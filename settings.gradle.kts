@@ -12,7 +12,13 @@
  *
  */
 
-rootProject.name = "edc-think-it-distribution"
+rootProject.name = "mds-edc"
+
+include(":extensions:example-extension")
+include(":runtimes:controlplane")
+include(":runtimes:dataplane")
+
+include(":system-tests:compatibility-tests")
 
 // this is needed to have access to snapshot builds of plugins
 pluginManagement {
@@ -42,8 +48,4 @@ dependencyResolutionManagement {
     }
 }
 
-// add dependencies
-include(":extensions:example-extension")
-include(":runtimes:controlplane")
-include(":runtimes:dataplane")
-include(":system-tests:compatibility-tests")
+
