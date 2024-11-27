@@ -52,7 +52,6 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.sql.testfixtures.PostgresqlEndToEndInstance.createDatabase;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
-import static org.testcontainers.utility.MountableFile.forClasspathResource;
 
 
 @EndToEndTest
@@ -109,9 +108,9 @@ public class TransferEndToEndTest {
     @BeforeEach
     void storeKeys() {
         // TODO: through management api?
-//        var vault = PROVIDER_PARTICIPANT.getService(Vault.class);
-//        vault.storeSecret("private-key", PROVIDER_PARTICIPANT.getPrivateKey());
-//        vault.storeSecret("public-key", PROVIDER_PARTICIPANT.getPublicKey());
+        // var vault = PROVIDER_PARTICIPANT.getService(Vault.class);
+        // vault.storeSecret("private-key", PROVIDER_PARTICIPANT.getPrivateKey());
+        // vault.storeSecret("public-key", PROVIDER_PARTICIPANT.getPublicKey());
     }
 
     @ParameterizedTest

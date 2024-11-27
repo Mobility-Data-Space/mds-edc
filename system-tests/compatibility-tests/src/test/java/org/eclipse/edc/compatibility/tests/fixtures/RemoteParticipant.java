@@ -67,9 +67,8 @@ public class RemoteParticipant extends BaseParticipant {
                 put("EDC_DATASOURCE_LOGGINGHOUSE_URL", "jdbc:postgresql://localhost:5432/%s".formatted(getId()));
                 put("EDC_DATASOURCE_LOGGINGHOUSE_USER", "postgres");
                 put("EDC_DATASOURCE_LOGGINGHOUSE_PASSWORD", "password");
-
-//                put("EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS", "private-key");
-//                put("EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS", "public-key");
+                // put("EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS", "private-key");
+                // put("EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS", "public-key");
                 put("EDC_DPF_SELECTOR_URL", controlPlaneControl + "/v1/dataplanes");
                 put("TESTING_EDC_VAULTS_1_KEY", "private-key");
                 put("TESTING_EDC_VAULTS_1_VALUE", getPrivateKey());
