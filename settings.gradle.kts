@@ -17,6 +17,7 @@ rootProject.name = "mds-edc"
 include(":extensions:example-extension")
 include(":runtimes:controlplane")
 include(":runtimes:dataplane")
+include(":runtimes:mds-edc")
 
 include(":system-tests:compatibility-tests")
 
