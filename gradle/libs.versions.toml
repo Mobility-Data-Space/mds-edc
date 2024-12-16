@@ -147,4 +147,4 @@ sql-dataplane = ["edc-sql-accesstokendata", "edc-sql-dataplane", "edc-sql-core",
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
 docker = { id = "com.bmuschko.docker-remote-api", version = "9.4.0" }
-swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.26" }
+swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version = "2.2.27" }
