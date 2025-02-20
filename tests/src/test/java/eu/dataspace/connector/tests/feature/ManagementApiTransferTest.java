@@ -57,7 +57,7 @@ class ManagementApiTransferTest {
                     .configurationProvider(CONSUMER::getConfiguration));
 
     @Test
-    void testDataTransfer() {
+    void shouldSupportHttpPushTransfer() {
         var providerDataSource = startClientAndServer(getFreePort());
         providerDataSource.when(request("/source")).respond(response("data"));
         var consumerDataDestination = startClientAndServer(getFreePort());

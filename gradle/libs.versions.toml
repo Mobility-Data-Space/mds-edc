@@ -1,7 +1,7 @@
 [versions]
 assertj = "3.27.3"
 awaitility = "4.2.2"
-edc = "0.11.0"
+edc = "0.11.1"
 junit-jupiter = "5.11.4"
 mockserver = "5.15.0"
 rest-assured = "5.5.0"
