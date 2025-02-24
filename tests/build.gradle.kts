@@ -10,6 +10,6 @@ dependencies {
     testImplementation(libs.rest.assured)
     testImplementation(libs.testcontainers.vault)
 
-    testRuntimeOnly(project(":launchers:connector-inmemory"))
-    testRuntimeOnly(project(":launchers:connector-vault"))
+    testCompileOnly(project(":launchers:connector-inmemory"))
+    testCompileOnly(project(":launchers:connector-vault"))
 }

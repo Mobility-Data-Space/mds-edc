@@ -10,7 +10,14 @@ Build project
 ./gradlew build
 ```
 
+### In Memory connector
+
 Build docker image
 ```
-docker build launchers/connector
+docker build --build-context runtime=connector-inmemory launchers
+```
+
+### Vault connector
+```
+docker build --build-context runtime=connector-vault launchers
 ```

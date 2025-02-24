@@ -17,7 +17,7 @@ updates:
       - "java"
 
   - package-ecosystem: "docker"
-    directory: launchers/connector
+    directory: launchers
     labels:
       - "dependabot"
       - "docker"

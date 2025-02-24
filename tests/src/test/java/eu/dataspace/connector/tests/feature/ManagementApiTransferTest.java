@@ -11,13 +11,11 @@ import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
-import org.testcontainers.vault.VaultContainer;
 
 import java.io.IOException;
 import java.util.Map;
@@ -80,19 +78,18 @@ class ManagementApiTransferTest {
         private static final RuntimeExtension PROVIDER_EXTENSION = new RuntimePerClassExtension(
                 new EmbeddedRuntime("provider", ":launchers:connector-vault")
                         .configurationProvider(PROVIDER::getConfiguration)
-                        .configurationProvider(VAULT_EXTENSION::getConfig))
+                        .configurationProvider(() -> VAULT_EXTENSION.getConfig("provider")))
                 .registerSystemExtension(ServiceExtension.class, PROVIDER.seedVaultKeys());
 
         @RegisterExtension
         private static final RuntimeExtension CONSUMER_EXTENSION = new RuntimePerClassExtension(
                 new EmbeddedRuntime("consumer", ":launchers:connector-vault")
                         .configurationProvider(CONSUMER::getConfiguration)
-                        .configurationProvider(VAULT_EXTENSION::getConfig));
+                        .configurationProvider(() -> VAULT_EXTENSION.getConfig("consumer")));
 
         protected HashicorpVault() {
             super(PROVIDER_EXTENSION, CONSUMER_EXTENSION);
         }
-
     }
 
     private abstract static class Tests {

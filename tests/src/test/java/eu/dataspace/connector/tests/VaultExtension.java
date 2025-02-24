@@ -25,10 +25,11 @@ public class VaultExtension implements BeforeAllCallback, AfterAllCallback {
         vaultContainer.stop();
     }
 
-    public Config getConfig() {
+    public Config getConfig(String name) {
         return ConfigFactory.fromMap(Map.of(
                 "edc.vault.hashicorp.url", "http://localhost:" + vaultContainer.getFirstMappedPort(),
-                "edc.vault.hashicorp.token", token
+                "edc.vault.hashicorp.token", token,
+                "edc.vault.hashicorp.folder", name
         ));
     }
 }
