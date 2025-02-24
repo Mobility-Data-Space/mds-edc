@@ -5,6 +5,7 @@ edc = "0.11.1"
 junit-jupiter = "5.11.4"
 mockserver = "5.15.0"
 rest-assured = "5.5.1"
+testcontainers = "1.20.5"
 
 [libraries]
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
@@ -16,6 +17,8 @@ edc-dataplane-base-bom = { module = "org.eclipse.edc:dataplane-base-bom", versio
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-management-api-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }
+edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "mockserver" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
+testcontainers-vault = { module = "org.testcontainers:vault", version.ref = "testcontainers" }

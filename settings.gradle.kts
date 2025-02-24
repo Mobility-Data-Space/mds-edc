@@ -14,5 +14,6 @@ dependencyResolutionManagement {
     }
 }
 
-include(":launchers:connector")
+include(":launchers:connector-inmemory")
+include(":launchers:connector-vault")
 include(":tests")

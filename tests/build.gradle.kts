@@ -8,6 +8,8 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.mockserver.netty)
     testImplementation(libs.rest.assured)
+    testImplementation(libs.testcontainers.vault)
 
-    testRuntimeOnly(project(":launchers:connector"))
+    testRuntimeOnly(project(":launchers:connector-inmemory"))
+    testRuntimeOnly(project(":launchers:connector-vault"))
 }
