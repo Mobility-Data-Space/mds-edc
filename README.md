@@ -14,10 +14,10 @@ Build project
 
 Build docker image
 ```
-docker build --build-context runtime=connector-inmemory launchers
+docker build --build-arg RUNTIME="connector-inmemory" launchers
 ```
 
 ### Vault connector
 ```
-docker build --build-context runtime=connector-vault launchers
+docker build --build-arg RUNTIME="connector-vault" launchers
 ```

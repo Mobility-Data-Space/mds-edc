@@ -7,7 +7,6 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
-import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.AsymmetricKey;
@@ -15,10 +14,8 @@ import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Base64;
-import java.util.Map;
 
-import static java.util.Map.entry;
-import static org.eclipse.edc.util.io.Ports.getFreePort;
+import static eu.dataspace.connector.tests.ConfigurationHelper.basicConfig;
 
 public class MdsParticipant extends Participant {
 
@@ -27,25 +24,7 @@ public class MdsParticipant extends Participant {
     }
 
     public Config getConfiguration() {
-        var map = Map.ofEntries(
-                entry("edc.participant.id", id),
-                entry("web.http.path", "/api"),
-                entry("web.http.port", getFreePort() + ""),
-                entry("web.http.control.path", "/control"),
-                entry("web.http.control.port", getFreePort() + ""),
-                entry("web.http.management.path", controlPlaneManagement.get().getPath()),
-                entry("web.http.management.port", controlPlaneManagement.get().getPort() + ""),
-                entry("web.http.protocol.path", controlPlaneProtocol.get().getPath()),
-                entry("web.http.protocol.port", controlPlaneProtocol.get().getPort() + ""),
-                entry("web.http.version.path", "/version"),
-                entry("web.http.version.port", getFreePort() + ""),
-                entry("web.http.public.path", "/public"),
-                entry("web.http.public.port", getFreePort() + ""),
-                entry("edc.transfer.proxy.token.verifier.publickey.alias", "public-key-alias"),
-                entry("edc.transfer.proxy.token.signer.privatekey.alias", "private-key-alias")
-        );
-
-        return ConfigFactory.fromMap(map);
+        return basicConfig(id, controlPlaneManagement.get(), controlPlaneProtocol.get());
     }
 
     public ServiceExtension seedVaultKeys() {
