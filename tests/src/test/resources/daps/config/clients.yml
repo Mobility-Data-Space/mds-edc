@@ -1,0 +1,22 @@
+---
+- client_id: provider
+  name: test client
+  redirect_uri:
+  allowed_scopes:
+    - omejdn:write
+    - openid
+    - idsc:IDS_CONNECTOR_ATTRIBUTES_ALL
+  attributes:
+    - key: omejdn
+    - value: admin
+
+- client_id: consumer
+  name: test client
+  redirect_uri:
+  allowed_scopes:
+    - omejdn:write
+    - openid
+    - idsc:IDS_CONNECTOR_ATTRIBUTES_ALL
+  attributes:
+    - key: omejdn
+    - value: admin

@@ -1,6 +1,7 @@
 package eu.dataspace.connector.tests.feature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.dataspace.connector.tests.DapsExtension;
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.VaultExtension;
 import jakarta.json.Json;
@@ -75,17 +76,27 @@ class ManagementApiTransferTest {
         private static final VaultExtension VAULT_EXTENSION = new VaultExtension();
 
         @RegisterExtension
+        @Order(1)
+        private static final DapsExtension DAPS_EXTENSION = new DapsExtension();
+
+        @RegisterExtension
         private static final RuntimeExtension PROVIDER_EXTENSION = new RuntimePerClassExtension(
                 new EmbeddedRuntime("provider", ":launchers:connector-vault")
                         .configurationProvider(PROVIDER::getConfiguration)
-                        .configurationProvider(() -> VAULT_EXTENSION.getConfig("provider")))
-                .registerSystemExtension(ServiceExtension.class, PROVIDER.seedVaultKeys());
+                        .configurationProvider(() -> VAULT_EXTENSION.getConfig("provider"))
+                        .registerSystemExtension(ServiceExtension.class, PROVIDER.seedVaultKeys())
+                        .configurationProvider(() -> DAPS_EXTENSION.dapsConfig("provider"))
+                        .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
+        );
 
         @RegisterExtension
         private static final RuntimeExtension CONSUMER_EXTENSION = new RuntimePerClassExtension(
                 new EmbeddedRuntime("consumer", ":launchers:connector-vault")
                         .configurationProvider(CONSUMER::getConfiguration)
-                        .configurationProvider(() -> VAULT_EXTENSION.getConfig("consumer")));
+                        .configurationProvider(() -> DAPS_EXTENSION.dapsConfig("consumer"))
+                        .configurationProvider(() -> VAULT_EXTENSION.getConfig("consumer"))
+                        .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
+        );
 
         protected HashicorpVault() {
             super(PROVIDER_EXTENSION, CONSUMER_EXTENSION);

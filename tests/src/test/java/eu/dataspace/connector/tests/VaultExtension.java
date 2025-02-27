@@ -1,14 +1,16 @@
 package eu.dataspace.connector.tests;
 
 import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.vault.VaultContainer;
 
+import java.util.Map;
 import java.util.UUID;
 
-import static eu.dataspace.connector.tests.ConfigurationHelper.vaultConfig;
+import static java.util.Map.entry;
 
 public class VaultExtension implements BeforeAllCallback, AfterAllCallback {
 
@@ -26,6 +28,12 @@ public class VaultExtension implements BeforeAllCallback, AfterAllCallback {
     }
 
     public Config getConfig(String name) {
-        return vaultConfig("http://localhost:" + vaultContainer.getFirstMappedPort(), token, name);
+        var settings = Map.ofEntries(
+                entry("edc.vault.hashicorp.url", "http://localhost:" + vaultContainer.getFirstMappedPort()),
+                entry("edc.vault.hashicorp.token", token),
+                entry("edc.vault.hashicorp.folder", name)
+        );
+
+        return ConfigFactory.fromMap(settings);
     }
 }
