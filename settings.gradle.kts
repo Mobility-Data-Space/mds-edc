@@ -14,6 +14,10 @@ dependencyResolutionManagement {
     }
 }
 
+include(":extensions:policy:policy-always-true")
+include(":extensions:policy:policy-referring-connector")
+include(":extensions:policy:policy-time-interval")
+
 include(":launchers:connector-inmemory")
 include(":launchers:connector-vault-postgresql")
 include(":tests")

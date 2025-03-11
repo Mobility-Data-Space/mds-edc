@@ -73,7 +73,7 @@ public class PostgresqlExtension implements BeforeAllCallback, AfterAllCallback 
             var command = stream(databases).map("create database %s;"::formatted).collect(joining("; "));
             connection.createStatement().execute(command);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

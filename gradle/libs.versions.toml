@@ -1,9 +1,9 @@
 [versions]
 assertj = "3.27.3"
 awaitility = "4.3.0"
-bouncycastle = "1.80"
 edc = "0.11.1"
 junit-jupiter = "5.12.0"
+mockito = "5.2.0"
 mockserver = "5.15.0"
 rest-assured = "5.5.1"
 testcontainers = "1.20.5"
@@ -14,18 +14,25 @@ postgres = "42.7.4"
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 edc-boot-lib = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
+edc-catalog-spi = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
 edc-control-plane-api = { module = "org.eclipse.edc:control-plane-api", version.ref = "edc" }
+edc-control-plane-spi = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
 edc-controlplane-base-bom = { module = "org.eclipse.edc:controlplane-base-bom", version.ref = "edc" }
 edc-dataplane-base-bom = { module = "org.eclipse.edc:dataplane-base-bom", version.ref = "edc" }
 edc-controlplane-feature-sql-bom = { module = "org.eclipse.edc:controlplane-feature-sql-bom", version.ref = "edc" }
 edc-dataplane-feature-sql-bom = { module = "org.eclipse.edc:dataplane-feature-sql-bom", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
+edc-json-ld-spi = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-management-api-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }
 edc-oauth2-daps = { module = "org.eclipse.edc:oauth2-daps", version.ref = "edc" }
 edc-oauth2-service = { module = "org.eclipse.edc:oauth2-service", version.ref = "edc" }
+edc-participant-spi = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
+edc-policy-spi = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
+edc-policy-engine-spi = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
 edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "mockserver" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
