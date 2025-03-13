@@ -2,7 +2,7 @@ name: Build and Publish Docker Images
 
 on:
   push:
-    branches: [ main ]
+    branches: [ all ]
 
 jobs:
   build-and-push-images:
@@ -38,8 +38,8 @@ jobs:
       - name: Build and push inmemory image
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: ./launchers/Dockerfile
+          context: ./launchers
+          file: Dockerfile
           push: true
           tags: ghcr.io/${{ steps.lowercase_gh_repo.outputs.lowercase }}/connector-inmemory:latest
           build-args: |
@@ -48,8 +48,8 @@ jobs:
       - name: Build and push vault postgresql image
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: ./launchers/Dockerfile
+          context: ./launchers
+          file: Dockerfile
           push: true
           tags: ghcr.io/${{ steps.lowercase_gh_repo.outputs.lowercase }}/connector-vault-postgresql:latest
           build-args: |
