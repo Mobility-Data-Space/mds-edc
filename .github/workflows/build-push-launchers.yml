@@ -36,7 +36,7 @@ jobs:
           string: ${{ github.repository }}
 
       - name: Build and push inmemory image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: ./launchers
           file: Dockerfile
@@ -46,7 +46,7 @@ jobs:
             RUNTIME=connector-inmemory
 
       - name: Build and push vault postgresql image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: ./launchers
           file: Dockerfile
