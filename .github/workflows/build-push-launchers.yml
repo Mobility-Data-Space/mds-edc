@@ -31,7 +31,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - id: lowercase_gh_repo
-        uses: ASzc/change-string-case-action@v2
+        uses: ASzc/change-string-case-action@v6
         with:
           string: ${{ github.repository }}
 
