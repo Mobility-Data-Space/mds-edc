@@ -2,7 +2,7 @@
 assertj = "3.27.3"
 awaitility = "4.3.0"
 edc = "0.11.1"
-junit-jupiter = "5.12.0"
+junit-jupiter = "5.12.1"
 mockito = "5.2.0"
 mockserver = "5.15.0"
 rest-assured = "5.5.1"
