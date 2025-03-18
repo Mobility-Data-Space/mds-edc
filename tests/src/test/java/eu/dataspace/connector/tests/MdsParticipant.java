@@ -1,5 +1,8 @@
 package eu.dataspace.connector.tests;
 
+import io.restassured.http.ContentType;
+import io.restassured.response.ValidatableResponse;
+import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.security.Vault;
@@ -9,10 +12,17 @@ import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 
 import java.util.Map;
+import java.util.UUID;
 
 import static eu.dataspace.connector.tests.Crypto.encode;
+import static io.restassured.http.ContentType.JSON;
+import static jakarta.json.Json.createObjectBuilder;
 import static java.util.Map.entry;
+import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
+import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 
 public class MdsParticipant extends Participant {
 
@@ -44,6 +54,36 @@ public class MdsParticipant extends Participant {
 
     public ServiceExtension seedVaultKeys() {
         return new SeedVaultKeys();
+    }
+
+    public String createOffer(Map<String, Object> dataAddressProperties) {
+        var assetId = UUID.randomUUID().toString();
+        createAsset(assetId, Map.of("description", "description"), dataAddressProperties);
+        var noConstraintPolicyId = createPolicyDefinition(noConstraintPolicy());
+        createContractDefinition(assetId, UUID.randomUUID().toString(), noConstraintPolicyId, noConstraintPolicyId);
+        return assetId;
+    }
+
+    public ValidatableResponse retireProviderAgreement(String agreementId) {
+        var body = createObjectBuilder()
+                .add(TYPE, EDC_NAMESPACE + "AgreementsRetirementEntry")
+                .add(EDC_NAMESPACE + "agreementId", agreementId)
+                .add(TX_NAMESPACE + "reason", "a good reason")
+                .build();
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .post("/v3.1alpha/retireagreements")
+                .then();
+    }
+
+    public JsonObject getTransferProcess(String transferProcessId) {
+        return baseManagementRequest()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/v3/transferprocesses/{id}", transferProcessId)
+                .then().statusCode(200).extract().body().as(JsonObject.class);
     }
 
     public static class Builder extends Participant.Builder<MdsParticipant, Builder> {

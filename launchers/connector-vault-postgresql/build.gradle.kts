@@ -19,6 +19,8 @@ dependencies {
     runtimeOnly(libs.tractusx.edc.postgresql.migration)
     runtimeOnly(libs.tractusx.edc.data.plane.migration)
     runtimeOnly(libs.tractusx.edc.control.plane.migration)
+
+    runtimeOnly(libs.tractusx.edc.retirement.evaluation.store.sql)
 }
 
 application {

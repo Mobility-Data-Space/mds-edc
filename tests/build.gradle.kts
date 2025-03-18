@@ -2,6 +2,7 @@ dependencies {
     testImplementation(libs.edc.boot.lib)
     testImplementation(libs.edc.junit)
     testImplementation(testFixtures(libs.edc.management.api.test.fixtures))
+    testImplementation(libs.tractusx.edc.core.spi)
 
     testImplementation(libs.assertj)
     testImplementation(libs.awaitility)

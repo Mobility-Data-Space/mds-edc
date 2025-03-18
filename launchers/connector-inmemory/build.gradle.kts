@@ -14,7 +14,12 @@ dependencies {
         exclude(group = edcGroupId, module = "data-plane-selector-client")
     }
 
+    runtimeOnly(libs.tractusx.edc.retirement.evaluation.api)
+    runtimeOnly(libs.tractusx.edc.retirement.evaluation.core)
+
     runtimeOnly(libs.edc.control.plane.api) // should not be needed anymore since https://github.com/eclipse-edc/Connector/issues/4759 gets resolved
+
+
     runtimeOnly(libs.edc.iam.mock)
 
     implementation(project(":extensions:policy:policy-always-true"))

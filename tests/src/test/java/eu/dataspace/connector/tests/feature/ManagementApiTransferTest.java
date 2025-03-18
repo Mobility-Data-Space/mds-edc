@@ -28,7 +28,6 @@ import static io.restassured.RestAssured.given;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
@@ -131,7 +130,7 @@ class ManagementApiTransferTest {
                     EDC_NAMESPACE + "baseUrl", "http://localhost:%s/source".formatted(providerDataSource.getPort())
             );
 
-            var assetId = createResourcesOnProvider(dataAddressProperties);
+            var assetId = PROVIDER.createOffer(dataAddressProperties);
 
             var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                     .withTransferType("HttpData-PUSH")
@@ -160,7 +159,7 @@ class ManagementApiTransferTest {
                     EDC_NAMESPACE + "baseUrl", "http://localhost:%s/source".formatted(providerDataSource.getPort())
             );
 
-            var assetId = createResourcesOnProvider(dataAddressProperties);
+            var assetId = PROVIDER.createOffer(dataAddressProperties);
 
             var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                     .withTransferType("HttpData-PULL")
@@ -212,7 +211,7 @@ class ManagementApiTransferTest {
                     EDC_NAMESPACE + "oauth2:tokenUrl", "http://localhost:%s/token".formatted(oauth2server.getPort())
             );
 
-            var assetId = createResourcesOnProvider(dataSource);
+            var assetId = PROVIDER.createOffer(dataSource);
 
             var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                     .withTransferType("HttpData-PUSH")
@@ -240,14 +239,6 @@ class ManagementApiTransferTest {
                             .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add)
                             .build())
                     .build();
-        }
-
-        private String createResourcesOnProvider(Map<String, Object> dataAddressProperties) {
-            var assetId = UUID.randomUUID().toString();
-            PROVIDER.createAsset(assetId, Map.of("description", "description"), dataAddressProperties);
-            var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
-            PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), noConstraintPolicyId, noConstraintPolicyId);
-            return assetId;
         }
 
         private JsonObject httpDataAddress(String baseUrl) {
