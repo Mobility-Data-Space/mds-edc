@@ -39,7 +39,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./launchers
-          file: Dockerfile
+          file: launchers/Dockerfile
           push: true
           tags: ghcr.io/${{ steps.lowercase_gh_repo.outputs.lowercase }}/connector-inmemory:latest
           build-args: |
@@ -49,7 +49,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./launchers
-          file: Dockerfile
+          file: launchers/Dockerfile
           push: true
           tags: ghcr.io/${{ steps.lowercase_gh_repo.outputs.lowercase }}/connector-vault-postgresql:latest
           build-args: |
