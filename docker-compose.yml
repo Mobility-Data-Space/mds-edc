@@ -22,6 +22,7 @@ services:
     environment:
       # Participant Configuration
       EDC_PARTICIPANT_ID: ${EDC_PARTICIPANT_ID:-my_participant_id}
+      EDC_COMPONENT_ID: "${EDC_PARTICIPANT_ID:-my_participant_id}_MDS_COMPONENT"
 
       # OAuth and IAM Configuration
       EDC_OAUTH_TOKEN_URL: ${DAPS_URL}/token
