@@ -54,6 +54,7 @@ public class EdpTest {
     void shouldAllowEDPSJob_andResultAsset() {
         var edpsBackendService = startClientAndServer(getFreePort());
         // Register EDPS endpoints
+        // Mock POST /v1/dataspace/analysisjob
         edpsBackendService.when(
             request()
                 .withMethod("POST")
@@ -64,6 +65,18 @@ public class EdpTest {
                 .withBody("{\"job_id\": \"40c70511-9427-43d1-811b-97231145cce1\", \"state\": \"WAITING_FOR_DATA\", \"state_detail\": \"Job is waiting for data to be uploaded.\"}")
         );
 
+        // Mock POST /v1/dataspace/analysisjob/{job_id}/data/file
+        edpsBackendService.when(
+            request()
+                .withMethod("POST")
+                .withPath("/v1/dataspace/analysisjob/40c70511-9427-43d1-811b-97231145cce1/data/file")
+        ).respond(
+            response()
+                .withStatusCode(201)
+                .withBody("{\"status\": \"success\", \"message\": \"File uploaded and processed successfully.\"}")
+        );
+
+        // Mock GET /v1/dataspace/analysisjob/{job_id}/result
         edpsBackendService.when(
             request()
                 .withMethod("GET")
@@ -72,9 +85,10 @@ public class EdpTest {
             response()
                 .withStatusCode(200)
                 .withHeader("Content-Type", "application/zip")
-                .withBody(new byte[]{}) // Simulating an empty zip file
+                .withBody(new byte[]{1, 2, 3, 4, 5}) // Simulating a non-empty zip file
         );
 
+        // Mock GET /v1/dataspace/analysisjob/{job_id}/status
         edpsBackendService.when(
             request()
                 .withMethod("GET")
@@ -82,7 +96,7 @@ public class EdpTest {
         ).respond(
             response()
                 .withStatusCode(200)
-                .withBody("{\"job_id\": \"40c70511-9427-43d1-811b-97231145cce1\", \"state\": \"WAITING_FOR_DATA\", \"state_detail\": \"Job is waiting for data to be uploaded.\"}")
+                .withBody("{\"job_id\": \"40c70511-9427-43d1-811b-97231145cce1\", \"state\": \"COMPLETED\", \"state_detail\": \"Job has been completed successfully.\"}")
         );
 
         // Prepare the contract agreement ID for the EDPS asset
