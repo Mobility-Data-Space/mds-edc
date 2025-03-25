@@ -14,5 +14,6 @@ dependencies {
     testImplementation(libs.testcontainers.postgresql)
 
     testCompileOnly(project(":launchers:connector-inmemory"))
+    testCompileOnly(project(":launchers:connector-inmemory-edp"))
     testCompileOnly(project(":launchers:connector-vault-postgresql"))
 }
