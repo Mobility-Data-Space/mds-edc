@@ -1,14 +1,16 @@
 package io.nexyo.edp.extensions.services;
 
-import com.apicatalog.jsonld.StringUtils;
 import io.nexyo.edp.extensions.exceptions.EdpException;
+import io.nexyo.edp.extensions.model.Edr;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
+import org.eclipse.edc.spi.constants.CoreConstants;
 import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.spi.result.ServiceResult;
 
 import java.util.Comparator;
 
@@ -27,30 +29,20 @@ public class EdrService {
     }
 
     /**
-     * Retrieves Endpoint Data Reference properties from the contract.
+     * Retrieves EDR for the contract
      *
-     * @param contractId the contract ID.
-     * @return the corresponding value of the given key.
+     * @param contractId the contract id
+     * @return the EDR if found, failure otherwise.
      */
-    public String getEdrProperty(String contractId, String key) {
-        var transferProcess = this.getCurrentTransferProcess(contractId);
+    public ServiceResult<Edr> getEdr(String contractId) {
+        var transferProcess = getCurrentTransferProcess(contractId);
 
-        var endpointDataReference = this.edrStore.resolveByTransferProcess(transferProcess.getId());
-        if (endpointDataReference.failed()) {
-            throw new EdpException("Endpoint Data Reference not found for transfer process. The error messages are: " +
-                    String.join("; ", endpointDataReference.getFailureMessages()) );
-        }
-
-        var edrProperties = endpointDataReference.getContent()
-                .getProperties();
-        var edrPropertyValue = edrProperties.getOrDefault(key, "")
-                .toString();
-
-        if (StringUtils.isBlank(edrPropertyValue)) {
-            throw new EdpException("Could not extract EDR property for key " + key);
-        }
-
-        return edrPropertyValue;
+        return edrStore.resolveByTransferProcess(transferProcess.getId())
+                .flatMap(ServiceResult::from)
+                .map(endpointDataReference -> new Edr(
+                        endpointDataReference.getStringProperty(CoreConstants.EDC_NAMESPACE + "endpoint"),
+                        endpointDataReference.getStringProperty(CoreConstants.EDC_NAMESPACE + "authorization")
+                ));
     }
 
     /**
@@ -83,7 +75,6 @@ public class EdrService {
         return currentTransferProcess;
     }
 
-
     /**
      * Retrieves the contract agreement for a given contract ID.
      * @param contractId the contract ID.
@@ -97,4 +88,5 @@ public class EdrService {
         }
         return contractAgreement;
     }
+
 }

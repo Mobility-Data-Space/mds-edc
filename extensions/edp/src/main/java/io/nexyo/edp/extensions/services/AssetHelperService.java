@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.nexyo.edp.extensions.exceptions.EdpException;
-import io.nexyo.edp.extensions.utils.LoggingUtils;
 import org.eclipse.edc.connector.controlplane.services.spi.asset.AssetService;
 import org.eclipse.edc.spi.monitor.Monitor;
 
@@ -26,10 +25,11 @@ public class AssetHelperService {
      * Constructor for the AssetHelperService.
      *
      * @param assetService the asset service
+     * @param monitor      the monitor
      */
-    public AssetHelperService(AssetService assetService) {
+    public AssetHelperService(AssetService assetService, Monitor monitor) {
         this.assetService = assetService;
-        this.logger = LoggingUtils.getLogger();
+        this.logger = monitor;
         this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 

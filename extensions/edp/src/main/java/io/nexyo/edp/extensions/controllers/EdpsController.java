@@ -2,10 +2,13 @@ package io.nexyo.edp.extensions.controllers;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.nexyo.edp.extensions.dtos.internal.*;
+import io.nexyo.edp.extensions.dtos.internal.EdpsCreateJobRequestDto;
+import io.nexyo.edp.extensions.dtos.internal.EdpsJobDto;
+import io.nexyo.edp.extensions.dtos.internal.EdpsResultRequestDto;
+import io.nexyo.edp.extensions.dtos.internal.GenericResponseDto;
+import io.nexyo.edp.extensions.dtos.internal.Status;
 import io.nexyo.edp.extensions.services.AssetHelperService;
 import io.nexyo.edp.extensions.services.EdpsService;
-import io.nexyo.edp.extensions.utils.LoggingUtils;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.edc.connector.controlplane.services.spi.asset.AssetService;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -27,12 +30,13 @@ public class EdpsController implements EdpsInterface {
          *
          * @param edpsService  the service responsible for handling EDPS operations
          * @param assetService the service responsible for handling asset operations
+         * @param monitor      the monitor
          */
-        public EdpsController(EdpsService edpsService, AssetService assetService) {
-                this.logger = LoggingUtils.getLogger();
+        public EdpsController(EdpsService edpsService, AssetService assetService, Monitor monitor) {
+                this.logger = monitor;
                 this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 this.edpsService = edpsService;
-                this.assetHelperService = new AssetHelperService(assetService);
+                this.assetHelperService = new AssetHelperService(assetService, monitor);
         }
 
         @Override

@@ -2,16 +2,17 @@ package io.nexyo.edp.extensions.controllers;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.nexyo.edp.extensions.dtos.internal.*;
+import io.nexyo.edp.extensions.dtos.internal.DaseenCreateEntryRequestDto;
+import io.nexyo.edp.extensions.dtos.internal.DaseenResourceDto;
+import io.nexyo.edp.extensions.dtos.internal.GenericResponseDto;
+import io.nexyo.edp.extensions.dtos.internal.Status;
 import io.nexyo.edp.extensions.services.AssetHelperService;
 import io.nexyo.edp.extensions.services.DaseenService;
-import io.nexyo.edp.extensions.utils.LoggingUtils;
 import jakarta.ws.rs.core.Response;
-
-import java.util.UUID;
-
 import org.eclipse.edc.connector.controlplane.services.spi.asset.AssetService;
 import org.eclipse.edc.spi.monitor.Monitor;
+
+import java.util.UUID;
 
 /**
  * DaseenController
@@ -29,12 +30,13 @@ public class DaseenController implements DaseenInterface {
      *
      * @param daseenService the daseen service
      * @param assetService  the asset service
+     * @param monitor       the monitor
      */
-    public DaseenController(DaseenService daseenService, AssetService assetService) {
-        this.logger = LoggingUtils.getLogger();
+    public DaseenController(DaseenService daseenService, AssetService assetService, Monitor monitor) {
+        this.logger = monitor;
         this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.daseenService = daseenService;
-        this.assetHelperService = new AssetHelperService(assetService);
+        this.assetHelperService = new AssetHelperService(assetService, monitor);
     }
 
     @Override

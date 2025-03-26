@@ -1,14 +1,11 @@
 package io.nexyo.edp.extensions.services;
 
 import io.nexyo.edp.extensions.exceptions.EdpException;
-import io.nexyo.edp.extensions.utils.ConfigurationUtils;
-import io.nexyo.edp.extensions.utils.LoggingUtils;
 import org.eclipse.edc.connector.controlplane.asset.spi.index.AssetIndex;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.DataFlowResponse;
 import org.eclipse.edc.connector.dataplane.selector.spi.DataPlaneSelectorService;
 import org.eclipse.edc.connector.dataplane.selector.spi.client.DataPlaneClientFactory;
 import org.eclipse.edc.connector.dataplane.selector.spi.instance.DataPlaneInstance;
-import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
@@ -43,14 +40,16 @@ public class DataplaneService {
      *                                 instances.
      * @param clientFactory            the factory for creating data plane clients.
      * @param assetIndexer             the indexer for resolving asset addresses.
+     * @param callbackAddress          the callback address
+     * @param monitor                  the monitor
      */
     public DataplaneService(DataPlaneSelectorService dataPlaneSelectorService, DataPlaneClientFactory clientFactory,
-            AssetIndex assetIndexer) {
+                            AssetIndex assetIndexer, String callbackAddress, Monitor monitor) {
         this.selectorService = dataPlaneSelectorService;
         this.clientFactory = clientFactory;
         this.assetIndexer = assetIndexer;
-        this.logger = LoggingUtils.getLogger();
-        this.callbackAddress = ConfigurationUtils.readStringProperty("edp.dataplane.callback", "url");
+        this.logger = monitor;
+        this.callbackAddress = callbackAddress;
     }
 
     /**

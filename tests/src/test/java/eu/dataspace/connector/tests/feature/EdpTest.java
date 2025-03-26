@@ -1,9 +1,6 @@
 package eu.dataspace.connector.tests.feature;
 
 import eu.dataspace.connector.tests.MdsParticipant;
-
-import java.util.Map;
-
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
@@ -13,13 +10,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 public class EdpTest {
 
@@ -49,7 +49,6 @@ public class EdpTest {
                     .registerSystemExtension(ServiceExtension.class, CONSUMER.seedVaultKeys())
     );
     
-
     @Test
     void shouldAllowEDPSJob_andResultAsset() {
         var edpsBackendService = startClientAndServer(getFreePort());
@@ -133,7 +132,8 @@ public class EdpTest {
         // Get EDPS Results zip file
         var edpsResults = CONSUMER.getEdpsResult(assetId, jobId, edpsContractAgreementId);
 
-        assert edpsResults != null : "EDPS results should not be null";
+        assertThat(edpsResults).isNotNull();
+        assertThat(edpsResults.getString("status")).isEqualTo("OK");
 
         // Verify EDPS backend calls
         edpsBackendService.verify(
