@@ -1,9 +1,9 @@
 package eu.dataspace.connector.tests.feature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.dataspace.connector.tests.DapsExtension;
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.PostgresqlExtension;
+import eu.dataspace.connector.tests.SovityDapsExtension;
 import eu.dataspace.connector.tests.VaultExtension;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
@@ -81,7 +81,7 @@ class ManagementApiTransferTest {
 
         @RegisterExtension
         @Order(2)
-        private static final DapsExtension DAPS_EXTENSION = new DapsExtension();
+        private static final SovityDapsExtension DAPS_EXTENSION = new SovityDapsExtension();
 
         @RegisterExtension
         private static final RuntimeExtension PROVIDER_EXTENSION = new RuntimePerClassExtension(

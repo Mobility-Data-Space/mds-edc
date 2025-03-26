@@ -3,6 +3,7 @@ assertj = "3.27.3"
 awaitility = "4.3.0"
 edc = "0.11.1"
 junit-jupiter = "5.12.1"
+keycloak = "26.0.4"
 mockito = "5.16.1"
 mockserver = "5.15.0"
 rest-assured = "5.5.1"
@@ -40,6 +41,7 @@ tractusx-edc-retirement-evaluation-store-sql = { module = "org.eclipse.tractusx.
 
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
+keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "mockserver" }
