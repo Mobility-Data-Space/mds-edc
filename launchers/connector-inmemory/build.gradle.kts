@@ -14,11 +14,10 @@ dependencies {
         exclude(group = edcGroupId, module = "data-plane-selector-client")
     }
 
+    runtimeOnly(libs.edc.data.plane.public.api.v2) // this has been deprecated, but it will be provided by tractus-x edc starting from version 0.10.0
+
     runtimeOnly(libs.tractusx.edc.retirement.evaluation.api)
     runtimeOnly(libs.tractusx.edc.retirement.evaluation.core)
-
-    runtimeOnly(libs.edc.control.plane.api) // should not be needed anymore since https://github.com/eclipse-edc/Connector/issues/4759 gets resolved
-
 
     runtimeOnly(libs.edc.iam.mock)
 

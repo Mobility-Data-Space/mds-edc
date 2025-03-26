@@ -13,10 +13,10 @@ postgres = "42.7.5"
 [libraries]
 edc-boot-lib = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
 edc-catalog-spi = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
-edc-control-plane-api = { module = "org.eclipse.edc:control-plane-api", version.ref = "edc" }
 edc-control-plane-spi = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
 edc-controlplane-base-bom = { module = "org.eclipse.edc:controlplane-base-bom", version.ref = "edc" }
 edc-dataplane-base-bom = { module = "org.eclipse.edc:dataplane-base-bom", version.ref = "edc" }
+edc-data-plane-public-api-v2 = { module = "org.eclipse.edc:data-plane-public-api-v2", version.ref = "edc" }
 edc-controlplane-feature-sql-bom = { module = "org.eclipse.edc:controlplane-feature-sql-bom", version.ref = "edc" }
 edc-dataplane-feature-sql-bom = { module = "org.eclipse.edc:dataplane-feature-sql-bom", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
