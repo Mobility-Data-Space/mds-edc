@@ -4,7 +4,7 @@ This documentation describes the EDP plugin, a EDC (Eclipse Dataspace Component)
 
 ## System Architecture Overview
 
-![System Architecture](resources/docs/overview.png)
+![System Architecture](../../docs/images/edp_extension_overview.png)
 
 The above diagram illustrates the overall system architecture showing how the Data Holder connects with EDPS and Daseen services through EDC contracts and data flows.
 
@@ -112,7 +112,7 @@ It is sufficient to change the `edc.edps.url` and `edc.daseen.url` properties to
 The Api reference for the:
 
 - Management Api can be found [here](https://github.com/eclipse-edc/Connector/blob/gh-pages/openapi/management-api/3.0.6/management-api.yaml).
-- Extension Api can be found [here](resources/edc-edps-openapi.yml).
+- Extension Api can be found [here](../../docs/edc_edps_openapi.yml).
 
 ## EDP Workflow
 
