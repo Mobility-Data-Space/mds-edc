@@ -86,6 +86,33 @@ public class MdsParticipant extends Participant {
                 .then().statusCode(200).extract().body().as(JsonObject.class);
     }
 
+    public JsonObject createEdpsJob(String assetId, String edpsContractAgreementId) {
+        return baseManagementRequest()
+                .contentType(ContentType.JSON)
+                .body(createObjectBuilder().add("contractId", edpsContractAgreementId).build())
+                .when()
+                .post("/edp/edps/{assetId}/jobs", assetId)
+                .then().statusCode(200).extract().body().as(JsonObject.class);
+    }
+
+    public JsonObject getEdpsResult(String assetId, String jobId, String edpsContractAgreementId) {
+        return baseManagementRequest()
+                .contentType(ContentType.JSON)
+                .body(createObjectBuilder().add("contractId", edpsContractAgreementId).build())
+                .when()
+                .post("/edp/edps/{assetId}/jobs/{jobId}/result", assetId, jobId)
+                .then().statusCode(200).extract().body().as(JsonObject.class);
+    }
+
+    public ValidatableResponse publishDassen(String resultAssetId, String daseenContractAgreementId) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(createObjectBuilder().add("contractId", daseenContractAgreementId).build())
+                .when()
+                .post("/edp/daseen/{resultAssetId}", resultAssetId)
+                .then();
+    }
+
     public static class Builder extends Participant.Builder<MdsParticipant, Builder> {
 
         public static Builder newInstance() {

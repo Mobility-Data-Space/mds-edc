@@ -1,0 +1,232 @@
+openapi: 3.0.3
+info:
+  title: EDC - EDP Extension API
+  description: RESTful API for managing Extended Dataset Profile (EDP) jobs, results, and Daseen resources.
+  version: 0.2.0
+
+servers:
+  - url: /edp
+    description: Base API path for EDP operations
+
+paths:
+  /edps/{assetId}/jobs:
+    get:
+      summary: Get all EDPS jobs for an asset
+      description: Retrieves all EDPS jobs associated with a specific asset.
+      operationId: getEdpsJob
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the asset to retrieve jobs for
+      responses:
+        '200':
+          description: Successfully retrieved EDPS jobs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EdpsJobDto'
+
+    post:
+      summary: Create a new EDPS job
+      description: Creates a new EDPS job for a specific asset and submits the associated file to EDPS.
+      operationId: createEdpsJob
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the asset to create a job for
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EdpsCreateJobRequestDto'
+      responses:
+        '200':
+          description: Successfully created EDPS job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EdpsJobDto'
+
+  /edps/{assetId}/jobs/{jobId}/status:
+    get:
+      summary: Get status of an EDPS job
+      description: Retrieves the current status of a specific EDPS job.
+      operationId: getEdpsJobStatus
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the asset associated with the job
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the job to check status for
+      responses:
+        '200':
+          description: Successfully retrieved job status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EdpsJobDto'
+
+  /edps/{assetId}/jobs/{jobId}/result:
+    post:
+      summary: Fetch and store EDPS job result
+      description: Retrieves the result from EDPS and stores the result file on the specified destination data address.
+      operationId: fetchEdpsJobResult
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the original asset
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the completed job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EdpsResultRequestDto'
+      responses:
+        '200':
+          description: Successfully fetched and stored job result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponseDto'
+
+  /daseen/{assetId}:
+    post:
+      summary: Create a Daseen resource
+      description: Publishes an asset to the Daseen API.
+      operationId: createDaseenResource
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the asset to be published
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DaseenCreateEntryRequestDto'
+      responses:
+        '200':
+          description: Successfully created Daseen resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponseDto'
+
+    put:
+      summary: Update a Daseen resource
+      description: Updates an existing asset in the Daseen API.
+      operationId: updateDaseenResource
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the asset to be updated
+      responses:
+        '200':
+          description: Successfully updated Daseen resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponseDto'
+
+    delete:
+      summary: Delete a Daseen resource
+      description: Deletes an asset from the Daseen API.
+      operationId: deleteDaseenResource
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The unique identifier of the asset to be deleted
+      responses:
+        '200':
+          description: Successfully deleted Daseen resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponseDto'
+
+components:
+  schemas:
+    EdpsJobDto:
+      type: object
+      description: Represents an EDPS job
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: The unique identifier of the job model
+        asset_id:
+          type: string
+          description: The identifier of the associated asset
+        job_id:
+          type: string
+          description: The unique identifier of the job
+        state:
+          type: string
+          description: The current state of the job
+        state_detail:
+          type: string
+          description: Additional details about the job state
+
+    EdpsCreateJobRequestDto:
+      type: object
+      properties:
+        contractId:
+          type: string
+          description: The contract ID to be used for the EDPS job
+
+    EdpsResultRequestDto:
+      type: object
+      properties:
+        destinationAddress:
+          type: string
+          description: The address where the result should be delivered
+
+    DaseenCreateEntryRequestDto:
+      type: object
+      properties:
+        contractId:
+          type: string
+          description: The contract ID to be used for the Daseen resource
+
+    GenericResponseDto:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Response message
+        status:
+          type: string
+          enum: [OK, ERROR]
+          description: Status of the operation

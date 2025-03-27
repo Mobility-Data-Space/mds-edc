@@ -7,6 +7,7 @@ dependencies {
     testImplementation(libs.assertj)
     testImplementation(libs.awaitility)
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.keycloak.admin.client)
     testImplementation(libs.mockserver.netty)
     testImplementation(libs.rest.assured)
     testImplementation(libs.postgres)
@@ -14,5 +15,6 @@ dependencies {
     testImplementation(libs.testcontainers.postgresql)
 
     testCompileOnly(project(":launchers:connector-inmemory"))
+    testCompileOnly(project(":launchers:connector-inmemory-edp"))
     testCompileOnly(project(":launchers:connector-vault-postgresql"))
 }
