@@ -58,7 +58,10 @@ with the relative `CommandHandler` implementations that do respectively:
 - set `pending` to false, transition state to `TERMINATING` with the reason set in the `errorDetail` attribute, save
   negotiation
 
-An API endpoint needs to be added as well to permit to approve/reject the negotiation.
+A pair of API endpoints will be needed to approve/reject the negotiation, and they would be like:
+
+`POST .../negotiations/<contract_negotiation_id>/approve`
+`POST .../negotiations/<contract_negotiation_id>/reject`
 
 #### Additional feature: eventing
 
@@ -74,3 +77,9 @@ eventRouter.publish(ContractNegotiationApprovalRequired.Builder.newInstance()
 
 If not already existent, an `EventSubscriber` that takes care to dispatch the event to a configured destination needs to
 be implemented.
+
+Other 2 events can be added:
+- `ContractNegotiationApproved`
+- `ContractNegotiationRejected`
+
+and they will be thrown by the approve/reject command handler.
