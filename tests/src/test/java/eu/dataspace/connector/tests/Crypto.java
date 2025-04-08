@@ -7,7 +7,6 @@ import org.testcontainers.shaded.org.bouncycastle.jce.provider.BouncyCastleProvi
 import org.testcontainers.shaded.org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import java.math.BigInteger;
-import java.security.AsymmetricKey;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -53,13 +52,12 @@ public interface Crypto {
         }
     }
 
-    static String encode(AsymmetricKey key) {
-        var type = switch (key) {
-            case PublicKey _ -> "PUBLIC KEY";
-            case PrivateKey _ -> "PRIVATE KEY";
-            default -> throw new IllegalStateException("not possible");
-        };
-        return encodeToString(type, key.getEncoded());
+    static String encode(PublicKey key) {
+        return encodeToString("PUBLIC KEY", key.getEncoded());
+    }
+
+    static String encode(PrivateKey key) {
+        return encodeToString("PRIVATE KEY", key.getEncoded());
     }
 
     static String encode(X509Certificate certificate) {
