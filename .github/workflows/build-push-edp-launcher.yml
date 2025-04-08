@@ -1,6 +1,7 @@
 name: Build and Publish Docker Images of MDS EDC with EDP extension
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
 
