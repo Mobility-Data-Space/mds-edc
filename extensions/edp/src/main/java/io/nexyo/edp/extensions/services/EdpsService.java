@@ -28,6 +28,9 @@ public class EdpsService {
     private final DataplaneService dataplaneService;
     private final EdrService edrService;
 
+    public static final String EDR_PROPERTY_EDPS_BASE_URL_KEY = "https://w3id.org/edc/v0.0.1/ns/endpoint";
+    public static final String EDR_PROPERTY_EDPS_AUTH_KEY = "https://w3id.org/edc/v0.0.1/ns/authorization";
+
     /**
      * Constructs an instance of EdpsService.
      *
@@ -50,37 +53,34 @@ public class EdpsService {
      */
     public EdpsJobResponseDto createEdpsJob(String assetId, String contractId) {
         this.logger.info(String.format("Creating EDP job for %s...", assetId));
-
-        var edrResolution = edrService.getEdr(contractId);
-        if (edrResolution.failed()) {
-            throw new EdpException(edrResolution.getFailureDetail());
-        }
-
-        var edr = edrResolution.getContent();
+        final var edpsBaseUrlFromContract = this.edrService.getEdrProperty(contractId,
+                        EDR_PROPERTY_EDPS_BASE_URL_KEY);
+        final var edpsAuthorizationFromContract = this.edrService.getEdrProperty(contractId,
+                        EDR_PROPERTY_EDPS_AUTH_KEY);
 
         var jsonb = JsonbBuilder.create();
         var requestBody = MockUtils.createRequestBody(assetId);
-        var jsonRequestBody = jsonb.toJson(requestBody);
+        String jsonRequestBody = jsonb.toJson(requestBody);
 
-        var apiResponse = httpClient.target(String.format("%s%s", edr.url(), "/v1/dataspace/analysisjob"))
-                .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", edr.authorization())
-                .post(Entity.entity(jsonRequestBody, MediaType.APPLICATION_JSON));
+        var apiResponse = httpClient
+                        .target(String.format("%s%s", edpsBaseUrlFromContract, "/v1/dataspace/analysisjob"))
+                        .request(MediaType.APPLICATION_JSON)
+                        .header("Authorization", edpsAuthorizationFromContract)
+                        .post(Entity.entity(jsonRequestBody, MediaType.APPLICATION_JSON));
 
         if (!(apiResponse.getStatus() >= 200 && apiResponse.getStatus() <= 300)) {
-            this.logger.warning(
-                    "Failed to create EDPS job for asset id: " + assetId + ". Status was: " + apiResponse.getStatus());
-            throw new EdpException("EDPS job creation failed for asset id: " + assetId);
+                this.logger.warning("Failed to create EDPS job for asset id: " + assetId + ". Status was: "
+                                                + apiResponse.getStatus());
+                throw new EdpException("EDPS job creation failed for asset id: " + assetId);
         }
 
         var responseBody = apiResponse.readEntity(String.class);
-        this.logger.info(
-                "EDPS job created successfully for asset id: " + assetId + ". Edps Server responded: " + responseBody);
-
+        this.logger.info("EDPS job created successfully for asset id: " + assetId + ". Edps Server responded: "
+            + responseBody);
         try {
-            return this.mapper.readValue(responseBody, EdpsJobResponseDto.class);
+                return this.mapper.readValue(responseBody, EdpsJobResponseDto.class);
         } catch (JsonProcessingException e) {
-            throw new EdpException("Unable to map response to DTO ", e);
+                throw new EdpException("Unable to map response to DTO ", e);
         }
     }
 
@@ -93,32 +93,29 @@ public class EdpsService {
      */
     public EdpsJobResponseDto getEdpsJobStatus(String jobId, String contractId) {
         this.logger.info(String.format("Fetching EDPS Job status for job %s...", jobId));
-
-        var edrResolution = edrService.getEdr(contractId);
-        if (edrResolution.failed()) {
-            throw new EdpException(edrResolution.getFailureDetail());
-        }
-
-        var edr = edrResolution.getContent();
+        final var edpsBaseUrl = this.edrService.getEdrProperty(contractId,
+                        EDR_PROPERTY_EDPS_BASE_URL_KEY);
+        final var edpsAuthorizationFromContract = this.edrService.getEdrProperty(contractId,
+                        EDR_PROPERTY_EDPS_AUTH_KEY);
 
         var apiResponse = this.httpClient
-                .target(String.format("%s/v1/dataspace/analysisjob/%s/status", edr.url(), jobId))
-                .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", edr.authorization())
-                .get();
+                        .target(String.format("%s/v1/dataspace/analysisjob/%s/status", edpsBaseUrl, jobId))
+                        .request(MediaType.APPLICATION_JSON)
+                        .header("Authorization", edpsAuthorizationFromContract)
+                        .get();
 
         if (apiResponse.getStatus() < 200 || apiResponse.getStatus() >= 300) {
-            String errorMessage = apiResponse.readEntity(String.class);
-            this.logger.warning("Failed to fetch EDPS job status: " + errorMessage);
-            throw new EdpException("Failed to fetch EDPS job status: " + errorMessage);
+                String errorMessage = apiResponse.readEntity(String.class);
+                this.logger.warning("Failed to fetch EDPS job status: " + errorMessage);
+                throw new EdpException("Failed to fetch EDPS job status: " + errorMessage);
         }
 
         String responseBody = apiResponse.readEntity(String.class);
 
         try {
-            return this.mapper.readValue(responseBody, EdpsJobResponseDto.class);
+                return this.mapper.readValue(responseBody, EdpsJobResponseDto.class);
         } catch (JsonProcessingException e) {
-            throw new EdpException("Unable to map response to DTO ", e);
+                throw new EdpException("Unable to map response to DTO ", e);
         }
     }
 
@@ -132,21 +129,18 @@ public class EdpsService {
         var transferProcess = this.edrService.getCurrentTransferProcess(contractId);
         var participantId = this.edrService.getContractAgreement(contractId).getProviderId();
 
-        var edrResolution = edrService.getEdr(contractId);
-        if (edrResolution.failed()) {
-            throw new EdpException(edrResolution.getFailureDetail());
-        }
-
-        var edr = edrResolution.getContent();
+        final var edpsBaseUrl = this.edrService.getEdrProperty(contractId, EDR_PROPERTY_EDPS_BASE_URL_KEY);
 
         var destinationAddress = HttpDataAddress.Builder.newInstance()
-                .type(FlowType.PUSH.toString())
-                .addAdditionalHeader("Authorization", edr.authorization())
-                .baseUrl(String.format("%s/v1/dataspace/analysisjob/%s/data/file", edr.url(), edpsJobDto.getJobId()))
-                .build();
+                        .type(FlowType.PUSH.toString())
+                        .property("header:accept", "application/json")
+                        .baseUrl(String.format("%s/v1/dataspace/analysisjob/%s/data/filename.csv", edpsBaseUrl,
+                                        edpsJobDto.getJobId()))
+                        .build();
 
-        this.dataplaneService.start(edpsJobDto.getAssetId(), destinationAddress, transferProcess.getId(), participantId,
-                contractId);
+        this.dataplaneService.start(edpsJobDto.getAssetId(), destinationAddress, transferProcess.getId(),
+                        participantId,
+                        contractId);
     }
 
     /**
@@ -158,15 +152,10 @@ public class EdpsService {
      */
     public void fetchEdpsJobResult(EdpsJobDto edpsJobDto, EdpsResultRequestDto edpResultRequestDto) {
         this.logger.info(String.format("Fetching EDPS Job Result ZIP for asset %s for job %s...",
-                edpsJobDto.getAssetId(), edpsJobDto.getAssetId()));
+                                edpsJobDto.getAssetId(), edpsJobDto.getAssetId()));
         var contractId = edpsJobDto.getContractId();
 
-        var edrResolution = edrService.getEdr(contractId);
-        if (edrResolution.failed()) {
-            throw new EdpException(edrResolution.getFailureDetail());
-        }
-
-        var edr = edrResolution.getContent();
+        final var edpsBaseUrl = this.edrService.getEdrProperty(contractId, EDR_PROPERTY_EDPS_BASE_URL_KEY);
 
         // TODO: Überlegung: Wir müssen nur aufpassen, dass der trnsfer process dann
         // nicht terminiert, vielleicht sollten wir für jeden transfer einen eigenen
@@ -175,19 +164,18 @@ public class EdpsService {
         var participantId = this.edrService.getContractAgreement(contractId).getProviderId();
 
         var sourceAddress = HttpDataAddress.Builder.newInstance()
-                .type(FlowType.PULL.toString())
-                .addAdditionalHeader("Authorization", edr.authorization())
-                .baseUrl(String.format("%s/v1/dataspace/analysisjob/%s/result", edr.url(), edpsJobDto.getJobId()))
-                .build();
+                        .type(FlowType.PULL.toString())
+                        .baseUrl(String.format("%s/v1/dataspace/analysisjob/%s/result", edpsBaseUrl,
+                                        edpsJobDto.getJobId()))
+                        .build();
 
         var destinationAddress = HttpDataAddress.Builder.newInstance()
-                .type(FlowType.PUSH.toString())
-                // .addAdditionalHeader("Authorization", edpsAuthorizationFromContract)
-                .baseUrl(edpResultRequestDto.destinationAddress())
-                .build();
+                        .type(FlowType.PUSH.toString())
+                        .baseUrl(edpResultRequestDto.destinationAddress())
+                        .build();
 
         this.dataplaneService.start(sourceAddress, destinationAddress, transferProcess.getId(), participantId,
-                contractId);
+                        contractId);
     }
 
     /**

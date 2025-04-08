@@ -1,16 +1,20 @@
 package io.nexyo.edp.extensions.services;
 
 import io.nexyo.edp.extensions.exceptions.EdpException;
-import io.nexyo.edp.extensions.model.Edr;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
+import org.eclipse.edc.connector.controlplane.services.spi.catalog.CatalogService;
 import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
+import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.edr.spi.store.EndpointDataReferenceStore;
-import org.eclipse.edc.spi.constants.CoreConstants;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
-import org.eclipse.edc.spi.result.ServiceResult;
+
+import com.apicatalog.jsonld.StringUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Comparator;
 
@@ -18,31 +22,48 @@ import static org.eclipse.edc.spi.query.Criterion.criterion;
 
 public class EdrService {
 
+    private final CatalogService catalogService;
+    private final ContractNegotiationService contractNegotiationService;
     private final ContractAgreementService contractAgreementService;
     private final TransferProcessService transferProcessService;
     private final EndpointDataReferenceStore edrStore;
 
-    public EdrService(ContractAgreementService contractAgreementService, TransferProcessService transferProcessService, EndpointDataReferenceStore edrStore) {
+    private final Monitor logger ;
+
+    public EdrService(CatalogService catalogService, ContractNegotiationService contractNegotiationService, ContractAgreementService contractAgreementService, TransferProcessService transferProcessService, EndpointDataReferenceStore edrStore, Monitor logger) {
+        this.catalogService = catalogService;
+        this.contractNegotiationService = contractNegotiationService;
         this.contractAgreementService = contractAgreementService;
         this.transferProcessService = transferProcessService;
         this.edrStore = edrStore;
+        this.logger = logger ;
     }
 
     /**
-     * Retrieves EDR for the contract
+     * Retrieves Endpoint Data Reference properties from the contract.
      *
-     * @param contractId the contract id
-     * @return the EDR if found, failure otherwise.
+     * @param contractId the contract ID.
+     * @return the corresponding value of the given key.
      */
-    public ServiceResult<Edr> getEdr(String contractId) {
-        var transferProcess = getCurrentTransferProcess(contractId);
+    public String getEdrProperty(String contractId, String key) {
+        var transferProcess = this.getCurrentTransferProcess(contractId);
 
-        return edrStore.resolveByTransferProcess(transferProcess.getId())
-                .flatMap(ServiceResult::from)
-                .map(endpointDataReference -> new Edr(
-                        endpointDataReference.getStringProperty(CoreConstants.EDC_NAMESPACE + "endpoint"),
-                        endpointDataReference.getStringProperty(CoreConstants.EDC_NAMESPACE + "authorization")
-                ));
+        var endpointDataReference = this.edrStore.resolveByTransferProcess(transferProcess.getId());
+        if (endpointDataReference.failed()) {
+            throw new EdpException("Endpoint Data Reference not found for transfer process. The error messages are: " +
+                    String.join("; ", endpointDataReference.getFailureMessages()) );
+        }
+
+        var edrProperties = endpointDataReference.getContent()
+                .getProperties();
+        var edrPropertyValue = edrProperties.getOrDefault(key, "")
+                .toString();
+
+        if (StringUtils.isBlank(edrPropertyValue)) {
+            throw new EdpException("Could not extract EDR property for key " + key);
+        }
+
+        return edrPropertyValue;
     }
 
     /**
@@ -87,6 +108,23 @@ public class EdrService {
             throw new EdpException("Contract agreement not found for contract ID: " + contractId);
         }
         return contractAgreement;
+    }
+
+    public String getServiceBaseUrlFromMetadata(String contractAgreementId) {
+        var negotiations = this.contractNegotiationService.search(QuerySpec.Builder.newInstance().filter(criterion("contractAgreement.id", "=", contractAgreementId)).build());
+        var negotiation = negotiations.getContent().stream().findFirst().orElseThrow(() -> new EdpException("Negotiation not found for contract agreement ID: " + contractAgreementId));
+        var offerAssetId = negotiation.getContractOffers().stream().findFirst().orElseThrow(() -> new EdpException("Offer not found for negotiation ID: " + negotiation.getId())).getAssetId();
+
+        var result = this.catalogService.requestDataset(offerAssetId, negotiation.getCounterPartyId(), negotiation.getCounterPartyAddress(), "dataspace-protocol-http").join();
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(result.getContent());
+            logger.debug(String.format("CA-ID: %s and Content: %s", contractAgreementId, jsonNode.asText()));
+            return jsonNode.get("baseUrl").asText();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse the response", e);
+        }
     }
 
 }

@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nexyo.edp.extensions.dtos.external.DaseenCreateResourceResponseDto;
 import io.nexyo.edp.extensions.dtos.internal.DaseenResourceDto;
 import io.nexyo.edp.extensions.exceptions.EdpException;
-import io.nexyo.edp.extensions.utils.MockUtils;
-import jakarta.json.bind.JsonbBuilder;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -28,6 +26,8 @@ public class DaseenService {
         private final DataplaneService dataplaneService;
         private final EdrService edrService;
 
+        public static final String EDR_PROPERTY_EDPS_BASE_URL_KEY = "https://w3id.org/edc/v0.0.1/ns/endpoint";
+        public static final String EDR_PROPERTY_EDPS_AUTH_KEY = "https://w3id.org/edc/v0.0.1/ns/authorization";
         /**
          * Constructor for the DaseenService.
          *
@@ -49,31 +49,25 @@ public class DaseenService {
          */
         public DaseenCreateResourceResponseDto createDaseenResource(String assetId, String contractId) {
                 this.logger.info(String.format("Creating Daseen Resource for Asset: %s...", assetId));
+                final var daseenBaseUrlFromContract = this.edrService.getEdrProperty(contractId,
+                                EDR_PROPERTY_EDPS_BASE_URL_KEY);
+                final var daseenAuthorizationFromContract = this.edrService.getEdrProperty(contractId,
+                                EDR_PROPERTY_EDPS_AUTH_KEY);
 
-                var edrResolution = edrService.getEdr(contractId);
-                if (edrResolution.failed()) {
-                        throw new EdpException(edrResolution.getFailureDetail());
-                }
-
-                var edr = edrResolution.getContent();
-
-                var jsonb = JsonbBuilder.create();
-                var requestBody = MockUtils.createRequestBody(assetId);
-                var jsonRequestBody = jsonb.toJson(requestBody);
-
-                var apiResponse = httpClient.target(String.format("%s/connector/edp", edr.url()))
-                                .request(MediaType.APPLICATION_JSON)
-                                .header("Authorization", edr.authorization())
-                                .post(Entity.entity(jsonRequestBody, MediaType.APPLICATION_JSON));
+                var apiResponse = httpClient.target(String.format("%s/connector/edp", daseenBaseUrlFromContract))
+                                .request()
+                                .header("accept", "*/*")
+                                .header("Authorization", daseenAuthorizationFromContract)
+                                .post(Entity.json(""));
 
                 if (!(apiResponse.getStatus() >= 200 && apiResponse.getStatus() < 300)) {
                         this.logger.warning("Failed to create EDP entry in Daseen for asset id: " + assetId
                                         + ". Status was: "
                                         + apiResponse.getStatus());
-                        throw new EdpException("EDPS job creation failed for asset id: " + assetId);
+                        throw new EdpException("Daseen job creation failed for asset id: " + assetId);
                 }
 
-                var responseBody = apiResponse.readEntity(String.class);
+                String responseBody = apiResponse.readEntity(String.class);
 
                 try {
                         return this.mapper.readValue(responseBody, DaseenCreateResourceResponseDto.class);
@@ -88,21 +82,20 @@ public class DaseenService {
          * @param daseenResourceDto the DaseenResourceDto to be published.
          */
         public void publishToDaseen(DaseenResourceDto daseenResourceDto) {
-                this.logger
-                                .info(String.format("Publishing Resource for Asset %s to Daseen...",
-                                                daseenResourceDto.getAssetId()));
+                this.logger.info(String.format("Publishing Resource for Asset %s to Daseen...", daseenResourceDto.getAssetId()));
 
-                var edrResolution = edrService.getEdr(daseenResourceDto.getContractId());
-                if (edrResolution.failed()) {
-                        throw new EdpException(edrResolution.getFailureDetail());
-                }
+                final var daseenBaseUrlFromContract = this.edrService.getEdrProperty(daseenResourceDto.getContractId(),
+                                EDR_PROPERTY_EDPS_BASE_URL_KEY);
+                final var daseenAuthorizationFromContract = this.edrService.getEdrProperty(
+                                daseenResourceDto.getContractId(),
+                                EDR_PROPERTY_EDPS_AUTH_KEY);
 
-                var edr = edrResolution.getContent();
                 var destinationAddress = HttpDataAddress.Builder.newInstance()
                                 .type(FlowType.PUSH.toString())
-                                .method(HttpMethod.POST)
-                                .addAdditionalHeader("Authorization", edr.authorization())
-                                .baseUrl(String.format("%s/connector/edp/%s", edr.url(),
+                                .method(HttpMethod.PUT)
+                                .addAdditionalHeader("accept", "application/json")
+                                .addAdditionalHeader("Authorization", String.format("Bearer %s", daseenAuthorizationFromContract))
+                                .baseUrl(String.format("%s/connector/edp/%s/edp-result.zip", daseenBaseUrlFromContract,
                                                 daseenResourceDto.getResourceId()))
                                 .build();
 
@@ -122,19 +115,17 @@ public class DaseenService {
         public void updateInDaseen(DaseenResourceDto daseenResourceDto) {
                 this.logger.info(String.format("Updating Resource for Asset %s in Daseen...",
                                 daseenResourceDto.getAssetId()));
-
-                var edrResolution = edrService.getEdr(daseenResourceDto.getContractId());
-                if (edrResolution.failed()) {
-                        throw new EdpException(edrResolution.getFailureDetail());
-                }
-
-                var edr = edrResolution.getContent();
+                final var daseenBaseUrlFromContract = this.edrService.getEdrProperty(daseenResourceDto.getContractId(),
+                                EDR_PROPERTY_EDPS_BASE_URL_KEY);
+                final var daseenAuthorizationFromContract = this.edrService.getEdrProperty(
+                                daseenResourceDto.getContractId(),
+                                EDR_PROPERTY_EDPS_AUTH_KEY);
 
                 var destinationAddress = HttpDataAddress.Builder.newInstance()
                                 .type(FlowType.PUSH.toString())
                                 .method(HttpMethod.PUT)
-                                .addAdditionalHeader("Authorization", edr.authorization())
-                                .baseUrl(String.format("%s/connector/edp/%s", edr.url(),
+                                .addAdditionalHeader("Authorization", daseenAuthorizationFromContract)
+                                .baseUrl(String.format("%s/connector/edp/%s", daseenBaseUrlFromContract,
                                                 daseenResourceDto.getResourceId()))
                                 .build();
 
@@ -152,22 +143,18 @@ public class DaseenService {
          * @param daseenResourceDto the DaseenResourceDto to be deleted.
          */
         public void deleteInDaseen(DaseenResourceDto daseenResourceDto) {
-                this.logger
-                                .info(String.format("Deleting EDP Entry in Daseen for Asset: %s...",
-                                                daseenResourceDto.getAssetId()));
-
-                var edrResolution = edrService.getEdr(daseenResourceDto.getContractId());
-                if (edrResolution.failed()) {
-                        throw new EdpException(edrResolution.getFailureDetail());
-                }
-
-                var edr = edrResolution.getContent();
+                this.logger.info(String.format("Deleting EDP Entry in Daseen for Asset: %s...", daseenResourceDto.getAssetId()));
+                final var daseenBaseUrlFromContract = this.edrService.getEdrProperty(daseenResourceDto.getContractId(),
+                                EDR_PROPERTY_EDPS_BASE_URL_KEY);
+                final var daseenAuthorizationFromContract = this.edrService.getEdrProperty(
+                                daseenResourceDto.getContractId(),
+                                EDR_PROPERTY_EDPS_AUTH_KEY);
 
                 var apiResponse = httpClient
-                                .target(String.format("%s/connector/edp/%s", edr.url(),
+                                .target(String.format("%s/connector/edp/%s", daseenBaseUrlFromContract,
                                                 daseenResourceDto.getResourceId()))
                                 .request(MediaType.APPLICATION_JSON)
-                                .header("Authorization", edr.authorization())
+                                .header("Authorization", daseenAuthorizationFromContract)
                                 .delete();
 
                 if (!(apiResponse.getStatus() == 204 || apiResponse.getStatus() == 200)) {
@@ -175,7 +162,7 @@ public class DaseenService {
                                         + daseenResourceDto.getAssetId()
                                         + ". Status was: " + apiResponse.getStatus());
                         throw new EdpException(
-                                        "EDPS job creation failed for asset id: " + daseenResourceDto.getAssetId());
+                                        "Daseen job creation failed for asset id: " + daseenResourceDto.getAssetId());
                 }
         }
 
