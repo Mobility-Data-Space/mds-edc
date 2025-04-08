@@ -29,11 +29,11 @@ import static org.mockserver.model.HttpResponse.response;
 public class EdpTest {
 
     private static final MdsParticipant PROVIDER = MdsParticipant.Builder.newInstance()
-            .id("provider").name("edps_daseen")
+            .id("provider").name("provider")
             .build();
 
     private static final MdsParticipant CONSUMER = MdsParticipant.Builder.newInstance()
-            .id("consumer").name("data_holder")
+            .id("consumer").name("consumer")
             .build();
 
     @RegisterExtension
