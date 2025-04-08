@@ -1,11 +1,16 @@
 package eu.dataspace.connector.tests.feature;
 
 import eu.dataspace.connector.tests.MdsParticipant;
+import eu.dataspace.connector.tests.PostgresqlExtension;
+import eu.dataspace.connector.tests.SovityDapsExtension;
+import eu.dataspace.connector.tests.VaultExtension;
+
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
@@ -24,29 +29,49 @@ import static org.mockserver.model.HttpResponse.response;
 public class EdpTest {
 
     private static final MdsParticipant PROVIDER = MdsParticipant.Builder.newInstance()
-            .id("edps_daseen").name("edps_daseen")
+            .id("provider").name("edps_daseen")
             .build();
 
     private static final MdsParticipant CONSUMER = MdsParticipant.Builder.newInstance()
-            .id("data_holder").name("data_holder")
+            .id("consumer").name("data_holder")
             .build();
 
     @RegisterExtension
+    @Order(0)
+    private static final VaultExtension VAULT_EXTENSION = new VaultExtension();
+
+    @RegisterExtension
+    @Order(1)
+    private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension(PROVIDER.getName(), CONSUMER.getName());
+
+    @RegisterExtension
+    @Order(2)
+    private static final SovityDapsExtension DAPS_EXTENSION = new SovityDapsExtension();
+
+    @RegisterExtension
     private static final RuntimeExtension PROVIDER_EXTENSION = new RuntimePerClassExtension(
-            new EmbeddedRuntime("provider", ":launchers:connector-inmemory-edp")
+            new EmbeddedRuntime("provider", ":launchers:connector-vault-postgresql-edp")
                     .configurationProvider(PROVIDER::getConfiguration)
-                    .configurationProvider(() 
-                        -> ConfigFactory.fromMap(Map.ofEntries(entry("edp.dataplane.callback.url", "http://localhost"))))
+                    .configurationProvider(() -> VAULT_EXTENSION.getConfig(PROVIDER.getName()))
                     .registerSystemExtension(ServiceExtension.class, PROVIDER.seedVaultKeys())
+                    .configurationProvider(() -> DAPS_EXTENSION.dapsConfig(PROVIDER.getId()))
+                    .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
+                    .configurationProvider(() -> POSTGRES_EXTENSION.getConfig(PROVIDER.getName()))
+                    .configurationProvider(() -> ConfigFactory.fromMap(
+                        Map.ofEntries(entry("edp.dataplane.callback.url", "http://localhost:8080"))))
     );
-    
+
     @RegisterExtension
     private static final RuntimeExtension CONSUMER_EXTENSION = new RuntimePerClassExtension(
-            new EmbeddedRuntime("consumer", ":launchers:connector-inmemory-edp")
+            new EmbeddedRuntime("consumer", ":launchers:connector-vault-postgresql-edp")
                     .configurationProvider(CONSUMER::getConfiguration)
-                    .configurationProvider(() 
-                        -> ConfigFactory.fromMap(Map.ofEntries(entry("edp.dataplane.callback.url", "http://localhost"))))
+                    .configurationProvider(() -> VAULT_EXTENSION.getConfig(CONSUMER.getName()))
                     .registerSystemExtension(ServiceExtension.class, CONSUMER.seedVaultKeys())
+                    .configurationProvider(() -> DAPS_EXTENSION.dapsConfig(CONSUMER.getId()))
+                    .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
+                    .configurationProvider(() -> POSTGRES_EXTENSION.getConfig(CONSUMER.getName()))
+                    .configurationProvider(() -> ConfigFactory.fromMap(
+                        Map.ofEntries(entry("edp.dataplane.callback.url", "http://localhost:8080"))))
     );
     
     @Test
@@ -60,7 +85,7 @@ public class EdpTest {
                 .withPath("/v1/dataspace/analysisjob")
         ).respond(
             response()
-                .withStatusCode(201)
+                .withStatusCode(200)
                 .withBody("{\"job_id\": \"40c70511-9427-43d1-811b-97231145cce1\", \"state\": \"WAITING_FOR_DATA\", \"state_detail\": \"Job is waiting for data to be uploaded.\"}")
         );
 
@@ -71,7 +96,7 @@ public class EdpTest {
                 .withPath("/v1/dataspace/analysisjob/40c70511-9427-43d1-811b-97231145cce1/data/file")
         ).respond(
             response()
-                .withStatusCode(201)
+                .withStatusCode(200)
                 .withBody("{\"status\": \"success\", \"message\": \"File uploaded and processed successfully.\"}")
         );
 
@@ -202,10 +227,6 @@ public class EdpTest {
                 .withMethod("POST")
                 .withPath("/connector/edp")
         );
-
-        // Update the published asset
-
-        // Delete the published asset
 
         daseenBackendService.stop();
         fileserver.stop();
