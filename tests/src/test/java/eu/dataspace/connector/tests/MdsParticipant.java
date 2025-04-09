@@ -58,7 +58,7 @@ public class MdsParticipant extends Participant {
 
     public String createOffer(Map<String, Object> dataAddressProperties) {
         var assetId = UUID.randomUUID().toString();
-        createAsset(assetId, Map.of("description", "description"), dataAddressProperties);
+        createAsset(assetId, Map.of("http://w3id.org/mds#dataCategory", "any"), dataAddressProperties);
         var noConstraintPolicyId = createPolicyDefinition(noConstraintPolicy());
         createContractDefinition(assetId, UUID.randomUUID().toString(), noConstraintPolicyId, noConstraintPolicyId);
         return assetId;

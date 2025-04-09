@@ -14,11 +14,11 @@ dependencyResolutionManagement {
     }
 }
 
+include(":extensions:edp")
 include(":extensions:policy:policy-always-true")
 include(":extensions:policy:policy-referring-connector")
 include(":extensions:policy:policy-time-interval")
-
-include(":extensions:edp")
+include(":extensions:semantic-validator")
 
 include(":launchers:connector-inmemory")
 include(":launchers:connector-inmemory-edp")
