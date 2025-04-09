@@ -41,7 +41,7 @@ public class EdpsController implements EdpsInterface {
 
         @Override
         public Response getEdpsJob(String assetId) {
-                logger.info("Getting latest EDP job for asset " + assetId);
+                logger.debug("Getting latest EDP job for asset " + assetId);
 
                 var jobDtoOptional = this.assetHelperService.load(assetId, AssetHelperService.EDPS_JOB_KEY,
                                 EdpsJobDto.class);
@@ -72,7 +72,7 @@ public class EdpsController implements EdpsInterface {
 
         @Override
         public Response createEdpsJob(String assetId, EdpsCreateJobRequestDto edpsCreateJobRequestDto) {
-                logger.info("Creating EDP job...");
+                logger.debug("Creating EDP job...");
                 var edpsJobResponseDto = this.edpsService.createEdpsJob(assetId, edpsCreateJobRequestDto.contractId());
                 var edpsJobDto = mapper.convertValue(edpsJobResponseDto, EdpsJobDto.class);
                 edpsJobDto.setAssetId(assetId);
@@ -90,7 +90,7 @@ public class EdpsController implements EdpsInterface {
 
         @Override
         public Response fetchEdpsJobResult(String assetId, String jobId, EdpsResultRequestDto edpResultRequestDto) {
-                logger.info("Storing EDP result ZIP to destination address..."
+                logger.debug("Storing EDP result ZIP to destination address..."
                                 + edpResultRequestDto.destinationAddress());
 
                 var jobDtoOptional = this.assetHelperService.load(assetId, AssetHelperService.EDPS_JOB_KEY,

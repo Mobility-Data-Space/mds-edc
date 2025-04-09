@@ -86,7 +86,7 @@ public class DataplaneService {
         }
 
         var dataplaneInstance = getDataplane(sourceAddress);
-        this.logger.info("Data flow starting with dataplane id: " + dataplaneInstance.getId());
+        this.logger.debug("Data flow starting with dataplane id: " + dataplaneInstance.getId());
 
         var dataFlowRequest = createDataFlowRequest(assetId, sourceAddress, destinationAddress, processId,
                 participantId, agreementId);
@@ -97,7 +97,7 @@ public class DataplaneService {
                         .dataAddress(it.getDataAddress())
                         .dataPlaneId(dataplaneInstance.getId())
                         .build());
-        this.logger.info("Data flow response is: " + result);
+        this.logger.debug("Data flow response is: " + result);
     }
 
     /**
@@ -109,7 +109,7 @@ public class DataplaneService {
     public void start(DataAddress sourceAddress, DataAddress destinationAddress, String processId, String participantId,
             String agreementId) {
         var dataplaneInstance = getDataplane(sourceAddress);
-        this.logger.info("Data flow starting with dataplane id: " + dataplaneInstance.getId());
+        this.logger.debug("Data flow starting with dataplane id: " + dataplaneInstance.getId());
 
         var dataFlowRequest = createDataFlowRequest(null, sourceAddress, destinationAddress, processId, participantId,
                 agreementId);
@@ -120,7 +120,7 @@ public class DataplaneService {
                         .dataAddress(it.getDataAddress())
                         .dataPlaneId(dataplaneInstance.getId())
                         .build());
-        this.logger.info("Data flow response is: " + result);
+        this.logger.debug("Data flow response is: " + result);
     }
 
     /**

@@ -48,7 +48,7 @@ public class DaseenService {
          * @return the DaseenCreateResourceResponseDto
          */
         public DaseenCreateResourceResponseDto createDaseenResource(String assetId, String contractId) {
-                this.logger.info(String.format("Creating Daseen Resource for Asset: %s...", assetId));
+                this.logger.debug(String.format("Creating Daseen Resource for Asset: %s...", assetId));
                 final var daseenBaseUrlFromContract = this.edrService.getEdrProperty(contractId,
                                 EDR_PROPERTY_EDPS_BASE_URL_KEY);
                 final var daseenAuthorizationFromContract = this.edrService.getEdrProperty(contractId,
@@ -67,7 +67,7 @@ public class DaseenService {
                         throw new EdpException("Daseen job creation failed for asset id: " + assetId);
                 }
 
-                String responseBody = apiResponse.readEntity(String.class);
+                var responseBody = apiResponse.readEntity(String.class);
 
                 try {
                         return this.mapper.readValue(responseBody, DaseenCreateResourceResponseDto.class);
@@ -82,7 +82,7 @@ public class DaseenService {
          * @param daseenResourceDto the DaseenResourceDto to be published.
          */
         public void publishToDaseen(DaseenResourceDto daseenResourceDto) {
-                this.logger.info(String.format("Publishing Resource for Asset %s to Daseen...", daseenResourceDto.getAssetId()));
+                this.logger.debug(String.format("Publishing Resource for Asset %s to Daseen...", daseenResourceDto.getAssetId()));
 
                 final var daseenBaseUrlFromContract = this.edrService.getEdrProperty(daseenResourceDto.getContractId(),
                                 EDR_PROPERTY_EDPS_BASE_URL_KEY);
@@ -113,7 +113,7 @@ public class DaseenService {
          * @param daseenResourceDto the DaseenResourceDto to be updated.
          */
         public void updateInDaseen(DaseenResourceDto daseenResourceDto) {
-                this.logger.info(String.format("Updating Resource for Asset %s in Daseen...",
+                this.logger.debug(String.format("Updating Resource for Asset %s in Daseen...",
                                 daseenResourceDto.getAssetId()));
                 final var daseenBaseUrlFromContract = this.edrService.getEdrProperty(daseenResourceDto.getContractId(),
                                 EDR_PROPERTY_EDPS_BASE_URL_KEY);
@@ -143,7 +143,7 @@ public class DaseenService {
          * @param daseenResourceDto the DaseenResourceDto to be deleted.
          */
         public void deleteInDaseen(DaseenResourceDto daseenResourceDto) {
-                this.logger.info(String.format("Deleting EDP Entry in Daseen for Asset: %s...", daseenResourceDto.getAssetId()));
+                this.logger.debug(String.format("Deleting EDP Entry in Daseen for Asset: %s...", daseenResourceDto.getAssetId()));
                 final var daseenBaseUrlFromContract = this.edrService.getEdrProperty(daseenResourceDto.getContractId(),
                                 EDR_PROPERTY_EDPS_BASE_URL_KEY);
                 final var daseenAuthorizationFromContract = this.edrService.getEdrProperty(
@@ -170,7 +170,7 @@ public class DaseenService {
          * Closes the HTTP client.
          */
         public void close() {
-                this.logger.info("Closing HTTP client...");
+                this.logger.debug("Closing HTTP client...");
                 this.httpClient.close();
         }
 

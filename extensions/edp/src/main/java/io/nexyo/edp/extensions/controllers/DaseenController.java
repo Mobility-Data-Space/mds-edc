@@ -41,7 +41,7 @@ public class DaseenController implements DaseenInterface {
 
     @Override
     public Response create(String assetId, DaseenCreateEntryRequestDto daseenCreateEntryRequestDto) {
-        this.logger.info(String.format("Creating Daseen resource for EDP asset %s", assetId));
+        this.logger.debug(String.format("Creating Daseen resource for EDP asset %s", assetId));
         var daseenResponseDto = this.daseenService.createDaseenResource(assetId,
                 daseenCreateEntryRequestDto.contractId());
         var daseenResourceId = daseenResponseDto.id();
@@ -63,7 +63,7 @@ public class DaseenController implements DaseenInterface {
 
     @Override
     public Response update(String assetId) {
-        this.logger.info(String.format("Updating Daseen resource for asset with id %s", assetId));
+        this.logger.debug(String.format("Updating Daseen resource for asset with id %s", assetId));
 
         final var daseenResourceOptional = this.assetHelperService.load(assetId,
                 AssetHelperService.DASEEN_RESOURCE_KEY, DaseenResourceDto.class);

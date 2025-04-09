@@ -52,7 +52,7 @@ public class EdpsService {
      * @throws EdpException if the job creation fails.
      */
     public EdpsJobResponseDto createEdpsJob(String assetId, String contractId) {
-        this.logger.info(String.format("Creating EDP job for %s...", assetId));
+        this.logger.debug(String.format("Creating EDP job for %s...", assetId));
         final var edpsBaseUrlFromContract = this.edrService.getEdrProperty(contractId,
                         EDR_PROPERTY_EDPS_BASE_URL_KEY);
         final var edpsAuthorizationFromContract = this.edrService.getEdrProperty(contractId,
@@ -75,7 +75,7 @@ public class EdpsService {
         }
 
         var responseBody = apiResponse.readEntity(String.class);
-        this.logger.info("EDPS job created successfully for asset id: " + assetId + ". Edps Server responded: "
+        this.logger.debug("EDPS job created successfully for asset id: " + assetId + ". Edps Server responded: "
             + responseBody);
         try {
                 return this.mapper.readValue(responseBody, EdpsJobResponseDto.class);
@@ -92,7 +92,7 @@ public class EdpsService {
      * @throws EdpException if the request fails.
      */
     public EdpsJobResponseDto getEdpsJobStatus(String jobId, String contractId) {
-        this.logger.info(String.format("Fetching EDPS Job status for job %s...", jobId));
+        this.logger.debug(String.format("Fetching EDPS Job status for job %s...", jobId));
         final var edpsBaseUrl = this.edrService.getEdrProperty(contractId,
                         EDR_PROPERTY_EDPS_BASE_URL_KEY);
         final var edpsAuthorizationFromContract = this.edrService.getEdrProperty(contractId,
@@ -151,7 +151,7 @@ public class EdpsService {
      *                            details.
      */
     public void fetchEdpsJobResult(EdpsJobDto edpsJobDto, EdpsResultRequestDto edpResultRequestDto) {
-        this.logger.info(String.format("Fetching EDPS Job Result ZIP for asset %s for job %s...",
+        this.logger.debug(String.format("Fetching EDPS Job Result ZIP for asset %s for job %s...",
                                 edpsJobDto.getAssetId(), edpsJobDto.getAssetId()));
         var contractId = edpsJobDto.getContractId();
 
@@ -182,7 +182,7 @@ public class EdpsService {
      * Closes the HTTP client.
      */
     public void close() {
-        this.logger.info("Closing HTTP client...");
+        this.logger.debug("Closing HTTP client...");
         this.httpClient.close();
     }
 
