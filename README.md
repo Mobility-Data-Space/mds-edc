@@ -2,192 +2,46 @@
 
 This is the open source EDC distribution of the MDS Connector.
 
-## Quick start
+## Overview
 
-### Build MDS EDC Java Runtimes
+The MDS Connector is an implementation of the Eclipse Dataspace Connector (EDC) tailored for the Mobility Data Space. It facilitates secure and standardized data exchange between participants in the mobility ecosystem.
 
-Build project
-```
-./gradlew build
-```
+## Quick Start
 
-### Build MDS EDC Docker Images
+For a quick start guide on building and deploying the MDS Connector, please refer to our [Deployment Guide](docs/deployment/mds_connector_configuration.md).
 
-Build docker image
+## Documentation
 
-#### In Memory connector
+Our documentation is organized into three main categories:
 
-```
-docker build --build-arg RUNTIME="connector-inmemory" launchers
-```
+1. **Development**: Documentation about the features architecture and design, fore maintainers and contributors working on or extending the MDS Connector.
+   - [Contract Negotiation Manual Approval Proposal](docs/development/contract_negotiation_manual_approval_proposal.md)
 
-#### Vault PostgreSQL connector
-### Vault PostgreSQL connector
-```
-docker build --build-arg RUNTIME="connector-vault-postgresql" launchers
-```
+2. **Usage**: Resources for using the MDS Connector.
+   - [Management API Usage Guide](docs/development/management_api_usage.md)
+   - [Management API Specification](docs/usage/management_api_spec.yml)
+   - [Connector Postman Collection](docs/usage/connector_postman_collection.json)
 
-## Directory structure
+3. **Deployment**: guides on deploying and configuring the MDS Connector.
+   - [MDS Connector Configuration Guide](docs/deployment/mds_connector_configuration.md)
 
-* extensions: this is where your extension modules should be implemented
-* launchers: contains executable modules for the MDS connector
-* tests: contains e2e tests of MDS connector features.
-* docs: contains documentation for users and contributors regarding the different features of MDS connector and deployments guides.
+## Directory Structure
 
-## Deploy the Blueprint MDS EDC Participant Infrastructure with `docker-compose`
+- `extensions/`: Contains extension modules for the MDS Connector.
+- `launchers/`: Contains executable modules for the MDS Connector.
+- `tests/`: Contains end-to-end tests for MDS Connector features.
+- `docs/`: Contains all documentation files.
 
-### Prerequisites
+## Contributing
 
-- Docker and Docker Compose installed on your system
-- A domain name (for production use with Let's Encrypt SSL)
+We welcome contributions to the MDS Connector project. Please refer to our [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started.
 
-### Architecture
+## License
 
-![Docker Compose Deployment Architecture](docs/images/docker_compose_deployment.png)
+This project is licensed under [LICENSE NAME]. See the [LICENSE](LICENSE) file for details.
 
-The deployment architecture consists of the following components:
+## Support
 
-1. Nginx: Acts as a reverse proxy and handles SSL/TLS termination. It routes incoming requests to the appropriate services.
+For support, please open an issue in the GitHub repository or contact our support team at [SUPPORT EMAIL/LINK].
 
-2. Certbot: Manages SSL/TLS certificates using Let's Encrypt for HTTPS.
-
-3. MDS EDC: The core component of the MDS (Mobility Data Space) Connector. It handles data exchange, policy enforcement, and integration with other participants in the dataspace.
-
-4. PostgreSQL: Provides persistent storage for the EDC, storing configuration data, policies, and other necessary information.
-
-5. Vault: HashiCorp Vault is used for secure secret management. It stores sensitive information such as API keys, certificates, and passwords, which are then injected into the EDC service.
-
-6. Vault-init: A helper service that initializes and configures the Vault with necessary secrets during deployment.
-
-### Configuration
-
-1. An `.env.example` file is provided in the project root. This file contains a template for all the necessary environment variables, grouped by their respective components (MDS EDC, DAPS, Postgres, and Vault).
-
-2. Create a `.env` file by copying the `.env.example` file:
-   ```
-   cp .env.example .env
-   ```
-
-3. Edit the `.env` file and replace the placeholder values with your actual configuration. The variables are as follows:
-
-   ```
-   # MDS EDC Configuration
-   EDC_HOSTNAME=yourdomain.com
-   EDC_PARTICIPANT_ID=your-participant-id
-   CERTBOT_EMAIL=your@email.com
-
-   # DAPS (Dynamic Attribute Provisioning Service) Configuration
-   DAPS_URL=https://daps.demo.mobility-dataspace.eu/realms/DAPS/protocol/openid-connect
-   EDC_OAUTH_CLIENT_ID=your-oauth-client-id
-   P12_PASSWORD=your-p12-password
-   P12_CONTENT=your-p12-content-base64-encoded
-
-   # Postgres Configuration
-   POSTGRES_USER=edc
-   POSTGRES_PASSWORD=your-secure-password
-
-   # Vault Configuration
-   VAULT_TOKEN=your-vault-token
-   ```
-
-   Ensure you replace all placeholder values with your actual configuration details.
-
-4. Update the Nginx configuration files:
-   - Edit `init.nginx.conf` and `secure.nginx.conf` to match your domain and desired server configuration.
-   - In both files, replace `yourdomain.com` with your actual domain name.
-   - Adjust any other settings as needed for your specific deployment.
-
-   To generate the P12_CONTENT for your .env file:
-
-    1. Locate your p12 file (e.g., `mds-connector-certificate.p12`).
-
-    2. Use the base64 command to encode the p12 file:
-       ```
-       base64 -i mds-connector-certificate.p12
-       ```
-    3. Copy the output (a long string of characters).
-    4. In your .env file, paste the encoded content as the value for P12_CONTENT:
-   ```
-   P12_CONTENT="[Paste your base64 encoded string here]"
-   ```
-    5. Make sure to enclose the entire string in quotes.
-
-   Note: The P12_CONTENT is a required variable in your .env file. It contains the base64 encoded content of your p12 certificate file.
-
-### Deployment Steps
-
-1. Ensure the `init-vault.sh` and `init-letsencrypt.sh` scripts are in the same directory as your `docker-compose.yml` file.
-
-2. Make the scripts executable:
-   ```
-   chmod +x init-vault.sh init-letsencrypt.sh
-   ```
-
-3. Update your `docker-compose.yml` file to use the initial Nginx configuration:
-   ```yaml
-   nginx:
-     ...
-     volumes:
-       - ./init.nginx.conf:/etc/nginx/nginx.conf
-   ```
-
-4. Initialize SSL certificates:
-   ```
-   ./init-letsencrypt.sh
-   ```
-   This script will start the Nginx service with the initial configuration and set up SSL certificates using Let's Encrypt. It will prompt you to confirm before replacing any existing certificates.
-
-5. After successfully obtaining the certificates, update your `docker-compose.yml` file to use the secure Nginx configuration:
-   ```yaml
-   nginx:
-     ...
-     volumes:
-       - ./secure.nginx.conf:/etc/nginx/nginx.conf
-   ```
-
-6. Start all services with the secure configuration:
-   ```
-   docker compose up -d
-   ```
-   This will start all services, including the automated Vault initialization, and Nginx with SSL/TLS enabled.
-
-7. Verify that all services are running:
-   ```
-   docker compose ps
-   ```
-
-### Usage
-
-The EDC services are now available at the following URLs:
-
-- API: https://yourdomain.com/api
-- Control: https://yourdomain.com/control
-- Management: https://yourdomain.com/management
-- Protocol: https://yourdomain.com/protocol
-- Public: https://yourdomain.com/public
-- Version: https://yourdomain.com/version
-
-Replace `yourdomain.com` with the actual domain you've configured in your `.env` file.
-
-### Security Notes
-
-- All external access is enforced over HTTPS using Let's Encrypt SSL certificates.
-- Secrets are securely stored in HashiCorp Vault and injected into the EDC service.
-- The EDC service uses PostgreSQL for persistent storage.
-- Nginx is configured to handle SSL/TLS termination and reverse proxy to the EDC services.
-
-### Troubleshooting
-
-- Check container logs: `docker compose logs [service-name]`
-- Ensure all environment variables are correctly set in the `.env` file
-- Verify that your domain is pointing to the correct IP address
-- If you need to reinitialize the Vault or add more secrets, modify the `init-vault.sh` script and run:
-  ```
-  docker compose up -d --no-deps vault-init
-  ```
-- If you need to renew SSL certificates, you can re-run the `init-letsencrypt.sh` script:
-  ```
-  ./init-letsencrypt.sh
-  ```
-
-For more detailed information on EDC configuration and usage, refer to the official Eclipse Dataspace Connector documentation.
+For more detailed information on EDC configuration and usage, refer to the official [Eclipse Dataspace Connector documentation](https://eclipse-edc.github.io/docs/).

@@ -1,0 +1,926 @@
+{
+  "info": {
+    "name": "MDS EDC Management API Collection",
+    "description": "A comprehensive collection of API requests for the MDS EDC Management API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "HTTP Provisioner Webhook",
+      "item": [
+        {
+          "name": "Call Deprovision Webhook",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/callback/{{processId}}/deprovision",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"error\": false,\n  \"provisionedResourceId\": \"resource-id\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Call Provision Webhook",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/callback/{{processId}}/provision",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"apiKeyJwt\": \"jwt-token\",\n  \"assetId\": \"asset-id\",\n  \"resourceName\": \"resource-name\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catalog V3",
+      "item": [
+        {
+          "name": "Get Dataset V3.1alpha",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3.1alpha/catalog/dataset/request",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"DatasetRequest\",\n  \"@id\": \"dataset-id\",\n  \"counterPartyAddress\": \"http://counter-party-address\",\n  \"counterPartyId\": \"counter-party-id\",\n  \"protocol\": \"dataspace-protocol-http\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Request Catalog V3.1alpha",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3.1alpha/catalog/request",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"CatalogRequest\",\n  \"counterPartyAddress\": \"http://provider-address\",\n  \"counterPartyId\": \"providerId\",\n  \"protocol\": \"dataspace-protocol-http\",\n  \"querySpec\": {\n    \"offset\": 0,\n    \"limit\": 50\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Policy Definition v3.1-alpha",
+      "item": [
+        {
+          "name": "Create Policy Definition V3.1",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3.1alpha/policydefinitions",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"definition-id\",\n  \"policy\": {\n    \"@context\": \"http://www.w3.org/ns/odrl.jsonld\",\n    \"@type\": \"Set\",\n    \"permission\": [{\n      \"target\": \"http://example.com/asset:9898.movie\",\n      \"action\": \"display\"\n    }]\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Query Policy Definitions V3.1",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3.1alpha/policydefinitions/request",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Policy Definition V3.1",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v3.1alpha/policydefinitions/{{policyId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update Policy Definition V3.1",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/v3.1alpha/policydefinitions/{{policyId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"{{policyId}}\",\n  \"policy\": {\n    \"@context\": \"http://www.w3.org/ns/odrl.jsonld\",\n    \"@type\": \"Set\",\n    \"permission\": [{\n      \"target\": \"http://example.com/asset:9898.movie\",\n      \"action\": \"display\"\n    }]\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Policy Definition V3.1",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/v3.1alpha/policydefinitions/{{policyId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asset V3",
+      "item": [
+        {
+          "name": "Update Asset V3",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/v3/assets",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"asset-id\",\n  \"properties\": {\n    \"key\": \"value\"\n  },\n  \"dataAddress\": {\n    \"type\": \"HttpData\",\n    \"baseUrl\": \"https://example.com/data\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Asset V3",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3/assets",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"asset-id\",\n  \"properties\": {\n    \"key\": \"value\"\n  },\n  \"dataAddress\": {\n    \"type\": \"HttpData\",\n    \"baseUrl\": \"https://example.com/data\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Request Assets V3",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3/assets/request",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Asset V3",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v3/assets/{{assetId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Remove Asset V3",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/v3/assets/{{assetId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contract Agreement V3",
+      "item": [
+        {
+          "name": "Query Agreements V3",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3/contractagreements/request",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Agreement By Id V3",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v3/contractagreements/{{agreementId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Negotiation By Agreement Id V3",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v3/contractagreements/{{agreementId}}/negotiation",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contract Definition V3",
+      "item": [
+        {
+          "name": "Update Contract Definition V3",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/v3/contractdefinitions",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"definition-id\",\n  \"accessPolicyId\": \"asset-policy-id\",\n  \"contractPolicyId\": \"contract-policy-id\",\n  \"assetsSelector\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Contract Definition V3",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3/contractdefinitions",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"definition-id\",\n  \"accessPolicyId\": \"asset-policy-id\",\n  \"contractPolicyId\": \"contract-policy-id\",\n  \"assetsSelector\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "Query Contract Definitions V3",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3/contractdefinitions/request",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Contract Definition V3",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v3/contractdefinitions/{{definitionId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Delete Contract Definition V3",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/v3/contractdefinitions/{{definitionId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Policy Definition v3.1-alpha",
+      "item": [
+        {
+          "name": "Create Execution Plan V3",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3.1alpha/policydefinitions/{{policyId}}/evaluationplan",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"PolicyEvaluationPlanRequest\",\n  \"policyScope\": \"catalog\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Validate Policy Definition V3",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3.1alpha/policydefinitions/{{policyId}}/validate",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dataplane Selector V3",
+      "item": [
+        {
+          "name": "Get All Data Plane Instances V3",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v3/dataplanes",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "EDR Cache V3",
+      "item": [
+        {
+          "name": "Request EDR Entries V3",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3/edrs/request",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50\n}"
+            }
+          }
+        },
+        {
+          "name": "Remove EDR Entry V3",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/v3/edrs/{{transferProcessId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get EDR Entry Data Address V3",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v3/edrs/{{transferProcessId}}/dataaddress",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contract Negotiation V3",
+      "item": [
+        {
+          "name": "Initiate Contract Negotiation V3",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3/contractnegotiations",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"ContractRequest\",\n  \"counterPartyAddress\": \"http://provider-address\",\n  \"protocol\": \"dataspace-protocol-http\",\n  \"policy\": {\n    \"@context\": \"http://www.w3.org/ns/odrl.jsonld\",\n    \"@type\": \"Set\",\n    \"@id\": \"offer-id\",\n    \"permission\": []\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Query Negotiations V3",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3/contractnegotiations/request",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Negotiation V3",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v3/contractnegotiations/{{negotiationId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Agreement For Negotiation V3",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v3/contractnegotiations/{{negotiationId}}/agreement",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Negotiation State V3",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v3/contractnegotiations/{{negotiationId}}/state",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Terminate Negotiation V3",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3/contractnegotiations/{{negotiationId}}/terminate",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"TerminateNegotiation\",\n  \"reason\": \"Termination reason\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dataplane Selector v4alpha",
+      "item": [
+        {
+          "name": "Get All Data Plane Instances V4",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/v4alpha/dataplanes",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Protocol Version v4alpha",
+      "item": [
+        {
+          "name": "Request Protocol Version V4alpha",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v4alpha/protocol-versions/request",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"CatalogRequest\",\n  \"counterPartyAddress\": \"http://provider-address\",\n  \"protocol\": \"dataspace-protocol-http\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Agreements Retirement",
+      "item": [
+        {
+          "name": "Retire Agreement V3",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3.1alpha/retireagreements",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": {\n    \"tx\": \"https://w3id.org/tractusx/v0.0.1/ns/\",\n    \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"edc:agreementId\": \"contract-agreement-id\",\n  \"tx:reason\": \"This contract agreement was retired since the physical counterpart is no longer valid.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Retired V3",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/v3.1alpha/retireagreements/request",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Reactivate Retired V3",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/v3.1alpha/retireagreements/{{agreementId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Application Observability",
+      "item": [
+        {
+          "name": "Check Health",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/check/health",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Liveness",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/check/liveness",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Readiness",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/check/readiness",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Startup",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/check/startup",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "EDP",
+      "item": [
+        {
+          "name": "Get EDPS Jobs",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/edp/edps/{{assetId}}/jobs",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Create EDPS Job",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/edp/edps/{{assetId}}/jobs",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contractId\": \"your-contract-id\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get EDPS Job Status",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/edp/edps/{{assetId}}/jobs/{{jobId}}/status",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Fetch EDPS Job Result",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/edp/edps/{{assetId}}/jobs/{{jobId}}/result",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destinationAddress\": \"your-destination-address\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Daseen Resource",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/edp/daseen/{{assetId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contractId\": \"your-contract-id\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Daseen Resource",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/edp/daseen/{{assetId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Delete Daseen Resource",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/edp/daseen/{{assetId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
