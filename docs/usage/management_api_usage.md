@@ -8,19 +8,20 @@ The EDC implements the [DataSpace Protocol (DSP)](https://github.com/Internation
 
 ## Endpoints
 
-The `MANAGEMENT_URL` specifies the URL of the management API and the prefixes `v2` and `v3` respect the fact that the endpoints are currently versioned independently of each other.
+The `MANAGEMENT_URL` specifies the URL of the management API and the prefixes `v3`, `v3.1alpha` and `v4alpha` respect the fact that the endpoints are currently versioned independently of each other.
 
-| Resource | Endpoint | Involved Actors |
-|----------|----------|-----------------|
-| Asset | `<MANAGEMENT_URL>/v3/assets` | Provider Admin & Provider EDC |
-| Policy Definition | `<MANAGEMENT_URL>/v3/policydefinitions` | Provider Admin & Provider EDC |
-| Contract Definition | `<MANAGEMENT_URL>/v3/contractdefinitions` | Provider Admin & Provider EDC |
-| Catalog | `<MANAGEMENT_URL>/v3/catalog` | Consumer App, Consumer EDC & Provider EDC |
-| Contract Negotiation | `<MANAGEMENT_URL>/v3/contractnegotiations` | Consumer App, Consumer EDC & Provider EDC |
-| Contract Agreement | `<MANAGEMENT_URL>/v3/contractagreements` | Provider Admin & Provider EDC |
-| Transfer Process | `<MANAGEMENT_URL>/v3/transferprocesses` | Consumer App, Consumer EDC & Provider EDC |
-| EDR | `<MANAGEMENT_URL>/v3/edrs` | Consumer App, Consumer EDC & Provider EDC |
-| Data Plane | `<DATAPLANE_URL>` | Consumer App & Provider EDC |
+| Resource | Endpoint | 
+|----------|----------|
+| Asset | `<MANAGEMENT_URL>/v3/assets` | 
+| Policy Definition | `<MANAGEMENT_URL>/v3/policydefinitions` |
+| Contract Definition | `<MANAGEMENT_URL>/v3/contractdefinitions` |
+| Catalog | `<MANAGEMENT_URL>/v3/catalog` |
+| Contract Negotiation | `<MANAGEMENT_URL>/v3/contractnegotiations` |
+| Contract Agreement | `<MANAGEMENT_URL>/v3/contractagreements` |
+| Transfer Process | `<MANAGEMENT_URL>/v3/transferprocesses` | 
+| EDR | `<MANAGEMENT_URL>/v3/edrs` | 
+| Agreements Retirement | `<MANAGEMENT_URL>/v3.1alpha/retireagreements` |
+| EDP (Experimental) | `<MANAGEMENT_URL>/edp` |
 
 
 ## Brief JSON-LD Introduction
@@ -34,7 +35,7 @@ An asset represents a resource that can be shared within the Dataspace, such as 
 ### Create an Asset
 
 ```http
-POST /assets
+POST /v3/assets
 Content-Type: application/json
 
 {
@@ -43,8 +44,7 @@ Content-Type: application/json
   },
   "@id": "your-asset-id",
   "properties": {
-    "name": "product description",
-    "contenttype": "application/json"
+
   },
   "dataAddress": {
     "@type": "DataAddress",
@@ -61,7 +61,7 @@ A policy definition specifies the rules and conditions for accessing an asset.
 ### Create a Policy Definition
 
 ```http
-POST /policydefinitions
+POST /v3/policydefinitions
 Content-Type: application/json
 
 {
@@ -85,7 +85,7 @@ A contract definition links assets with usage policies.
 ### Create a Contract Definition
 
 ```http
-POST /contractdefinitions
+POST /v3/contractdefinitions
 Content-Type: application/json
 
 {
@@ -106,14 +106,19 @@ The catalog endpoint allows consumers to discover available assets.
 ### Request Catalog
 
 ```http
-POST /catalog/request
+POST /v3/catalog/request
 Content-Type: application/json
 
 {
   "@context": {
-    "edc": "https://w3id.org/edc/v0.0.1/ns/"
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
-  "providerUrl": "http://localhost:8282/api/v1/dsp"
+  "@type": "CatalogRequest",
+  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp",
+  "counterPartyId": "MY_MDS_ID",
+  "protocol": "dataspace-protocol-http",
+  "additionalScopes": [
+  ]
 }
 ```
 
@@ -124,31 +129,39 @@ Contract negotiation is the process of establishing an agreement between a provi
 ### Initiate Contract Negotiation
 
 ```http
-POST /contractnegotiations
+POST /v3/contractnegotiations
 Content-Type: application/json
 
 {
   "@context": {
-    "edc": "https://w3id.org/edc/v0.0.1/ns/"
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
-  "@type": "NegotiationInitiateRequestDto",
-  "connectorId": "provider",
-  "connectorAddress": "http://localhost:8282/api/v1/dsp",
+  "@type": "https://w3id.org/edc/v0.0.1/ns/ContractRequest",
+  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp",
   "protocol": "dataspace-protocol-http",
-  "offer": {
-    "offerId": "a-contract-offer-id",
-    "assetId": "asset-id",
-    "policy": {
-      "@id": "offer-id:policy",
-      "@type": "odrl:Set",
-      "odrl:permission": [],
-      "odrl:prohibition": [],
-      "odrl:obligation": [],
-      "odrl:target": {
-        "@id": "asset-id"
-      }
+  "policy": {
+    "@context": "http://www.w3.org/ns/odrl.jsonld",
+    "@type": "odrl:Offer",
+    "@id": "offer-id",
+    "assigner": "MDSLXXX.XXXXX",
+    "odrl:permission": {
+        "odrl:action": {
+            "@id": "use"
+        }
+    },
+    "odrl:prohibition": [],
+    "odrl:obligation": [],
+    "target": "asset-id"
+  },
+  "callbackAddresses": [
+    {
+      "transactional": false,
+      "uri": "http://webhook",
+      "events": [
+        "contract.negotiation"
+      ]
     }
-  }
+  ]
 }
 ```
 
@@ -164,25 +177,18 @@ Content-Type: application/json
 
 {
   "@context": {
-    "edc": "https://w3id.org/edc/v0.0.1/ns/"
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
-  "@type": "TransferRequestDto",
-  "connectorId": "provider",
-  "connectorAddress": "http://localhost:8282/api/v1/dsp",
-  "contractId": "contract-id",
-  "assetId": "asset-id",
+  "@type": "TransferRequest",
   "protocol": "dataspace-protocol-http",
-  "dataDestination": {
-    "@type": "DataAddress",
-    "type": "HttpProxy"
-  },
-  "managedResources": false,
-  "transferType": {
-    "@id": "HttpProxy"
-  }
+  "counterPartyAddress": "{{https://provider.dataspaces.think-it.io/api/dsp}}",
+  "contractId": "{{contract-id}}",
+  "transferType": "HttpData-PULL"
 }
 ```
 
 ## Conclusion
 
-This walkthrough provides a basic understanding of how to use the Management API to create and manage assets, policies, and contract definitions in the Eclipse Dataspace Connector. For more detailed information, please refer to the full API documentation and the EDC project documentation.
+This walkthrough provides a basic understanding of how to use the Management API to create and manage assets, policies, and contract definitions with the MDS Connector based on EDC. 
+
+For more detailed information, please refer to the full API documentation and the EDC project documentation.
