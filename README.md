@@ -44,4 +44,4 @@ This project is licensed under [LICENSE NAME]. See the [LICENSE](LICENSE) file f
 
 For support, please open an issue in the GitHub repository or contact our support team at [SUPPORT EMAIL/LINK].
 
-For more detailed information on EDC configuration and usage, refer to the official [Eclipse Dataspace Connector documentation](https://eclipse-edc.github.io/docs/).
+For more detailed information on EDC configuration and usage, refer to the official [Eclipse Dataspace Components documentation](https://eclipse-edc.github.io/docs/).
