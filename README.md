@@ -18,7 +18,7 @@ Our documentation is organized into three main categories:
    - [Contract Negotiation Manual Approval Proposal](docs/development/contract_negotiation_manual_approval_proposal.md)
 
 2. **Usage**: Resources for using the MDS Connector.
-   - [Management API Usage Guide](docs/development/management_api_usage.md)
+   - [Management API Usage Guide](docs/usage/management_api_usage.md)
    - [Management API Specification](docs/usage/management_api_spec.yml)
    - [Connector Postman Collection](docs/usage/connector_postman_collection.json)
 
