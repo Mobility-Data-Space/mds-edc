@@ -25,6 +25,7 @@ public class DaseenService {
         private final ObjectMapper mapper = new ObjectMapper();
         private final DataplaneService dataplaneService;
         private final EdrService edrService;
+        private final String daseenApiKey ;
 
         public static final String EDR_PROPERTY_EDPS_BASE_URL_KEY = "https://w3id.org/edc/v0.0.1/ns/endpoint";
         public static final String EDR_PROPERTY_EDPS_AUTH_KEY = "https://w3id.org/edc/v0.0.1/ns/authorization";
@@ -34,11 +35,12 @@ public class DaseenService {
          * @param dataplaneService the dataplane service
          * @param monitor          the monitor
          */
-        public DaseenService(DataplaneService dataplaneService, EdrService edrService, Monitor monitor) {
+        public DaseenService(DataplaneService dataplaneService, EdrService edrService, Monitor monitor, String daseenApiKey) {
                 this.logger = monitor;
                 this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 this.dataplaneService = dataplaneService;
                 this.edrService = edrService;
+                this.daseenApiKey = daseenApiKey ;
         }
 
         /**
@@ -84,18 +86,15 @@ public class DaseenService {
         public void publishToDaseen(DaseenResourceDto daseenResourceDto) {
                 this.logger.debug(String.format("Publishing Resource for Asset %s to Daseen...", daseenResourceDto.getAssetId()));
 
-                final var daseenBaseUrlFromContract = this.edrService.getEdrProperty(daseenResourceDto.getContractId(),
-                                EDR_PROPERTY_EDPS_BASE_URL_KEY);
-                final var daseenAuthorizationFromContract = this.edrService.getEdrProperty(
-                                daseenResourceDto.getContractId(),
-                                EDR_PROPERTY_EDPS_AUTH_KEY);
+                final var daseenBaseUrl = this.edrService.getServiceBaseUrlFromMetadata(daseenResourceDto.getContractId());
+                final var daseenAuthorization = daseenApiKey;
 
                 var destinationAddress = HttpDataAddress.Builder.newInstance()
                                 .type(FlowType.PUSH.toString())
                                 .method(HttpMethod.PUT)
                                 .addAdditionalHeader("accept", "application/json")
-                                .addAdditionalHeader("Authorization", String.format("Bearer %s", daseenAuthorizationFromContract))
-                                .baseUrl(String.format("%s/connector/edp/%s/edp-result.zip", daseenBaseUrlFromContract,
+                                .addAdditionalHeader("Authorization", String.format("Bearer %s", daseenAuthorization))
+                                .baseUrl(String.format("%s/connector/edp/%s/edp-result.zip", daseenBaseUrl,
                                                 daseenResourceDto.getResourceId()))
                                 .build();
 

@@ -34,6 +34,9 @@ public class EdpServiceExtension implements ServiceExtension {
     @Setting(key = "edp.dataplane.callback.url")
     private String dataplaneCallbackUrl;
 
+    @Setting(key = "edp.daseen.api.key")
+    private String daseenApiKey ;
+
     @Inject
     private WebService webService;
 
@@ -80,7 +83,7 @@ public class EdpServiceExtension implements ServiceExtension {
         var dataplaneService = new DataplaneService(dataPlaneSelectorService, clientFactory, assetIndexer, dataplaneCallbackUrl, monitor);
         var edrService = new EdrService(catalogService, contractNegotiationService, contractAgreementService, transferProcessService, edrStore, monitor);
         edpsService = new EdpsService(dataplaneService, edrService, monitor);
-        daseenService = new DaseenService(dataplaneService, edrService, monitor);
+        daseenService = new DaseenService(dataplaneService, edrService, monitor, daseenApiKey);
         var edpsController = new EdpsController(edpsService, assetService, monitor);
         var daseenController = new DaseenController(daseenService, assetService, monitor);
 

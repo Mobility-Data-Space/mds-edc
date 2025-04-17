@@ -57,8 +57,10 @@ public class EdpTest {
                     .configurationProvider(() -> DAPS_EXTENSION.dapsConfig(PROVIDER.getId()))
                     .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
                     .configurationProvider(() -> POSTGRES_EXTENSION.getConfig(PROVIDER.getName()))
-                    .configurationProvider(() -> ConfigFactory.fromMap(
-                        Map.ofEntries(entry("edp.dataplane.callback.url", "http://localhost:8080"))))
+                    .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
+                        entry("edp.dataplane.callback.url", "http://localhost:8080"), 
+                        entry("edp.daseen.api.key", "api-key")))
+                    )
     );
 
     @RegisterExtension
@@ -70,8 +72,10 @@ public class EdpTest {
                     .configurationProvider(() -> DAPS_EXTENSION.dapsConfig(CONSUMER.getId()))
                     .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
                     .configurationProvider(() -> POSTGRES_EXTENSION.getConfig(CONSUMER.getName()))
-                    .configurationProvider(() -> ConfigFactory.fromMap(
-                        Map.ofEntries(entry("edp.dataplane.callback.url", "http://localhost:8080"))))
+                    .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
+                        entry("edp.dataplane.callback.url", "http://localhost:8080"), 
+                        entry("edp.daseen.api.key", "api-key")))
+                    )
     );
     
     @Test

@@ -120,7 +120,6 @@ public class EdrService {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(result.getContent());
-            logger.debug(String.format("CA-ID: %s and Content: %s", contractAgreementId, jsonNode.asText()));
             return jsonNode.get("baseUrl").asText();
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse the response", e);
