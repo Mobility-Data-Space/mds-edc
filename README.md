@@ -4,7 +4,7 @@ This is the open source EDC distribution of the MDS Connector.
 
 ## Overview
 
-The MDS Connector is an implementation of the Eclipse Dataspace Connector (EDC) tailored for the Mobility Data Space. It facilitates secure and standardized data exchange between participants in the mobility ecosystem.
+The MDS Connector is a distribution based on the Eclipse Dataspace Components (EDC) tailored for the Mobility Data Space. It facilitates secure and standardized data exchange between participants in the mobility ecosystem.
 
 ## Quick Start
 
