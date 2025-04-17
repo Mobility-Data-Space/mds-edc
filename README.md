@@ -14,7 +14,7 @@ For a quick start guide on building and deploying the MDS Connector, please refe
 
 Our documentation is organized into three main categories:
 
-1. **Development**: Documentation about the features architecture and design, fore maintainers and contributors working on or extending the MDS Connector.
+1. **Development**: Documentation about the features architecture and design, for maintainers and contributors working on or extending the MDS Connector.
    - [Contract Negotiation Manual Approval Proposal](docs/development/contract_negotiation_manual_approval_proposal.md)
 
 2. **Usage**: Resources for using the MDS Connector.
