@@ -46,7 +46,7 @@ proxy (at least the protocol endpoint needs to be).
 - The MDS EDC Connector is meant to be deployed with a reverse proxy merging the following ports:
   - The Backend's `11002` port. Henceforth, called the Management API.
   - The Backend's `11003` port. Henceforth, called the Protocol API.
-  - The Backend's `11005`port. Henceforth, called the Public API.
+  - The Backend's `11005` port. Henceforth, called the Public API.
 - The mapping should look like this:
   - `https://[MY_EDC_FQDN]/api/dsp` -> `edc:11003/api/dsp`
   - `https://[MY_EDC_FQDN]/public` -> `edc:11005/public`
