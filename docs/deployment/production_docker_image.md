@@ -2,7 +2,7 @@
 
 ## About this Guide
 
-This is a productive deployment guide for self-hosting a functional MDS EDC Connector.
+This is a productive deployment guide for self-hosting a functional MDS Connector.
 
 ## Prerequisites
 
