@@ -172,7 +172,7 @@ The transfer process manages the actual data transfer between provider and consu
 ### Initiate Transfer Process
 
 ```http
-POST /transferprocesses
+POST /v3/transferprocesses
 Content-Type: application/json
 
 {
