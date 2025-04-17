@@ -27,18 +27,15 @@ Our documentation is organized into three main categories:
 
 ## Directory Structure
 
+- `docs/`: Contains all documentation files.
 - `extensions/`: Contains extension modules for the MDS Connector.
 - `launchers/`: Contains executable modules for the MDS Connector.
 - `tests/`: Contains end-to-end tests for MDS Connector features.
-- `docs/`: Contains all documentation files.
+
 
 ## Contributing
 
 We welcome contributions to the MDS Connector project. Please refer to our [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started.
-
-## License
-
-This project is licensed under [LICENSE NAME]. See the [LICENSE](LICENSE) file for details.
 
 ## Support
 

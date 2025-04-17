@@ -133,6 +133,9 @@ The EDC services are now available at the following URLs:
 
 Replace `yourdomain.com` with the actual domain you've configured in your `.env` file.
 
+> In a production environment, The only endpoints that should exposed on the internet are the protocol and the public endpoints. 
+> The other endpoints are meant to be used internally within the participant network. For example, the Control API is meant to be used for internal component interactions. Read the [EDC documentation](https://eclipse-edc.github.io/documentation/for-contributors/best-practices/#21-exposing-apis-to-the-internet) for more details
+
 ### Security Notes
 
 - All external access is enforced over HTTPS using Let's Encrypt SSL certificates.

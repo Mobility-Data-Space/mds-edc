@@ -40,13 +40,13 @@ To make the deployment work, the connector needs to be exposed to the internet. 
 communication is asynchronous and done with authentication via the DAPS. Thus, if the target connector cannot reach
 your connector under its self-declared URLs, contract negotiation and transfer processes will fail.
 
-The EDC Backend opens up multiple ports with different functionalities. They are expected to be merged by a reverse
+The MDS connector opens up multiple ports with different functionalities. They are expected to be merged by a reverse
 proxy (at least the protocol endpoint needs to be).
 
 - The MDS EDC Connector is meant to be deployed with a reverse proxy merging the following ports:
-  - The Backend's `11002` port. Henceforth, called the Management API.
-  - The Backend's `11003` port. Henceforth, called the Protocol API.
-  - The Backend's `11005` port. Henceforth, called the Public API.
+  - The MDS connector's `11002` port. Henceforth, called the Management API.
+  - The MDS connector's `11003` port. Henceforth, called the Protocol API.
+  - The MDS connector's `11005` port. Henceforth, called the Public API.
 - The mapping should look like this:
   - `https://[MY_EDC_FQDN]/api/dsp` -> `edc:11003/api/dsp`
   - `https://[MY_EDC_FQDN]/public` -> `edc:11005/public`
@@ -56,9 +56,9 @@ proxy (at least the protocol endpoint needs to be).
   - All endpoint should have HTTP to HTTPS redirects.
 - Regarding Authentication:
   - The Management API need to be secured by an auth proxy. Otherwise, access to either would mean full control of the application.
-  - The connector's `11003` port needs to be unsecured. Authentication between connectors is done via the Data Space Authority / DAPS and the configured certificates.
+  - The connector's `11003` and `11005` ports need to be unsecured. Authentication between connectors is done via the Data Space Authority / DAPS and the configured certificates.
 - Exposing to the internet:
-  - The Protocol API must be reachable via the internet.
+  - The Protocol API and the public API must be reachable via the internet.
   - Exposing the Management Endpoint to the internet requires an intermediate auth proxy, we recommend restricting the access to the Management Endpoint to your internal network.
 - Security:
   - Limit the header size in the proxy so that only a certain number of API Keys can be tested with one API-request (e.g. limit to 8kb).
