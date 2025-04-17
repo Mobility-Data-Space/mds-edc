@@ -35,7 +35,7 @@ public class EdpServiceExtension implements ServiceExtension {
     private String dataplaneCallbackUrl;
 
     @Setting(key = "edp.daseen.api.key")
-    private String daseenApiKey ;
+    private String daseenApiKey;
 
     @Inject
     private WebService webService;
