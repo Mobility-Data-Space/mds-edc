@@ -17,7 +17,7 @@ The deployment architecture consists of the following components:
 
 3. MDS EDC: The core component of the MDS (Mobility Data Space) Connector. It handles data exchange, policy enforcement, and integration with other participants in the dataspace.
 
-4. PostgreSQL: Provides persistent storage for the EDC, storing configuration data, policies, and other necessary information.
+4. PostgreSQL: Provides persistent storage for the Connector, storing configuration data, policies, and other necessary information.
 
 5. Vault: HashiCorp Vault is used for secure secret management. It stores sensitive information such as API keys, certificates, and passwords, which are then injected into the EDC service.
 
