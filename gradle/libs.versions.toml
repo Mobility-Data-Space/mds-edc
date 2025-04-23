@@ -16,9 +16,9 @@ yasson = "3.0.4"
 [libraries]
 edc-asset-api = { module = "org.eclipse.edc:asset-api", version.ref = "edc" }
 edc-core-spi = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
-edc-boot = { module = "org.eclipse.edc:boot", version.ref = "edc" }
 edc-boot-lib = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
 edc-catalog-spi = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
+edc-contract-spi = { module = "org.eclipse.edc:contract-spi", version.ref = "edc" }
 edc-control-plane-spi = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
 edc-controlplane-base-bom = { module = "org.eclipse.edc:controlplane-base-bom", version.ref = "edc" }
 edc-controlplane-feature-sql-bom = { module = "org.eclipse.edc:controlplane-feature-sql-bom", version.ref = "edc" }
@@ -38,6 +38,7 @@ edc-oauth2-service = { module = "org.eclipse.edc:oauth2-service", version.ref = 
 edc-participant-spi = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
 edc-policy-spi = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
 edc-policy-engine-spi = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
+edc-transaction-spi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
 edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
 edc-validator-spi = { module = "org.eclipse.edc:validator-spi", version.ref = "edc" }
 edc-validator-lib = { module = "org.eclipse.edc:validator-lib", version.ref = "edc" }

@@ -15,6 +15,7 @@ dependencyResolutionManagement {
 }
 
 include(":extensions:edp")
+include(":extensions:manual-negotiation-approval")
 include(":extensions:policy:policy-always-true")
 include(":extensions:policy:policy-referring-connector")
 include(":extensions:policy:policy-time-interval")

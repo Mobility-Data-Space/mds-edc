@@ -2,6 +2,8 @@ package eu.dataspace.connector.tests;
 
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -19,6 +21,7 @@ import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.util.Map.entry;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
@@ -84,6 +87,28 @@ public class MdsParticipant extends Participant {
                 .when()
                 .get("/v3/transferprocesses/{id}", transferProcessId)
                 .then().statusCode(200).extract().body().as(JsonObject.class);
+    }
+
+    public JsonObject getContractNegotiation(String id) {
+        return baseManagementRequest()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/v3/contractnegotiations/{id}", id)
+                .then().statusCode(200).extract().body().as(JsonObject.class);
+    }
+
+    public JsonArray getContractNegotiations(JsonObject query) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(query)
+                .when()
+                .post("/v3/contractnegotiations/request")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(JsonArray.class);
     }
 
     public JsonObject createEdpsJob(String assetId, String edpsContractAgreementId) {
