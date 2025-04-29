@@ -24,10 +24,8 @@ import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates.FINALIZED;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.REQUESTED;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_CONNECTOR_MANAGEMENT_CONTEXT;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public class ContractNegotiationManualApprovalTest {
@@ -87,11 +85,11 @@ public class ContractNegotiationManualApprovalTest {
             assertThat(CONSUMER.getContractNegotiationState(consumerContractNegotiationId)).isEqualTo(REQUESTED.name());
         });
 
-        var providerContractNegotiationId = getProviderContractNegotiationId(consumerContractNegotiationId);
-        assertThat(PROVIDER.getContractNegotiationState(providerContractNegotiationId)).isEqualTo(REQUESTED.name());
+        var pending = await().until(PROVIDER::getPendingNegotiations, array -> array.size() == 1).getFirst();
+        assertThat(pending.asJsonObject().getString("state")).isEqualTo(REQUESTED.name());
 
         PROVIDER.baseManagementRequest()
-                .post("/v3/contractnegotiations/{id}/approve", providerContractNegotiationId)
+                .post("/v3/contractnegotiations/{id}/approve", pending.asJsonObject().getString(ID))
                 .then()
                 .statusCode(204);
 
@@ -115,11 +113,11 @@ public class ContractNegotiationManualApprovalTest {
             assertThat(CONSUMER.getContractNegotiationState(consumerContractNegotiationId)).isEqualTo(REQUESTED.name());
         });
 
-        var providerContractNegotiationId = getProviderContractNegotiationId(consumerContractNegotiationId);
-        assertThat(PROVIDER.getContractNegotiationState(providerContractNegotiationId)).isEqualTo(REQUESTED.name());
+        var pending = await().until(PROVIDER::getPendingNegotiations, array -> array.size() == 1).getFirst();
+        assertThat(pending.asJsonObject().getString("state")).isEqualTo(REQUESTED.name());
 
         PROVIDER.baseManagementRequest()
-                .post("/v3/contractnegotiations/{id}/reject", providerContractNegotiationId)
+                .post("/v3/contractnegotiations/{id}/reject", pending.asJsonObject().getString(ID))
                 .then()
                 .statusCode(204);
 
@@ -161,15 +159,4 @@ public class ContractNegotiationManualApprovalTest {
         return assetId;
     }
 
-    private String getProviderContractNegotiationId(String consumerContractNegotiationId) {
-        var contractNegotiations = PROVIDER.getContractNegotiations(Json.createObjectBuilder()
-                .add(CONTEXT, EDC_CONNECTOR_MANAGEMENT_CONTEXT)
-                .add("filterExpression", Json.createArrayBuilder()
-                        .add(Json.createObjectBuilder()
-                                .add("operandLeft", "correlationId")
-                                .add("operator", "=")
-                                .add("operandRight", consumerContractNegotiationId))
-                ).build());
-        return contractNegotiations.getJsonObject(0).getString(ID);
-    }
 }

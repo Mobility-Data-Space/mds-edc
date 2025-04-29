@@ -18,11 +18,14 @@ import java.util.UUID;
 
 import static eu.dataspace.connector.tests.Crypto.encode;
 import static io.restassured.http.ContentType.JSON;
+import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.util.Map.entry;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
@@ -109,6 +112,19 @@ public class MdsParticipant extends Participant {
                 .extract()
                 .body()
                 .as(JsonArray.class);
+    }
+
+    public JsonArray getPendingNegotiations() {
+        return getContractNegotiations(createObjectBuilder()
+                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
+                .add("filterExpression", createArrayBuilder()
+                        .add(createObjectBuilder()
+                                .add("operandLeft", "pending")
+                                .add("operator", "=")
+                                .add("operandRight", true)
+                        )
+                )
+                .build());
     }
 
     public JsonObject createEdpsJob(String assetId, String edpsContractAgreementId) {

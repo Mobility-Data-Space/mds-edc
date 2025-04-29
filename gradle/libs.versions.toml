@@ -39,6 +39,7 @@ edc-participant-spi = { module = "org.eclipse.edc:participant-spi", version.ref 
 edc-policy-spi = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
 edc-policy-engine-spi = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
 edc-transaction-spi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
+edc-transform-spi = { module = "org.eclipse.edc:transform-spi", version.ref = "edc" }
 edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
 edc-validator-spi = { module = "org.eclipse.edc:validator-spi", version.ref = "edc" }
 edc-validator-lib = { module = "org.eclipse.edc:validator-lib", version.ref = "edc" }
