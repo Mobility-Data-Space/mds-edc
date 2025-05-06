@@ -17,6 +17,7 @@ yasson = "3.0.4"
 edc-asset-api = { module = "org.eclipse.edc:asset-api", version.ref = "edc" }
 edc-core-spi = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
 edc-boot-lib = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
+edc-callback-static-endpoint = { module = "org.eclipse.edc:callback-static-endpoint", version.ref = "edc" }
 edc-catalog-spi = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
 edc-contract-spi = { module = "org.eclipse.edc:contract-spi", version.ref = "edc" }
 edc-control-plane-spi = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
