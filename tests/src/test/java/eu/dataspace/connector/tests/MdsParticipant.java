@@ -5,35 +5,78 @@ import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
+import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+import org.eclipse.edc.util.io.Ports;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.HttpRequest;
+import org.mockserver.model.HttpResponse;
 
+import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 
 import static eu.dataspace.connector.tests.Crypto.encode;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.util.Map.entry;
+import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.JsonBody.json;
 
-public class MdsParticipant extends Participant {
+public class MdsParticipant extends Participant implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+
+    private final LazySupplier<Integer> eventReceiverPort = new LazySupplier<>(Ports::getFreePort);
+    private ClientAndServer eventReceiver;
+    private EmbeddedRuntime runtime;
 
     private MdsParticipant() {
 
+    }
+
+    @Override
+    public void beforeAll(ExtensionContext context) {
+        if (runtime != null) {
+            eventReceiver = ClientAndServer.startClientAndServer(eventReceiverPort.get());
+            runtime.boot(false);
+        }
+    }
+
+    @Override
+    public void afterAll(ExtensionContext context) {
+        if (runtime != null) {
+            runtime.shutdown();
+            eventReceiver.stop();
+        }
+    }
+
+    @Override
+    public void beforeEach(ExtensionContext context) {
+        eventReceiver.reset();
+        eventReceiver.when(request()).respond(HttpResponse.response());
     }
 
     public Config getConfiguration() {
@@ -52,7 +95,11 @@ public class MdsParticipant extends Participant {
                 entry("web.http.public.path", "/public"),
                 entry("web.http.public.port", getFreePort() + ""),
                 entry("edc.transfer.proxy.token.verifier.publickey.alias", "public-key-alias"),
-                entry("edc.transfer.proxy.token.signer.privatekey.alias", "private-key-alias")
+                entry("edc.transfer.proxy.token.signer.privatekey.alias", "private-key-alias"),
+
+                entry("edc.callback.default.events", "contract.negotiation"),
+                entry("edc.callback.default.uri", "http://localhost:" + eventReceiverPort.get()),
+                entry("edc.callback.default.transactional", "true")
         );
 
         return ConfigFactory.fromMap(settings);
@@ -154,6 +201,25 @@ public class MdsParticipant extends Participant {
                 .then();
     }
 
+    public <T> T getService(Class<T> clazz) {
+        return runtime.getService(clazz);
+    }
+
+    public JsonObject waitForEvent(String eventType) {
+        var request = request().withBody(json(Map.entry("type", eventType)));
+        return await()
+                .until(
+                        () -> Arrays.stream(eventReceiver.retrieveRecordedRequests(request))
+                                .findFirst()
+                                .map(HttpRequest::getBodyAsRawBytes)
+                                .map(ByteArrayInputStream::new)
+                                .map(Json::createReader)
+                                .map(JsonReader::readObject)
+                                .orElse(null),
+                        Objects::nonNull
+                );
+    }
+
     public static class Builder extends Participant.Builder<MdsParticipant, Builder> {
 
         public static Builder newInstance() {
@@ -164,6 +230,10 @@ public class MdsParticipant extends Participant {
             super(participant);
         }
 
+        public Builder runtime(Function<MdsParticipant, EmbeddedRuntime> runtimeSupplier) {
+            participant.runtime = runtimeSupplier.apply(participant);
+            return this;
+        }
     }
 
     private static class SeedVaultKeys implements ServiceExtension {

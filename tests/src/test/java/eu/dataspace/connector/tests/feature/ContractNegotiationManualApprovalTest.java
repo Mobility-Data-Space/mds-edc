@@ -1,32 +1,16 @@
 package eu.dataspace.connector.tests.feature;
 
 import eu.dataspace.connector.tests.MdsParticipant;
+import eu.dataspace.connector.tests.MdsParticipantFactory;
 import eu.dataspace.connector.tests.PostgresqlExtension;
 import eu.dataspace.connector.tests.SovityDapsExtension;
 import eu.dataspace.connector.tests.VaultExtension;
 import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
-import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
-import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
-import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.configuration.ConfigFactory;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockserver.configuration.Configuration;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.HttpRequest;
-import org.mockserver.model.HttpResponse;
-import org.slf4j.event.Level;
 
-import java.io.ByteArrayInputStream;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 import static io.restassured.http.ContentType.JSON;
@@ -40,22 +24,8 @@ import static org.eclipse.edc.connector.controlplane.transfer.spi.types.Transfer
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.JsonBody.json;
 
 public class ContractNegotiationManualApprovalTest {
-
-    private static final MdsParticipant PROVIDER = MdsParticipant.Builder.newInstance()
-            .id("provider").name("provider")
-            .build();
-
-    private static final MdsParticipant CONSUMER = MdsParticipant.Builder.newInstance()
-            .id("consumer").name("consumer")
-            .build();
-
-    private static final ClientAndServer providerEventReceiver = ClientAndServer.startClientAndServer(getFreePort());
-    private static final ClientAndServer consumerEventReceiver = ClientAndServer.startClientAndServer(getFreePort());
 
     @RegisterExtension
     @Order(0)
@@ -63,56 +33,19 @@ public class ContractNegotiationManualApprovalTest {
 
     @RegisterExtension
     @Order(1)
-    private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension(PROVIDER.getName(), CONSUMER.getName());
+    private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension("provider", "consumer");
 
     @RegisterExtension
     @Order(2)
     private static final SovityDapsExtension DAPS_EXTENSION = new SovityDapsExtension();
 
     @RegisterExtension
-    private static final RuntimeExtension PROVIDER_EXTENSION = new RuntimePerClassExtension(
-            new EmbeddedRuntime("provider", ":launchers:connector-vault-postgresql")
-                    .configurationProvider(PROVIDER::getConfiguration)
-                    .configurationProvider(() -> DAPS_EXTENSION.dapsConfig("provider"))
-                    .configurationProvider(() -> VAULT_EXTENSION.getConfig("provider"))
-                    .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
-                            "edc.callback.default.events", "contract.negotiation",
-                            "edc.callback.default.uri", "http://localhost:" + providerEventReceiver.getPort(),
-                            "edc.callback.default.transactional", "true"
-                    )))
-                    .registerSystemExtension(ServiceExtension.class, PROVIDER.seedVaultKeys())
-                    .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
-                    .configurationProvider(() -> POSTGRES_EXTENSION.getConfig(PROVIDER.getName()))
-    );
+    @Order(3)
+    private static final MdsParticipant PROVIDER = MdsParticipantFactory.hashicorpVault("provider", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
 
     @RegisterExtension
-    private static final RuntimeExtension CONSUMER_EXTENSION = new RuntimePerClassExtension(
-            new EmbeddedRuntime("consumer", ":launchers:connector-vault-postgresql")
-                    .configurationProvider(CONSUMER::getConfiguration)
-                    .configurationProvider(() -> DAPS_EXTENSION.dapsConfig("consumer"))
-                    .configurationProvider(() -> VAULT_EXTENSION.getConfig("consumer"))
-                    .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
-                            "edc.callback.default.events", "contract.negotiation",
-                            "edc.callback.default.uri", "http://localhost:" + consumerEventReceiver.getPort(),
-                            "edc.callback.default.transactional", "true"
-                    )))
-                    .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
-                    .configurationProvider(() -> POSTGRES_EXTENSION.getConfig(CONSUMER.getName()))
-    );
-
-    @BeforeAll
-    static void beforeAll() {
-        providerEventReceiver.when(request()).respond(HttpResponse.response());
-        consumerEventReceiver.when(request()).respond(HttpResponse.response());
-    }
-
-    @BeforeEach
-    void setUp() {
-        providerEventReceiver.reset();
-        providerEventReceiver.when(request()).respond(HttpResponse.response());
-        consumerEventReceiver.reset();
-        consumerEventReceiver.when(request()).respond(HttpResponse.response());
-    }
+    @Order(3)
+    private static final MdsParticipant CONSUMER = MdsParticipantFactory.hashicorpVault("consumer", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
 
     @Test
     void shouldManuallyApproveNegotiation() {
@@ -179,18 +112,18 @@ public class ContractNegotiationManualApprovalTest {
         var assetId = createOfferWithManualApproval(dataAddressProperties);
         var consumerNegotiationId = CONSUMER.initContractNegotiation(PROVIDER, assetId);
 
-        var contractNegotiationRequested = waitForEvent("ContractNegotiationRequested", providerEventReceiver);
+        var contractNegotiationRequested = PROVIDER.waitForEvent("ContractNegotiationRequested");
 
         var providerNegotiationId = contractNegotiationRequested.getJsonObject("payload").getString("contractNegotiationId");
 
-        waitForEvent("ContractNegotiationRequested", consumerEventReceiver);
+        CONSUMER.waitForEvent("ContractNegotiationRequested");
         PROVIDER.baseManagementRequest()
                 .post("/v3/contractnegotiations/{id}/approve", providerNegotiationId)
                 .then()
                 .statusCode(204);
 
-        waitForEvent("ContractNegotiationManuallyApproved", providerEventReceiver);
-        var contractNegotiationFinalized = waitForEvent("ContractNegotiationFinalized", consumerEventReceiver);
+        PROVIDER.waitForEvent("ContractNegotiationManuallyApproved");
+        var contractNegotiationFinalized = CONSUMER.waitForEvent("ContractNegotiationFinalized");
 
         assertThat(contractNegotiationFinalized.getJsonObject("payload").getString("contractNegotiationId")).isEqualTo(consumerNegotiationId);
         assertThat(CONSUMER.getContractNegotiationState(consumerNegotiationId)).isEqualTo(FINALIZED.name());
@@ -206,36 +139,21 @@ public class ContractNegotiationManualApprovalTest {
         var assetId = createOfferWithManualApproval(dataAddressProperties);
         var consumerNegotiationId = CONSUMER.initContractNegotiation(PROVIDER, assetId);
 
-        var contractNegotiationRequested = waitForEvent("ContractNegotiationRequested", providerEventReceiver);
+        var contractNegotiationRequested = PROVIDER.waitForEvent("ContractNegotiationRequested");
 
         var providerNegotiationId = contractNegotiationRequested.getJsonObject("payload").getString("contractNegotiationId");
 
-        waitForEvent("ContractNegotiationRequested", consumerEventReceiver);
+        CONSUMER.waitForEvent("ContractNegotiationRequested");
         PROVIDER.baseManagementRequest()
                 .post("/v3/contractnegotiations/{id}/reject", providerNegotiationId)
                 .then()
                 .statusCode(204);
 
-        waitForEvent("ContractNegotiationManuallyRejected", providerEventReceiver);
-        var contractNegotiationFinalized = waitForEvent("ContractNegotiationTerminated", consumerEventReceiver);
+        PROVIDER.waitForEvent("ContractNegotiationManuallyRejected");
+        var contractNegotiationFinalized = CONSUMER.waitForEvent("ContractNegotiationTerminated");
 
         assertThat(contractNegotiationFinalized.getJsonObject("payload").getString("contractNegotiationId")).isEqualTo(consumerNegotiationId);
         assertThat(CONSUMER.getContractNegotiationState(consumerNegotiationId)).isEqualTo(TERMINATED.name());
-    }
-
-    private JsonObject waitForEvent(String eventType, ClientAndServer eventReceiver) {
-        var request = request().withBody(json(Map.entry("type", eventType)));
-        return await()
-                .until(
-                        () -> Arrays.stream(eventReceiver.retrieveRecordedRequests(request))
-                                .findFirst()
-                                .map(HttpRequest::getBodyAsRawBytes)
-                                .map(ByteArrayInputStream::new)
-                                .map(Json::createReader)
-                                .map(JsonReader::readObject)
-                                .orElse(null),
-                        Objects::nonNull
-                );
     }
 
     private String createOfferWithManualApproval(Map<String, Object> dataAddressProperties) {

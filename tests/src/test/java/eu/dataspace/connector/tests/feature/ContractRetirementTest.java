@@ -1,13 +1,10 @@
 package eu.dataspace.connector.tests.feature;
 
 import eu.dataspace.connector.tests.MdsParticipant;
+import eu.dataspace.connector.tests.MdsParticipantFactory;
 import eu.dataspace.connector.tests.PostgresqlExtension;
 import eu.dataspace.connector.tests.SovityDapsExtension;
 import eu.dataspace.connector.tests.VaultExtension;
-import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
-import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
-import org.eclipse.edc.spi.system.ServiceExtension;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -21,28 +18,18 @@ import static org.eclipse.edc.connector.controlplane.transfer.spi.types.Transfer
 
 public class ContractRetirementTest {
 
-    private static final MdsParticipant PROVIDER = MdsParticipant.Builder.newInstance()
-            .id("provider").name("provider")
-            .build();
-
-    private static final MdsParticipant CONSUMER = MdsParticipant.Builder.newInstance()
-            .id("consumer").name("consumer")
-            .build();
-
     @Nested
     class InMemory extends Tests {
 
         @RegisterExtension
-        private static final RuntimeExtension PROVIDER_EXTENSION = new RuntimePerClassExtension(
-                new EmbeddedRuntime("provider", ":launchers:connector-inmemory")
-                        .configurationProvider(PROVIDER::getConfiguration))
-                .registerSystemExtension(ServiceExtension.class, PROVIDER.seedVaultKeys());
+        private static final MdsParticipant PROVIDER = MdsParticipantFactory.inMemory("provider");
 
         @RegisterExtension
-        private static final RuntimeExtension CONSUMER_EXTENSION = new RuntimePerClassExtension(
-                new EmbeddedRuntime("consumer", ":launchers:connector-inmemory")
-                        .configurationProvider(CONSUMER::getConfiguration));
+        private static final MdsParticipant CONSUMER = MdsParticipantFactory.inMemory("consumer");
 
+        InMemory() {
+            super(PROVIDER, CONSUMER);
+        }
     }
 
     @Nested
@@ -54,61 +41,57 @@ public class ContractRetirementTest {
 
         @RegisterExtension
         @Order(1)
-        private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension(PROVIDER.getName(), CONSUMER.getName());
+        private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension("provider", "consumer");
 
         @RegisterExtension
         @Order(2)
         private static final SovityDapsExtension DAPS_EXTENSION = new SovityDapsExtension();
 
         @RegisterExtension
-        private static final RuntimeExtension PROVIDER_EXTENSION = new RuntimePerClassExtension(
-                new EmbeddedRuntime("provider", ":launchers:connector-vault-postgresql")
-                        .configurationProvider(PROVIDER::getConfiguration)
-                        .configurationProvider(() -> VAULT_EXTENSION.getConfig("provider"))
-                        .registerSystemExtension(ServiceExtension.class, PROVIDER.seedVaultKeys())
-                        .configurationProvider(() -> DAPS_EXTENSION.dapsConfig("provider"))
-                        .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
-                        .configurationProvider(() -> POSTGRES_EXTENSION.getConfig(PROVIDER.getName()))
-        );
+        private static final MdsParticipant PROVIDER = MdsParticipantFactory.hashicorpVault("provider", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
 
         @RegisterExtension
-        private static final RuntimeExtension CONSUMER_EXTENSION = new RuntimePerClassExtension(
-                new EmbeddedRuntime("consumer", ":launchers:connector-vault-postgresql")
-                        .configurationProvider(CONSUMER::getConfiguration)
-                        .configurationProvider(() -> DAPS_EXTENSION.dapsConfig("consumer"))
-                        .configurationProvider(() -> VAULT_EXTENSION.getConfig("consumer"))
-                        .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
-                        .configurationProvider(() -> POSTGRES_EXTENSION.getConfig(CONSUMER.getName()))
-        );
+        private static final MdsParticipant CONSUMER = MdsParticipantFactory.hashicorpVault("consumer", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);;
 
+        HashicorpVaultPostgresql() {
+            super(PROVIDER, CONSUMER);
+        }
     }
 
     abstract static class Tests {
 
+        private final MdsParticipant provider;
+        private final MdsParticipant consumer;
+
+        Tests(MdsParticipant provider, MdsParticipant consumer) {
+            this.provider = provider;
+            this.consumer = consumer;
+        }
+
         @Test
         void shouldTerminateRunningTransfers_andPreventNewOnes() {
-            var assetId = PROVIDER.createOffer(Map.of("type", "HttpData", "baseUrl", "https://localhost/any"));
+            var assetId = provider.createOffer(Map.of("type", "HttpData", "baseUrl", "https://localhost/any"));
 
-            var consumerTransferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+            var consumerTransferProcessId = consumer.requestAssetFrom(assetId, provider)
                     .withTransferType("HttpData-PULL")
                     .execute();
 
-            CONSUMER.awaitTransferToBeInState(consumerTransferProcessId, STARTED);
+            consumer.awaitTransferToBeInState(consumerTransferProcessId, STARTED);
 
-            var agreementId = CONSUMER.getTransferProcess(consumerTransferProcessId).getString("contractId");
+            var agreementId = consumer.getTransferProcess(consumerTransferProcessId).getString("contractId");
 
-            PROVIDER.retireProviderAgreement(agreementId)
+            provider.retireProviderAgreement(agreementId)
                     .statusCode(204);
 
-            CONSUMER.awaitTransferToBeInState(consumerTransferProcessId, TERMINATED);
+            consumer.awaitTransferToBeInState(consumerTransferProcessId, TERMINATED);
 
-            var failedTransferId = CONSUMER.initiateTransfer(PROVIDER, agreementId, null, null, "HttpData-PULL");
-            CONSUMER.awaitTransferToBeInState(failedTransferId, TERMINATED);
+            var failedTransferId = consumer.initiateTransfer(provider, agreementId, null, null, "HttpData-PULL");
+            consumer.awaitTransferToBeInState(failedTransferId, TERMINATED);
         }
 
         @Test
         void shouldFail_whenAgreementDoesNotExist() {
-            PROVIDER.retireProviderAgreement(UUID.randomUUID().toString()).statusCode(404);
+            provider.retireProviderAgreement(UUID.randomUUID().toString()).statusCode(404);
         }
 
     }
