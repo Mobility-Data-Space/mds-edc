@@ -1,9 +1,5 @@
 package eu.dataspace.connector.tests;
 
-import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.SystemExtension;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
@@ -112,20 +108,14 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
         return ConfigFactory.fromMap(settings);
     }
 
-    public SystemExtension seedExtension() {
-        return new ServiceExtension() {
-
-            @Inject
-            private Vault vault;
-
-            @Override
-            public void initialize(ServiceExtensionContext context) {
-                var client = Client.valueOf(context.getParticipantId());
-                vault.storeSecret("daps-private-key", client.encodedPrivateKey());
-                vault.storeSecret("daps-certificate", client.encodedCertificate());
-            }
-
-        };
+    public SystemExtension seedDapsKeyPair() {
+        return SeedVault.fromMap(context -> {
+            var client = Client.valueOf(context.getParticipantId());
+            return Map.of(
+                    "daps-private-key", client.encodedPrivateKey(),
+                    "daps-certificate", client.encodedCertificate()
+            );
+        });
     }
 
     private @NotNull ClientRepresentation createClient(Client client) {

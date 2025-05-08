@@ -1,6 +1,7 @@
 [versions]
 assertj = "3.27.3"
 awaitility = "4.3.0"
+aws = "2.31.36"
 edc = "0.12.0"
 junit-jupiter = "5.12.2"
 keycloak = "26.0.5"
@@ -46,6 +47,9 @@ edc-validator-spi = { module = "org.eclipse.edc:validator-spi", version.ref = "e
 edc-validator-lib = { module = "org.eclipse.edc:validator-lib", version.ref = "edc" }
 edc-web-spi = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 
+edc-aws-data-plane-aws-s3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc" }
+edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-data-address-s3", version.ref = "edc" }
+
 tractusx-edc-core-spi = { module = "org.eclipse.tractusx.edc:core-spi", version.ref = "tractusx-edc" }
 tractusx-edc-control-plane-migration = { module = "org.eclipse.tractusx.edc:control-plane-migration", version.ref = "tractusx-edc" }
 tractusx-edc-data-plane-migration = { module = "org.eclipse.tractusx.edc:data-plane-migration", version.ref = "tractusx-edc" }
@@ -56,6 +60,8 @@ tractusx-edc-retirement-evaluation-store-sql = { module = "org.eclipse.tractusx.
 
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
+aws-iam = { module = "software.amazon.awssdk:iam", version.ref = "aws" }
+aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
@@ -63,7 +69,8 @@ mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = 
 owlapi-distribution = { module = "net.sourceforge.owlapi:owlapi-distribution", version.ref = "owlapi" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
-testcontainers-vault = { module = "org.testcontainers:vault", version.ref = "testcontainers" }
+testcontainers-localstack = { module = "org.testcontainers:localstack", version.ref = "testcontainers" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+testcontainers-vault = { module = "org.testcontainers:vault", version.ref = "testcontainers" }
 
 yasson = { module = "org.eclipse:yasson", version.ref = "yasson" }

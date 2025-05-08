@@ -29,7 +29,7 @@ public interface MdsParticipantFactory {
                         .configurationProvider(() -> vault.getConfig(name))
                         .registerSystemExtension(ServiceExtension.class, participant.seedVaultKeys())
                         .configurationProvider(() -> daps.dapsConfig(name))
-                        .registerSystemExtension(ServiceExtension.class, daps.seedExtension())
+                        .registerSystemExtension(ServiceExtension.class, daps.seedDapsKeyPair())
                         .configurationProvider(() -> postgres.getConfig(name))
                 )
                 .build();
@@ -44,7 +44,7 @@ public interface MdsParticipantFactory {
                         .configurationProvider(() -> vault.getConfig(name))
                         .registerSystemExtension(ServiceExtension.class, participant.seedVaultKeys())
                         .configurationProvider(() -> daps.dapsConfig(name))
-                        .registerSystemExtension(ServiceExtension.class, daps.seedExtension())
+                        .registerSystemExtension(ServiceExtension.class, daps.seedDapsKeyPair())
                         .configurationProvider(() -> postgres.getConfig(name))
                         .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
                                 entry("edp.dataplane.callback.url", "http://localhost:8080"),

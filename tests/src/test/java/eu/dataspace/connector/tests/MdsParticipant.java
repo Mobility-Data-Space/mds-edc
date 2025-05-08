@@ -9,10 +9,7 @@ import jakarta.json.JsonReader;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
-import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.util.io.Ports;
@@ -106,7 +103,12 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
     }
 
     public ServiceExtension seedVaultKeys() {
-        return new SeedVaultKeys();
+        var keyPair = Crypto.generateKeyPair();
+        var map = Map.of(
+                "private-key-alias", encode(keyPair.getPrivate()),
+                "public-key-alias", encode(keyPair.getPublic())
+        );
+        return SeedVault.fromMap(c -> map);
     }
 
     public String createOffer(Map<String, Object> dataAddressProperties) {
@@ -236,17 +238,4 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         }
     }
 
-    private static class SeedVaultKeys implements ServiceExtension {
-
-        @Inject
-        private Vault vault;
-
-        @Override
-        public void initialize(ServiceExtensionContext context) {
-            var keyPair = Crypto.generateKeyPair();
-            vault.storeSecret("private-key-alias", encode(keyPair.getPrivate()));
-            vault.storeSecret("public-key-alias", encode(keyPair.getPublic()));
-        }
-
-    }
 }
