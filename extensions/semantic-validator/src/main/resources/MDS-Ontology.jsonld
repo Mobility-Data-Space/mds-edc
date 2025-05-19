@@ -1,0 +1,154 @@
+{
+  "@context": {
+    "dct": "http://purl.org/dc/terms/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "ids": "https://w3id.org/idsa/core/",
+    "idsm": "https://w3id.org/idsa/metamodel/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dbpedia": "http://dbpedia.org/ontology/",
+    "mds": "http://w3id.org/mds#",
+    "cat": "http://w3id.org/mds/data-categories#",
+    "sub": "http://w3id.org/mds/data-subcategories#",
+    "tmode": "http://w3id.org/mds/transport-mode#"
+  },
+  "@graph": [
+    {
+      "@id": "mds:DataCategory",
+      "@type": "owl:Class",
+      "rdfs:label": { "@value": "Data category", "@language": "en" },
+      "rdfs:comment": { "@value": "Class of all data categories (controlled vocabulary).", "@language": "en" }
+    },
+    {
+      "@id": "mds:DataSubcategory",
+      "@type": "owl:Class",
+      "rdfs:label": { "@value": "Data subcategory", "@language": "en" },
+      "rdfs:comment": { "@value": "Class of all data subcategories (controlled vocabulary).", "@language": "en" }
+    },
+    {
+      "@id": "mds:TransportMode",
+      "@type": "owl:Class",
+      "rdfs:label": { "@value": "Transport mode", "@language": "en" },
+      "rdfs:comment": { "@value": "Mode of transport is a term used to distinguish between different ways of transportation or transporting people or goods.", "@language": "en" }
+    },
+    {
+      "@id": "mds:dataCategory",
+      "@type": "owl:ObjectProperty",
+      "rdfs:domain": "ids:Resource",
+      "rdfs:range": "mds:DataCategory",
+      "rdfs:label": { "@value": "Data category", "@language": "en" }
+    },
+    {
+      "@id": "mds:dataSubcategory",
+      "@type": "owl:ObjectProperty",
+      "rdfs:domain": "ids:Resource",
+      "rdfs:range": "mds:DataSubcategory",
+      "rdfs:label": { "@value": "Data subcategory", "@language": "en" }
+    },
+    {
+      "@id": "mds:transportMode",
+      "@type": "owl:ObjectProperty",
+      "rdfs:domain": "ids:Resource",
+      "rdfs:range": "mds:TransportMode",
+      "rdfs:label": { "@value": "Transport mode", "@language": "en" }
+    },
+    {
+      "@id": "mds:geoReferenceMethod",
+      "@type": "owl:DatatypeProperty",
+      "rdfs:domain": "ids:Resource",
+      "rdfs:range": "rdfs:Literal",
+      "rdfs:label": { "@value": "Geo reference method", "@language": "en" }
+    },
+    {
+      "@id": "mds:dataModel",
+      "@type": "owl:DatatypeProperty",
+      "rdfs:domain": "ids:Resource",
+      "rdfs:range": "rdfs:Literal",
+      "rdfs:label": { "@value": "Data model", "@language": "en" }
+    },
+    {
+      "@id": "mds:dataFormatAdditionalDescription",
+      "@type": "owl:DatatypeProperty",
+      "rdfs:domain": "ids:Resource",
+      "rdfs:range": "rdfs:Literal",
+      "rdfs:label": { "@value": "Additional description for the data format", "@language": "en" }
+    },
+    {
+      "@id": "tmode:Rail",
+      "@type": "mds:TransportMode",
+      "rdfs:label": { "@value": "Rail", "@language": "en" }
+    },
+    {
+      "@id": "tmode:Road",
+      "@type": "mds:TransportMode",
+      "rdfs:label": { "@value": "Road", "@language": "en" }
+    },
+    {
+      "@id": "tmode:Water",
+      "@type": "mds:TransportMode",
+      "rdfs:label": { "@value": "Water", "@language": "en" }
+    },
+    {
+      "@id": "tmode:Air",
+      "@type": "mds:TransportMode",
+      "rdfs:label": { "@value": "Air", "@language": "en" }
+    },
+    {
+      "@id": "cat:TrafficInformation",
+      "@type": "mds:DataCategory",
+      "rdfs:label": { "@value": "Traffic Information", "@language": "en" }
+    },
+    {
+      "@id": "cat:RoadworksRoadConditions",
+      "@type": "mds:DataCategory",
+      "rdfs:label": { "@value": "Roadworks and Road Conditions", "@language": "en" }
+    },
+    {
+      "@id": "cat:TrafficFlowInformation",
+      "@type": "mds:DataCategory",
+      "rdfs:label": { "@value": "Traffic Flow Information", "@language": "en" }
+    },
+    {
+      "@id": "cat:ParkingInformation",
+      "@type": "mds:DataCategory",
+      "rdfs:label": { "@value": "Parking Information", "@language": "en" }
+    },
+    {
+      "@id": "cat:Electromobility",
+      "@type": "mds:DataCategory",
+      "rdfs:label": { "@value": "Electromobility", "@language": "en" }
+    },
+    {
+      "@id": "cat:TrafficSignsSpeedInformation",
+      "@type": "mds:DataCategory",
+      "rdfs:label": { "@value": "Traffic Signs and Speed Information", "@language": "en" }
+    },
+    {
+      "@id": "cat:WeatherInformation",
+      "@type": "mds:DataCategory",
+      "rdfs:label": { "@value": "Weather Information", "@language": "en" }
+    },
+    {
+      "@id": "cat:PublicTransportInformation",
+      "@type": "mds:DataCategory",
+      "rdfs:label": { "@value": "Public Transport Information", "@language": "en" }
+    },
+    {
+      "@id": "cat:SharedOnDemandMobility",
+      "@type": "mds:DataCategory",
+      "rdfs:label": { "@value": "Shared and On-Demand Mobility", "@language": "en" }
+    },
+    {
+      "@id": "cat:InfrastructureLogistics",
+      "@type": "mds:DataCategory",
+      "rdfs:label": { "@value": "Infrastructure and Logistics", "@language": "en" }
+    },
+    {
+      "@id": "cat:Various",
+      "@type": "mds:DataCategory",
+      "rdfs:label": { "@value": "Various", "@language": "en" }
+    }
+  ]
+}
