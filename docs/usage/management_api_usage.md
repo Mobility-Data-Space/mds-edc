@@ -40,16 +40,43 @@ Content-Type: application/json
 
 {
   "@context": {
+    "@vocabulary": "https://w3id.org/edc/v0.0.1/ns/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "mobilitydcatap": "https://w3id.org/mobilitydcat-ap",
+    "adms": "http://www.w3.org/ns/adms#",
     "edc": "https://w3id.org/edc/v0.0.1/ns/"
   },
-  "@id": "your-asset-id",
+  "@id": "my-asset-id",
   "properties": {
-
-  },
-  "dataAddress": {
-    "@type": "DataAddress",
-    "type": "HttpData",
-    "baseUrl": "https://example.com"
+    "dct:title": "My Asset",
+    "dct:description": "Lorem Ipsum ...",
+    "dct:language": "code/EN",
+    "dct:publisher": "https://data-source.my-org/about",
+    "dct:license": "https://data-source.my-org/license",
+    "dct:rightsHolder": "my-sovereign-legal-name",
+    "dct:accessRights": "usage policies and rights",
+    "dct:spatial": ["my-geo-location","DE", "DE636"],
+    "dct:isReferencedBy": "https://data-source.my-org/references",
+    "dct:temporal": [ "2024-02-01", "2024-02-10"],
+    "dct:accrualPeriodicity": "every month",
+    
+    "dcat:organization": "MDSXXX.XXX",
+    "dcat:keywords": ["some", "keywords"],
+    "dcat:mediaType": "application/json",
+    "dcat:landingPage": "https://data-source.my-org/docs",
+    
+    "owl:versionInfo": "1.1",
+    
+    "mobilitydcatap:mobilityTheme": ["Infrastructure and Logistics", "General Information About Planning Of Routes"],
+    "mobilitydcatap:mobilityDataStandard": "my-data-model-001",
+    "mobilitydcatap:transportMode": "my-transport-mode",
+    "mobilitydcatap:georeferencingMethod": "my-geo-reference-method",
+    
+    "adms:sample": ["https://teamabc.departmentxyz.sample/a", "https://teamabc.departmentxyz.sample/b"],
+    
+    "additionalProperties": {}
   }
 }
 ```
@@ -70,7 +97,8 @@ Content-Type: application/json
   },
   "@id": "aPolicy",
   "policy": {
-    "@type": "set",
+    "@context": "http://www.w3.org/ns/odrl.jsonld",
+    "@type": "Set",
     "odrl:permission": [],
     "odrl:prohibition": [],
     "odrl:obligation": []
