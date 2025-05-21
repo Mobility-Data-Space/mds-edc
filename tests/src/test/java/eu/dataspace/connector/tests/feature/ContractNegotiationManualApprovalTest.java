@@ -128,7 +128,7 @@ public class ContractNegotiationManualApprovalTest {
 
     private String createOfferWithManualApproval(Map<String, Object> dataAddressProperties) {
         var assetId = UUID.randomUUID().toString();
-        PROVIDER.createAsset(assetId, Map.of("http://w3id.org/mds#dataCategory", "any"), dataAddressProperties);
+        PROVIDER.createAsset(assetId, Map.of("http://purl.org/dc/terms/title", "any"), dataAddressProperties);
         var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
 
         var requestBody = createObjectBuilder()

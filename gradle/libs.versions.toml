@@ -6,7 +6,6 @@ junit-jupiter = "5.12.2"
 keycloak = "26.0.5"
 mockito = "5.17.0"
 mockserver = "5.15.0"
-owlapi = "5.5.1"
 postgres = "42.7.5"
 rest-assured = "5.5.1"
 testcontainers = "1.20.6"
@@ -59,7 +58,6 @@ keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "mockserver" }
-owlapi-distribution = { module = "net.sourceforge.owlapi:owlapi-distribution", version.ref = "owlapi" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
 testcontainers-vault = { module = "org.testcontainers:vault", version.ref = "testcontainers" }
