@@ -8,7 +8,7 @@
 | http://purl.org/dc/terms/title | Title |  1  |  String  | Dataset Name | Traffic situation in Hamburg|
 | http://www.w3.org/2002/07/owl#versionInfo | Version |  0..1  |  String  | Dataset Version | 1.0.0 |
 | http://purl.org/dc/terms/description | Description |  0..1  |  String with Markdown | Dataset Description | The dataset contains the traffic situation in real time on the Hamburg road network. The traffic situation is divided into 4 condition classes: **flowing traffic** (green), **heavy traffic** (orange), **slow-moving traffic** (red), **queued traffic** (dark red).|
-| http://www.w3.org/ns/dcat#keyword | Keywords |  0..*  |  String | Keywords describing the dataset | traffic; hamburg; traffic jams |
+| http://www.w3.org/ns/dcat#keywords | Keywords |  0..*  |  String | Keywords describing the dataset | traffic; hamburg; traffic jams |
 | http://purl.org/dc/terms/language | Language |  0..*  |  Enumeration | Language of the dataset (use "Multilingual" if more than one language is used) | German |
 | http://www.w3.org/ns/dcat#mediaType | Content type |  0..*  |  String | Content type of the dataset | application/json |
 | http://www.w3.org/ns/dcat#landingPage | Endpoint Documentation |  0..1  | URL | Documentation describing the dataset, its parameters and values | https://api.hamburg.de/datasets/v1/verkehrslage//api?f=html |
