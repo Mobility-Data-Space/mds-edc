@@ -2,17 +2,14 @@ package eu.dataspace.connector.tests.feature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dataspace.connector.tests.MdsParticipant;
+import eu.dataspace.connector.tests.MdsParticipantFactory;
 import eu.dataspace.connector.tests.PostgresqlExtension;
 import eu.dataspace.connector.tests.SovityDapsExtension;
 import eu.dataspace.connector.tests.VaultExtension;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
-import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.system.ServiceExtension;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -41,30 +38,17 @@ import static org.mockserver.model.JsonBody.json;
 
 class ManagementApiTransferTest {
 
-    private static final MdsParticipant PROVIDER = MdsParticipant.Builder.newInstance()
-            .id("provider").name("provider")
-            .build();
-
-    private static final MdsParticipant CONSUMER = MdsParticipant.Builder.newInstance()
-            .id("consumer").name("consumer")
-            .build();
-
     @Nested
     class InMemory extends Tests {
 
         @RegisterExtension
-        private static final RuntimeExtension PROVIDER_EXTENSION = new RuntimePerClassExtension(
-                new EmbeddedRuntime("provider", ":launchers:connector-inmemory")
-                        .configurationProvider(PROVIDER::getConfiguration))
-                .registerSystemExtension(ServiceExtension.class, PROVIDER.seedVaultKeys());
+        private static final MdsParticipant PROVIDER = MdsParticipantFactory.inMemory("provider");
 
         @RegisterExtension
-        private static final RuntimeExtension CONSUMER_EXTENSION = new RuntimePerClassExtension(
-                new EmbeddedRuntime("consumer", ":launchers:connector-inmemory")
-                        .configurationProvider(CONSUMER::getConfiguration));
+        private static final MdsParticipant CONSUMER = MdsParticipantFactory.inMemory("consumer");
 
         protected InMemory() {
-            super(PROVIDER_EXTENSION, CONSUMER_EXTENSION);
+            super(PROVIDER, CONSUMER);
         }
     }
 
@@ -77,46 +61,33 @@ class ManagementApiTransferTest {
 
         @RegisterExtension
         @Order(1)
-        private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension(PROVIDER.getName(), CONSUMER.getName());
+        private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension("provider", "consumer");
 
         @RegisterExtension
         @Order(2)
         private static final SovityDapsExtension DAPS_EXTENSION = new SovityDapsExtension();
 
         @RegisterExtension
-        private static final RuntimeExtension PROVIDER_EXTENSION = new RuntimePerClassExtension(
-                new EmbeddedRuntime("provider", ":launchers:connector-vault-postgresql")
-                        .configurationProvider(PROVIDER::getConfiguration)
-                        .configurationProvider(() -> VAULT_EXTENSION.getConfig("provider"))
-                        .registerSystemExtension(ServiceExtension.class, PROVIDER.seedVaultKeys())
-                        .configurationProvider(() -> DAPS_EXTENSION.dapsConfig("provider"))
-                        .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
-                        .configurationProvider(() -> POSTGRES_EXTENSION.getConfig(PROVIDER.getName()))
-        );
+        @Order(3)
+        private static final MdsParticipant PROVIDER = MdsParticipantFactory.hashicorpVault("provider", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
 
         @RegisterExtension
-        private static final RuntimeExtension CONSUMER_EXTENSION = new RuntimePerClassExtension(
-                new EmbeddedRuntime("consumer", ":launchers:connector-vault-postgresql")
-                        .configurationProvider(CONSUMER::getConfiguration)
-                        .configurationProvider(() -> DAPS_EXTENSION.dapsConfig("consumer"))
-                        .configurationProvider(() -> VAULT_EXTENSION.getConfig("consumer"))
-                        .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
-                        .configurationProvider(() -> POSTGRES_EXTENSION.getConfig(CONSUMER.getName()))
-        );
+        @Order(3)
+        private static final MdsParticipant CONSUMER = MdsParticipantFactory.hashicorpVault("consumer", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
 
         protected HashicorpVaultPostgresql() {
-            super(PROVIDER_EXTENSION, CONSUMER_EXTENSION);
+            super(PROVIDER, CONSUMER);
         }
     }
 
     private abstract static class Tests {
 
-        private final RuntimeExtension providerExtension;
-        private final RuntimeExtension consumerExtension;
+        private final MdsParticipant provider;
+        private final MdsParticipant consumer;
 
-        protected Tests(RuntimeExtension providerExtension, RuntimeExtension consumerExtension) {
-            this.providerExtension = providerExtension;
-            this.consumerExtension = consumerExtension;
+        protected Tests(MdsParticipant provider, MdsParticipant consumer) {
+            this.provider = provider;
+            this.consumer = consumer;
         }
 
         @Test
@@ -130,14 +101,14 @@ class ManagementApiTransferTest {
                     EDC_NAMESPACE + "baseUrl", "http://localhost:%s/source".formatted(providerDataSource.getPort())
             );
 
-            var assetId = PROVIDER.createOffer(dataAddressProperties);
+            var assetId = provider.createOffer(dataAddressProperties);
 
-            var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+            var transferProcessId = consumer.requestAssetFrom(assetId, provider)
                     .withTransferType("HttpData-PUSH")
                     .withDestination(httpDataAddress("http://localhost:" + consumerDataDestination.getPort() + "/destination"))
                     .execute();
 
-            CONSUMER.awaitTransferToBeInState(transferProcessId, COMPLETED);
+            consumer.awaitTransferToBeInState(transferProcessId, COMPLETED);
 
             await().untilAsserted(() -> {
                 providerDataSource.verify(request("/source").withMethod("GET"));
@@ -159,16 +130,16 @@ class ManagementApiTransferTest {
                     EDC_NAMESPACE + "baseUrl", "http://localhost:%s/source".formatted(providerDataSource.getPort())
             );
 
-            var assetId = PROVIDER.createOffer(dataAddressProperties);
+            var assetId = provider.createOffer(dataAddressProperties);
 
-            var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+            var transferProcessId = consumer.requestAssetFrom(assetId, provider)
                     .withTransferType("HttpData-PULL")
                     .withCallbacks(Json.createArrayBuilder()
                             .add(createCallback("http://localhost:%s/edr".formatted(consumerEdrReceiver.getPort()), true, Set.of("transfer.process.started")))
                             .build())
                     .execute();
 
-            CONSUMER.awaitTransferToBeInState(transferProcessId, STARTED);
+            consumer.awaitTransferToBeInState(transferProcessId, STARTED);
 
             var edrRequests = await().until(() -> consumerEdrReceiver.retrieveRecordedRequests(request("/edr")), it -> it.length > 0);
 
@@ -201,7 +172,7 @@ class ManagementApiTransferTest {
             destinationBackend.when(request("/destination")).respond(response());
 
             var clientSecretKey = UUID.randomUUID().toString();
-            providerExtension.getService(Vault.class).storeSecret(clientSecretKey, "clientSecretValue");
+            provider.getService(Vault.class).storeSecret(clientSecretKey, "clientSecretValue");
 
             Map<String, Object> dataSource = Map.of(
                     EDC_NAMESPACE + "type", "HttpData",
@@ -211,14 +182,14 @@ class ManagementApiTransferTest {
                     EDC_NAMESPACE + "oauth2:tokenUrl", "http://localhost:%s/token".formatted(oauth2server.getPort())
             );
 
-            var assetId = PROVIDER.createOffer(dataSource);
+            var assetId = provider.createOffer(dataSource);
 
-            var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+            var transferProcessId = consumer.requestAssetFrom(assetId, provider)
                     .withTransferType("HttpData-PUSH")
                     .withDestination(httpDataAddress("http://localhost:" + destinationBackend.getPort() + "/destination"))
                     .execute();
 
-            CONSUMER.awaitTransferToBeInState(transferProcessId, COMPLETED);
+            consumer.awaitTransferToBeInState(transferProcessId, COMPLETED);
 
             oauth2server.verify(request("/token").withBody("grant_type=client_credentials&client_secret=clientSecretValue&client_id=clientId"));
             sourceBackend.verify(request("/source").withMethod("GET").withHeader("Authorization", "Bearer token"));

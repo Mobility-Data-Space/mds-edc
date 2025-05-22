@@ -18,7 +18,9 @@ public class SemanticValidatorExtension implements ServiceExtension {
     @Override
     public void prepare() {
         var baseAssetValidator = AssetValidator.instance();
-        var semanticValidator = SemanticValidator.instance();
+
+        var allowedPropertiesProvider = new AllowedPropertiesProvider(jsonLd);
+        var semanticValidator = SemanticValidator.instance(allowedPropertiesProvider.provide());
 
         this.validator.register(EDC_ASSET_TYPE, i -> baseAssetValidator.validate(i).merge(semanticValidator.validate(i)));
     }

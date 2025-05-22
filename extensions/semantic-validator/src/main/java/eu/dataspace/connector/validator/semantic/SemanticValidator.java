@@ -1,18 +1,12 @@
 package eu.dataspace.connector.validator.semantic;
 
 import jakarta.json.JsonObject;
-import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.validator.jsonobject.JsonLdPath;
 import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.HasSubject;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 import static org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset.EDC_ASSET_PROPERTIES;
 import static org.eclipse.edc.validator.spi.Violation.violation;
@@ -20,35 +14,23 @@ import static org.eclipse.edc.validator.spi.Violation.violation;
 public class SemanticValidator implements Validator<JsonObject> {
 
     private final JsonLdPath path;
-    private final List<String> axioms;
+    private final Set<String> allowed;
 
-    public static JsonObjectValidator instance() {
+    public static JsonObjectValidator instance(Set<String> allowed) {
         return JsonObjectValidator.newValidator()
-                .verifyObject(EDC_ASSET_PROPERTIES, builder -> builder.verify(SemanticValidator::new))
+                .verifyObject(EDC_ASSET_PROPERTIES, builder -> builder.verify(path -> new SemanticValidator(path, allowed)))
                 .build();
     }
 
-    public SemanticValidator(JsonLdPath path) {
+    public SemanticValidator(JsonLdPath path, Set<String> allowed) {
         this.path = path;
-        try {
-            var ontologyFile = getClass().getClassLoader().getResource("MDS-Ontology.ttl");
-            var ontology = OWLManager.createOWLOntologyManager().loadOntology(IRI.create(ontologyFile));
-            axioms = ontology.axioms()
-                    .map(owlAxiom -> owlAxiom instanceof HasSubject<?> subject && subject.getSubject() instanceof IRI iri
-                            ? iri
-                            : null
-                    )
-                    .filter(Objects::nonNull)
-                    .map(IRI::getIRIString).toList();
-        } catch (OWLOntologyCreationException e) {
-            throw new EdcException(e);
-        }
+        this.allowed = allowed;
     }
 
     @Override
     public ValidationResult validate(JsonObject jsonObject) {
-        var violations = jsonObject.asJsonObject().keySet().stream().filter(key -> !axioms.contains(key))
-                .map(key -> violation("Asset property '%s' is not part of the MDS ontology".formatted(key), path.append(key).toString()))
+        var violations = jsonObject.asJsonObject().keySet().stream().filter(key -> !allowed.contains(key))
+                .map(key -> violation("Asset property '%s' is not allowed".formatted(key), path.append(key).toString()))
                 .toList();
 
         if (violations.isEmpty()) {

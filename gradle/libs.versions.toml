@@ -1,15 +1,15 @@
 [versions]
 assertj = "3.27.3"
 awaitility = "4.3.0"
+aws = "2.31.45"
 edc = "0.12.0"
 junit-jupiter = "5.12.2"
 keycloak = "26.0.5"
 mockito = "5.17.0"
 mockserver = "5.15.0"
-owlapi = "5.5.1"
 postgres = "42.7.5"
-rest-assured = "5.5.1"
-testcontainers = "1.20.6"
+rest-assured = "5.5.2"
+testcontainers = "1.21.0"
 tractusx-edc = "0.9.0"
 yasson = "3.0.4"
 
@@ -17,6 +17,7 @@ yasson = "3.0.4"
 edc-asset-api = { module = "org.eclipse.edc:asset-api", version.ref = "edc" }
 edc-core-spi = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
 edc-boot-lib = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
+edc-callback-static-endpoint = { module = "org.eclipse.edc:callback-static-endpoint", version.ref = "edc" }
 edc-catalog-spi = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
 edc-contract-spi = { module = "org.eclipse.edc:contract-spi", version.ref = "edc" }
 edc-control-plane-spi = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
@@ -45,6 +46,9 @@ edc-validator-spi = { module = "org.eclipse.edc:validator-spi", version.ref = "e
 edc-validator-lib = { module = "org.eclipse.edc:validator-lib", version.ref = "edc" }
 edc-web-spi = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 
+edc-aws-data-plane-aws-s3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc" }
+edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-data-address-s3", version.ref = "edc" }
+
 tractusx-edc-core-spi = { module = "org.eclipse.tractusx.edc:core-spi", version.ref = "tractusx-edc" }
 tractusx-edc-control-plane-migration = { module = "org.eclipse.tractusx.edc:control-plane-migration", version.ref = "tractusx-edc" }
 tractusx-edc-data-plane-migration = { module = "org.eclipse.tractusx.edc:data-plane-migration", version.ref = "tractusx-edc" }
@@ -55,14 +59,16 @@ tractusx-edc-retirement-evaluation-store-sql = { module = "org.eclipse.tractusx.
 
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
+aws-iam = { module = "software.amazon.awssdk:iam", version.ref = "aws" }
+aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "mockserver" }
-owlapi-distribution = { module = "net.sourceforge.owlapi:owlapi-distribution", version.ref = "owlapi" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
-testcontainers-vault = { module = "org.testcontainers:vault", version.ref = "testcontainers" }
+testcontainers-localstack = { module = "org.testcontainers:localstack", version.ref = "testcontainers" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+testcontainers-vault = { module = "org.testcontainers:vault", version.ref = "testcontainers" }
 
 yasson = { module = "org.eclipse:yasson", version.ref = "yasson" }

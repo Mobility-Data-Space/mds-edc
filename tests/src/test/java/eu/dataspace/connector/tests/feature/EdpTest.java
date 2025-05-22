@@ -1,15 +1,10 @@
 package eu.dataspace.connector.tests.feature;
 
 import eu.dataspace.connector.tests.MdsParticipant;
+import eu.dataspace.connector.tests.MdsParticipantFactory;
 import eu.dataspace.connector.tests.PostgresqlExtension;
 import eu.dataspace.connector.tests.SovityDapsExtension;
 import eu.dataspace.connector.tests.VaultExtension;
-
-import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
-import org.eclipse.edc.junit.extensions.RuntimeExtension;
-import org.eclipse.edc.junit.extensions.RuntimePerClassExtension;
-import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -18,7 +13,6 @@ import org.mockserver.integration.ClientAndServer;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
@@ -28,56 +22,24 @@ import static org.mockserver.model.HttpResponse.response;
 
 public class EdpTest {
 
-    private static final MdsParticipant PROVIDER = MdsParticipant.Builder.newInstance()
-            .id("provider").name("provider")
-            .build();
-
-    private static final MdsParticipant CONSUMER = MdsParticipant.Builder.newInstance()
-            .id("consumer").name("consumer")
-            .build();
-
     @RegisterExtension
     @Order(0)
     private static final VaultExtension VAULT_EXTENSION = new VaultExtension();
 
     @RegisterExtension
     @Order(1)
-    private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension(PROVIDER.getName(), CONSUMER.getName());
+    private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension("provider", "consumer");
 
     @RegisterExtension
     @Order(2)
     private static final SovityDapsExtension DAPS_EXTENSION = new SovityDapsExtension();
 
     @RegisterExtension
-    private static final RuntimeExtension PROVIDER_EXTENSION = new RuntimePerClassExtension(
-            new EmbeddedRuntime("provider", ":launchers:connector-vault-postgresql-edp")
-                    .configurationProvider(PROVIDER::getConfiguration)
-                    .configurationProvider(() -> VAULT_EXTENSION.getConfig(PROVIDER.getName()))
-                    .registerSystemExtension(ServiceExtension.class, PROVIDER.seedVaultKeys())
-                    .configurationProvider(() -> DAPS_EXTENSION.dapsConfig(PROVIDER.getId()))
-                    .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
-                    .configurationProvider(() -> POSTGRES_EXTENSION.getConfig(PROVIDER.getName()))
-                    .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
-                        entry("edp.dataplane.callback.url", "http://localhost:8080"), 
-                        entry("edp.daseen.api.key", "api-key")))
-                    )
-    );
+    private static final MdsParticipant PROVIDER = MdsParticipantFactory.edp("provider", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
 
     @RegisterExtension
-    private static final RuntimeExtension CONSUMER_EXTENSION = new RuntimePerClassExtension(
-            new EmbeddedRuntime("consumer", ":launchers:connector-vault-postgresql-edp")
-                    .configurationProvider(CONSUMER::getConfiguration)
-                    .configurationProvider(() -> VAULT_EXTENSION.getConfig(CONSUMER.getName()))
-                    .registerSystemExtension(ServiceExtension.class, CONSUMER.seedVaultKeys())
-                    .configurationProvider(() -> DAPS_EXTENSION.dapsConfig(CONSUMER.getId()))
-                    .registerSystemExtension(ServiceExtension.class, DAPS_EXTENSION.seedExtension())
-                    .configurationProvider(() -> POSTGRES_EXTENSION.getConfig(CONSUMER.getName()))
-                    .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
-                        entry("edp.dataplane.callback.url", "http://localhost:8080"), 
-                        entry("edp.daseen.api.key", "api-key")))
-                    )
-    );
-    
+    private static final MdsParticipant CONSUMER = MdsParticipantFactory.edp("consumer", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
+
     @Test
     void shouldAllowEDPSJob_andResultAsset() {
         var edpsBackendService = startClientAndServer(getFreePort());
