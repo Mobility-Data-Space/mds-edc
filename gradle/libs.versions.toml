@@ -2,7 +2,7 @@
 assertj = "3.27.3"
 awaitility = "4.3.0"
 aws = "2.31.50"
-edc = "0.12.0"
+edc = "0.13.0"
 junit-jupiter = "5.12.2"
 keycloak = "26.0.5"
 mockito = "5.18.0"
@@ -10,14 +10,13 @@ mockserver = "5.15.0"
 postgres = "42.7.6"
 rest-assured = "5.5.5"
 testcontainers = "1.21.1"
-tractusx-edc = "0.9.0"
+tractusx-edc = "0.10.0-rc2"
 yasson = "3.0.4"
 
 [libraries]
 edc-asset-api = { module = "org.eclipse.edc:asset-api", version.ref = "edc" }
 edc-core-spi = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
 edc-boot-lib = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
-edc-callback-static-endpoint = { module = "org.eclipse.edc:callback-static-endpoint", version.ref = "edc" }
 edc-catalog-spi = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }
 edc-contract-spi = { module = "org.eclipse.edc:contract-spi", version.ref = "edc" }
 edc-control-plane-spi = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }

@@ -14,7 +14,6 @@ dependencies {
         exclude(group = edcGroupId, module = "data-plane-selector-client")
     }
 
-    runtimeOnly(libs.edc.callback.static.endpoint) // this will be provided by controlplane bom from EDC 0.13.0
     runtimeOnly(libs.edc.data.plane.public.api.v2) // this has been deprecated, but it will be provided by tractus-x edc starting from version 0.10.0
     runtimeOnly(libs.edc.aws.data.plane.aws.s3)
     runtimeOnly(libs.edc.aws.validator.data.address.s3)
