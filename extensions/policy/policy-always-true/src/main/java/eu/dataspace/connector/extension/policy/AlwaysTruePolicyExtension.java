@@ -29,7 +29,7 @@ public class AlwaysTruePolicyExtension implements ServiceExtension {
     }
 
     @Override
-    public void prepare() {
+    public void start() {
         if (policyDefinitionService.findById(ALWAYS_TRUE_POLICY_ID) == null) {
             var policyDefinition = alwaysTruePolicy();
 
