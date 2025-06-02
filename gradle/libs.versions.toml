@@ -9,7 +9,7 @@ mockito = "5.18.0"
 mockserver = "5.15.0"
 postgres = "42.7.6"
 rest-assured = "5.5.5"
-testcontainers = "1.21.0"
+testcontainers = "1.21.1"
 tractusx-edc = "0.9.0"
 yasson = "3.0.4"
 
