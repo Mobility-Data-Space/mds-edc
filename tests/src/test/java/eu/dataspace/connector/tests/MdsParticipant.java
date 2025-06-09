@@ -129,7 +129,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .post("/v3.1alpha/retireagreements")
+                .post("/v3/contractagreements/retirements")
                 .then();
     }
 

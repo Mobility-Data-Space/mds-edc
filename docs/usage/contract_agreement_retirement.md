@@ -6,7 +6,7 @@ The endpoint allows participants to retire contract agreements.
 ## Retire Agreement
 
 ```http
-POST /v3.1alpha/retireagreements
+POST /v3/contractagreements/retirements
 Content-Type: application/json
 
 {
