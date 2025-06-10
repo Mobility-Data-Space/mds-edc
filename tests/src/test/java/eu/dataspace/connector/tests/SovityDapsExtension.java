@@ -42,9 +42,7 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
 
             .withEnv("KC_LOG_LEVEL_ORG_KEYCLOAK_SERVICES", "TRACE")
             .withEnv("KC_LOG_LEVEL_ORG_KEYCLOAK_EVENTS", "DEBUG")
-            .withEnv("KC_LOG_LEVEL_ORG_KEYCLOAK_AUTHENTICATION_AUTHENTICATORS_CLIENT", "TRACE")
-
-            .withLogConsumer(e -> System.out.println(e.getUtf8StringWithoutLineEnding()));
+            .withEnv("KC_LOG_LEVEL_ORG_KEYCLOAK_AUTHENTICATION_AUTHENTICATORS_CLIENT", "TRACE");
 
     @Override
     public void beforeAll(ExtensionContext context) {

@@ -15,12 +15,14 @@ dependencies {
     runtimeOnly(libs.edc.controlplane.feature.sql.bom)
     runtimeOnly(libs.edc.dataplane.feature.sql.bom)
 
-    // Tractusx EDC migrations libraries
     runtimeOnly(libs.tractusx.edc.postgresql.migration)
     runtimeOnly(libs.tractusx.edc.data.plane.migration)
     runtimeOnly(libs.tractusx.edc.control.plane.migration)
 
     runtimeOnly(libs.tractusx.edc.retirement.evaluation.store.sql)
+
+    runtimeOnly(libs.logging.house.client)
+
 }
 
 application {

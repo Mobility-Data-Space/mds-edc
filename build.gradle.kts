@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     `java-library`
 }
@@ -7,15 +10,19 @@ val edcVersion = libs.versions.edc
 allprojects {
     apply(plugin = "java")
 
-    repositories {
-        mavenCentral()
-    }
-
     testing {
         suites {
             val test by getting(JvmTestSuite::class) {
                 useJUnitJupiter()
             }
+        }
+    }
+
+    tasks.withType<Test> {
+        testLogging {
+            events(TestLogEvent.FAILED)
+            showStackTraces = true
+            exceptionFormat = TestExceptionFormat.FULL
         }
     }
 

@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.ext
+
 rootProject.name = "mds-connector"
 
 pluginManagement {
@@ -10,7 +12,19 @@ pluginManagement {
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
+        mavenGpr("Mobility-Data-Space/mds-logging-house-client")
+        mavenGpr("ids-basecamp/ids-infomodel-java")
         mavenLocal()
+    }
+}
+
+fun RepositoryHandler.mavenGpr(project: String) {
+    maven {
+        setUrl("https://maven.pkg.github.com/$project")
+        credentials {
+            this.username = settings.ext.properties["gpr.user"] as String? ?: System.getenv("USERNAME")
+            this.password = settings.ext.properties["gpr.key"] as String? ?: System.getenv("TOKEN")
+        }
     }
 }
 

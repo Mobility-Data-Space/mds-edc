@@ -5,6 +5,7 @@ aws = "2.31.50"
 edc = "0.13.0"
 junit-jupiter = "5.12.2"
 keycloak = "26.0.5"
+logging-house-client = "1.0.0-rc.1"
 mockito = "5.18.0"
 mockserver = "5.15.0"
 postgres = "42.7.6"
@@ -55,6 +56,8 @@ tractusx-edc-postgresql-migration = { module = "org.eclipse.tractusx.edc:postgre
 tractusx-edc-retirement-evaluation-api = { module = "org.eclipse.tractusx.edc:retirement-evaluation-api", version.ref = "tractusx-edc" }
 tractusx-edc-retirement-evaluation-core = { module = "org.eclipse.tractusx.edc:retirement-evaluation-core", version.ref = "tractusx-edc" }
 tractusx-edc-retirement-evaluation-store-sql = { module = "org.eclipse.tractusx.edc:retirement-evaluation-store-sql", version.ref = "tractusx-edc" }
+
+logging-house-client = { module = "mds-logging-house:client", version.ref = "logging-house-client" }
 
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }

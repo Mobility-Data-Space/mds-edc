@@ -96,7 +96,9 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
                 entry("edc.callback.default.events", "contract.negotiation"),
                 entry("edc.callback.default.uri", "http://localhost:" + eventReceiverPort.get()),
-                entry("edc.callback.default.transactional", "true")
+                entry("edc.callback.default.transactional", "true"),
+
+                entry("edc.logginghouse.extension.url", "http://localhost/any")
         );
 
         return ConfigFactory.fromMap(settings);
