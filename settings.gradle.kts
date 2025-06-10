@@ -24,6 +24,8 @@ fun RepositoryHandler.mavenGpr(project: String) {
         credentials {
             this.username = settings.ext.properties["gpr.user"] as String? ?: System.getenv("USERNAME")
             this.password = settings.ext.properties["gpr.key"] as String? ?: System.getenv("TOKEN")
+
+            println("USERNAME is $username. password... can't tell :)")
         }
     }
 }
