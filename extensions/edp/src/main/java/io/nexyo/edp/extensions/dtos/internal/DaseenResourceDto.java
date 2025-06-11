@@ -23,6 +23,9 @@ public class DaseenResourceDto {
     @JsonProperty("contract_id")
     private String contractId;
 
+    @JsonProperty("upload_url")
+    private String uploadUrl;
+
     /**
      * Default constructor.
      */
@@ -38,11 +41,12 @@ public class DaseenResourceDto {
      * @param resourceId the unique identifier of the resource
      * @param contractId the current status of the resource
      */
-    public DaseenResourceDto(String uuid, String assetId, String resourceId, String contractId) {
+    public DaseenResourceDto(String uuid, String assetId, String resourceId, String contractId, String uploadUrl) {
         this.uuid = uuid;
         this.assetId = assetId;
         this.resourceId = resourceId;
         this.contractId = contractId;
+        this.uploadUrl = uploadUrl;
     }
 
     /**
@@ -115,5 +119,23 @@ public class DaseenResourceDto {
      */
     public void setContractId(String contractId) {
         this.contractId = contractId;
+    }
+
+    /**
+     * Retrieves the upload URL.
+     *
+     * @return the upload URL
+     */
+    public String getUploadUrl() {
+        return uploadUrl;
+    }
+
+    /**
+     * Sets the upload URL.
+     *
+     * @param uploadUrl the upload URL to set
+     */
+    public void setUploadUrl(String uploadUrl) {
+        this.uploadUrl = uploadUrl;
     }
 }

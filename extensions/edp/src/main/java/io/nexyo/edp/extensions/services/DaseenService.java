@@ -86,7 +86,6 @@ public class DaseenService {
         public void publishToDaseen(DaseenResourceDto daseenResourceDto) {
                 this.logger.debug(String.format("Publishing Resource for Asset %s to Daseen...", daseenResourceDto.getAssetId()));
 
-                final var daseenBaseUrl = this.edrService.getServiceBaseUrlFromMetadata(daseenResourceDto.getContractId());
                 final var daseenAuthorization = daseenApiKey;
 
                 var destinationAddress = HttpDataAddress.Builder.newInstance()
@@ -94,8 +93,7 @@ public class DaseenService {
                                 .method(HttpMethod.PUT)
                                 .addAdditionalHeader("accept", "application/json")
                                 .addAdditionalHeader("Authorization", String.format("Bearer %s", daseenAuthorization))
-                                .baseUrl(String.format("%s/connector/edp/%s/edp-result.zip", daseenBaseUrl,
-                                                daseenResourceDto.getResourceId()))
+                                .baseUrl(daseenResourceDto.getUploadUrl())
                                 .build();
 
                 var transferProcess = this.edrService.getCurrentTransferProcess(daseenResourceDto.getContractId());

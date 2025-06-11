@@ -13,6 +13,9 @@ public record DaseenCreateResourceResponseDto(
         String state,
 
         @JsonProperty("message")
-        String message
+        String message,
+
+        @JsonProperty("rawZIPUploadURL")
+        String uploadUrl
 ) {
 }

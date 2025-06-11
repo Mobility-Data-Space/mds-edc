@@ -46,7 +46,7 @@ public class DaseenController implements DaseenInterface {
                 daseenCreateEntryRequestDto.contractId());
         var daseenResourceId = daseenResponseDto.id();
         var daseenResourceDto = new DaseenResourceDto(UUID.randomUUID().toString(), assetId, daseenResourceId,
-                daseenCreateEntryRequestDto.contractId());
+                daseenCreateEntryRequestDto.contractId(), daseenResponseDto.uploadUrl());
 
         this.assetHelperService.persist(assetId, AssetHelperService.DASEEN_RESOURCE_KEY, daseenResourceDto);
 

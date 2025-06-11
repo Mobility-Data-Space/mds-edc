@@ -109,21 +109,4 @@ public class EdrService {
         }
         return contractAgreement;
     }
-
-    public String getServiceBaseUrlFromMetadata(String contractAgreementId) {
-        var negotiations = this.contractNegotiationService.search(QuerySpec.Builder.newInstance().filter(criterion("contractAgreement.id", "=", contractAgreementId)).build());
-        var negotiation = negotiations.getContent().stream().findFirst().orElseThrow(() -> new EdpException("Negotiation not found for contract agreement ID: " + contractAgreementId));
-        var offerAssetId = negotiation.getContractOffers().stream().findFirst().orElseThrow(() -> new EdpException("Offer not found for negotiation ID: " + negotiation.getId())).getAssetId();
-
-        var result = this.catalogService.requestDataset(offerAssetId, negotiation.getCounterPartyId(), negotiation.getCounterPartyAddress(), "dataspace-protocol-http").join();
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonNode = mapper.readTree(result.getContent());
-            return jsonNode.get("baseUrl").asText();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to parse the response", e);
-        }
-    }
-
 }

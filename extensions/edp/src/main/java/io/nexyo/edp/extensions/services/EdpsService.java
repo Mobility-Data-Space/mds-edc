@@ -78,7 +78,20 @@ public class EdpsService {
         this.logger.debug("EDPS job created successfully for asset id: " + assetId + ". Edps Server responded: "
             + responseBody);
         try {
-                return this.mapper.readValue(responseBody, EdpsJobResponseDto.class);
+            var edpsJobResponseDto = this.mapper.readValue(responseBody, EdpsJobResponseDto.class);
+
+            // map upload url to correct url
+            String baseUrl = edpsJobResponseDto.uploadUrl().replace("/api/", "/v1/dataspace/analysisjob/");
+            String uploadUrl = baseUrl + "/data/file.csv";
+            String resultUrl = baseUrl + "/result";
+            edpsJobResponseDto = new EdpsJobResponseDto(
+                    edpsJobResponseDto.jobUuid(),
+                    edpsJobResponseDto.state(),
+                    edpsJobResponseDto.details(),
+                    uploadUrl, resultUrl
+            );
+
+            return edpsJobResponseDto;
         } catch (JsonProcessingException e) {
                 throw new EdpException("Unable to map response to DTO ", e);
         }
@@ -129,13 +142,10 @@ public class EdpsService {
         var transferProcess = this.edrService.getCurrentTransferProcess(contractId);
         var participantId = this.edrService.getContractAgreement(contractId).getProviderId();
 
-        final var edpsBaseUrl = this.edrService.getEdrProperty(contractId, EDR_PROPERTY_EDPS_BASE_URL_KEY);
-
         var destinationAddress = HttpDataAddress.Builder.newInstance()
                         .type(FlowType.PUSH.toString())
                         .property("header:accept", "application/json")
-                        .baseUrl(String.format("%s/v1/dataspace/analysisjob/%s/data/filename.csv", edpsBaseUrl,
-                                        edpsJobDto.getJobId()))
+                        .baseUrl(edpsJobDto.getUploadUrl())
                         .build();
 
         this.dataplaneService.start(edpsJobDto.getAssetId(), destinationAddress, transferProcess.getId(),
@@ -155,18 +165,13 @@ public class EdpsService {
                                 edpsJobDto.getAssetId(), edpsJobDto.getAssetId()));
         var contractId = edpsJobDto.getContractId();
 
-        final var edpsBaseUrl = this.edrService.getEdrProperty(contractId, EDR_PROPERTY_EDPS_BASE_URL_KEY);
-
-        // TODO: Überlegung: Wir müssen nur aufpassen, dass der trnsfer process dann
-        // nicht terminiert, vielleicht sollten wir für jeden transfer einen eigenen
-        // transfer process spawnen, ist halt async
+        // TODO: check if transfer process is still running
         var transferProcess = this.edrService.getCurrentTransferProcess(contractId);
         var participantId = this.edrService.getContractAgreement(contractId).getProviderId();
 
         var sourceAddress = HttpDataAddress.Builder.newInstance()
                         .type(FlowType.PULL.toString())
-                        .baseUrl(String.format("%s/v1/dataspace/analysisjob/%s/result", edpsBaseUrl,
-                                        edpsJobDto.getJobId()))
+                        .baseUrl(edpsJobDto.getResultUrl())
                         .build();
 
         var destinationAddress = HttpDataAddress.Builder.newInstance()

@@ -29,6 +29,12 @@ public class EdpsJobDto {
     @JsonProperty("contract_id")
     private String contractId;
 
+    @JsonProperty("upload_url")
+    private String uploadUrl;
+
+    @JsonProperty("result_url")
+    private String resultUrl;
+
     /**
      * Default constructor.
      */
@@ -145,5 +151,19 @@ public class EdpsJobDto {
 
     public void setContractId(String contractId) {
         this.contractId = contractId;
+    }
+
+    public String getUploadUrl() {
+        return uploadUrl;
+    }
+    public void setUploadUrl(String uploadUrl) {
+        this.uploadUrl = uploadUrl;
+    }
+
+    public String getResultUrl() {
+        return resultUrl;
+    }
+    public void setResultUrl(String resultUrl) {
+        this.resultUrl = resultUrl;
     }
 }

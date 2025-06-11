@@ -13,6 +13,12 @@ public record EdpsJobResponseDto(
         String state,
 
         @JsonProperty("state_details")
-        String details
+        String details,
+
+        @JsonProperty("upload_url")
+        String uploadUrl,
+
+        @JsonProperty("result_url")
+        String resultUrl
 ) {
 }
