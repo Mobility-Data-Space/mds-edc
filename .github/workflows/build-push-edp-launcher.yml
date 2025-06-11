@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [ main ]
+    tags:
+      - "*"
 
 jobs:
   build-and-push-images:
@@ -36,12 +38,28 @@ jobs:
         with:
           string: ${{ github.repository }}
 
+      - name: Generate Docker metadata for EDP Experimental MDS connector
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ steps.lowercase_gh_repo.outputs.lowercase }}/connector-vault-postgresql-edp
+          labels: |
+            org.opencontainers.image.title=MDS EDC EDP Experimental
+            org.opencontainers.image.description=MDS EDC connector with EDP extension for production use.
+          tags: |
+            type=semver,pattern={{version}},enable=${{ startsWith(github.ref, 'refs/tags/') }}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+
       - name: Build and push vault postgresql edp image
         uses: docker/build-push-action@v6
         with:
           context: ./launchers
           file: launchers/Dockerfile
           push: true
-          tags: ghcr.io/${{ steps.lowercase_gh_repo.outputs.lowercase }}/connector-vault-postgresql-edp:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.tags }}
           build-args: |
             RUNTIME=connector-vault-postgresql-edp

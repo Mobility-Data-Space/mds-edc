@@ -3,6 +3,8 @@ name: Build and Publish Docker Images
 on:
   push:
     branches: [ main ]
+    tags:
+      - "*"
 
 jobs:
   build-and-push-images:
@@ -34,13 +36,44 @@ jobs:
         with:
           string: ${{ github.repository }}
 
+      - name: Generate Docker metadata for vault postgres connector
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ steps.lowercase_gh_repo.outputs.lowercase }}/connector-vault-postgresql
+          labels: |
+            org.opencontainers.image.title=MDS EDC
+            org.opencontainers.image.description=MDS EDC Vault Postgresql connector for production use.
+          tags: |
+            type=semver,pattern={{version}},enable=${{ startsWith(github.ref, 'refs/tags/') }}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Generate Docker metadata for in-memory connector
+        id: meta_inmemory
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ steps.lowercase_gh_repo.outputs.lowercase }}/connector-inmemory
+          labels: |
+            org.opencontainers.image.title=MDS EDC In Memory
+            org.opencontainers.image.description=MDS EDC In Memory for development purposes.
+          tags: |
+            type=semver,pattern={{version}},enable=${{ startsWith(github.ref, 'refs/tags/') }}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
+
       - name: Build and push inmemory image
         uses: docker/build-push-action@v6
         with:
           context: ./launchers
           file: launchers/Dockerfile
           push: true
-          tags: ghcr.io/${{ steps.lowercase_gh_repo.outputs.lowercase }}/connector-inmemory:latest
+          tags: ${{ steps.meta_inmemory.outputs.tags }}
+          labels: ${{ steps.meta_inmemory.outputs.tags }}
           build-args: |
             RUNTIME=connector-inmemory
 
@@ -50,6 +83,7 @@ jobs:
           context: ./launchers
           file: launchers/Dockerfile
           push: true
-          tags: ghcr.io/${{ steps.lowercase_gh_repo.outputs.lowercase }}/connector-vault-postgresql:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.tags }}
           build-args: |
             RUNTIME=connector-vault-postgresql
