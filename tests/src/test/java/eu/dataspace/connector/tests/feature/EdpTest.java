@@ -52,7 +52,7 @@ public class EdpTest {
         ).respond(
             response()
                 .withStatusCode(200)
-                .withBody("{\"job_id\": \"40c70511-9427-43d1-811b-97231145cce1\", \"state\": \"WAITING_FOR_DATA\", \"state_detail\": \"Job is waiting for data to be uploaded.\"}")
+                .withBody("{\"job_id\": \"40c70511-9427-43d1-811b-97231145cce1\", \"state\": \"WAITING_FOR_DATA\", \"state_detail\": \"Job is waiting for data to be uploaded.\", \"upload_url\": \"http://edps-base-url/api/40c70511-9427-43d1-811b-97231145cce1\"}")
         );
 
         // Mock POST /v1/dataspace/analysisjob/{job_id}/data/file
