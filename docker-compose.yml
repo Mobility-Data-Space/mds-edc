@@ -70,7 +70,7 @@ services:
 
       # Logging House Configuration
       EDC_LOGGINGHOUSE_EXTENSION_ENABLED: "true"
-      EDC_LOGGINGHOUSE_EXTENSION_URL: "{$LOGGING_HOUSE_URL"
+      EDC_LOGGINGHOUSE_EXTENSION_URL: "{$LOGGING_HOUSE_URL}"
     ports:
       - "8181:8181"  # API
       - "8186:8186"  # Control
