@@ -23,14 +23,14 @@ jobs:
         run: ./gradlew build
         env:
           USERNAME: ${{ github.actor }}
-          TOKEN: ${{ github.token }}
+          TOKEN: ${{ secrets.MDS_PAT }}
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.MDS_PAT }}
 
       - id: lowercase_gh_repo
         uses: ASzc/change-string-case-action@v6
