@@ -56,7 +56,7 @@ public class DaseenService {
                 final var daseenAuthorizationFromContract = this.edrService.getEdrProperty(contractId,
                                 EDR_PROPERTY_EDPS_AUTH_KEY);
 
-                var apiResponse = httpClient.target(String.format("%s/connector/edp", daseenBaseUrlFromContract))
+                var apiResponse = httpClient.target(String.format("%s/connector/edp/", daseenBaseUrlFromContract))
                                 .request()
                                 .header("accept", "*/*")
                                 .header("Authorization", daseenAuthorizationFromContract)
