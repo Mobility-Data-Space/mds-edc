@@ -150,7 +150,7 @@ public class EdpTest {
         daseenBackendService.when(
             request()
                 .withMethod("POST")
-                .withPath("/connector/edp")
+                .withPath("/connector/edp/")
         ).respond(
             response()
                 .withStatusCode(201)
@@ -191,7 +191,7 @@ public class EdpTest {
         daseenBackendService.verify(
             request()
                 .withMethod("POST")
-                .withPath("/connector/edp")
+                .withPath("/connector/edp/")
         );
 
         daseenBackendService.stop();
