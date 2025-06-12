@@ -65,7 +65,8 @@ proxy (at least the protocol endpoint needs to be).
   - Limit the access rate to the API endpoints and monitor access for attacks like brute force attacks.
 
 ### Vault Configuration
-
+Add a key pair for securing the data plane and the DAPS certificate to your vault with the same names used in the connector configuration.
+See our helper script `init_vault.sh` for guidance.
 
 ### EDC Connector Configuration
 

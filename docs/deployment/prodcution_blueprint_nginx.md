@@ -52,6 +52,9 @@ The deployment architecture consists of the following components:
 
    # Vault Configuration
    VAULT_TOKEN=your-vault-token
+   
+   # Logging House Configuration
+   LOGGING_HOUSE_URL=your-lh-url
    ```
 
    Ensure you replace all placeholder values with your actual configuration details.

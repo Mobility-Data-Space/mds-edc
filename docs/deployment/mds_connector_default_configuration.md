@@ -55,6 +55,10 @@ edc.oauth.provider.audience = "https://daps.url/token"
 edc.iam.token.scope = "idsc:IDS_CONNECTOR_ATTRIBUTES_ALL"
 edc.oauth.endpoint.audience = "idsc:IDS_CONNECTORS_ALL"
 edc.agent.identity.key = "referringConnector"
+
+# Logging House configuration
+edc.logginghouse.extension.enabled = true
+edc.logginghouse.extension.url = "https://logging_house.url"
 ```
 
 For more detailed information on each configuration property and advanced deployment scenarios, please refer to the full documentation or reach out in the discussion.
