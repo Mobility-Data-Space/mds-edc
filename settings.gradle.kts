@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.ext
-
 rootProject.name = "mds-connector"
 
 pluginManagement {
@@ -22,10 +20,8 @@ fun RepositoryHandler.mavenGpr(project: String) {
     maven {
         setUrl("https://maven.pkg.github.com/$project")
         credentials {
-            this.username = settings.ext.properties["gpr.user"] as String? ?: System.getenv("USERNAME")
-            this.password = settings.ext.properties["gpr.key"] as String? ?: System.getenv("TOKEN")
-
-            println("USERNAME is $username. password... can't tell :)")
+            username = settings.ext.properties["gpr.user"] as String? ?: System.getenv("USERNAME")
+            password = settings.ext.properties["gpr.key"] as String? ?: System.getenv("TOKEN")
         }
     }
 }
