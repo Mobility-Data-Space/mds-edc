@@ -8,7 +8,7 @@ The MDS Connector is a distribution based on the Eclipse Dataspace Components (E
 
 ## Quick Start
 
-For a quick start guide on building and deploying the MDS Connector, please refer to our [Deployment Guide](docs/deployment/mds_connector_configuration.md).
+For a quick start guide on building and deploying the MDS Connector, please refer to our [Deployment Guide](docs/deployment/prodcution_blueprint_nginx.md).
 
 ## Documentation
 
@@ -18,12 +18,12 @@ Our documentation is organized into three main categories:
    - [Contract Negotiation Manual Approval Proposal](docs/development/contract_negotiation_manual_approval_proposal.md)
 
 2. **Usage**: Resources for using the MDS Connector.
-   - [Management API Usage Guide](docs/usage/management_api_usage.md)
-   - [Management API Specification](docs/usage/management_api_spec.yml)
-   - [Connector Postman Collection](docs/usage/connector_postman_collection.json)
+   - [Management API Usage Guide](docs/usage/edc_management_api_usage.md)
+   - [Management API Specification](docs/usage/mds_edc_management_api.yml)
+   - [Connector Postman Collection](docs/usage/MDS%20EDC%20Management%20API%20Collection.postman_collection.json)
 
 3. **Deployment**: guides on deploying and configuring the MDS Connector.
-   - [MDS Connector Configuration Guide](docs/deployment/mds_connector_configuration.md)
+   - [MDS Connector Configuration Guide](docs/deployment/mds_connector_default_configuration.md)
 
 ## Directory Structure
 
@@ -32,13 +32,8 @@ Our documentation is organized into three main categories:
 - `launchers/`: Contains executable modules for the MDS Connector.
 - `tests/`: Contains end-to-end tests for MDS Connector features.
 
-
-## Contributing
-
-We welcome contributions to the MDS Connector project. Please refer to our [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started.
-
 ## Support
 
-For support, please open an issue in the GitHub repository or contact our support team at [SUPPORT EMAIL/LINK].
+For support, please open an issue in the GitHub repository or contact our support team.
 
 For more detailed information on EDC configuration and usage, refer to the official [Eclipse Dataspace Components documentation](https://eclipse-edc.github.io/docs/).
