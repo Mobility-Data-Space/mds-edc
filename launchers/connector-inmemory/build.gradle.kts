@@ -15,8 +15,10 @@ dependencies {
     }
 
     runtimeOnly(libs.edc.data.plane.public.api.v2) // this has been deprecated, but it will be provided by tractus-x edc starting from version 0.10.0
+
     runtimeOnly(libs.edc.aws.data.plane.aws.s3)
     runtimeOnly(libs.edc.aws.validator.data.address.s3)
+    runtimeOnly(libs.edc.azure.data.plane.azure.storage)
 
     runtimeOnly(libs.tractusx.edc.retirement.evaluation.api)
     runtimeOnly(libs.tractusx.edc.retirement.evaluation.core)

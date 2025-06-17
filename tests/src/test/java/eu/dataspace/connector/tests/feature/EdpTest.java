@@ -2,9 +2,9 @@ package eu.dataspace.connector.tests.feature;
 
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;
-import eu.dataspace.connector.tests.PostgresqlExtension;
-import eu.dataspace.connector.tests.SovityDapsExtension;
-import eu.dataspace.connector.tests.VaultExtension;
+import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
+import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
+import eu.dataspace.connector.tests.extensions.VaultExtension;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

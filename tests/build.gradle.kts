@@ -8,6 +8,7 @@ dependencies {
     testImplementation(libs.awaitility)
     testImplementation(libs.aws.iam)
     testImplementation(libs.aws.s3)
+    testImplementation(libs.azure.storage.blob)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.keycloak.admin.client)
     testImplementation(libs.mockserver.netty)

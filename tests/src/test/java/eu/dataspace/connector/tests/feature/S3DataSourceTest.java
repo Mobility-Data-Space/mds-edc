@@ -2,17 +2,16 @@ package eu.dataspace.connector.tests.feature;
 
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;
-import eu.dataspace.connector.tests.PostgresqlExtension;
-import eu.dataspace.connector.tests.S3Extension;
-import eu.dataspace.connector.tests.SovityDapsExtension;
-import eu.dataspace.connector.tests.VaultExtension;
+import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
+import eu.dataspace.connector.tests.extensions.S3Extension;
+import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
+import eu.dataspace.connector.tests.extensions.VaultExtension;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.spi.security.Vault;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import software.amazon.awssdk.services.iam.model.AccessKey;
 
 import java.util.Map;
 import java.util.UUID;

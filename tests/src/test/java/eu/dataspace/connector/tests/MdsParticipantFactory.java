@@ -1,5 +1,8 @@
 package eu.dataspace.connector.tests;
 
+import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
+import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
+import eu.dataspace.connector.tests.extensions.VaultExtension;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;

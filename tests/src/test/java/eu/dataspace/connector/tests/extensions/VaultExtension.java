@@ -1,4 +1,4 @@
-package eu.dataspace.connector.tests;
+package eu.dataspace.connector.tests.extensions;
 
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;

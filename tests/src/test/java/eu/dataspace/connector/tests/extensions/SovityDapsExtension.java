@@ -1,5 +1,7 @@
-package eu.dataspace.connector.tests;
+package eu.dataspace.connector.tests.extensions;
 
+import eu.dataspace.connector.tests.Crypto;
+import eu.dataspace.connector.tests.SeedVault;
 import org.eclipse.edc.spi.system.SystemExtension;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;

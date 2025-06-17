@@ -1,4 +1,4 @@
-package eu.dataspace.connector.tests;
+package eu.dataspace.connector.tests.extensions;
 
 import org.eclipse.edc.util.io.Ports;
 import org.eclipse.edc.spi.system.configuration.Config;

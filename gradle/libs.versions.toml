@@ -2,6 +2,7 @@
 assertj = "3.27.3"
 awaitility = "4.3.0"
 aws = "2.31.60"
+azure-storage-blob = "12.30.0"
 edc = "0.13.0"
 junit-jupiter = "5.13.1"
 keycloak = "26.0.5"
@@ -49,6 +50,8 @@ edc-web-spi = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-aws-data-plane-aws-s3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc" }
 edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-data-address-s3", version.ref = "edc" }
 
+edc-azure-data-plane-azure-storage = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
+
 tractusx-edc-core-spi = { module = "org.eclipse.tractusx.edc:core-spi", version.ref = "tractusx-edc" }
 tractusx-edc-control-plane-migration = { module = "org.eclipse.tractusx.edc:control-plane-migration", version.ref = "tractusx-edc" }
 tractusx-edc-data-plane-migration = { module = "org.eclipse.tractusx.edc:data-plane-migration", version.ref = "tractusx-edc" }
@@ -63,6 +66,7 @@ assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 aws-iam = { module = "software.amazon.awssdk:iam", version.ref = "aws" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
+azure-storage-blob = { group = "com.azure", name = "azure-storage-blob", version.ref = "azure-storage-blob" }
 keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }

@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static eu.dataspace.connector.tests.Crypto.encode;
 import static io.restassured.http.ContentType.JSON;
@@ -222,6 +223,11 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                                 .orElse(null),
                         Objects::nonNull
                 );
+    }
+
+    public MdsParticipant configurationProvider(Supplier<Config> configurationProvider) {
+        runtime.configurationProvider(configurationProvider);
+        return this;
     }
 
     public static class Builder extends Participant.Builder<MdsParticipant, Builder> {

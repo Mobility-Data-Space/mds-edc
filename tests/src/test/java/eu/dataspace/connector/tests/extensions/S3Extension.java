@@ -1,4 +1,4 @@
-package eu.dataspace.connector.tests;
+package eu.dataspace.connector.tests.extensions;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterAllCallback;
