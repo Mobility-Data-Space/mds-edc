@@ -59,6 +59,9 @@ edc.agent.identity.key = "referringConnector"
 # Logging House configuration
 edc.logginghouse.extension.enabled = true
 edc.logginghouse.extension.url = "https://logging_house.url"
+edc.datasource.logginghouse.url = "jdbc:postgresql://postgres:5432/edc?currentSchema=mds_edc_schema"
+edc.datasource.logginghouse.user = user
+edc.datasource.logginghouse.password = password
 ```
 
 For more detailed information on each configuration property and advanced deployment scenarios, please refer to the full documentation or reach out in the discussion.
