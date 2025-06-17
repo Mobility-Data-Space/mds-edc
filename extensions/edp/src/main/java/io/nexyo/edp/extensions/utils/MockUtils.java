@@ -29,7 +29,7 @@ public class MockUtils {
     public static Map<String, Object> createRequestBody(String assetId) {
         Map<String, Object> innerRequestBody = new HashMap<>();
         String timestamp = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm:ss"));
-        innerRequestBody.put("name", "Example EDC Asset - " + timestamp);
+        innerRequestBody.put("name", "MDS Asset - " + assetId + " - " + timestamp);
 
         // Create assetRef object
         Map<String, Object> assetRef = new HashMap<>();
@@ -38,7 +38,7 @@ public class MockUtils {
         assetRef.put("assetUrl", "https://example.com/data");
         assetRef.put("assetVersion", "1.0");
 
-        Map<String, String> dataSpace = Map.of("name", "Example Dataspace", "url", "https://dataspace.com");
+        Map<String, String> dataSpace = Map.of("name", "Mobility Dataspace", "url", "https://mobility-dataspace.eu/");
         assetRef.put("dataSpace", dataSpace);
 
         Map<String, String> publisher = Map.of("name", "Publisher Name", "url", "https://publisher.com");
