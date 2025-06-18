@@ -24,14 +24,14 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
         env:
-          USERNAME: ${{ github.actor }}
+          USERNAME: ${{ secrets.MDS_GH_USER }}
           TOKEN: ${{ secrets.MDS_PAT }}
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ secrets.MDS_GH_USER }}
           password: ${{ secrets.MDS_PAT }}
 
       - id: lowercase_gh_repo

@@ -28,5 +28,5 @@ jobs:
           ./gradlew build -x test
           ./gradlew build
         env:
-          USERNAME: ${{ github.actor }}
+          USERNAME: ${{ secrets.MDS_GH_USER }}
           TOKEN: ${{ secrets.MDS_PAT }}
