@@ -41,7 +41,7 @@ jobs:
 
       - name: Generate Docker metadata for vault postgres connector
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ steps.lowercase_gh_repo.outputs.lowercase }}/connector-vault-postgresql
           labels: |
@@ -56,7 +56,7 @@ jobs:
 
       - name: Generate Docker metadata for in-memory connector
         id: meta_inmemory
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ steps.lowercase_gh_repo.outputs.lowercase }}/connector-inmemory
           labels: |
