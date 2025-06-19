@@ -4,6 +4,7 @@ import eu.dataspace.connector.extension.negotiation.manual.approval.api.ManualNe
 import eu.dataspace.connector.extension.negotiation.manual.approval.command.ApproveNegotiationCommandHandler;
 import eu.dataspace.connector.extension.negotiation.manual.approval.command.RejectNegotiationCommandHandler;
 import eu.dataspace.connector.extension.negotiation.manual.approval.logic.ManualNegotiationApprovalPendingGuard;
+import eu.dataspace.connector.extension.negotiation.manual.approval.logic.ManualNegotiationApprovalService;
 import eu.dataspace.connector.extension.negotiation.manual.approval.transformer.JsonValueToGenericTypeTransformer;
 import org.eclipse.edc.connector.controlplane.contract.spi.negotiation.ContractNegotiationPendingGuard;
 import org.eclipse.edc.connector.controlplane.contract.spi.negotiation.store.ContractNegotiationStore;
@@ -50,7 +51,8 @@ public class ManualNegotiationApprovalExtension implements ServiceExtension {
         commandHandlerRegistry.register(new ApproveNegotiationCommandHandler(contractNegotiationStore, eventRouter, clock));
         commandHandlerRegistry.register(new RejectNegotiationCommandHandler(contractNegotiationStore, eventRouter, clock));
 
-        webService.registerResource(MANAGEMENT, new ManualNegotiationApprovalApiController(transactionContext, commandHandlerRegistry));
+        var service = new ManualNegotiationApprovalService(transactionContext, commandHandlerRegistry);
+        webService.registerResource(MANAGEMENT, new ManualNegotiationApprovalApiController(service));
 
         // this is a workaround for this bug: https://github.com/eclipse-edc/Connector/issues/4955 it can be removed when it will be fixed (likely in version 0.13.0)
         var managementApiTransformerRegistry = transformerRegistry.forContext("management-api");

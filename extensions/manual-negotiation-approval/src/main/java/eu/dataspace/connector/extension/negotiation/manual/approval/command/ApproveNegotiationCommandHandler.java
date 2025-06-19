@@ -8,11 +8,13 @@ import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.edc.spi.event.EventRouter;
 
 import java.time.Clock;
+import java.util.function.Predicate;
 
 public class ApproveNegotiationCommandHandler extends EntityCommandHandler<ApproveNegotiationCommand, ContractNegotiation> {
 
     private final EventRouter eventRouter;
     private final Clock clock;
+    private final Predicate<ContractNegotiation> validation = CommandValidation.eligibleForManualApprovalRejection;
 
     public ApproveNegotiationCommandHandler(ContractNegotiationStore store, EventRouter eventRouter, Clock clock) {
         super(store);
@@ -22,6 +24,10 @@ public class ApproveNegotiationCommandHandler extends EntityCommandHandler<Appro
 
     @Override
     protected boolean modify(ContractNegotiation entity, ApproveNegotiationCommand command) {
+        if (!validation.test(entity)) {
+            return false;
+        }
+
         entity.transitionAgreeing();
         entity.setPending(false);
         return true;

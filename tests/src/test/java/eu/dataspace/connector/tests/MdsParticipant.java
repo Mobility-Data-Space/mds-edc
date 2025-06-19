@@ -5,7 +5,7 @@ import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
@@ -14,18 +14,21 @@ import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.util.io.Ports;
 import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 
 import java.io.ByteArrayInputStream;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -34,22 +37,22 @@ import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createArrayBuilder;
 import static jakarta.json.Json.createObjectBuilder;
 import static java.util.Map.entry;
-import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.JsonBody.json;
 
-public class MdsParticipant extends Participant implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+public class MdsParticipant extends Participant implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback {
 
     private final LazySupplier<Integer> eventReceiverPort = new LazySupplier<>(Ports::getFreePort);
     private ClientAndServer eventReceiver;
     private EmbeddedRuntime runtime;
+    private final BlockingQueue<JsonObject> events = new LinkedBlockingDeque<>();
 
     private MdsParticipant() {
 
@@ -58,8 +61,14 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
     @Override
     public void beforeAll(ExtensionContext context) {
         if (runtime != null) {
-            eventReceiver = ClientAndServer.startClientAndServer(eventReceiverPort.get());
             runtime.boot(false);
+            eventReceiver = ClientAndServer.startClientAndServer(eventReceiverPort.get());
+            eventReceiver.when(request()).respond(httpRequest -> {
+                var bodyAsRawBytes = httpRequest.getBodyAsRawBytes();
+                var event = Json.createReader(new ByteArrayInputStream(bodyAsRawBytes)).readObject();
+                events.add(event);
+                return HttpResponse.response();
+            });
         }
     }
 
@@ -73,8 +82,11 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
     @Override
     public void beforeEach(ExtensionContext context) {
-        eventReceiver.reset();
-        eventReceiver.when(request()).respond(HttpResponse.response());
+    }
+
+    @Override
+    public void afterEach(ExtensionContext context) {
+        events.clear();
     }
 
     public Config getConfiguration() {
@@ -166,7 +178,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .as(JsonArray.class);
     }
 
-    public JsonArray getPendingNegotiations() {
+    public JsonObject getPendingNegotiation(String negotiationId) {
         return getContractNegotiations(createObjectBuilder()
                 .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
                 .add("filterExpression", createArrayBuilder()
@@ -176,7 +188,11 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                                 .add("operandRight", true)
                         )
                 )
-                .build());
+                .build()).stream()
+                .map(JsonValue::asJsonObject)
+                .filter(it -> it.getString(ID).equals(negotiationId))
+                .findAny()
+                .orElse(null);
     }
 
     public JsonObject createEdpsJob(String assetId, String edpsContractAgreementId) {
@@ -211,18 +227,20 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
     }
 
     public JsonObject waitForEvent(String eventType) {
-        var request = request().withBody(json(Map.entry("type", eventType)));
-        return await()
-                .until(
-                        () -> Arrays.stream(eventReceiver.retrieveRecordedRequests(request))
-                                .findFirst()
-                                .map(HttpRequest::getBodyAsRawBytes)
-                                .map(ByteArrayInputStream::new)
-                                .map(Json::createReader)
-                                .map(JsonReader::readObject)
-                                .orElse(null),
-                        Objects::nonNull
-                );
+        try {
+            do {
+                var event = events.poll(timeout.getSeconds(), TimeUnit.SECONDS);
+                if (event == null) {
+                    throw new TimeoutException("No event of type " + eventType + " received");
+                }
+                if (Objects.equals(event.getString("type"), eventType)) {
+                    return event;
+                }
+            } while (true);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public MdsParticipant configurationProvider(Supplier<Config> configurationProvider) {
