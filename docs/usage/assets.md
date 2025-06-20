@@ -77,7 +77,3 @@ Content-Type: application/json
   }
 }
 ```
-
-## MDS Asset Properties Validation
-
-Assets added to the connector are validated against the MDS assets properties. Only the listed properties are allowed.
