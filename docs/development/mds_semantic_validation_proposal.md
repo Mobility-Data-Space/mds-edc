@@ -69,125 +69,106 @@ The semantic validation process for MDS asset creation consists of three main st
 
 Validation failures result in asset creation rejection with specific error messages. Successful validation allows the connector to add the properties to the DCAT Datasets.
 
-## MDS Data Category and Subcategory Enumerations
+## MDS Data Category and Subcategory Representation
 
-```java
-public enum DataCategory {
-    TRAFFIC_INFORMATION("Traffic Information"),
-    ROADWORKS_AND_ROAD_CONDITIONS("Roadworks and Road Conditions"),
-    TRAFFIC_FLOW_INFORMATION("Traffic Flow Information"),
-    PARKING_INFORMATION("Parking Information"),
-    ELECTROMOBILITY("Electromobility"),
-    TRAFFIC_SIGNS_AND_SPEED_INFORMATION("Traffic Signs and Speed Information"),
-    WEATHER_INFORMATION("Weather Information"),
-    PUBLIC_TRANSPORT_INFORMATION("Public Transport Information"),
-    SHARED_AND_ON_DEMAND_MOBILITY("Shared and On-Demand Mobility"),
-    INFRASTRUCTURE_AND_LOGISTICS("Infrastructure and Logistics"),
-    VARIOUS("Various");
-
-    private final String name;
-
-    DataCategory(String name) {
-        this.name = name;
+```json
+{
+  "categories": [
+    {
+      "name": "Traffic Information",
+      "id": "TRAFFIC_INFORMATION",
+      "subcategories": [
+        { "name": "Accidents", "id": "ACCIDENTS" },
+        { "name": "Hazard Warnings", "id": "HAZARD_WARNINGS" }
+      ]
+    },
+    {
+      "name": "Roadworks and Road Conditions",
+      "id": "ROADWORKS_AND_ROAD_CONDITIONS",
+      "subcategories": [
+        { "name": "Roadworks", "id": "ROADWORKS" },
+        { "name": "Road Conditions", "id": "ROAD_CONDITIONS" }
+      ]
+    },
+    {
+      "name": "Traffic Flow Information",
+      "id": "TRAFFIC_FLOW_INFORMATION",
+      "subcategories": [
+        { "name": "Realtime Traffic Flow Data", "id": "REALTIME_TRAFFIC_FLOW_DATA" },
+        { "name": "Forecast Traffic Flow Data", "id": "FORECAST_TRAFFIC_FLOW_DATA" }
+      ]
+    },
+    {
+      "name": "Parking Information",
+      "id": "PARKING_INFORMATION",
+      "subcategories": [
+        { "name": "Availability and Forecast", "id": "AVAILABILITY_AND_FORECAST" },
+        { "name": "Prices", "id": "PRICES" }
+      ]
+    },
+    {
+      "name": "Electromobility",
+      "id": "ELECTROMOBILITY",
+      "subcategories": [
+        { "name": "Availability of Charging Station", "id": "AVAILABILITY_OF_CHARGING_STATION" },
+        { "name": "Location of Charging Station", "id": "LOCATION_OF_CHARGING_STATION" },
+        { "name": "Prices of Charging Station", "id": "PRICES_OF_CHARGING_STATION" }
+      ]
+    },
+    {
+      "name": "Traffic Signs and Speed Information",
+      "id": "TRAFFIC_SIGNS_AND_SPEED_INFORMATION",
+      "subcategories": [
+        { "name": "Dynamic Speed Information", "id": "DYNAMIC_SPEED_INFORMATION" },
+        { "name": "Dynamic Traffic Signs", "id": "DYNAMIC_TRAFFIC_SIGNS" },
+        { "name": "Static Traffic Signs", "id": "STATIC_TRAFFIC_SIGNS" }
+      ]
+    },
+    {
+      "name": "Weather Information",
+      "id": "WEATHER_INFORMATION",
+      "subcategories": [
+        { "name": "Current Weather Conditions", "id": "CURRENT_WEATHER_CONDITIONS" },
+        { "name": "Weather Forecast", "id": "WEATHER_FORECAST" },
+        { "name": "Special Events or Disruptions", "id": "SPECIAL_EVENTS_OR_DISRUPTIONS" }
+      ]
+    },
+    {
+      "name": "Public Transport Information",
+      "id": "PUBLIC_TRANSPORT_INFORMATION",
+      "subcategories": [
+        { "name": "Timetables", "id": "TIMETABLES" },
+        { "name": "Fare", "id": "FARE" },
+        { "name": "Location Information", "id": "LOCATION_INFORMATION" }
+      ]
+    },
+    {
+      "name": "Shared and On-Demand Mobility",
+      "id": "SHARED_AND_ON_DEMAND_MOBILITY",
+      "subcategories": [
+        { "name": "Vehicle Information", "id": "VEHICLE_INFORMATION" },
+        { "name": "Availability", "id": "AVAILABILITY" },
+        { "name": "Location", "id": "LOCATION" },
+        { "name": "Range", "id": "RANGE" }
+      ]
+    },
+    {
+      "name": "Infrastructure and Logistics",
+      "id": "INFRASTRUCTURE_AND_LOGISTICS",
+      "subcategories": [
+        { "name": "General Information About Planning Of Routes", "id": "GENERAL_INFORMATION_ABOUT_PLANNING_OF_ROUTES" },
+        { "name": "Pedestrian Networks", "id": "PEDESTRIAN_NETWORKS" },
+        { "name": "Cycling Networks", "id": "CYCLING_NETWORKS" },
+        { "name": "Road Network", "id": "ROAD_NETWORK" },
+        { "name": "Water Routes", "id": "WATER_ROUTES" },
+        { "name": "Cargo and Logistics", "id": "CARGO_AND_LOGISTICS" },
+        { "name": "Toll Information", "id": "TOLL_INFORMATION" }
+      ]
+    },
+    {
+      "name": "Various",
+      "id": "VARIOUS",
+      "subcategories": []
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<DataSubcategory> getSubcategories() {
-        return DataSubcategory.getSubcategoriesForCategory(this);
-    }
-}
-
-public enum DataSubcategory {
-    // Traffic Information
-    ACCIDENTS("Accidents", DataCategory.TRAFFIC_INFORMATION),
-    HAZARD_WARNINGS("Hazard Warnings", DataCategory.TRAFFIC_INFORMATION),
-    
-    // Roadworks and Road Conditions
-    ROADWORKS("Roadworks", DataCategory.ROADWORKS_AND_ROAD_CONDITIONS),
-    ROAD_CONDITIONS("Road Conditions", DataCategory.ROADWORKS_AND_ROAD_CONDITIONS),
-    
-    // Traffic Flow Information
-    REALTIME_TRAFFIC_FLOW_DATA("Realtime Traffic Flow Data", DataCategory.TRAFFIC_FLOW_INFORMATION),
-    FORECAST_TRAFFIC_FLOW_DATA("Forecast Traffic Flow Data", DataCategory.TRAFFIC_FLOW_INFORMATION),
-    
-    // Parking Information
-    AVAILABILITY_AND_FORECAST("Availability and Forecast", DataCategory.PARKING_INFORMATION),
-    PRICES("Prices", DataCategory.PARKING_INFORMATION),
-    
-    // Electromobility
-    AVAILABILITY_OF_CHARGING_STATION("Availability of Charging Station", DataCategory.ELECTROMOBILITY),
-    LOCATION_OF_CHARGING_STATION("Location of Charging Station", DataCategory.ELECTROMOBILITY),
-    PRICES_OF_CHARGING_STATION("Prices of Charging Station", DataCategory.ELECTROMOBILITY),
-    
-    // Traffic Signs and Speed Information
-    DYNAMIC_SPEED_INFORMATION("Dynamic Speed Information", DataCategory.TRAFFIC_SIGNS_AND_SPEED_INFORMATION),
-    DYNAMIC_TRAFFIC_SIGNS("Dynamic Traffic Signs", DataCategory.TRAFFIC_SIGNS_AND_SPEED_INFORMATION),
-    STATIC_TRAFFIC_SIGNS("Static Traffic Signs", DataCategory.TRAFFIC_SIGNS_AND_SPEED_INFORMATION),
-    
-    // Weather Information
-    CURRENT_WEATHER_CONDITIONS("Current Weather Conditions", DataCategory.WEATHER_INFORMATION),
-    WEATHER_FORECAST("Weather Forecast", DataCategory.WEATHER_INFORMATION),
-    SPECIAL_EVENTS_OR_DISRUPTIONS("Special Events or Disruptions", DataCategory.WEATHER_INFORMATION),
-    
-    // Public Transport Information
-    TIMETABLES("Timetables", DataCategory.PUBLIC_TRANSPORT_INFORMATION),
-    FARE("Fare", DataCategory.PUBLIC_TRANSPORT_INFORMATION),
-    LOCATION_INFORMATION("Location Information", DataCategory.PUBLIC_TRANSPORT_INFORMATION),
-    
-    // Shared and On-Demand Mobility
-    VEHICLE_INFORMATION("Vehicle Information", DataCategory.SHARED_AND_ON_DEMAND_MOBILITY),
-    AVAILABILITY("Availability", DataCategory.SHARED_AND_ON_DEMAND_MOBILITY),
-    LOCATION("Location", DataCategory.SHARED_AND_ON_DEMAND_MOBILITY),
-    RANGE("Range", DataCategory.SHARED_AND_ON_DEMAND_MOBILITY),
-    
-    // Infrastructure and Logistics
-    GENERAL_INFORMATION_ABOUT_PLANNING_OF_ROUTES("General Information About Planning Of Routes", DataCategory.INFRASTRUCTURE_AND_LOGISTICS),
-    PEDESTRIAN_NETWORKS("Pedestrian Networks", DataCategory.INFRASTRUCTURE_AND_LOGISTICS),
-    CYCLING_NETWORKS("Cycling Networks", DataCategory.INFRASTRUCTURE_AND_LOGISTICS),
-    ROAD_NETWORK("Road Network", DataCategory.INFRASTRUCTURE_AND_LOGISTICS),
-    WATER_ROUTES("Water Routes", DataCategory.INFRASTRUCTURE_AND_LOGISTICS),
-    CARGO_AND_LOGISTICS("Cargo and Logistics", DataCategory.INFRASTRUCTURE_AND_LOGISTICS),
-    TOLL_INFORMATION("Toll Information", DataCategory.INFRASTRUCTURE_AND_LOGISTICS);
-
-    private final String name;
-    private final DataCategory category;
-
-    DataSubcategory(String name, DataCategory category) {
-        this.name = name;
-        this.category = category;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public DataCategory getCategory() {
-        return category;
-    }
-
-    public static List<DataSubcategory> getSubcategoriesForCategory(DataCategory category) {
-        return Arrays.stream(values())
-                .filter(subcategory -> subcategory.getCategory() == category)
-                .collect(Collectors.toList());
-    }
-}
-
-public enum TransportMode {
-    ROAD("Road"),
-    RAIL("Rail"),
-    WATER("Water"),
-    AIR("Air");
-
-    private final String name;
-
-    TransportMode(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
+  ]
 }
