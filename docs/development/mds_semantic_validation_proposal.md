@@ -69,10 +69,15 @@ The semantic validation process for MDS asset creation consists of three main st
 
 Validation failures result in asset creation rejection with specific error messages. Successful validation allows the connector to add the properties to the DCAT Datasets.
 
-## MDS Data Category and Subcategory Representation
+### JSON representation 
+Note: this includes the definition of the MDS Data Category and Subcategory enumerations.
 
 ```json
 {
+  "required": [ "title", "data_category", "data_subcategory" ],
+  "optional": [
+    ...
+  ],
   "categories": [
     {
       "name": "Traffic Information",
