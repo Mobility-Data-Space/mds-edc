@@ -1,0 +1,100 @@
+  {
+    "jsonld-context": {
+      "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+      "edc": "https://w3id.org/edc/v0.0.1/ns/",
+      "dcat": "http://www.w3.org/ns/dcat#",
+      "dct": "http://purl.org/dc/terms/",
+      "owl": "http://www.w3.org/2002/07/owl#",
+      "mobilitydcatap": "https://w3id.org/mobilitydcat-ap/",
+      "mobilitydcatap-theme": "https://w3id.org/mobilitydcat-ap/mobility-theme/",
+      "adms": "http://www.w3.org/ns/adms#",
+      "skos": "http://www.w3.org/2004/02/skos/core#",
+      "rdf": "http://www.w3.org/2000/01/rdf-schema#"
+    },
+    "required": [
+      "dct:title",
+      "mobilitydcatap:mobilityTheme.mobilitydcatap-theme:data-content-category"
+    ],
+    "optional": [
+      "dct:description",
+      "dct:language",
+      "dct:publisher",
+      "dct:license",
+      "dct:rightsHolder",
+      "dct:accessRights",
+      "dct:spatial.skos:prefLabel",
+      "dct:spatial.dct:identifier",
+      "dct:isReferencedBy",
+      "dct:temporal.dcat:startDate",
+      "dct:temporal.dcat:endDate",
+      "dct:accrualPeriodicity",
+      "dcat:organization",
+      "dcat:keywords",
+      "dcat:mediaType",
+      "dcat:landingPage",
+      "owl:versionInfo",
+      "mobilitydcatap:mobilityTheme.mobilitydcatap-theme:data-content-sub-category",
+      "mobilitydcatap:mobilityDataStandard.@id",
+      "mobilitydcatap:mobilityDataStandard.mobilitydcatap:schema.dcat:downloadURL",
+      "mobilitydcatap:mobilityDataStandard.mobilitydcatap:schema.rdf:Literal",
+      "mobilitydcatap:transportMode",
+      "mobilitydcatap:georeferencingMethod",
+      "adms:sample",
+      "additionalProperties.onrequest",
+      "additionalProperties.email",
+      "additionalProperties.preferred_subject",
+      "additionalProperties.manual_approval"
+    ],
+    "enums": {
+      "mobilitydcatap-theme:data-content-category": [
+        {
+          "id": "TRAFFIC_INFORMATION",
+          "mobilitydcatap-theme:data-content-sub-category": [ "ACCIDENTS", "HAZARD_WARNINGS" ]
+        },
+        {
+          "id": "ROADWORKS_AND_ROAD_CONDITIONS",
+          "mobilitydcatap-theme:data-content-sub-category": [ "ROADWORKS", "ROAD_CONDITIONS" ]
+        },
+        {
+          "id": "TRAFFIC_FLOW_INFORMATION",
+          "mobilitydcatap-theme:data-content-sub-category": [ "REALTIME_TRAFFIC_FLOW_DATA", "FORECAST_TRAFFIC_FLOW_DATA" ]
+        },
+        {
+          "id": "PARKING_INFORMATION",
+          "mobilitydcatap-theme:data-content-sub-category": [ "AVAILABILITY_AND_FORECAST", "PRICES" ]
+        },
+        {
+          "id": "ELECTROMOBILITY",
+          "mobilitydcatap-theme:data-content-sub-category": [ "AVAILABILITY_OF_CHARGING_STATION", "LOCATION_OF_CHARGING_STATION", "PRICES_OF_CHARGING_STATION" ]
+        },
+        {
+          "id": "TRAFFIC_SIGNS_AND_SPEED_INFORMATION",
+          "mobilitydcatap-theme:data-content-sub-category": [ "DYNAMIC_SPEED_INFORMATION", "DYNAMIC_TRAFFIC_SIGNS", "STATIC_TRAFFIC_SIGNS" ]
+        },
+        {
+          "id": "WEATHER_INFORMATION",
+          "mobilitydcatap-theme:data-content-sub-category": ["CURRENT_WEATHER_CONDITIONS", "WEATHER_FORECAST", "SPECIAL_EVENTS_OR_DISRUPTIONS"]
+        },
+        {
+          "id": "PUBLIC_TRANSPORT_INFORMATION",
+          "mobilitydcatap-theme:data-content-sub-category": [ "TIMETABLES", "FARE", "LOCATION_INFORMATION" ]
+        },
+        {
+          "id": "SHARED_AND_ON_DEMAND_MOBILITY",
+          "mobilitydcatap-theme:data-content-sub-category": [ "VEHICLE_INFORMATION", "AVAILABILITY", "LOCATION", "RANGE" ]
+        },
+        {
+          "id": "INFRASTRUCTURE_AND_LOGISTICS",
+          "mobilitydcatap-theme:data-content-sub-category": [
+            "GENERAL_INFORMATION_ABOUT_PLANNING_OF_ROUTES", "PEDESTRIAN_NETWORKS", "CYCLING_NETWORKS",
+            "ROAD_NETWORK", "WATER_ROUTES", "CARGO_AND_LOGISTICS", "TOLL_INFORMATION"
+          ]
+        },
+        {
+          "id": "VARIOUS",
+          "mobilitydcatap-theme:data-content-sub-category": []
+        }
+      ],
+      "mobilitydcatap:transportMode": [ "ROAD", "RAIL", "WATER" , "AIR" ]
+    }
+  }

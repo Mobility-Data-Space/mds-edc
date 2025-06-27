@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createObjectBuilder;
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates.FINALIZED;
@@ -204,7 +205,7 @@ public class ContractNegotiationManualApprovalTest {
 
     private String createOfferWithManualApproval(Map<String, Object> dataAddressProperties) {
         var assetId = UUID.randomUUID().toString();
-        PROVIDER.createAsset(assetId, Map.of("http://purl.org/dc/terms/title", "any"), dataAddressProperties);
+        PROVIDER.createAsset(assetId, emptyMap(), dataAddressProperties);
         var noConstraintPolicyId = PROVIDER.createPolicyDefinition(noConstraintPolicy());
 
         var requestBody = createObjectBuilder()

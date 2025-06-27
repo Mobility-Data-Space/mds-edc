@@ -1,6 +1,5 @@
 package eu.dataspace.connector.tests;
 
-import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -22,6 +21,7 @@ import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
 
 import java.io.ByteArrayInputStream;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -128,10 +128,41 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
     public String createOffer(Map<String, Object> dataAddressProperties) {
         var assetId = UUID.randomUUID().toString();
-        createAsset(assetId, Map.of("http://purl.org/dc/terms/title", "any"), dataAddressProperties);
+        createAsset(assetId, Collections.emptyMap(), dataAddressProperties);
         var noConstraintPolicyId = createPolicyDefinition(noConstraintPolicy());
         createContractDefinition(assetId, UUID.randomUUID().toString(), noConstraintPolicyId, noConstraintPolicyId);
         return assetId;
+    }
+
+    @Override
+    public String createAsset(String assetId, Map<String, Object> properties, Map<String, Object> dataAddressProperties) {
+        var baseProperties = createObjectBuilder(properties)
+                .add("dct:title", "any")
+                .add("mobilitydcatap:mobilityTheme", createObjectBuilder()
+                        .add("mobilitydcatap-theme:data-content-category", "VARIOUS")
+                );
+        var requestBody = Json.createObjectBuilder()
+                .add("@context", Json.createObjectBuilder()
+                        .add("@vocab", "https://w3id.org/edc/v0.0.1/ns/")
+                        .add("dct", "http://purl.org/dc/terms/")
+                        .add("mobilitydcatap", "https://w3id.org/mobilitydcat-ap/")
+                        .add("mobilitydcatap-theme", "https://w3id.org/mobilitydcat-ap/mobility-theme/")
+                )
+                .add("@id", assetId)
+                .add("properties", baseProperties.addAll(createObjectBuilder(properties)))
+                .add("dataAddress", Json.createObjectBuilder(dataAddressProperties))
+                .build();
+
+        return this.baseManagementRequest()
+                .contentType(JSON)
+                .body(requestBody)
+                .when().post("/v3/assets")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(JSON)
+                .extract().jsonPath()
+                .getString(ID);
     }
 
     public ValidatableResponse retireProviderAgreement(String agreementId) {
@@ -150,7 +181,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
     public JsonObject getTransferProcess(String transferProcessId) {
         return baseManagementRequest()
-                .contentType(ContentType.JSON)
+                .contentType(JSON)
                 .when()
                 .get("/v3/transferprocesses/{id}", transferProcessId)
                 .then().statusCode(200).extract().body().as(JsonObject.class);
@@ -158,7 +189,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
     public JsonObject getContractNegotiation(String id) {
         return baseManagementRequest()
-                .contentType(ContentType.JSON)
+                .contentType(JSON)
                 .when()
                 .get("/v3/contractnegotiations/{id}", id)
                 .then().statusCode(200).extract().body().as(JsonObject.class);
@@ -197,7 +228,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
     public JsonObject createEdpsJob(String assetId, String edpsContractAgreementId) {
         return baseManagementRequest()
-                .contentType(ContentType.JSON)
+                .contentType(JSON)
                 .body(createObjectBuilder().add("contractId", edpsContractAgreementId).build())
                 .when()
                 .post("/edp/edps/{assetId}/jobs", assetId)
@@ -206,7 +237,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
     public JsonObject getEdpsResult(String assetId, String jobId, String edpsContractAgreementId) {
         return baseManagementRequest()
-                .contentType(ContentType.JSON)
+                .contentType(JSON)
                 .body(createObjectBuilder().add("contractId", edpsContractAgreementId).build())
                 .when()
                 .post("/edp/edps/{assetId}/jobs/{jobId}/result", assetId, jobId)
