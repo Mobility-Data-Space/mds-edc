@@ -3,9 +3,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     `java-library`
+    `maven-publish`
 }
-
-val edcVersion = libs.versions.edc
 
 allprojects {
     apply(plugin = "java")
@@ -31,6 +30,33 @@ allprojects {
         dependsOn(tasks.compileJava)
         doLast {
             println(sourceSets["main"].runtimeClasspath.asPath)
+        }
+    }
+
+}
+
+subprojects {
+
+    afterEvaluate {
+        if (project.plugins.hasPlugin(MavenPublishPlugin::class.java)) {
+            publishing {
+                publications {
+                    create<MavenPublication>(project.name) {
+                        from(components["java"])
+                        groupId = "eu.dataspace"
+                    }
+                }
+
+                repositories {
+                    maven {
+                        url = uri("https://maven.pkg.github.com/Mobility-Data-Space/mds-edc")
+                        credentials {
+                            username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                            password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+                        }
+                    }
+                }
+            }
         }
     }
 
