@@ -14,7 +14,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Generate Docker metadata for ${{ runtime }}
+    - name: Generate Docker metadata for ${{ inputs.runtime }}
       id: meta
       uses: docker/metadata-action@v5
       with:
@@ -29,7 +29,7 @@ runs:
           type=sha
           type=raw,value=latest,enable={{is_default_branch}}
 
-    - name: Build and push ${{ inputs.runtime}}
+    - name: Build and push ${{ inputs.runtime }}
       uses: docker/build-push-action@v6
       with:
         context: ./launchers
