@@ -26,6 +26,7 @@ fun RepositoryHandler.mavenGpr(project: String) {
     }
 }
 
+include(":extensions:contract-retirement")
 include(":extensions:edp")
 include(":extensions:manual-negotiation-approval")
 include(":extensions:policy:policy-always-true")

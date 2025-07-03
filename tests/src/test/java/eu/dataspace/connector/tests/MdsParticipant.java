@@ -107,7 +107,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 entry("edc.transfer.proxy.token.verifier.publickey.alias", "public-key-alias"),
                 entry("edc.transfer.proxy.token.signer.privatekey.alias", "private-key-alias"),
 
-                entry("edc.callback.default.events", "contract.negotiation"),
+                entry("edc.callback.default.events", "contract"),
                 entry("edc.callback.default.uri", "http://localhost:" + eventReceiverPort.get()),
                 entry("edc.callback.default.transactional", "true"),
 
@@ -165,7 +165,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .getString(ID);
     }
 
-    public ValidatableResponse retireProviderAgreement(String agreementId) {
+    public ValidatableResponse retireAgreement(String agreementId) {
         var body = createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "AgreementsRetirementEntry")
                 .add(EDC_NAMESPACE + "agreementId", agreementId)

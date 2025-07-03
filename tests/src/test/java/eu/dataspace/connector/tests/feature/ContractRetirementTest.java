@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.TERMINATED;
 
@@ -80,9 +81,11 @@ public class ContractRetirementTest {
 
             var agreementId = consumer.getTransferProcess(consumerTransferProcessId).getString("contractId");
 
-            provider.retireProviderAgreement(agreementId)
+            provider.retireAgreement(agreementId)
                     .statusCode(204);
 
+            var event = provider.waitForEvent("ContractAgreementRetired");
+            assertThat(event.getJsonObject("payload").getString("contractAgreementId")).isEqualTo(agreementId);
             consumer.awaitTransferToBeInState(consumerTransferProcessId, TERMINATED);
 
             var failedTransferId = consumer.initiateTransfer(provider, agreementId, null, null, "HttpData-PULL");
@@ -91,7 +94,7 @@ public class ContractRetirementTest {
 
         @Test
         void shouldFail_whenAgreementDoesNotExist() {
-            provider.retireProviderAgreement(UUID.randomUUID().toString()).statusCode(404);
+            provider.retireAgreement(UUID.randomUUID().toString()).statusCode(404);
         }
 
     }

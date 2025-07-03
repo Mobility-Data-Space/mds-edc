@@ -25,6 +25,7 @@ dependencies {
 
     runtimeOnly(libs.edc.iam.mock)
 
+    implementation(project(":extensions:contract-retirement"))
     implementation(project(":extensions:manual-negotiation-approval"))
     implementation(project(":extensions:policy:policy-always-true"))
     implementation(project(":extensions:policy:policy-referring-connector"))
