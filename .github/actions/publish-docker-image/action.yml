@@ -23,7 +23,7 @@ runs:
           org.opencontainers.image.title=${{ inputs.image-title }}
           org.opencontainers.image.description=${{ inputs.image-description }}
         tags: |
-              type=semver,pattern={{version}},enable=${{ startsWith(github.ref, 'refs/tags/') }}
+          type=semver,pattern={{version}},enable=${{ startsWith(github.ref, 'refs/tags/') }}
           type=ref,event=branch
           type=ref,event=pr
           type=sha

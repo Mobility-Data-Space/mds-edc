@@ -29,7 +29,13 @@ jobs:
           clean_version=${${{ github.ref_name }}:1}
           sed -i 's#^version=.*#version='${clean_version}'#g' gradle.properties
 
-      - name: Build and Publish Maven Artifacts
+      - name: Build
+        run: ./gradlew build
+        env:
+          USERNAME: ${{ secrets.MDS_GH_USER }}
+          TOKEN: ${{ secrets.MDS_PAT }}
+
+      - name: Publish Maven Artifacts
         run: ./gradlew publish
         env:
           USERNAME: ${{ secrets.MDS_GH_USER }}
