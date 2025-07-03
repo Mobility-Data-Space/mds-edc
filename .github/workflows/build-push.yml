@@ -27,7 +27,7 @@ jobs:
         if: github.ref_type == 'tag'
         run: |
           version=${{ github.ref_name }}
-          clean_version=${version:1}
+          clean_version=`echo ${version} | cut -c 2-` 
           sed -i 's#^version=.*#version='${clean_version}'#g' gradle.properties
 
       - name: Build
