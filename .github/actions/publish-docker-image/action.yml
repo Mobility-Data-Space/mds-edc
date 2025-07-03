@@ -1,0 +1,41 @@
+name: Build and Publish Docker images
+
+inputs:
+  runtime:
+    description: the runtime name
+    required: true
+  image-title:
+    description: the image title
+    required: true
+  image-description:
+    description: the image description
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Generate Docker metadata for ${{ runtime }}
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository }}/${{ inputs.runtime }}
+        labels: |
+          org.opencontainers.image.title=${{ inputs.image-title }}
+          org.opencontainers.image.description=${{ inputs.image-description }}
+        tags: |
+              type=semver,pattern={{version}},enable=${{ startsWith(github.ref, 'refs/tags/') }}
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push ${{ inputs.runtime}}
+      uses: docker/build-push-action@v6
+      with:
+        context: ./launchers
+        file: launchers/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.tags }}
+        build-args: |
+          RUNTIME=${{ inputs.runtime }}

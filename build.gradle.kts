@@ -43,7 +43,16 @@ subprojects {
                 publications {
                     create<MavenPublication>(project.name) {
                         from(components["java"])
-                        groupId = "eu.dataspace"
+                        groupId = "eu.dataspace.connector"
+
+                        pom {
+                            licenses {
+                                license {
+                                    name = "The Apache License, Version 2.0"
+                                    url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                                }
+                            }
+                        }
                     }
                 }
 
