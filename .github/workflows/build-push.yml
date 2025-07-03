@@ -42,7 +42,7 @@ jobs:
           username: ${{ secrets.MDS_GH_USER }}
           password: ${{ secrets.MDS_PAT }}
 
-      - uses: ./.github/actions/publish-docker-image@main
+      - uses: ./.github/actions/publish-docker-image
         with:
           runtime: connector-vault-postgresql
           image-title: MDS EDC
@@ -54,7 +54,7 @@ jobs:
           image-title: MDS EDC In Memory
           image-description: MDS EDC In Memory for development purposes.
 
-      - uses: ./.github/actions/publish-docker-image@main
+      - uses: ./.github/actions/publish-docker-image
         with:
           runtime: connector-vault-postgresql-edp
           image-title: MDS EDC EDP Experimental
