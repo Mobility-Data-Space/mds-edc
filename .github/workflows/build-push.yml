@@ -48,7 +48,7 @@ jobs:
           image-title: MDS EDC
           image-description: MDS EDC Vault Postgresql connector for production use.
 
-      - uses: ./.github/actions/publish-docker-image@main
+      - uses: ./.github/actions/publish-docker-image
         with:
           runtime: connector-inmemory
           image-title: MDS EDC In Memory
