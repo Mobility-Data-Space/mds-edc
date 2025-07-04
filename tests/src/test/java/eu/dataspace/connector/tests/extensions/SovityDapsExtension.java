@@ -44,7 +44,8 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
 
             .withEnv("KC_LOG_LEVEL_ORG_KEYCLOAK_SERVICES", "TRACE")
             .withEnv("KC_LOG_LEVEL_ORG_KEYCLOAK_EVENTS", "DEBUG")
-            .withEnv("KC_LOG_LEVEL_ORG_KEYCLOAK_AUTHENTICATION_AUTHENTICATORS_CLIENT", "TRACE");
+            .withEnv("KC_LOG_LEVEL_ORG_KEYCLOAK_AUTHENTICATION_AUTHENTICATORS_CLIENT", "TRACE")
+            .withLogConsumer(o -> System.out.println(o.getUtf8StringWithoutLineEnding()));
 
     @Override
     public void beforeAll(ExtensionContext context) {
@@ -58,7 +59,6 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
                 .clientId("admin-cli")
                 .build();
 
-
         var realm = new RealmRepresentation();
         realm.setRealm(REALM_NAME);
         realm.setEnabled(true);
@@ -66,17 +66,15 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
 
         var dapsRealm = keycloak.realm(REALM_NAME);
 
-        var scope = new ClientScopeRepresentation();
-        scope.setName("idsc:IDS_CONNECTORS_ALL");
-        scope.setProtocol("openid-connect");
-        scope.setAttributes(Map.of("include.in.token.scope", "true"));
-        dapsRealm.clientScopes().create(scope);
+        var scopes = List.of("idsc:IDS_CONNECTOR_ATTRIBUTES_ALL");
+
+        scopes.forEach(scope -> dapsRealm.clientScopes().create(createScope(scope)));
 
         var clientsResource = dapsRealm.clients();
         for (var client : Client.values()) {
             clientsResource.create(createClient(client));
 
-            var internalClientId = clientsResource.findByClientId(client.name()).get(0).getId();
+            var internalClientId = clientsResource.findByClientId(client.name()).getFirst().getId();
 
             dapsRealm.clients().get(internalClientId)
                     .getProtocolMappers()
@@ -100,7 +98,7 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
                 "edc.oauth.certificate.alias", "daps-certificate",
                 "edc.oauth.provider.jwks.url", dapsUrl + "/certs",
                 "edc.oauth.token.expiration", "60",
-                "edc.iam.token.scope", "idsc:IDS_CONNECTORS_ALL",
+                "edc.iam.token.scope", "idsc:IDS_CONNECTOR_ATTRIBUTES_ALL",
                 "edc.oauth.provider.audience", keycloakRealmUser,
                 "edc.oauth.endpoint.audience", "idsc:IDS_CONNECTORS_ALL"
         );
@@ -118,6 +116,14 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
         });
     }
 
+    private @NotNull ClientScopeRepresentation createScope(String name) {
+        var scope = new ClientScopeRepresentation();
+        scope.setName(name);
+        scope.setProtocol("openid-connect");
+        scope.setAttributes(Map.of("include.in.token.scope", "true"));
+        return scope;
+    }
+
     private @NotNull ClientRepresentation createClient(Client client) {
         var clientRepresentation = new ClientRepresentation();
         clientRepresentation.setClientId(client.name());
@@ -125,7 +131,7 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
         clientRepresentation.setDirectAccessGrantsEnabled(false);
         clientRepresentation.setServiceAccountsEnabled(true);
         clientRepresentation.setClientAuthenticatorType("client-jwt");
-        clientRepresentation.setDefaultClientScopes(List.of("idsc:IDS_CONNECTORS_ALL"));
+        clientRepresentation.setDefaultClientScopes(List.of("idsc:IDS_CONNECTOR_ATTRIBUTES_ALL"));
         clientRepresentation.setAttributes(Map.of(
                 "access.token.signed.response.alg", "RS256",
                 "use.jwks.url", "false",
@@ -145,7 +151,7 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
                 "audience-claim", "idsc:IDS_CONNECTORS_ALL",
                 "scope-claim", "idsc:IDS_CONNECTOR_ATTRIBUTES_ALL",
                 "subject-claim", client.name(),
-                "referring-connector-claim", "idsc:IDS_CONNECTORS_ALL",
+                "referring-connector-claim", "idsc:IDS_CONNECTOR_ATTRIBUTES_ALL",
                 "access.token.claim", "true"
         ));
         return datMapper;

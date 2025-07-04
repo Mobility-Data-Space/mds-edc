@@ -104,6 +104,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 entry("web.http.version.port", getFreePort() + ""),
                 entry("web.http.public.path", "/public"),
                 entry("web.http.public.port", getFreePort() + ""),
+                entry("edc.core.retry.retries.max", "0"),
                 entry("edc.transfer.proxy.token.verifier.publickey.alias", "public-key-alias"),
                 entry("edc.transfer.proxy.token.signer.privatekey.alias", "private-key-alias"),
 
@@ -111,7 +112,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 entry("edc.callback.default.uri", "http://localhost:" + eventReceiverPort.get()),
                 entry("edc.callback.default.transactional", "true"),
 
-                entry("edc.logginghouse.extension.url", "http://localhost/any")
+                entry("edc.logginghouse.extension.enabled", "false")
         );
 
         return ConfigFactory.fromMap(settings);

@@ -1,8 +1,10 @@
 plugins {
     `java-library`
+    `maven-publish`
 }
 
 dependencies {
+    api(project(":extensions:contract-retirement:contract-retirement-spi"))
     implementation(libs.edc.contract.spi)
     implementation(libs.edc.control.plane.spi)
     implementation(libs.edc.core.spi)
