@@ -1,5 +1,7 @@
 package eu.dataspace.connector.tests;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -8,6 +10,7 @@ import jakarta.json.JsonValue;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
@@ -252,6 +255,32 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .when()
                 .post("/edp/daseen/{resultAssetId}", resultAssetId)
                 .then();
+    }
+
+    @Override
+    public JsonArray getCatalogDatasets(Participant provider) {
+        var requestBodyBuilder = Json.createObjectBuilder()
+                .add("@context", Json.createObjectBuilder().add("@vocab", "https://w3id.org/edc/v0.0.1/ns/"))
+                .add("@type", "CatalogRequest")
+                .add("counterPartyId", provider.getId())
+                .add("counterPartyAddress", provider.getProtocolUrl())
+                .add("protocol", this.protocol);
+
+        var response = this.baseManagementRequest()
+                .contentType(ContentType.JSON)
+                .when().body(requestBodyBuilder.build())
+                .post("/v3/catalog/request")
+                .then().log().ifValidationFails()
+                .statusCode(200).extract().body().asString();
+
+        try {
+            var responseBody = objectMapper.readValue(response, JsonObject.class);
+            var catalog = jsonLd.expand(responseBody).orElseThrow((f) -> new EdcException(f.getFailureDetail()));
+            return catalog.getJsonArray("http://www.w3.org/ns/dcat#dataset");
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public <T> T getService(Class<T> clazz) {

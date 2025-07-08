@@ -17,6 +17,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -25,8 +27,11 @@ import static io.restassured.RestAssured.given;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.atomicConstraint;
+import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.policy;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
@@ -78,9 +83,27 @@ class ManagementApiTransferTest {
         protected HashicorpVaultPostgresql() {
             super(PROVIDER, CONSUMER);
         }
+
+        @Test
+        void shouldNotOfferAssets_whenPolicyIsConstrained() {
+            var assetId = UUID.randomUUID().toString();
+            PROVIDER.createAsset(assetId, Collections.emptyMap(), Map.of("type", "HttpData", "baseUrl", "http://any"));
+            var permission = createObjectBuilder()
+                    .add("action", "use")
+                    .add("constraint", atomicConstraint("REFERRING_CONNECTOR", "eq", "not-consumer"))
+                    .build();
+            var policyId = PROVIDER.createPolicyDefinition(policy(List.of(permission)));
+            PROVIDER.createContractDefinition(assetId, UUID.randomUUID().toString(), policyId, policyId);
+
+            var catalogDatasets = CONSUMER.getCatalogDatasets(PROVIDER);
+
+            assertThat(catalogDatasets).noneSatisfy(dataset ->
+                    assertThat(dataset.asJsonObject().getString(ID)).isEqualTo(assetId)
+            );
+        }
     }
 
-    private abstract static class Tests {
+    abstract static class Tests {
 
         private final MdsParticipant provider;
         private final MdsParticipant consumer;

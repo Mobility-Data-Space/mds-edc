@@ -151,7 +151,7 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
                 "audience-claim", "idsc:IDS_CONNECTORS_ALL",
                 "scope-claim", "idsc:IDS_CONNECTOR_ATTRIBUTES_ALL",
                 "subject-claim", client.name(),
-                "referring-connector-claim", "idsc:IDS_CONNECTOR_ATTRIBUTES_ALL",
+                "referring-connector-claim", client.name(),
                 "access.token.claim", "true"
         ));
         return datMapper;

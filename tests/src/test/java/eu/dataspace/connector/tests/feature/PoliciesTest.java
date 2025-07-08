@@ -37,6 +37,7 @@ import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_USE_ACTION_ATTRIBUTE;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class PoliciesTest {
@@ -84,7 +85,7 @@ public class PoliciesTest {
                 .permission(Permission.Builder.newInstance()
                         .action(Action.Builder.newInstance().type(ODRL_USE_ACTION_ATTRIBUTE).build())
                         .constraint(AtomicConstraint.Builder.newInstance()
-                                .leftExpression(new LiteralExpression("REFERRING_CONNECTOR"))
+                                .leftExpression(new LiteralExpression(EDC_NAMESPACE + "REFERRING_CONNECTOR"))
                                 .operator(Operator.EQ)
                                 .rightExpression(new LiteralExpression("http://any"))
                                 .build())
@@ -106,7 +107,7 @@ public class PoliciesTest {
                 .permission(Permission.Builder.newInstance()
                         .action(Action.Builder.newInstance().type(ODRL_USE_ACTION_ATTRIBUTE).build())
                         .constraint(AtomicConstraint.Builder.newInstance()
-                                .leftExpression(new LiteralExpression("POLICY_EVALUATION_TIME"))
+                                .leftExpression(new LiteralExpression(EDC_NAMESPACE + "POLICY_EVALUATION_TIME"))
                                 .operator(Operator.LT)
                                 .rightExpression(new LiteralExpression(OffsetDateTime.now().minusDays(1).toString()))
                                 .build())

@@ -43,7 +43,7 @@ public class ReferringConnectorPolicyFunction<R extends Rule, C extends Particip
 
     static final String REFERRING_CONNECTOR_CLAIM = "referringConnector";
 
-    private static final String PROBLEM_PREFIX = "Failing evaluation because of invalid referring connector constraint. ";
+    private static final String PROBLEM_PREFIX = "Failing evaluation because of invalid referring connector constraint.";
 
     /**
      * Evaluation function.

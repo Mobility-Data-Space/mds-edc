@@ -15,6 +15,7 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
 import static eu.dataspace.connector.extension.policy.ReferringConnectorPolicyExtension.NAME;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_USE_ACTION_ATTRIBUTE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 
 @Extension(NAME)
@@ -55,7 +56,7 @@ public class ReferringConnectorPolicyExtension implements ServiceExtension {
      *       }
      * </pre>
      */
-    static final String REFERRING_CONNECTOR_CONSTRAINT_KEY = "REFERRING_CONNECTOR";
+    static final String REFERRING_CONNECTOR_CONSTRAINT_KEY = EDC_NAMESPACE + "REFERRING_CONNECTOR";
 
     @Inject
     private RuleBindingRegistry ruleBindingRegistry;

@@ -16,13 +16,14 @@ import java.time.OffsetDateTime;
 
 import static eu.dataspace.connector.extension.policy.TimeIntervalPolicyExtension.NAME;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_USE_ACTION_ATTRIBUTE;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 
 @Extension(NAME)
 public class TimeIntervalPolicyExtension implements ServiceExtension {
 
     static final String NAME = "Time Interval Policy";
-    static final String POLICY_EVALUATION_TIME_CONSTRAINT_KEY = "POLICY_EVALUATION_TIME";
+    static final String POLICY_EVALUATION_TIME_CONSTRAINT_KEY = EDC_NAMESPACE + "POLICY_EVALUATION_TIME";
 
     @Inject
     private RuleBindingRegistry ruleBindingRegistry;
