@@ -1,9 +1,12 @@
+import io.swagger.v3.plugins.gradle.SwaggerPlugin
+import io.swagger.v3.plugins.gradle.tasks.ResolveTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     `java-library`
     `maven-publish`
+    alias(libs.plugins.swagger) apply false
 }
 
 allprojects {
@@ -38,6 +41,16 @@ allprojects {
 subprojects {
 
     afterEvaluate {
+        if (project.plugins.hasPlugin(SwaggerPlugin::class.java)) {
+            tasks.withType<ResolveTask> {
+                outputFileName = "openapi"
+                outputFormat = ResolveTask.Format.YAML
+                classpath = sourceSets.main.get().runtimeClasspath
+                buildClasspath = classpath
+                resourcePackages.add("eu.dataspace.connector")
+            }
+        }
+
         if (project.plugins.hasPlugin(MavenPublishPlugin::class.java)) {
             publishing {
                 publications {

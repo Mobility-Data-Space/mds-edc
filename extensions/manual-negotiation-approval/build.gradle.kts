@@ -1,6 +1,7 @@
 plugins {
     `java-library`
     `maven-publish`
+    alias(libs.plugins.swagger)
 }
 
 dependencies {
@@ -11,6 +12,9 @@ dependencies {
     implementation(libs.edc.transaction.spi)
     implementation(libs.edc.transform.spi)
     implementation(libs.edc.web.spi)
+
+    implementation(libs.swagger.annotations)
+    implementation(libs.swagger.jaxrs2.jakarta)
 
     testImplementation(libs.assertj)
     testImplementation(libs.edc.junit)
