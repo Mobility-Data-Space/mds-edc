@@ -1,8 +1,9 @@
 package eu.dataspace.connector.validator.semantic;
 
 import jakarta.json.Json;
-import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import org.eclipse.edc.validator.jsonobject.JsonObjectValidator;
 import org.eclipse.edc.validator.spi.Violation;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ public class SemanticValidatorTest {
             Set.of(
                     property("optional"),
                     property("nested", property("optional")),
+                    property("nested", property("@id")),
                     property("simpleEnum"),
                     property("nested", property("firstEnum")),
                     property("nested", property("secondEnum"))
@@ -79,6 +81,18 @@ public class SemanticValidatorTest {
     }
 
     @Test
+    void shouldPass_whenIdNestedProperty() {
+        var input = assetWithProperties(
+                entry("required", value("any")),
+                entry("nested", sub("@id", Json.createValue("id")))
+        );
+
+        var result = validator.validate(input);
+
+        assertThat(result).isSucceeded();
+    }
+
+    @Test
     void shouldFail_whenUnallowedNestedPropertyIsSet() {
         var input = assetWithProperties(
                 entry("required", value("any")),
@@ -127,6 +141,7 @@ public class SemanticValidatorTest {
                 entry("nested", Json.createArrayBuilder()
                         .add(createObjectBuilder().add("firstEnum", value("FIRST_VALUE")))
                         .add(createObjectBuilder().add("secondEnum", value("unexpected")))
+                        .build()
                 )
         );
 
@@ -143,7 +158,7 @@ public class SemanticValidatorTest {
     }
 
     @SafeVarargs
-    private JsonObject assetWithProperties(Map.Entry<String, JsonArrayBuilder>... properties) {
+    private JsonObject assetWithProperties(Map.Entry<String, JsonValue>... properties) {
         var jsonProperties = createObjectBuilder();
 
         for (var property : properties) {
@@ -153,12 +168,12 @@ public class SemanticValidatorTest {
         return createObjectBuilder().add(EDC_ASSET_PROPERTIES, createArrayBuilder().add(jsonProperties)).build();
     }
 
-    private JsonArrayBuilder sub(String key, JsonArrayBuilder value) {
-        return createArrayBuilder().add(createObjectBuilder().add(key, value));
+    private JsonArray sub(String key, JsonValue value) {
+        return createArrayBuilder().add(createObjectBuilder().add(key, value)).build();
     }
 
-    private JsonArrayBuilder value(String value) {
-        return createArrayBuilder().add(createObjectBuilder().add(VALUE, value));
+    private JsonArray value(String value) {
+        return createArrayBuilder().add(createObjectBuilder().add(VALUE, value)).build();
     }
 
 }

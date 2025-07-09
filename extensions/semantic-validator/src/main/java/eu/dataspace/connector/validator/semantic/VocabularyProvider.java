@@ -16,6 +16,7 @@ import static eu.dataspace.connector.validator.semantic.Vocabulary.Enum.enumProp
 import static eu.dataspace.connector.validator.semantic.Vocabulary.Property.property;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 
 /**
  * Provides a Vocabulary that can be semantically validated
@@ -100,6 +101,10 @@ public class VocabularyProvider {
 
     private String expand(String value, Map<String, String> namespaces) {
         var tokens = value.split(":");
+        if (Objects.equals(tokens[0], ID)) {
+            return ID;
+        }
+
         var url = namespaces.get(tokens[0]);
         if (tokens.length == 1) {
             return url;

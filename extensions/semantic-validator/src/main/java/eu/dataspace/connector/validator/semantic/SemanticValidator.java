@@ -1,5 +1,6 @@
 package eu.dataspace.connector.validator.semantic;
 
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
@@ -9,9 +10,11 @@ import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 import org.eclipse.edc.validator.spi.Violation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -59,11 +62,11 @@ public class SemanticValidator implements Validator<JsonObject> {
 
         var requiredViolations = vocabulary.required().stream()
                 .filter(required -> !properties.contains(required))
-                .map(this::toRequiredViolation);
+                .map(property -> toViolation(property, "is required"));
 
         var notAllowedViolations = properties.stream()
                 .filter(property -> !vocabulary.allowed().contains(property))
-                .map(this::toNotAllowedViolation);
+                .map(property -> toViolation(property, "is not allowed"));
 
         var enumViolations = vocabulary.enums().entrySet().stream()
                 .flatMap(enumItem -> validateEnum(enumItem, values));
@@ -76,12 +79,8 @@ public class SemanticValidator implements Validator<JsonObject> {
         return ValidationResult.failure(violations);
     }
 
-    private @NotNull Violation toNotAllowedViolation(Vocabulary.Property property) {
-        return violation("property '%s' is not allowed".formatted(property.toString()), path.append(property.name()).toString());
-    }
-
-    private @NotNull Violation toRequiredViolation(Vocabulary.Property property) {
-        return violation("property '%s' is required".formatted(property.toString()), path.append(property.name()).toString());
+    private @NotNull Violation toViolation(Vocabulary.Property property, String message) {
+        return violation("property '%s' %s".formatted(property.toString(), message), path.append(property.name()).toString());
     }
 
     private @NotNull Stream<Violation> validateEnum(Map.Entry<String, Set<Vocabulary.Enum>> enumItem, Set<AssetPropertyValue> values) {
@@ -123,23 +122,34 @@ public class SemanticValidator implements Validator<JsonObject> {
 
     private Set<AssetProperty> createTree(JsonObject jsonObject) {
         return jsonObject.entrySet().stream()
-                .map(entry -> {
-                    var array = entry.getValue().asJsonArray();
-                    if (array.stream().anyMatch(item -> item.asJsonObject().containsKey(VALUE))) {
-                        var value = array.size() == 1
-                                ? array.getFirst().asJsonObject().get(VALUE)
-                                : array.stream().map(v -> v.asJsonObject().get(VALUE)).collect(toJsonArray());
-
-                        return new AssetPropertyValue(entry.getKey(), value);
-
-                    } else {
-                        var children = array.stream().map(it -> createTree(it.asJsonObject()))
-                                .flatMap(Collection::stream)
-                                .collect(toSet());
-                        return new AssetPropertyChildren(entry.getKey(), children);
-                    }
-                })
+                .map(this::toAssetProperty)
+                .filter(Objects::nonNull)
                 .collect(toSet());
+    }
+
+    private @Nullable AssetProperty toAssetProperty(Map.Entry<String, JsonValue> entry) {
+        var jsonValue = entry.getValue();
+        if (jsonValue instanceof JsonArray array) {
+            if (array.stream().anyMatch(item -> item.asJsonObject().containsKey(VALUE))) {
+                var value = array.size() == 1
+                        ? array.getFirst().asJsonObject().get(VALUE)
+                        : array.stream().map(v -> v.asJsonObject().get(VALUE)).collect(toJsonArray());
+
+                return new AssetPropertyValue(entry.getKey(), value);
+
+            } else {
+                var children = array.stream().map(it -> createTree(it.asJsonObject()))
+                        .flatMap(Collection::stream)
+                        .collect(toSet());
+                return new AssetPropertyChildren(entry.getKey(), children);
+            }
+        }
+
+        if (jsonValue instanceof JsonString string) {
+            return new AssetPropertyValue(entry.getKey(), string);
+        }
+
+        return null;
     }
 
     record AssetPropertyChildren(String name, Set<AssetProperty> children) implements AssetProperty {}

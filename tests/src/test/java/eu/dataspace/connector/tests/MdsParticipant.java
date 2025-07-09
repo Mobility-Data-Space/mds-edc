@@ -283,6 +283,19 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
     }
 
+    public String createAsset(String body) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(body)
+                .when().post("/v3/assets")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(JSON)
+                .extract().jsonPath()
+                .getString(ID);
+    }
+
     public <T> T getService(Class<T> clazz) {
         return runtime.getService(clazz);
     }
