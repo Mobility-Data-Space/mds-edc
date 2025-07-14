@@ -2,6 +2,7 @@ plugins {
     application
     distribution
     `maven-publish`
+    alias(libs.plugins.openapi.generator)
 }
 
 val edcGroupId = "org.eclipse.edc"

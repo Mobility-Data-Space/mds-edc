@@ -1,0 +1,46 @@
+name: Build and Publish openapi specs to GH pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    tags:
+      - "*"
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Generate extensions OpenApi specs
+        run: ./gradlew resolve
+
+      - name: Generate launchers OpenApi specs
+        run: ./gradlew :launchers:${{ matrix.launcher }}:openApiGenerate
+
+      - run: |
+          if [[ "${{ github.ref.type }}" == "tag" ]]; then
+            version${{ github.ref_name }}
+          else
+            version=latest  
+          fi
+          
+          launchers=($(cd launchers && ls */ -d))
+          
+          for launcher in "${launchers[@]}"
+          do
+            mkdir -p public/openapi/${launcher}latest && cp launchers/${launcher}build/generated/openapi/openapi.yaml "$_"
+          done
+
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          keep_files: true
