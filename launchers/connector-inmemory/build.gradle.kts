@@ -8,9 +8,7 @@ plugins {
 val edcGroupId = "org.eclipse.edc"
 
 dependencies {
-    runtimeOnly(libs.edc.controlplane.base.bom) {
-        exclude(group = edcGroupId, module = "auth-tokenbased")
-    }
+    runtimeOnly(libs.edc.controlplane.base.bom)
 
     runtimeOnly(libs.edc.dataplane.base.bom) {
         exclude(group = edcGroupId, module = "data-plane-selector-client")

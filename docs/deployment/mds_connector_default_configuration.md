@@ -16,6 +16,7 @@ web.http.port = 8181
 web.http.control.path = /api/control
 web.http.control.port = 8186
 web.http.management.path = /api/management
+web.http.management.auth.type = tokenbased
 web.http.management.auth.key = x-api-key
 web.http.management.port = 8182
 web.http.protocol.path = /api/dsp

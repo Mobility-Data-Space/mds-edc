@@ -53,6 +53,7 @@ import static org.mockserver.model.HttpRequest.request;
 public class MdsParticipant extends Participant implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback {
 
     private final LazySupplier<Integer> eventReceiverPort = new LazySupplier<>(Ports::getFreePort);
+    private final String managementAuthKey = UUID.randomUUID().toString();
     private ClientAndServer eventReceiver;
     private EmbeddedRuntime runtime;
     private final BlockingQueue<JsonObject> events = new LinkedBlockingDeque<>();
@@ -101,6 +102,8 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 entry("web.http.control.port", getFreePort() + ""),
                 entry("web.http.management.path", controlPlaneManagement.get().getPath()),
                 entry("web.http.management.port", controlPlaneManagement.get().getPort() + ""),
+                entry("web.http.management.auth.type", "tokenbased"),
+                entry("web.http.management.auth.key", managementAuthKey),
                 entry("web.http.protocol.path", controlPlaneProtocol.get().getPath()),
                 entry("web.http.protocol.port", controlPlaneProtocol.get().getPort() + ""),
                 entry("web.http.version.path", "/version"),
@@ -330,6 +333,12 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
         protected Builder(MdsParticipant participant) {
             super(participant);
+        }
+
+        @Override
+        public MdsParticipant build() {
+            participant.enrichManagementRequest = request -> request.header("x-api-key", participant.managementAuthKey);
+            return super.build();
         }
 
         public Builder runtime(Function<MdsParticipant, EmbeddedRuntime> runtimeSupplier) {

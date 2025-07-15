@@ -52,6 +52,7 @@ services:
       WEB_HTTP_CONTROL_PORT: "8186"
       WEB_HTTP_MANAGEMENT_PATH: "/api/management"
       WEB_HTTP_MANAGEMENT_PORT: "8182"
+      WEB_HTTP_MANAGEMENT_AUTH_TYPE: "tokenbased"
       WEB_HTTP_MANAGEMENT_AUTH_KEY: "x-api-key"
 
       WEB_HTTP_PROTOCOL_PATH: "/api/dsp"
