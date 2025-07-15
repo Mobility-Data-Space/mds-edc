@@ -23,7 +23,7 @@ jobs:
         run: ./gradlew resolve
 
       - name: Generate launchers OpenApi specs
-        run: ./gradlew :launchers:${{ matrix.launcher }}:openApiGenerate
+        run: ./gradlew openApiGenerate
 
       - run: |
           if [[ "${{ github.ref.type }}" == "tag" ]]; then
