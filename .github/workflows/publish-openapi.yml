@@ -20,10 +20,12 @@ jobs:
           distribution: 'temurin'
 
       - name: Generate extensions OpenApi specs
-        run: ./gradlew resolve
-
-      - name: Generate launchers OpenApi specs
-        run: ./gradlew openApiGenerate
+        run: | 
+          ./gradlew resolve
+          ./gradlew openApiGenerate
+        env:
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ github.token }}
 
       - run: |
           if [[ "${{ github.ref.type }}" == "tag" ]]; then
