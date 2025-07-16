@@ -14,11 +14,7 @@ services:
       - edc
 
   edc:
-    build:
-      context: ./launchers
-      dockerfile: Dockerfile
-      args:
-        RUNTIME: connector-vault-postgresql
+    image: ghcr.io/mobility-data-space/mds-edc/connector-vault-postgresql:latest
     environment:
       # Participant Configuration
       EDC_PARTICIPANT_ID: ${EDC_PARTICIPANT_ID:-my_participant_id}
@@ -53,7 +49,7 @@ services:
       WEB_HTTP_MANAGEMENT_PATH: "/api/management"
       WEB_HTTP_MANAGEMENT_PORT: "8182"
       WEB_HTTP_MANAGEMENT_AUTH_TYPE: "tokenbased"
-      WEB_HTTP_MANAGEMENT_AUTH_KEY: "x-api-key"
+      WEB_HTTP_MANAGEMENT_AUTH_KEY: ${EDC_MANAGEMENT_API_KEY:-myApiKey}
 
       WEB_HTTP_PROTOCOL_PATH: "/api/dsp"
       WEB_HTTP_PROTOCOL_PORT: "8183"
@@ -73,7 +69,7 @@ services:
       EDC_LOGGINGHOUSE_EXTENSION_ENABLED: "true"
       EDC_LOGGINGHOUSE_EXTENSION_URL: ${LOGGING_HOUSE_URL}
       EDC_DATASOURCE_LOGGINGHOUSE_URL: "jdbc:postgresql://postgres:5432/edc?currentSchema=mds_edc_schema"
-      EDC_DATASOURCE_LOGGINGHOUSE_USER: ${POSTGRES_USER:-user}
+      EDC_DATASOURCE_LOGGINGHOUSE_USER: ${POSTGRES_USER:-edc}
       EDC_DATASOURCE_LOGGINGHOUSE_PASSWORD: ${POSTGRES_PASSWORD:-password}
 
     ports:
@@ -131,9 +127,10 @@ services:
       VAULT_ADDR: http://vault:8200
       VAULT_TOKEN: ${VAULT_TOKEN:-root}
       P12_PASSWORD: ${P12_PASSWORD}
-      P12_CONTENT: ${P12_CONTENT}
+      P12_FILE_PATH: /certificate.p12
     volumes:
       - ./resources/init-vault.sh:/init-vault.sh
+      - ${P12_FILE_PATH}:/certificate.p12
     command: sh -c "apk add --no-cache bash && bash /init-vault.sh"
     healthcheck:
       test: ["CMD-SHELL", "vault status -tls-skip-verify | grep 'Initialized' | grep 'true'"]
