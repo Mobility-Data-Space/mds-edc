@@ -1,0 +1,228 @@
+openapi: 3.0.1
+info:
+  description: merged spec
+  title: merged spec
+  version: 1.0.0
+servers:
+- url: http://localhost:8080
+paths:
+  /v3/assets/request:
+    $ref: ./asset-api.yaml#/paths/~1v3~1assets~1request
+  /check/health:
+    $ref: ./connector-inmemory.yaml#/paths/~1check~1health
+  /v3/transferprocesses/{id}/state:
+    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1state"
+  /v3/assets/{id}:
+    $ref: "./asset-api.yaml#/paths/~1v3~1assets~1{id}"
+  /v3/contractnegotiations/{id}/reject:
+    $ref: "./manual-negotiation-approval.yaml#/paths/~1v3~1contractnegotiations~1{id}~1reject"
+  /check/liveness:
+    $ref: ./connector-inmemory.yaml#/paths/~1check~1liveness
+  /check/readiness:
+    $ref: ./connector-inmemory.yaml#/paths/~1check~1readiness
+  /v3/policydefinitions/{id}:
+    $ref: "./policy-definition-api.yaml#/paths/~1v3~1policydefinitions~1{id}"
+  /v3/contractagreements/request:
+    $ref: ./contract-agreement-api.yaml#/paths/~1v3~1contractagreements~1request
+  /v4alpha/contractagreements/request:
+    $ref: ./contract-agreement-api.yaml#/paths/~1v4alpha~1contractagreements~1request
+  /v3/edrs/request:
+    $ref: ./edr-cache-api.yaml#/paths/~1v3~1edrs~1request
+  /v3/contractnegotiations/{id}/agreement:
+    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}~1agreement"
+  /v3/catalog/request:
+    $ref: ./catalog-api.yaml#/paths/~1v3~1catalog~1request
+  /v3/transferprocesses/{id}/terminate:
+    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1terminate"
+  /v3/contractnegotiations:
+    $ref: ./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations
+  /v3/contractdefinitions/request:
+    $ref: ./connector-inmemory.yaml#/paths/~1v3~1contractdefinitions~1request
+  /v3/policydefinitions/{id}/evaluationplan:
+    $ref: "./policy-definition-api.yaml#/paths/~1v3~1policydefinitions~1{id}~1evaluationplan"
+  /v3/edrs/{transferProcessId}/dataaddress:
+    $ref: "./edr-cache-api.yaml#/paths/~1v3~1edrs~1{transferProcessId}~1dataaddress"
+  /v3/contractagreements/{id}:
+    $ref: "./contract-agreement-api.yaml#/paths/~1v3~1contractagreements~1{id}"
+  /v3/contractnegotiations/request:
+    $ref: ./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1request
+  /v4alpha/contractagreements/{id}/negotiation:
+    $ref: "./contract-agreement-api.yaml#/paths/~1v4alpha~1contractagreements~1{id}~1negotiation"
+  /v3/contractnegotiations/{id}/terminate:
+    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}~1terminate"
+  /v3/transferprocesses/{id}/deprovision:
+    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1deprovision"
+  /{any}:
+    $ref: "./data-plane-public-api-v2.yaml#/paths/~1{any}"
+  /v3/dataplanes:
+    get:
+      description: Returns a list of all currently registered data plane instances
+      operationId: getAllDataPlaneInstancesV3
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/DataPlaneInstanceSchemaV3"
+                type: array
+          description: A (potentially empty) list of currently registered data plane
+            instances
+      tags:
+      - Dataplane Selector V3
+  /v3/catalog/dataset/request:
+    $ref: ./catalog-api.yaml#/paths/~1v3~1catalog~1dataset~1request
+  /v3/transferprocesses/request:
+    $ref: ./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1request
+  /v3/transferprocesses/{id}/suspend:
+    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1suspend"
+  /v3/transferprocesses/{id}:
+    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}"
+  /v3/contractnegotiations/{id}/approve:
+    $ref: "./manual-negotiation-approval.yaml#/paths/~1v3~1contractnegotiations~1{id}~1approve"
+  /v4alpha/contractagreements/{id}:
+    $ref: "./contract-agreement-api.yaml#/paths/~1v4alpha~1contractagreements~1{id}"
+  /v3/contractdefinitions:
+    $ref: ./connector-inmemory.yaml#/paths/~1v3~1contractdefinitions
+  /v3/contractdefinitions/{id}:
+    $ref: "./connector-inmemory.yaml#/paths/~1v3~1contractdefinitions~1{id}"
+  /v3/policydefinitions/request:
+    $ref: ./policy-definition-api.yaml#/paths/~1v3~1policydefinitions~1request
+  /v3/edrs/{transferProcessId}:
+    $ref: "./edr-cache-api.yaml#/paths/~1v3~1edrs~1{transferProcessId}"
+  /check/startup:
+    $ref: ./connector-inmemory.yaml#/paths/~1check~1startup
+  /v3/policydefinitions:
+    $ref: ./policy-definition-api.yaml#/paths/~1v3~1policydefinitions
+  /v3/transferprocesses/{id}/resume:
+    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1resume"
+  /v4alpha/protocol-versions/request:
+    $ref: ./protocol-version-api.yaml#/paths/~1v4alpha~1protocol-versions~1request
+  /v3/policydefinitions/{id}/validate:
+    $ref: "./policy-definition-api.yaml#/paths/~1v3~1policydefinitions~1{id}~1validate"
+  /v3/contractagreements/{id}/negotiation:
+    $ref: "./contract-agreement-api.yaml#/paths/~1v3~1contractagreements~1{id}~1negotiation"
+  /v4alpha/dataplanes:
+    get:
+      description: Returns a list of all currently registered data plane instances
+      operationId: getAllDataPlaneInstancesV4
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/DataPlaneInstanceSchemaV4"
+                type: array
+          description: A (potentially empty) list of currently registered data plane
+            instances
+      tags:
+      - Dataplane Selector v4alpha
+  /v3/contractnegotiations/{id}:
+    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}"
+  /v3/transferprocesses:
+    $ref: ./transfer-process-api.yaml#/paths/~1v3~1transferprocesses
+  /v3/contractnegotiations/{id}/state:
+    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}~1state"
+  /v3/assets:
+    $ref: ./asset-api.yaml#/paths/~1v3~1assets
+components:
+  schemas:
+    DataPlaneInstanceSchemaV3:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': your-dataplane-id
+        url: http://somewhere.com:1234/api/v1
+        allowedSourceTypes:
+        - source-type1
+        - source-type2
+        allowedDestTypes:
+        - your-dest-type
+        allowedTransferTypes:
+        - transfer-type
+        state: AVAILABLE
+        stateTimestamp: 1688465655
+      properties:
+        '@context':
+          type: object
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/DataPlaneInstance
+          type: string
+        allowedDestTypes:
+          deprecated: true
+          items:
+            deprecated: true
+            type: string
+          type: array
+          uniqueItems: true
+        allowedSourceTypes:
+          items:
+            type: string
+          type: array
+          uniqueItems: true
+        lastActive:
+          format: int64
+          type: integer
+        state:
+          type: string
+        stateTimestamp:
+          format: int64
+          type: integer
+        turnCount:
+          deprecated: true
+          format: int32
+          type: integer
+        url:
+          format: url
+          type: string
+      required:
+      - '@context'
+      - allowedDestTypes
+      - allowedSourceTypes
+      - url
+      type: object
+    DataPlaneInstanceSchemaV4:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': your-dataplane-id
+        url: http://somewhere.com:1234/api/v1
+        allowedSourceTypes:
+        - source-type1
+        - source-type2
+        allowedTransferTypes:
+        - transfer-type
+        state: AVAILABLE
+        stateTimestamp: 1688465655
+      properties:
+        '@context':
+          type: object
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/DataPlaneInstance
+          type: string
+        allowedSourceTypes:
+          items:
+            type: string
+          type: array
+          uniqueItems: true
+        lastActive:
+          format: int64
+          type: integer
+        state:
+          type: string
+        stateTimestamp:
+          format: int64
+          type: integer
+        url:
+          format: url
+          type: string
+      required:
+      - '@context'
+      - allowedSourceTypes
+      - url
+      type: object
