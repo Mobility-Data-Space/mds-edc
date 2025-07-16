@@ -3,7 +3,9 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-export VAULT_ADDR="http://127.0.01:8200"
+if [ -z "$VAULT_ADDR" ]; then
+    export VAULT_ADDR="http://127.0.0.1:8200"
+fi
 
 # Check if P12_FILE_PATH is set
 if [ -z "$P12_FILE_PATH" ]; then
