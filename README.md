@@ -15,15 +15,9 @@ For a quick start guide on building and deploying the MDS Connector, please refe
 Our documentation is organized into three main categories:
 
 1. **Development**: Documentation about the features architecture and design, for maintainers and contributors working on or extending the MDS Connector.
-   - [Contract Negotiation Manual Approval Proposal](docs/development/contract_negotiation_manual_approval_proposal.md)
-
 2. **Usage**: Resources for using the MDS Connector.
-   - [Management API Usage Guide](docs/usage/edc_management_api_usage.md)
-   - [Management API Specification](docs/usage/mds_edc_management_api.yml)
-   - [Connector Postman Collection](docs/usage/MDS%20EDC%20Management%20API%20Collection.postman_collection.json)
-
 3. **Deployment**: guides on deploying and configuring the MDS Connector.
-   - [MDS Connector Configuration Guide](docs/deployment/mds_connector_default_configuration.md)
+
 
 ## Directory Structure
 
