@@ -51,6 +51,15 @@ class TimeIntervalPolicyFunctionTest {
     }
 
     @Test
+    void shouldParseSimpleDate() {
+        when(currentDateProvider.get()).thenReturn(OffsetDateTime.now());
+
+        var result = function.evaluate(Operator.GT, "2025-07-20T12:34:56Z", null, context);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
     void shouldFailWhenRightValueIsNotDate() {
         var result = function.evaluate(Operator.EQ, "any", null, context);
 
@@ -102,7 +111,7 @@ class TimeIntervalPolicyFunctionTest {
         }
     }
 
-    private class TestPolicyContext extends PolicyContextImpl implements ParticipantAgentPolicyContext {
+    private static class TestPolicyContext extends PolicyContextImpl implements ParticipantAgentPolicyContext {
 
         private final ParticipantAgent participantAgent = new ParticipantAgent(emptyMap(), emptyMap());
 

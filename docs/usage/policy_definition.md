@@ -29,7 +29,7 @@ Content-Type: application/json
         {
           "leftOperand":"POLICY_EVALUATION_TIME",
           "operator":"odrl:lt",
-          "rightOperand":"26/06/2025"
+          "rightOperand":"2025-07-20T12:34:56Z"
         }]
       }]
     }],
@@ -37,4 +37,25 @@ Content-Type: application/json
     "prohibition":[]
   }
 }
+```
 
+## Policy Operands
+
+### REFERRING_CONNECTOR
+The `rightOperand` will be checked against the `referringConnector` claim.
+The `rightOperand` needs to be a `String`, if multiple values are supposed to be used (e.g. with the `isPartOf` operator)
+they will need to be separated with a comma, e.g.: 
+```
+"rightOperand":"MDSLXXX.XXXXX,MDSLYYY.YYYYY,MDSLZZZ.ZZZZZ,..."
+```
+
+If the `odrl:eq` operator is used, the evaluation will pass if the claim equals to the `rightOperand`
+If the `odrl:isPartOf` operator is used, the evaluation will pass if the claim is contained in the `rightOperand`
+
+### POLICY_EVALUATION_TIME
+
+The rightOperand needs to be a `String` containing a Date and Time formatted in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601).
+e.g.:
+```
+"rightOperand":"2025-07-20T12:34:56Z"
+```
