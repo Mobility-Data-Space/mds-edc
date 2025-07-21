@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import static eu.dataspace.connector.extension.policy.ReferringConnectorPolicyFunction.REFERRING_CONNECTOR_CLAIM;
@@ -24,21 +23,31 @@ class ReferringConnectorPolicyFunctionTest {
     @Nested
     class Eq {
         @Test
-        void shouldReturnTrue_whenReferringIsContainedInRightValue() {
+        void shouldReturnTrue_whenReferringIsEqualToRightValue() {
             var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
             var context = new TestPolicyContext(participantAgent);
 
-            var result = function.evaluate(Operator.EQ, "another,referring,other", null, context);
+            var result = function.evaluate(Operator.EQ, "referring", null, context);
 
             assertThat(result).isTrue();
         }
 
         @Test
-        void shouldReturnFalse_whenReferringIsNotContainedInRightValue() {
+        void shouldReturnFalse_whenReferringIsContainedInRightValueWithOtherValues() {
             var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
             var context = new TestPolicyContext(participantAgent);
 
-            var result = function.evaluate(Operator.EQ, "another,other", null, context);
+            var result = function.evaluate(Operator.EQ, "other,referring,another", null, context);
+
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalse_whenReferringIsNotEqualToRightValue() {
+            var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
+            var context = new TestPolicyContext(participantAgent);
+
+            var result = function.evaluate(Operator.EQ, "another", null, context);
 
             assertThat(result).isFalse();
             assertThat(context.hasProblems()).isFalse();
@@ -53,7 +62,7 @@ class ReferringConnectorPolicyFunctionTest {
 
             assertThat(result).isFalse();
             assertThat(context.hasProblems()).isTrue();
-            assertThat(context.getProblems()).anyMatch(it -> it.contains("right value must be String"));
+            assertThat(context.getProblems()).anyMatch(it -> it.contains("Right operand must be a String"));
         }
     }
 
@@ -65,7 +74,7 @@ class ReferringConnectorPolicyFunctionTest {
             var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
             var context = new TestPolicyContext(participantAgent);
 
-            var result = function.evaluate(Operator.IN, List.of("another", "referring", "other"), null, context);
+            var result = function.evaluate(Operator.IN, "another,referring,other", null, context);
 
             assertThat(result).isTrue();
         }
@@ -75,14 +84,14 @@ class ReferringConnectorPolicyFunctionTest {
             var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
             var context = new TestPolicyContext(participantAgent);
 
-            var result = function.evaluate(Operator.IN, List.of("another", "other"), null, context);
+            var result = function.evaluate(Operator.IN, "another,other", null, context);
 
             assertThat(result).isFalse();
             assertThat(context.hasProblems()).isFalse();
         }
 
         @Test
-        void shouldReturnFalse_whenRightValueNotList() {
+        void shouldReturnFalse_whenRightValueNotString() {
             var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
             var context = new TestPolicyContext(participantAgent);
 
@@ -90,7 +99,7 @@ class ReferringConnectorPolicyFunctionTest {
 
             assertThat(result).isFalse();
             assertThat(context.hasProblems()).isTrue();
-            assertThat(context.getProblems()).anyMatch(it -> it.contains("right value must be List"));
+            assertThat(context.getProblems()).anyMatch(it -> it.contains("Right operand must be a String"));
         }
 
     }

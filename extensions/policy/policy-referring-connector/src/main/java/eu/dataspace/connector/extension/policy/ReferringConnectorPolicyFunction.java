@@ -28,13 +28,8 @@ package eu.dataspace.connector.extension.policy;
 
 import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
-import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Rule;
-
-import java.util.List;
-
-import static java.util.Arrays.asList;
 
 /**
  * ReferringConnector constraint validation function
@@ -43,7 +38,7 @@ public class ReferringConnectorPolicyFunction<R extends Rule, C extends Particip
 
     static final String REFERRING_CONNECTOR_CLAIM = "referringConnector";
 
-    private static final String PROBLEM_PREFIX = "Failing evaluation because of invalid referring connector constraint.";
+    private static final String PROBLEM_PREFIX = "Failing evaluation because of invalid referring connector constraint. ";
 
     /**
      * Evaluation function.
@@ -59,52 +54,34 @@ public class ReferringConnectorPolicyFunction<R extends Rule, C extends Particip
 
         var referringConnectorClaim = claims.get(REFERRING_CONNECTOR_CLAIM);
         if (referringConnectorClaim == null) {
-            context.reportProblem(PROBLEM_PREFIX + "%s claim is null".formatted(REFERRING_CONNECTOR_CLAIM));
+            context.reportProblem(PROBLEM_PREFIX + REFERRING_CONNECTOR_CLAIM + " claim is null");
             return false;
         }
 
         if (!(referringConnectorClaim instanceof String referringConnectorClaimString)) {
-            context.reportProblem(PROBLEM_PREFIX + "%s claim is not a String as expected".formatted(REFERRING_CONNECTOR_CLAIM));
+            context.reportProblem(PROBLEM_PREFIX + REFERRING_CONNECTOR_CLAIM + " claim is not a String as expected");
             return false;
         }
 
         if (referringConnectorClaimString.isBlank()) {
-            context.reportProblem(PROBLEM_PREFIX + "%s claim is an empty string".formatted(REFERRING_CONNECTOR_CLAIM));
+            context.reportProblem(PROBLEM_PREFIX + REFERRING_CONNECTOR_CLAIM + " claim is an empty string");
             return false;
         }
 
-        if (operator != Operator.EQ && operator != Operator.IN) {
-            context.reportProblem((PROBLEM_PREFIX + "Unsupported operator: '%s'").formatted(operator));
+        if (!(rightValue instanceof String referringConnectorString)) {
+            context.reportProblem(PROBLEM_PREFIX + "Right operand must be a String");
             return false;
         }
 
         return switch (operator) {
-            case EQ -> evaluateEq(rightValue, context, referringConnectorClaimString);
-            case IN -> evaluateIn(rightValue, context, referringConnectorClaimString);
+            case EQ -> referringConnectorString.equals(referringConnectorClaimString);
+            case IN -> referringConnectorString.contains(referringConnectorClaimString);
             default -> {
-                context.reportProblem((PROBLEM_PREFIX + "Unsupported operator: '%s'").formatted(operator));
+                context.reportProblem((PROBLEM_PREFIX + "Unsupported operator: '%s'").formatted(operator.getOdrlRepresentation()));
                 yield false;
             }
         };
 
-    }
-
-    private boolean evaluateIn(Object rightValue, PolicyContext context, String referringConnectorClaimString) {
-        if (!(rightValue instanceof List<?> referringConnectorList)) {
-            context.reportProblem(PROBLEM_PREFIX + "For operator 'IN' right value must be List");
-            return false;
-        }
-
-        return referringConnectorList.contains(referringConnectorClaimString);
-    }
-
-    private boolean evaluateEq(Object rightValue, PolicyContext context, String referringConnectorClaimString) {
-        if (!(rightValue instanceof String referringConnectorString)) {
-            context.reportProblem((PROBLEM_PREFIX + "For operator 'EQ' right value must be String"));
-            return false;
-        }
-
-        return asList(referringConnectorString.split(",")).contains(referringConnectorClaimString);
     }
 
 }
