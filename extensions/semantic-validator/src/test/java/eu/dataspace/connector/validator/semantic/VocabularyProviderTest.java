@@ -18,10 +18,14 @@ class VocabularyProviderTest {
         var vocabulary = provider.provide();
 
         assertThat(vocabulary).isNotNull();
-        assertThat(vocabulary.required()).contains(property("http://purl.org/dc/terms/title", null));
-        assertThat(vocabulary.required()).contains(property("https://w3id.org/mobilitydcat-ap/mobilityTheme", property("https://w3id.org/mobilitydcat-ap/mobility-theme/data-content-category", null)));
-        assertThat(vocabulary.allowed()).contains(property("http://purl.org/dc/terms/accrualPeriodicity", null));
-        assertThat(vocabulary.allowed()).contains(property("https://w3id.org/mobilitydcat-ap/mobilityDataStandard", property("@id", null)));
+        assertThat(vocabulary.required())
+                .contains(property("http://purl.org/dc/terms/title", null))
+                .contains(property("https://w3id.org/mobilitydcat-ap/mobilityTheme", property("https://w3id.org/mobilitydcat-ap/mobility-theme/data-content-category")));
+        assertThat(vocabulary.allowed())
+                .contains(property("http://purl.org/dc/terms/accrualPeriodicity", null))
+                .contains(property("https://w3id.org/mobilitydcat-ap/mobilityDataStandard", property("@id", null)))
+                .contains(property("https://w3id.org/mobilitydcat-ap/mobilityTheme", property("https://w3id.org/mobilitydcat-ap/mobility-theme/data-content-category")))
+                .contains(property("https://w3id.org/edc/v0.0.1/ns/additionalProperties", property("https://w3id.org/edc/v0.0.1/ns/onrequest")));
         assertThat(vocabulary.enums()).contains(entry("https://w3id.org/mobilitydcat-ap/transportMode",
                 Set.of(enumProperty("ROAD"), enumProperty("RAIL"), enumProperty("WATER"), enumProperty("AIR"))));
         assertThat(vocabulary.enums()).hasEntrySatisfying("https://w3id.org/mobilitydcat-ap/mobility-theme/data-content-category", enums -> {
