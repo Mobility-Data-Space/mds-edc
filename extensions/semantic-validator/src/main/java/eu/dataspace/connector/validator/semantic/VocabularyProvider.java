@@ -107,7 +107,7 @@ public class VocabularyProvider {
 
         var url = namespaces.get(tokens[0]);
         if (tokens.length == 1) {
-            return url;
+            throw new IllegalStateException(String.format("Attribute key %s is not valid: it's missing namespace", value));
         } else {
             return url + tokens[1];
         }
