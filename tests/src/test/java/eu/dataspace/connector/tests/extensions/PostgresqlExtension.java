@@ -1,9 +1,8 @@
 package eu.dataspace.connector.tests.extensions;
 
-import org.eclipse.edc.util.io.Ports;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
-
+import org.eclipse.edc.util.io.Ports;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -14,10 +13,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import static java.util.Map.entry;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
+import static java.util.Map.entry;
 import static java.util.stream.Collectors.joining;
 
 /**
@@ -63,9 +62,6 @@ public class PostgresqlExtension implements BeforeAllCallback, AfterAllCallback 
                 entry("edc.datasource.default.url", jdbcUrl),
                 entry("edc.datasource.default.user", USER),
                 entry("edc.datasource.default.password", PASSWORD),
-                entry("edc.datasource.logginghouse.url", jdbcUrl),
-                entry("edc.datasource.logginghouse.user", USER),
-                entry("edc.datasource.logginghouse.password", PASSWORD),
                 entry("org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME)
         );
         return ConfigFactory.fromMap(settings);
