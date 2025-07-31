@@ -17,7 +17,7 @@ tractusx-edc = "0.10.0"
 yasson = "3.0.4"
 
 [libraries]
-edc-asset-api = { module = "org.eclipse.edc:asset-api", version.ref = "edc" }
+edc-asset-spi = { module = "org.eclipse.edc:asset-spi", version.ref = "edc" }
 edc-core-spi = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
 edc-boot-lib = { module = "org.eclipse.edc:boot-lib", version.ref = "edc" }
 edc-catalog-spi = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" }

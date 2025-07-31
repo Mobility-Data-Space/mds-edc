@@ -1,6 +1,5 @@
 package eu.dataspace.connector.validator.semantic;
 
-import org.eclipse.edc.connector.controlplane.api.management.asset.validation.AssetValidator;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
@@ -14,12 +13,10 @@ public class SemanticValidatorExtension implements ServiceExtension {
 
     @Override
     public void prepare() {
-        var baseAssetValidator = AssetValidator.instance();
-
         var vocabularyProvider = new VocabularyProvider();
         var semanticValidator = SemanticValidator.instance(vocabularyProvider.provide());
 
-        this.validator.register(EDC_ASSET_TYPE, i -> baseAssetValidator.validate(i).merge(semanticValidator.validate(i)));
+        this.validator.register(EDC_ASSET_TYPE, semanticValidator);
     }
 
 }

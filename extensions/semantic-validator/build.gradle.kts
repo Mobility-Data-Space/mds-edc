@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.asset.api)
+    implementation(libs.edc.asset.spi)
     implementation(libs.edc.core.spi)
     implementation(libs.edc.validator.lib)
     implementation(libs.edc.validator.spi)
