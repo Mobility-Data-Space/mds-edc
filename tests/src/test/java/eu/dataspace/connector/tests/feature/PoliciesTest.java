@@ -52,7 +52,6 @@ public class PoliciesTest {
                     .configurationProvider(RUNTIME::getConfiguration))
             .registerSystemExtension(ServiceExtension.class, RUNTIME.seedVaultKeys());
 
-
     @Test
     void alwaysTrue_shouldProvideAlwaysTruePolicy() {
         var policyDefinitionService = RUNTIME_EXTENSION.getService(PolicyDefinitionService.class);
@@ -67,7 +66,7 @@ public class PoliciesTest {
         var policyEngine = RUNTIME_EXTENSION.getService(PolicyEngine.class);
         var policy = Policy.Builder.newInstance()
                 .permission(Permission.Builder.newInstance()
-                        .action(Action.Builder.newInstance().type("use").build())
+                        .action(Action.Builder.newInstance().type(ODRL_USE_ACTION_ATTRIBUTE).build())
                         .build()
                 )
                 .build();
