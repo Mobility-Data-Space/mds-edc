@@ -68,9 +68,6 @@ services:
       # Logging House Configuration
       EDC_LOGGINGHOUSE_EXTENSION_ENABLED: "true"
       EDC_LOGGINGHOUSE_EXTENSION_URL: ${LOGGING_HOUSE_URL}
-      EDC_DATASOURCE_LOGGINGHOUSE_URL: "jdbc:postgresql://postgres:5432/edc?currentSchema=mds_edc_schema"
-      EDC_DATASOURCE_LOGGINGHOUSE_USER: ${POSTGRES_USER:-edc}
-      EDC_DATASOURCE_LOGGINGHOUSE_PASSWORD: ${POSTGRES_PASSWORD:-password}
 
     ports:
       - "8181:8181"  # API
