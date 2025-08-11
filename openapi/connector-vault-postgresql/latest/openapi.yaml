@@ -7,38 +7,8 @@ servers:
 - url: http://localhost:8080
 paths:
   /v3/contractnegotiations/{id}/approve:
-    post:
-      description: Approve a pending negotiation
-      operationId: approveNegotiation
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          content:
-            '*/*': {}
-          description: default response
-      tags:
-      - Manual Negotiation Approval
+    $ref: "./manual-negotiation-approval.yaml#/paths/~1v3~1contractnegotiations~1{id}~1approve"
   /v3/contractnegotiations/{id}/reject:
-    post:
-      description: Reject a pending negotiation
-      operationId: rejectNegotiation
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          content:
-            '*/*': {}
-          description: default response
-      tags:
-      - Manual Negotiation Approval
+    $ref: "./manual-negotiation-approval.yaml#/paths/~1v3~1contractnegotiations~1{id}~1reject"
 components:
   schemas: {}
