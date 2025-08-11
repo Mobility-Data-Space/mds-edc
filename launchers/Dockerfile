@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21.0.6_7-jre-alpine-3.21
+FROM eclipse-temurin:24-jre-alpine-3.22
 
 ARG RUNTIME
 ENV RUNTIME=${RUNTIME}
