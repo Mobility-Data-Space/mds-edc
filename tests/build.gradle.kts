@@ -14,6 +14,7 @@ dependencies {
     testImplementation(libs.aws.s3)
     testImplementation(libs.azure.storage.blob)
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.kafka.clients)
     testImplementation(libs.keycloak.admin.client)
     testImplementation(libs.mockserver.netty)
     testImplementation(libs.rest.assured)
@@ -21,6 +22,7 @@ dependencies {
     testImplementation(libs.testcontainers.localstack)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.vault)
+    testImplementation("com.auth0:java-jwt:4.5.0")
 
     testCompileOnly(project(":launchers:connector-inmemory"))
     testCompileOnly(project(":launchers:connector-vault-postgresql"))

@@ -19,3 +19,7 @@ certbot
 
 # Environment variables
 .env
+
+# Ignore AI IDEs
+.cursor
+CLAUDE.md

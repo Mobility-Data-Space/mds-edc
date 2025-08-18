@@ -38,6 +38,10 @@ include(":extensions:policy:policy-referring-connector")
 include(":extensions:policy:policy-time-interval")
 include(":extensions:semantic-validator")
 
+include(":extensions:kafka:broker")
+include(":extensions:kafka:data-address-spi")
+include(":extensions:kafka:validator-data-address")
+
 include(":launchers:connector-inmemory")
 include(":launchers:connector-vault-postgresql")
 include(":launchers:connector-vault-postgresql-edp")
