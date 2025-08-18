@@ -6,6 +6,7 @@ azure-storage-blob = "12.30.1"
 bouncycastle = "1.81"
 edc = "0.14.0"
 junit-jupiter = "5.13.4"
+kafka = "3.9.1"
 keycloak = "26.0.6"
 logging-house-client = "1.0.0-rc.3"
 mockito = "5.19.0"
@@ -48,7 +49,10 @@ edc-policy-engine-spi = { module = "org.eclipse.edc:policy-engine-spi", version.
 edc-token-lib = { module = "org.eclipse.edc:token-lib", version.ref = "edc" }
 edc-token-spi = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
 edc-transaction-spi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
+edc-transfer-spi = { module = "org.eclipse.edc:transfer-spi", version.ref = "edc" }
+edc-transfer-data-plane-signaling = { module = "org.eclipse.edc:transfer-data-plane-signaling", version.ref = "edc" }
 edc-transform-spi = { module = "org.eclipse.edc:transform-spi", version.ref = "edc" }
+edc-util-lib = { module = "org.eclipse.edc:util-lib", version.ref = "edc" }
 edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
 edc-validator-spi = { module = "org.eclipse.edc:validator-spi", version.ref = "edc" }
 edc-validator-lib = { module = "org.eclipse.edc:validator-lib", version.ref = "edc" }
@@ -75,6 +79,7 @@ aws-iam = { module = "software.amazon.awssdk:iam", version.ref = "aws" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 azure-storage-blob = { group = "com.azure", name = "azure-storage-blob", version.ref = "azure-storage-blob" }
 bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
+kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka" }
 keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
