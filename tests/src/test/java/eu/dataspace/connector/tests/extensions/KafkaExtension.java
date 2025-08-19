@@ -1,5 +1,8 @@
 package eu.dataspace.connector.tests.extensions;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -24,24 +27,45 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.MountableFile;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-
+import java.io.IOException;
+import java.time.Duration;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.AppConfigurationEntry;
-import java.io.IOException;
-import java.time.Duration;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
 import static java.util.Map.entry;
-import static org.apache.kafka.clients.producer.ProducerConfig.*;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
-import static org.apache.kafka.common.config.SaslConfigs.*;
 import static org.apache.kafka.clients.CommonClientConfigs.SECURITY_PROTOCOL_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.ACKS_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.BATCH_SIZE_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.BUFFER_MEMORY_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.LINGER_MS_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.RETRIES_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.common.config.SaslConfigs.SASL_JAAS_CONFIG;
+import static org.apache.kafka.common.config.SaslConfigs.SASL_LOGIN_CALLBACK_HANDLER_CLASS;
+import static org.apache.kafka.common.config.SaslConfigs.SASL_LOGIN_CONNECT_TIMEOUT_MS;
+import static org.apache.kafka.common.config.SaslConfigs.SASL_LOGIN_REFRESH_BUFFER_SECONDS;
+import static org.apache.kafka.common.config.SaslConfigs.SASL_LOGIN_REFRESH_MIN_PERIOD_SECONDS;
+import static org.apache.kafka.common.config.SaslConfigs.SASL_LOGIN_REFRESH_WINDOW_FACTOR;
+import static org.apache.kafka.common.config.SaslConfigs.SASL_LOGIN_REFRESH_WINDOW_JITTER;
+import static org.apache.kafka.common.config.SaslConfigs.SASL_MECHANISM;
+import static org.apache.kafka.common.config.SaslConfigs.SASL_OAUTHBEARER_SCOPE_CLAIM_NAME;
+import static org.apache.kafka.common.config.SaslConfigs.SASL_OAUTHBEARER_TOKEN_ENDPOINT_URL;
 
 /**
  * JUnit extension that sets up Kafka and Keycloak containers for testing.
@@ -134,9 +158,9 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
 
     }
 
-    public void runConsumer(JsonNode edr, boolean jwt) {
+    public void runConsumer(JsonNode edr) {
         EDRData edrData = new EDRData(edr) ;
-        try (final KafkaConsumer<String, String> consumer = initializeKafkaConsumer(edrData, jwt)) {
+        try (final KafkaConsumer<String, String> consumer = initializeKafkaConsumer(edrData)) {
             final List<String> topics = List.of(edrData.topic);
 
             consumer.subscribe(topics);
@@ -161,10 +185,10 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
         });
     }
 
-    private static KafkaConsumer<String, String> initializeKafkaConsumer(final EDRData edrData, boolean jwt) {
+    private static KafkaConsumer<String, String> initializeKafkaConsumer(final EDRData edrData) {
         Objects.requireNonNull(edrData, "EDR data cannot be null");
 
-        final Properties props = new Properties();
+        var props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, edrData.kafkaBootstrapServers);
         props.put(GROUP_ID_CONFIG, edrData.kafkaGroupPrefix);
         props.put(ENABLE_AUTO_COMMIT_CONFIG, "true"); // Automatically commit offsets
@@ -177,11 +201,7 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
         props.put(SECURITY_PROTOCOL_CONFIG, edrData.kafkaSecurityProtocol);
         props.put(SASL_MECHANISM, edrData.kafkaSaslMechanism);
 
-        if(jwt){
-            props.put(SASL_LOGIN_CALLBACK_HANDLER_CLASS, EdrTokenCallbackHandler.class.getName());
-        }else{
-            props.put(SASL_LOGIN_CALLBACK_HANDLER_CLASS, OAuthBearerLoginCallbackHandler.class.getName());
-        }
+        props.put(SASL_LOGIN_CALLBACK_HANDLER_CLASS, OAuthBearerLoginCallbackHandler.class.getName());
 
         props.put(SASL_JAAS_CONFIG, "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required;");
 
