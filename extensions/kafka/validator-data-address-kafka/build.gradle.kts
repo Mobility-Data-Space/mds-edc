@@ -6,7 +6,7 @@ plugins {
 dependencies {
     implementation(libs.edc.core.spi)
     implementation(libs.edc.validator.spi)
-    implementation(project(":extensions:kafka:data-address-spi"))
+    implementation(project(":extensions:kafka:kafka-spi"))
 
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj)

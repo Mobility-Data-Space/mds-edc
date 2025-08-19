@@ -33,7 +33,7 @@ dependencies {
     implementation(project(":extensions:policy:policy-time-interval"))
     implementation(project(":extensions:semantic-validator"))
 
-    implementation(project(":extensions:kafka:broker"))
+    implementation(project(":extensions:kafka:kafka-broker"))
 }
 
 application {
