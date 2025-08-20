@@ -15,6 +15,7 @@ postgres = "42.7.7"
 rest-assured = "5.5.6"
 swagger = "2.2.35"
 testcontainers = "1.21.3"
+testcontainers-keycloak = "3.4.0"
 tractusx-edc = "0.11.0-RC1"
 yasson = "3.0.4"
 
@@ -27,6 +28,7 @@ edc-contract-spi = { module = "org.eclipse.edc:contract-spi", version.ref = "edc
 edc-control-plane-spi = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
 edc-controlplane-base-bom = { module = "org.eclipse.edc:controlplane-base-bom", version.ref = "edc" }
 edc-controlplane-feature-sql-bom = { module = "org.eclipse.edc:controlplane-feature-sql-bom", version.ref = "edc" }
+edc-data-plane-spi = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
 edc-data-plane-http-spi = { module = "org.eclipse.edc:data-plane-http-spi", version.ref = "edc" }
 edc-data-plane-public-api-v2 = { module = "org.eclipse.edc:data-plane-public-api-v2", version.ref = "edc" }
 edc-data-plane-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
@@ -84,10 +86,12 @@ keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "mockserver" }
+parsson = { module = "org.eclipse.parsson:parsson", version = "1.1.7" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
 swagger-annotations = { module = "io.swagger.core.v3:swagger-annotations", version.ref = "swagger" }
 swagger-jaxrs2-jakarta = { module = "io.swagger.core.v3:swagger-jaxrs2-jakarta", version.ref = "swagger" }
+testcontainers-keycloak = { module = "com.github.dasniko:testcontainers-keycloak", version.ref = "testcontainers-keycloak" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 testcontainers-localstack = { module = "org.testcontainers:localstack", version.ref = "testcontainers" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }

@@ -1,24 +1,21 @@
 package eu.dataspace.connector.extension.kafka.broker;
 
-import org.eclipse.edc.connector.controlplane.transfer.spi.flow.DataFlowManager;
-import org.eclipse.edc.connector.controlplane.transfer.spi.flow.DataFlowPropertiesProvider;
-import org.eclipse.edc.connector.controlplane.transfer.spi.flow.TransferTypeParser;
-import org.eclipse.edc.connector.dataplane.selector.spi.DataPlaneSelectorService;
-import org.eclipse.edc.connector.dataplane.selector.spi.client.DataPlaneClientFactory;
+import eu.dataspace.connector.extension.kafka.broker.auth.OpenIdConnectService;
+import org.eclipse.edc.connector.dataplane.spi.Endpoint;
+import org.eclipse.edc.connector.dataplane.spi.iam.PublicEndpointGeneratorService;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSourceFactory;
+import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
-import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.response.StatusResult;
-import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.web.spi.configuration.context.ControlApiUrl;
-import eu.dataspace.connector.extension.kafka.broker.auth.KafkaOAuthServiceImpl;
-
-import java.util.Map;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Kafka Broker flow extension
@@ -32,46 +29,51 @@ public class KafkaBrokerExtension implements ServiceExtension {
     private static final String DPF_SELECTOR_STRATEGY = "edc.dataplane.client.selector.strategy";
 
     @Inject
-    private DataFlowManager dataFlowManager;
-
-    @Inject
-    private Vault vault;
-
-    @Inject
     private TypeManager typeManager;
 
     @Inject
     private EdcHttpClient httpClient;
 
     @Inject
-    private DataPlaneSelectorService selectorService;
+    private PublicEndpointGeneratorService publicEndpointGeneratorService;
 
     @Inject
-    private DataPlaneClientFactory clientFactory;
-
-    @Inject(required = false)
-    private DataFlowPropertiesProvider propertiesProvider;
-
-    @Inject
-    private TransferTypeParser transferTypeParser;
-
-    @Inject
-    private Monitor monitor;
-
-    @Inject(required = false)
-    private ControlApiUrl callbackUrl;
-
+    private PipelineService pipelineService;
 
     @Override
     public void initialize(final ServiceExtensionContext context) {
         var selectionStrategy = context.getSetting(DPF_SELECTOR_STRATEGY, DEFAULT_DATAPLANE_SELECTOR_STRATEGY);
-        var kafkaOAuthService = new KafkaOAuthServiceImpl(httpClient, typeManager.getMapper());
-        var controller = new KafkaBrokerDataFlowController(vault, kafkaOAuthService, transferTypeParser, getPropertiesProvider(),
-                selectorService, clientFactory, selectionStrategy, monitor, callbackUrl);
-        dataFlowManager.register(controller);
+        var kafkaOAuthService = new OpenIdConnectService(httpClient, typeManager.getMapper());
+//        var controller = new KafkaBrokerDataFlowController(vault, kafkaOAuthService, transferTypeParser, getPropertiesProvider(),
+//                selectorService, clientFactory, selectionStrategy, monitor, callbackUrl);
+//        dataFlowManager.register(controller);
+        context.registerService(OpenIdConnectService.class, kafkaOAuthService);
+
+        pipelineService.registerFactory(new KafkaDummySourceFactory());
+
+        publicEndpointGeneratorService.addGeneratorFunction("Kafka", address -> {
+            return Endpoint.url("cueo");
+        });
     }
 
-    private DataFlowPropertiesProvider getPropertiesProvider() {
-        return propertiesProvider == null ? (tp, p) -> StatusResult.success(Map.of()) : propertiesProvider;
+    /**
+     * TODO: this is necessary because in the data-plane self registration the allowed sources are decided by the `PipelineService`
+     * this will likely need some work upstream
+     */
+    private static class KafkaDummySourceFactory implements DataSourceFactory {
+        @Override
+        public String supportedType() {
+            return "KafkaBroker";
+        }
+
+        @Override
+        public DataSource createSource(DataFlowStartMessage dataFlowStartMessage) {
+            return null;
+        }
+
+        @Override
+        public @NotNull Result<Void> validateRequest(DataFlowStartMessage dataFlowStartMessage) {
+            return null;
+        }
     }
 }
