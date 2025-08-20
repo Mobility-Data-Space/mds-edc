@@ -1,8 +1,8 @@
 package eu.dataspace.connector.tests.feature;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;
+import eu.dataspace.connector.tests.extensions.KafkaEdr;
 import eu.dataspace.connector.tests.extensions.KafkaExtension;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
@@ -10,6 +10,7 @@ import eu.dataspace.connector.tests.extensions.VaultExtension;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.security.Vault;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -17,12 +18,17 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static jakarta.json.Json.createObjectBuilder;
 import static java.lang.String.format;
 import static java.util.Map.entry;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
@@ -75,12 +81,11 @@ class KafkaTransferTest {
         var dataAddressProperties = createKafkaDataAddress(topic); // OAuth2 includes client registration
         var assetId = PROVIDER.createOffer(dataAddressProperties);
 
-        // provider runs producer application to generate data
-        try {
-            KAFKA_EXTENSION.runProducer(topic);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        var factory = Thread.ofVirtual().factory();
+        factory.newThread(() -> {
+            final var producer = KAFKA_EXTENSION.initializeKafkaProducer();
+            Executors.newScheduledThreadPool(0, factory).scheduleAtFixedRate(() -> KafkaExtension.sendMessage(producer, topic, "key", "payload"), 0, 2, TimeUnit.SECONDS);
+        });
 
         // consumer initiates a kafka transfer with proper resource tracking
         var consumerEdrReceiver = ClientAndServer.startClientAndServer(getFreePort());
@@ -97,12 +102,19 @@ class KafkaTransferTest {
         CONSUMER.awaitTransferToBeInState(transferProcessId, STARTED);
 
         var edrRequests = await().until(() -> consumerEdrReceiver.retrieveRecordedRequests(request("/edr")), it -> it.length > 0);
-        var edr = new ObjectMapper().readTree(edrRequests[0].getBodyAsRawBytes()).get("payload").get("dataAddress").get("properties");
+        var objectMapper = new JacksonTypeManager().getMapper();
+        var edr = objectMapper.readTree(edrRequests[0].getBodyAsRawBytes()).get("payload").get("dataAddress").get("properties");
 
         // Verify EDR contains expected properties
 
-        // Runs the Kafka Consumer App with appropriate authentication mode
-        KAFKA_EXTENSION.runConsumer(edr);
+        var edrData = objectMapper.convertValue(edr, KafkaEdr.class);
+
+        try (var consumer = KafkaExtension.createKafkaConsumer(edrData)) {
+            consumer.subscribe(List.of(edrData.topic()));
+
+            var records = consumer.poll(Duration.parse(edrData.kafkaPollDuration()));
+            assertThat(records.records(edrData.topic())).isNotEmpty();
+        }
     }
 
     private Map<String, Object> createKafkaDataAddress(String topic) {
