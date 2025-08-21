@@ -7,13 +7,21 @@ import eu.dataspace.connector.extension.kafka.broker.auth.OpenIdConnectService;
 import okhttp3.OkHttpClient;
 import org.eclipse.edc.http.client.EdcHttpClientImpl;
 import org.eclipse.edc.json.JacksonTypeManager;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.idm.ClientInitialAccessCreatePresentation;
+import org.keycloak.representations.idm.ClientScopeRepresentation;
+import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -39,9 +47,29 @@ class OpenIdConnectServiceTest {
         var openIdConnectDiscoveryUrl = "http://localhost:%s/realms/%s/.well-known/openid-configuration"
                 .formatted(keycloak.getFirstMappedPort(), realmName);
 
-        var registration = service.registerNewClient(openIdConnectDiscoveryUrl, initialAccessToken);
+        var registration = service.fetchOpenIdConfiguration(openIdConnectDiscoveryUrl)
+                .compose(configuration -> service.registerNewClient(configuration, initialAccessToken));
 
         assertThat(registration).isSucceeded().isNotNull().extracting(ClientRegistrationResponse::clientId).isNotNull();
+    }
+
+    @Nested
+    class UserInfo {
+        @Test
+        void shouldRetrieveUserInfo() {
+            var adminClient = createAdminClient();
+            var realmName = "kafka";
+            createRealm(adminClient, realmName);
+            var initialAccessToken = createInitialAccessToken(adminClient, realmName);
+            var openIdConnectDiscoveryUrl = "http://localhost:%s/realms/%s/.well-known/openid-configuration"
+                    .formatted(keycloak.getFirstMappedPort(), realmName);
+
+            var result = service.fetchOpenIdConfiguration(openIdConnectDiscoveryUrl)
+                    .compose(openIdConfiguration -> service.registerNewClient(openIdConfiguration, initialAccessToken)
+                            .compose(response -> service.userInfo(openIdConfiguration, response)));
+
+            assertThat(result).isSucceeded().extracting(it -> it.sub()).isNotNull().satisfies(UUID::fromString);
+        }
     }
 
     private String createInitialAccessToken(Keycloak adminClient, String realmName) {
@@ -65,6 +93,34 @@ class OpenIdConnectServiceTest {
         var realm = new RealmRepresentation();
         realm.setRealm(realmName);
         realm.setEnabled(true);
+
         adminClient.realms().create(realm);
+        var realmResource = adminClient.realms().realm(realmName);
+
+        var config = Map.of(
+                "access.token.claim", "true",
+                "id.token.claim", "true",
+                "userinfo.token.claim", "true",
+                "jsonType.label", "String",
+                "multivalued", "true"
+        );
+
+        var mapper = new ProtocolMapperRepresentation();
+        mapper.setName("scope_mapper");
+        mapper.setProtocol("openid-connect");
+        mapper.setProtocolMapper("oidc-usermodel-attribute-mapper");
+        mapper.setConfig(config);
+
+        var clientScopeRepresentation = new ClientScopeRepresentation();
+        clientScopeRepresentation.setId("openid");
+        clientScopeRepresentation.setDescription("Adds scope claim with openid value");
+        clientScopeRepresentation.setName("openid");
+        clientScopeRepresentation.setProtocol("openid-connect");
+        clientScopeRepresentation.setAttributes(Collections.singletonMap("include.in.token.scope", "true"));
+        clientScopeRepresentation.setProtocolMappers(List.of(mapper));
+
+        realmResource.clientScopes().create(clientScopeRepresentation);
+        realmResource.addDefaultDefaultClientScope("openid");
     }
+
 }

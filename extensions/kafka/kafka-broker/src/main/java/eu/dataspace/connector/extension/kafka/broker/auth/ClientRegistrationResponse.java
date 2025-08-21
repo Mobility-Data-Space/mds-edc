@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 
 public record ClientRegistrationResponse(
         @JsonAlias("client_id")
-        String clientId
+        String clientId,
+        @JsonAlias("client_secret")
+        String clientSecret
 ) {
 }

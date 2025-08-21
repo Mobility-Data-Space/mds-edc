@@ -20,6 +20,7 @@ dependencies {
     testImplementation(libs.rest.assured)
     testImplementation(libs.postgres)
     testImplementation(libs.testcontainers.localstack)
+    testImplementation(libs.testcontainers.kafka)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.vault)
     testImplementation("com.auth0:java-jwt:4.5.0")

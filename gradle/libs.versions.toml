@@ -6,7 +6,7 @@ azure-storage-blob = "12.30.1"
 bouncycastle = "1.81"
 edc = "0.14.0"
 junit-jupiter = "5.13.4"
-kafka = "3.9.1"
+kafka = "4.0.0"
 keycloak = "26.0.6"
 logging-house-client = "1.0.0-rc.3"
 mockito = "5.19.0"
@@ -91,6 +91,7 @@ postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
 swagger-annotations = { module = "io.swagger.core.v3:swagger-annotations", version.ref = "swagger" }
 swagger-jaxrs2-jakarta = { module = "io.swagger.core.v3:swagger-jaxrs2-jakarta", version.ref = "swagger" }
+testcontainers-kafka = { module = "org.testcontainers:kafka", version.ref = "testcontainers" }
 testcontainers-keycloak = { module = "com.github.dasniko:testcontainers-keycloak", version.ref = "testcontainers-keycloak" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 testcontainers-localstack = { module = "org.testcontainers:localstack", version.ref = "testcontainers" }

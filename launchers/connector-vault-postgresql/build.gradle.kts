@@ -8,7 +8,10 @@ plugins {
 val edcGroupId = "org.eclipse.edc"
 
 dependencies {
-    runtimeOnly(project(":launchers:connector-inmemory"))
+    runtimeOnly(project(":launchers:connector-inmemory")) {
+        // TODO: currently there's no way around this, it will disable EDR for HTTP-Data, only here for the sake of Kafka solution
+        exclude("org.eclipse.edc", "data-plane-iam")
+    }
 
     implementation(project(":extensions:daps:oauth2-daps"))
     implementation(project(":extensions:daps:oauth2-identity-service"))
