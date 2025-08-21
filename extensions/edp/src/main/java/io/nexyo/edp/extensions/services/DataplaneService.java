@@ -60,7 +60,7 @@ public class DataplaneService {
      * @throws EdpException if no suitable data plane instance is found.
      */
     private DataPlaneInstance getDataplane(DataAddress dataAddress) {
-        var selection = selectorService.select(dataAddress, "HttpData-PUSH", null);
+        var selection = selectorService.select("random", dataPlaneInstance -> dataPlaneInstance.canHandle(dataAddress, "HttpData-PUSH"));
         var dataPlaneInstance = selection.getContent();
 
         if (dataPlaneInstance == null) {
@@ -134,7 +134,7 @@ public class DataplaneService {
      */
     private DataFlowStartMessage createDataFlowRequest(String assetId, DataAddress sourceDataAddress,
             DataAddress destinationDataAddress, String processId, String participantId, String agreementId) {
-        TransferType transferType = new TransferType("HttpData", FlowType.PUSH);
+        var transferType = new TransferType("HttpData", FlowType.PUSH);
 
         return DataFlowStartMessage.Builder.newInstance()
                 .id(UUID.randomUUID().toString())
