@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation(libs.edc.core.spi)
     implementation(libs.edc.data.plane.spi)
+    implementation(libs.edc.jwt.spi)
     implementation(libs.edc.transfer.spi)
     implementation(libs.edc.validator.spi)
     implementation(libs.kafka.clients)

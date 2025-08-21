@@ -18,7 +18,7 @@ https://github.com/eclipse-tractusx/tractusx-edc-kafka-extension/tree/main
   - Allow both types during build times? How to go about Kafka DataAddress (determine auth type based on source properties from Provider?):
     ```json
     {
-      "type": "KafkaBroker",
+      "type": "Kafka",
       "kafka.bootstrap.servers": "",
       "kafka.poll.duration": "",
       "kafka.group.prefix": "",
@@ -33,7 +33,7 @@ https://github.com/eclipse-tractusx/tractusx-edc-kafka-extension/tree/main
   - Kafka as a Data Destination? (Destination from Consumer):
     ```json
     {
-      "type": "KafkaBroker"
+      "type": "Kafka"
     }
     ```
 

@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +41,6 @@ import static org.mockserver.model.HttpResponse.response;
 class KafkaTransferTest {
 
     private static final String TEST_TOPIC_PREFIX = "test-topic";
-    private static final String OAUTH_REALM = "kafka";
     private static final String KAFKA_BOOTSTRAP_SERVERS = "localhost:9092";
     private static final String CLIENT_ID = "myclient";
     private static final String CLIENT_SECRET_KEY = "mysecretkey";
@@ -73,19 +73,18 @@ class KafkaTransferTest {
     @Test
     void shouldSupportKafkaPullTransfer() throws IOException {
         var topic = TEST_TOPIC_PREFIX + "-oauth2";
+        var registerClientTokenKey = UUID.randomUUID().toString();
 
-        // Store client secret for each test
-        PROVIDER.getService(Vault.class).storeSecret(CLIENT_SECRET_KEY, CLIENT_SECRET_VALUE);
+        var providerVault = PROVIDER.getService(Vault.class);
+        providerVault.storeSecret(CLIENT_SECRET_KEY, CLIENT_SECRET_VALUE); // TODO: needed?
+        providerVault.storeSecret(registerClientTokenKey, KAFKA_EXTENSION.createInitialAccessToken());
 
         // provider creates the asset, policy and offer on EDC
-        var dataAddressProperties = createKafkaDataAddress(topic); // OAuth2 includes client registration
+        var dataAddressProperties = createKafkaDataAddress(topic, registerClientTokenKey); // OAuth2 includes client registration
         var assetId = PROVIDER.createOffer(dataAddressProperties);
 
-        var factory = Thread.ofVirtual().factory();
-        factory.newThread(() -> {
-            final var producer = KAFKA_EXTENSION.initializeKafkaProducer();
-            Executors.newScheduledThreadPool(0, factory).scheduleAtFixedRate(() -> KafkaExtension.sendMessage(producer, topic, "key", "payload"), 0, 2, TimeUnit.SECONDS);
-        });
+        final var producer = KAFKA_EXTENSION.initializeKafkaProducer();
+        Executors.newScheduledThreadPool(0, Thread.ofVirtual().factory()).scheduleAtFixedRate(() -> KafkaExtension.sendMessage(producer, topic, "key", "payload"), 0, 2, TimeUnit.SECONDS);
 
         // consumer initiates a kafka transfer with proper resource tracking
         var consumerEdrReceiver = ClientAndServer.startClientAndServer(getFreePort());
@@ -117,18 +116,19 @@ class KafkaTransferTest {
         }
     }
 
-    private Map<String, Object> createKafkaDataAddress(String topic) {
+    private Map<String, Object> createKafkaDataAddress(String topic, String registerClientTokenKey) {
         Map<String, Object> properties = Map.ofEntries(
-                entry(EDC_NAMESPACE + "type", "KafkaBroker"),
+                entry(EDC_NAMESPACE + "type", "Kafka"),
                 entry(EDC_NAMESPACE + "kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS),
                 entry(EDC_NAMESPACE + "kafka.sasl.mechanism", "OAUTHBEARER"),
                 entry(EDC_NAMESPACE + "kafka.security.protocol", "SASL_PLAINTEXT"),
                 entry(EDC_NAMESPACE + "topic", topic),
-                entry(EDC_NAMESPACE + "tokenUrl", format("http://localhost:%s/realms/%s/protocol/openid-connect/token", KAFKA_EXTENSION.getOAuthServicePort(), OAUTH_REALM)),
-                entry(EDC_NAMESPACE + "revokeUrl", format("http://localhost:%s/realms/%s/protocol/openid-connect/revoke", KAFKA_EXTENSION.getOAuthServicePort(), OAUTH_REALM)),
+//                entry(EDC_NAMESPACE + "tokenUrl", format("http://localhost:%s/realms/%s/protocol/openid-connect/token", KAFKA_EXTENSION.getOAuthServicePort(), OAUTH_REALM)),
+//                entry(EDC_NAMESPACE + "revokeUrl", format("http://localhost:%s/realms/%s/protocol/openid-connect/revoke", KAFKA_EXTENSION.getOAuthServicePort(), OAUTH_REALM)),
                 entry(EDC_NAMESPACE + "clientId", CLIENT_ID),
                 entry(EDC_NAMESPACE + "clientSecretKey", CLIENT_SECRET_KEY),
-                entry(EDC_NAMESPACE + "clientRegistration", format("http://localhost:%s/realms/%s/protocol/openid-connect/register", KAFKA_EXTENSION.getOAuthServicePort(), OAUTH_REALM))
+                entry(EDC_NAMESPACE + "openIdConnectDiscoveryUrl", KAFKA_EXTENSION.openIdConnectDiscoveryUrl()),
+                entry(EDC_NAMESPACE + "registerClientTokenKey", registerClientTokenKey)
         );
 
         return properties;
@@ -149,7 +149,7 @@ class KafkaTransferTest {
     private JsonObject createKafkaDestinationDataAddress() {
         return createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "DataAddress")
-                .add(EDC_NAMESPACE + "type", "KafkaBroker")
+                .add(EDC_NAMESPACE + "type", "Kafka")
                 .build();
     }
 }

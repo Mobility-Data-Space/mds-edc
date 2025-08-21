@@ -7,9 +7,13 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginCallbackHandler;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.representations.idm.ClientInitialAccessCreatePresentation;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -19,7 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
-import static java.lang.String.format;
 import static java.util.Map.entry;
 import static org.apache.kafka.clients.CommonClientConfigs.SECURITY_PROTOCOL_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG;
@@ -53,6 +56,7 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
 
     private static final String KEYCLOAK_IMAGE = "quay.io/keycloak/keycloak:26.2";
     private static final String KAFKA_IMAGE = "apache/kafka:4.0.0";
+    private static final String OAUTH_REALM = "kafka";
 
     private final Network network = Network.newNetwork();
     private final GenericContainer<?> keycloakContainer = new GenericContainer<>(KEYCLOAK_IMAGE)
@@ -132,7 +136,7 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
         Objects.requireNonNull(edrData, "EDR data cannot be null");
 
         var props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, edrData.kafkaBootstrapServers());
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, edrData.endpoint());
         props.put(GROUP_ID_CONFIG, edrData.kafkaGroupPrefix());
         props.put(ENABLE_AUTO_COMMIT_CONFIG, "true"); // Automatically commit offsets
         props.put(AUTO_OFFSET_RESET_CONFIG, "earliest"); // Automatically reset the offset to the earliest offset
@@ -210,4 +214,24 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
         });
     }
 
+    public String createInitialAccessToken() {
+        return createAdminClient().realm(OAUTH_REALM)
+                .clientInitialAccess()
+                .create(new ClientInitialAccessCreatePresentation(100, 10))
+                .getToken();
+    }
+
+    public String openIdConnectDiscoveryUrl() {
+        return "http://localhost:%s/realms/%s/.well-known/openid-configuration".formatted(getOAuthServicePort(), OAUTH_REALM);
+    }
+
+    private Keycloak createAdminClient() {
+        return KeycloakBuilder.builder()
+                .serverUrl("http://localhost:%s".formatted(keycloakContainer.getFirstMappedPort()))
+                .realm("master")
+                .username("admin")
+                .password("admin")
+                .clientId("admin-cli")
+                .build();
+    }
 }

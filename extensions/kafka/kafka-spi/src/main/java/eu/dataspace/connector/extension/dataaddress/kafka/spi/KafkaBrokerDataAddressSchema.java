@@ -10,7 +10,7 @@ public interface KafkaBrokerDataAddressSchema {
     /**
      * The transfer type.
      */
-    String KAFKA_TYPE = "KafkaBroker";
+    String KAFKA_TYPE = "Kafka";
 
     /**
      * The Kafka topic that will be allowed to poll for the consumer.
@@ -71,4 +71,8 @@ public interface KafkaBrokerDataAddressSchema {
      * The OAuth client secret key.
      */
     String OAUTH_CLIENT_SECRET_KEY = EDC_NAMESPACE + "clientSecretKey";
+
+    String OPENID_CONNECT_DISCOVERY_URL = EDC_NAMESPACE + "openIdConnectDiscoveryUrl";
+
+    String REGISTER_CLIENT_TOKEN_KEY = EDC_NAMESPACE + "registerClientTokenKey";
 }
