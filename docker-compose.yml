@@ -6,8 +6,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      # - ./deploy-local/init.nginx.conf:/etc/nginx/nginx.conf
-      - ./deploy-local/secure.nginx.conf:/etc/nginx/nginx.conf
+      # - ./resources/init.nginx.conf:/etc/nginx/nginx.conf
+      - ./resources/secure.nginx.conf:/etc/nginx/nginx.conf
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     depends_on:
