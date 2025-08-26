@@ -10,9 +10,6 @@ val edcGroupId = "org.eclipse.edc"
 dependencies {
     runtimeOnly(project(":launchers:connector-inmemory"))
 
-    // TODO: needed because we are depending from tractusx-edc for db migrations, decision needed
-    implementation(project(":extensions:edc014patch"))
-
     implementation(project(":extensions:daps:oauth2-daps"))
     implementation(project(":extensions:daps:oauth2-identity-service"))
     runtimeOnly(libs.edc.vault.hashicorp)
