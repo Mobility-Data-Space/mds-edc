@@ -10,8 +10,8 @@ val edcGroupId = "org.eclipse.edc"
 dependencies {
     runtimeOnly(project(":launchers:connector-inmemory"))
 
-    runtimeOnly(libs.edc.oauth2.daps)
-    runtimeOnly(libs.edc.oauth2.service)
+    implementation(project(":extensions:daps:oauth2-daps"))
+    implementation(project(":extensions:daps:oauth2-identity-service"))
     runtimeOnly(libs.edc.vault.hashicorp)
 
     runtimeOnly(libs.edc.controlplane.feature.sql.bom)

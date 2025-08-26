@@ -1,3 +1,7 @@
+plugins {
+    `java-test-fixtures`
+}
+
 dependencies {
     testImplementation(libs.edc.boot.lib)
     testImplementation(libs.edc.junit)
@@ -21,4 +25,6 @@ dependencies {
     testCompileOnly(project(":launchers:connector-inmemory"))
     testCompileOnly(project(":launchers:connector-vault-postgresql"))
     testCompileOnly(project(":launchers:connector-vault-postgresql-edp"))
+
+    testFixturesApi(libs.bouncycastle.bcpkix)
 }

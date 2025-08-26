@@ -3,7 +3,8 @@ assertj = "3.27.4"
 awaitility = "4.3.0"
 aws = "2.32.24"
 azure-storage-blob = "12.30.1"
-edc = "0.13.2"
+bouncycastle = "1.81"
+edc = "0.14.0"
 junit-jupiter = "5.13.4"
 keycloak = "26.0.6"
 logging-house-client = "1.0.0-rc.3"
@@ -13,7 +14,7 @@ postgres = "42.7.7"
 rest-assured = "5.5.6"
 swagger = "2.2.35"
 testcontainers = "1.21.3"
-tractusx-edc = "0.10.0"
+tractusx-edc = "0.11.0-RC1"
 yasson = "3.0.4"
 
 [libraries]
@@ -31,16 +32,21 @@ edc-data-plane-selector-spi = { module = "org.eclipse.edc:data-plane-selector-sp
 edc-dataplane-base-bom = { module = "org.eclipse.edc:dataplane-base-bom", version.ref = "edc" }
 edc-dataplane-feature-sql-bom = { module = "org.eclipse.edc:dataplane-feature-sql-bom", version.ref = "edc" }
 edc-edr-store-spi = { module = "org.eclipse.edc:edr-store-spi", version.ref = "edc" }
+edc-http-lib = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
+edc-http-spi = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-json-ld-spi = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-json-ld-lib = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
+edc-jwt-spi = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
+edc-jwt-signer-spi = { module = "org.eclipse.edc:jwt-signer-spi", version.ref = "edc" }
 edc-management-api-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }
-edc-oauth2-daps = { module = "org.eclipse.edc:oauth2-daps", version.ref = "edc" }
-edc-oauth2-service = { module = "org.eclipse.edc:oauth2-service", version.ref = "edc" }
+edc-oauth2-spi = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
 edc-participant-spi = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
 edc-policy-spi = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
 edc-policy-engine-spi = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
+edc-token-lib = { module = "org.eclipse.edc:token-lib", version.ref = "edc" }
+edc-token-spi = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
 edc-transaction-spi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
 edc-transform-spi = { module = "org.eclipse.edc:transform-spi", version.ref = "edc" }
 edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
@@ -68,6 +74,7 @@ awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" 
 aws-iam = { module = "software.amazon.awssdk:iam", version.ref = "aws" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 azure-storage-blob = { group = "com.azure", name = "azure-storage-blob", version.ref = "azure-storage-blob" }
+bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
 keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
@@ -76,6 +83,7 @@ postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
 swagger-annotations = { module = "io.swagger.core.v3:swagger-annotations", version.ref = "swagger" }
 swagger-jaxrs2-jakarta = { module = "io.swagger.core.v3:swagger-jaxrs2-jakarta", version.ref = "swagger" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 testcontainers-localstack = { module = "org.testcontainers:localstack", version.ref = "testcontainers" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 testcontainers-vault = { module = "org.testcontainers:vault", version.ref = "testcontainers" }
