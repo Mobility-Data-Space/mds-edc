@@ -2,8 +2,8 @@ package eu.dataspace.connector.extension.kafka.auth;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
 import dev.failsafe.RetryPolicy;
-import eu.dataspace.connector.extension.kafka.broker.auth.ClientRegistrationResponse;
-import eu.dataspace.connector.extension.kafka.broker.auth.OpenIdConnectService;
+import eu.dataspace.connector.extension.kafka.broker.openid.ClientRegistrationResponse;
+import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConnectService;
 import okhttp3.OkHttpClient;
 import org.eclipse.edc.http.client.EdcHttpClientImpl;
 import org.eclipse.edc.json.JacksonTypeManager;

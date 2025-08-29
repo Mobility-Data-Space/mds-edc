@@ -1,8 +1,7 @@
 package eu.dataspace.connector.extension.kafka.broker;
 
 import eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema;
-import eu.dataspace.connector.extension.kafka.broker.auth.OpenIdConnectService;
-import org.eclipse.edc.connector.dataplane.spi.Endpoint;
+import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConnectService;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.connector.dataplane.spi.iam.PublicEndpointGeneratorService;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
@@ -19,9 +18,6 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.jetbrains.annotations.NotNull;
-
-import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.BOOTSTRAP_SERVERS;
-import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.PROTOCOL;
 
 @Extension(value = KafkaBrokerExtension.NAME)
 public class KafkaBrokerExtension implements ServiceExtension {
@@ -47,10 +43,9 @@ public class KafkaBrokerExtension implements ServiceExtension {
     public void initialize(final ServiceExtensionContext context) {
         pipelineService.registerFactory(new KafkaDummySourceFactory());
 
-        publicEndpointGeneratorService.addGeneratorFunction("Kafka", address -> {
-            // TODO: are these correct?
-            return new Endpoint(address.getStringProperty(BOOTSTRAP_SERVERS), address.getStringProperty(PROTOCOL));
-        });
+        // TODO: this is necessary because currently the public endpoint generator service is deciding which pull
+        //  transfers are supported. To be tackled upstream in https://github.com/eclipse-edc/Connector/issues/5194
+        publicEndpointGeneratorService.addGeneratorFunction("Kafka", address -> null);
     }
 
     @Provider

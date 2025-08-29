@@ -1,9 +1,9 @@
 package eu.dataspace.connector.extension.kafka.broker;
 
 import eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema;
-import eu.dataspace.connector.extension.kafka.broker.auth.ClientRegistrationResponse;
-import eu.dataspace.connector.extension.kafka.broker.auth.OpenIdConfiguration;
-import eu.dataspace.connector.extension.kafka.broker.auth.OpenIdConnectService;
+import eu.dataspace.connector.extension.kafka.broker.openid.ClientRegistrationResponse;
+import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConfiguration;
+import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConnectService;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.common.acl.AccessControlEntry;

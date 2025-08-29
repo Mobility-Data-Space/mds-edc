@@ -1,4 +1,4 @@
-package eu.dataspace.connector.extension.kafka.broker.auth;
+package eu.dataspace.connector.extension.kafka.broker.openid;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
