@@ -56,7 +56,6 @@ public class OpenIdConnectService {
     public ServiceResult<UserInfo> userInfo(OpenIdConfiguration openIdConfiguration, ClientRegistrationResponse clientRegistrationResponse) {
         return issueToken(openIdConfiguration, clientRegistrationResponse)
                 .compose(token -> {
-                    System.out.println(token.accessToken());
                     var userInfoRequest = new Request.Builder().url(openIdConfiguration.userInfoEndpoint()).addHeader("Authorization", token.tokenType() + " " + token.accessToken()).build();
                     return httpClient.execute(userInfoRequest, response -> handleResponse("userinfo", response, UserInfo.class))
                             .flatMap(ServiceResult::from);

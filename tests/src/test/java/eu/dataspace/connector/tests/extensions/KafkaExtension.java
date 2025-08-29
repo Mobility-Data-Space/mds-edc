@@ -159,9 +159,8 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
 
         props.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required clientId=\"%s\" clientSecret=\"%s\";"
                 .formatted(edrData.clientId(), edrData.clientSecret()));
-        props.put(SaslConfigs.SASL_OAUTHBEARER_TOKEN_ENDPOINT_URL, edrData.tokenEndpointUrl());
+        props.put(SaslConfigs.SASL_OAUTHBEARER_TOKEN_ENDPOINT_URL, edrData.tokenEndpoint());
         props.put(SaslConfigs.SASL_LOGIN_CALLBACK_HANDLER_CLASS, OAuthBearerLoginCallbackHandler.class.getName());
-
 
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
@@ -241,7 +240,7 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
                 .getToken();
     }
 
-    public String openIdConnectDiscoveryUrl() {
+    public String oidcDiscoveryUrl() {
         return "http://localhost:%s/realms/%s/.well-known/openid-configuration".formatted(getOAuthServicePort(), OAUTH_REALM);
     }
 

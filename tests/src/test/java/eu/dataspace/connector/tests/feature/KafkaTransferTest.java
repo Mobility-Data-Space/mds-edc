@@ -66,7 +66,7 @@ class KafkaTransferTest {
     @Test
     void shouldSupportKafkaPullTransfer() throws IOException {
         var topic = "topic-" + UUID.randomUUID();
-        var registerClientTokenKey = UUID.randomUUID().toString();
+        var oidcRegisterClientTokenKey = UUID.randomUUID().toString();
 
         KAFKA_EXTENSION.createAcls(KAFKA_EXTENSION.userCanDoAll("myclient", ResourceType.TOPIC, topic));
         var producer = KAFKA_EXTENSION.initializeKafkaProducer();
@@ -74,10 +74,10 @@ class KafkaTransferTest {
                 .scheduleAtFixedRate(() -> KafkaExtension.sendMessage(producer, topic, "key", "payload"), 0, 1, SECONDS);
 
         var providerVault = PROVIDER.getService(Vault.class);
-        providerVault.storeSecret(registerClientTokenKey, KAFKA_EXTENSION.createInitialAccessToken());
+        providerVault.storeSecret(oidcRegisterClientTokenKey, KAFKA_EXTENSION.createInitialAccessToken());
 
         // provider creates the asset, policy and offer on EDC
-        var dataAddressProperties = createKafkaDataAddress(topic, registerClientTokenKey);
+        var dataAddressProperties = createKafkaDataAddress(topic, oidcRegisterClientTokenKey);
         var assetId = PROVIDER.createOffer(dataAddressProperties);
 
         // consumer initiates a kafka transfer with proper resource tracking
@@ -109,15 +109,15 @@ class KafkaTransferTest {
         }
     }
 
-    private Map<String, Object> createKafkaDataAddress(String topic, String registerClientTokenKey) {
+    private Map<String, Object> createKafkaDataAddress(String topic, String oidcRegisterClientTokenKey) {
         Map<String, Object> properties = Map.ofEntries(
                 entry(EDC_NAMESPACE + "type", "Kafka"),
                 entry(EDC_NAMESPACE + "kafka.bootstrap.servers", KAFKA_EXTENSION.getBootstrapServers()),
                 entry(EDC_NAMESPACE + "kafka.sasl.mechanism", "OAUTHBEARER"),
                 entry(EDC_NAMESPACE + "kafka.security.protocol", "SASL_PLAINTEXT"),
                 entry(EDC_NAMESPACE + "topic", topic),
-                entry(EDC_NAMESPACE + "openIdConnectDiscoveryUrl", KAFKA_EXTENSION.openIdConnectDiscoveryUrl()),
-                entry(EDC_NAMESPACE + "registerClientTokenKey", registerClientTokenKey)
+                entry(EDC_NAMESPACE + "oidcDiscoveryUrl", KAFKA_EXTENSION.oidcDiscoveryUrl()),
+                entry(EDC_NAMESPACE + "oidcRegisterClientTokenKey", oidcRegisterClientTokenKey)
         );
 
         return properties;

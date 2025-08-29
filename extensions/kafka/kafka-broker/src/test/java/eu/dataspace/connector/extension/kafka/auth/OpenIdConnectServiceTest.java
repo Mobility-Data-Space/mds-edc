@@ -44,10 +44,10 @@ class OpenIdConnectServiceTest {
         createRealm(adminClient, realmName);
         var initialAccessToken = createInitialAccessToken(adminClient, realmName);
 
-        var openIdConnectDiscoveryUrl = "http://localhost:%s/realms/%s/.well-known/openid-configuration"
+        var oidcDiscoveryUrl = "http://localhost:%s/realms/%s/.well-known/openid-configuration"
                 .formatted(keycloak.getFirstMappedPort(), realmName);
 
-        var registration = service.fetchOpenIdConfiguration(openIdConnectDiscoveryUrl)
+        var registration = service.fetchOpenIdConfiguration(oidcDiscoveryUrl)
                 .compose(configuration -> service.registerNewClient(configuration, initialAccessToken));
 
         assertThat(registration).isSucceeded().isNotNull().extracting(ClientRegistrationResponse::clientId).isNotNull();
@@ -61,10 +61,10 @@ class OpenIdConnectServiceTest {
             var realmName = "kafka";
             createRealm(adminClient, realmName);
             var initialAccessToken = createInitialAccessToken(adminClient, realmName);
-            var openIdConnectDiscoveryUrl = "http://localhost:%s/realms/%s/.well-known/openid-configuration"
+            var oidcDiscoveryUrl = "http://localhost:%s/realms/%s/.well-known/openid-configuration"
                     .formatted(keycloak.getFirstMappedPort(), realmName);
 
-            var result = service.fetchOpenIdConfiguration(openIdConnectDiscoveryUrl)
+            var result = service.fetchOpenIdConfiguration(oidcDiscoveryUrl)
                     .compose(openIdConfiguration -> service.registerNewClient(openIdConfiguration, initialAccessToken)
                             .compose(response -> service.userInfo(openIdConfiguration, response)));
 

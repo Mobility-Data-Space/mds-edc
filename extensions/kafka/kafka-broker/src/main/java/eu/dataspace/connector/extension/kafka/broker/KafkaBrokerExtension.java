@@ -43,8 +43,8 @@ public class KafkaBrokerExtension implements ServiceExtension {
     public void initialize(final ServiceExtensionContext context) {
         pipelineService.registerFactory(new KafkaDummySourceFactory());
 
-        // TODO: this is necessary because currently the public endpoint generator service is deciding which pull
-        //  transfers are supported. To be tackled upstream in https://github.com/eclipse-edc/Connector/issues/5194
+        // TODO(upstream): this is necessary because currently the public endpoint generator service is deciding which pull
+        //  transfers are supported.
         publicEndpointGeneratorService.addGeneratorFunction("Kafka", address -> null);
     }
 
@@ -56,8 +56,8 @@ public class KafkaBrokerExtension implements ServiceExtension {
     }
 
     /**
-     * TODO: this is necessary because in the data-plane self registration the allowed sources are decided by the `PipelineService`
-     * this will likely need some work upstream
+     * TODO(upstream): this is necessary because in the data-plane self registration the allowed sources are decided by
+     * the `PipelineService` this will likely need some work upstream
      */
     private static class KafkaDummySourceFactory implements DataSourceFactory {
         @Override

@@ -7,72 +7,25 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
  */
 public interface KafkaBrokerDataAddressSchema {
 
-    /**
-     * The transfer type.
-     */
     String KAFKA_TYPE = "Kafka";
 
-    /**
-     * The Kafka topic that will be allowed to poll for the consumer.
-     */
     String TOPIC = EDC_NAMESPACE + "topic";
 
-    /**
-     * The kafka.bootstrap.servers property.
-     */
-    String BOOTSTRAP_SERVERS = EDC_NAMESPACE + "kafka.bootstrap.servers";
-
-    /**
-     * The kafka.poll.duration property which specifies the duration of the consumer polling.
-     * <p>
-     * The value should be a ISO-8601 duration e.g. "PT10S" for 10 seconds.
-     * This parameter is optional. The default value is 1 second.
-     *
-     * @see java.time.Duration#parse(CharSequence) for ISO-8601 duration format
-     */
-    String POLL_DURATION = EDC_NAMESPACE + "kafka.poll.duration";
-
-    /**
-     * The kafka.group.prefix that will be allowed to use for the consumer.
-     */
-    String GROUP_PREFIX = EDC_NAMESPACE + "kafka.group.prefix";
-
-    /**
-     * The security.protocol property.
-     */
-    String PROTOCOL = EDC_NAMESPACE + "kafka.security.protocol";
-
-    /**
-     * The sasl.mechanism property.
-     */
-    String MECHANISM = EDC_NAMESPACE + "kafka.sasl.mechanism";
-
-    /**
-     * The authentication token.
-     */
-    String TOKEN = EDC_NAMESPACE + "token";
-
-    /**
-     * The OAuth token URL for retrieving access tokens.
-     */
-    String OAUTH_TOKEN_URL = EDC_NAMESPACE + "tokenUrl";
-
-    /**
-     * The OAuth revoke URL for invalidating tokens.
-     */
+    String OIDC_TOKEN_ENDPOINT = EDC_NAMESPACE + "tokenEndpoint";
+    String OIDC_CLIENT_ID = EDC_NAMESPACE + "clientId";
+    String OIDC_CLIENT_SECRET = EDC_NAMESPACE + "clientSecret";
+    String OIDC_DISCOVERY_URL = EDC_NAMESPACE + "oidcDiscoveryUrl";
+    String OIDC_REGISTER_CLIENT_TOKEN_KEY = EDC_NAMESPACE + "oidcRegisterClientTokenKey";
+    @Deprecated
     String OAUTH_REVOKE_URL = EDC_NAMESPACE + "revokeUrl";
-    // TODO we might consider adding the create client APIs from provider
-    /**
-     * The OAuth client ID.
-     */
-    String OAUTH_CLIENT_ID = EDC_NAMESPACE + "clientId";
+    @Deprecated
+    String OIDC_TOKEN_URL = EDC_NAMESPACE + "tokenUrl";
+    @Deprecated
+    String OIDC_CLIENT_SECRET_KEY = EDC_NAMESPACE + "clientSecretKey";
 
-    /**
-     * The OAuth client secret key.
-     */
-    String OAUTH_CLIENT_SECRET_KEY = EDC_NAMESPACE + "clientSecretKey";
+    String BOOTSTRAP_SERVERS = EDC_NAMESPACE + "kafka.bootstrap.servers";
+    String GROUP_PREFIX = EDC_NAMESPACE + "kafka.group.prefix";
+    String SECURITY_PROTOCOL = EDC_NAMESPACE + "kafka.security.protocol";
+    String SASL_MECHANISM = EDC_NAMESPACE + "kafka.sasl.mechanism";
 
-    String OPENID_CONNECT_DISCOVERY_URL = EDC_NAMESPACE + "openIdConnectDiscoveryUrl";
-
-    String REGISTER_CLIENT_TOKEN_KEY = EDC_NAMESPACE + "registerClientTokenKey";
 }

@@ -19,12 +19,12 @@ class KafkaBrokerDataAddressValidatorTest {
                 .type("Kafka")
                 .property(TOPIC, "topic.name")
                 .property(BOOTSTRAP_SERVERS, "any:98123")
-                .property(MECHANISM, "OAUTHBEARER")
-                .property(PROTOCOL, "SASL_PLAINTEXT")
-                .property(OAUTH_TOKEN_URL, "http://keycloak/token")
+                .property(SASL_MECHANISM, "OAUTHBEARER")
+                .property(SECURITY_PROTOCOL, "SASL_PLAINTEXT")
+                .property(OIDC_TOKEN_URL, "http://keycloak/token")
                 .property(OAUTH_REVOKE_URL, "http://keycloak/revoke")
-                .property(OAUTH_CLIENT_ID, "client-id")
-                .property(OAUTH_CLIENT_SECRET_KEY, "clientSecretKey")
+                .property(OIDC_CLIENT_ID, "client-id")
+                .property(OIDC_CLIENT_SECRET_KEY, "clientSecretKey")
                 .build();
 
         var result = validator.validate(dataAddress);
@@ -42,7 +42,7 @@ class KafkaBrokerDataAddressValidatorTest {
 
         assertThat(result).isFailed().extracting(ValidationFailure::getViolations)
                 .satisfies(violations -> assertThat(violations).extracting(Violation::path)
-                        .containsExactlyInAnyOrder(TOPIC, BOOTSTRAP_SERVERS, MECHANISM, PROTOCOL, OAUTH_TOKEN_URL,
-                                OAUTH_REVOKE_URL, OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET_KEY));
+                        .containsExactlyInAnyOrder(TOPIC, BOOTSTRAP_SERVERS, SASL_MECHANISM, SECURITY_PROTOCOL, OIDC_TOKEN_URL,
+                                OAUTH_REVOKE_URL, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET_KEY));
     }
 }

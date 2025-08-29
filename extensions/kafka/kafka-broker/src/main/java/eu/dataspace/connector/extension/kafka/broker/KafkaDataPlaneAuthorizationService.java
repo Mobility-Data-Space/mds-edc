@@ -1,6 +1,5 @@
 package eu.dataspace.connector.extension.kafka.broker;
 
-import eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema;
 import eu.dataspace.connector.extension.kafka.broker.openid.ClientRegistrationResponse;
 import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConfiguration;
 import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConnectService;
@@ -29,8 +28,16 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.BOOTSTRAP_SERVERS;
+import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.GROUP_PREFIX;
+import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_CLIENT_ID;
+import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_CLIENT_SECRET;
+import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_DISCOVERY_URL;
+import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_REGISTER_CLIENT_TOKEN_KEY;
+import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_TOKEN_ENDPOINT;
+import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.SASL_MECHANISM;
+import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.SECURITY_PROTOCOL;
 import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.TOPIC;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIMPLE_TYPE;
 
 /**
  * Manages the authentication and the EDR creation for Kafka-PULL transfers
@@ -47,26 +54,23 @@ class KafkaDataPlaneAuthorizationService implements DataPlaneAuthorizationServic
     @Override
     public Result<DataAddress> createEndpointDataReference(DataFlow dataFlow) {
         var dataAddress = dataFlow.getSource();
-        var discoveryUrl = dataAddress.getStringProperty(KafkaBrokerDataAddressSchema.OPENID_CONNECT_DISCOVERY_URL);
-        var tokenKey = dataAddress.getStringProperty(KafkaBrokerDataAddressSchema.REGISTER_CLIENT_TOKEN_KEY);
+        var discoveryUrl = dataAddress.getStringProperty(OIDC_DISCOVERY_URL);
+        var tokenKey = dataAddress.getStringProperty(OIDC_REGISTER_CLIENT_TOKEN_KEY);
         var token = vault.resolveSecret(tokenKey);
 
         ServiceResult<DataAddress> compose = openIdConnectService.fetchOpenIdConfiguration(discoveryUrl)
                 .compose(configuration -> openIdConnectService.registerNewClient(configuration, token)
-                        .compose(client -> {
-                            var groupId = UUID.randomUUID().toString();
+                        .compose(client -> openIdConnectService.userInfo(configuration, client)
+                                .map(userInfo -> {
+                                    var groupId = UUID.randomUUID().toString();
 
-                            return openIdConnectService.userInfo(configuration, client)
-                                    .map(userInfo -> {
-                                        createAcls(dataAddress.getStringProperty(BOOTSTRAP_SERVERS), configuration.tokenEndpoint(),
-                                                userCanAccess(userInfo.sub(), ResourceType.TOPIC, dataAddress.getStringProperty(TOPIC)),
-                                                userCanAccess(userInfo.sub(), ResourceType.GROUP, groupId)
-                                        );
+                                    createAcls(dataAddress.getStringProperty(BOOTSTRAP_SERVERS), configuration.tokenEndpoint(),
+                                            userCanAccess(userInfo.sub(), ResourceType.TOPIC, dataAddress.getStringProperty(TOPIC)),
+                                            userCanAccess(userInfo.sub(), ResourceType.GROUP, groupId)
+                                    );
 
-                                        return createEdr(configuration, client, dataAddress, groupId);
-                                    });
-
-                        }));
+                                    return createEdr(configuration, client, dataAddress, groupId);
+                                })));
 
         return compose
                 .flatMap(result -> {
@@ -81,11 +85,15 @@ class KafkaDataPlaneAuthorizationService implements DataPlaneAuthorizationServic
 
     private DataAddress createEdr(OpenIdConfiguration configuration, ClientRegistrationResponse client, DataAddress dataAddress, String groupId) {
         return DataAddress.Builder.newInstance()
-                .properties(dataAddress.getProperties()) // TODO: provisional, not all the properties should be sent!
-                .property(EDC_NAMESPACE + "clientId", client.clientId())
-                .property(EDC_NAMESPACE + "clientSecret", client.clientSecret())
-                .property(EDC_NAMESPACE + "tokenEndpointUrl", configuration.tokenEndpoint())
-                .property(EDC_NAMESPACE + "kafka.group.prefix", groupId)
+                .type(EDR_SIMPLE_TYPE)
+                .property(OIDC_CLIENT_ID, client.clientId())
+                .property(OIDC_CLIENT_SECRET, client.clientSecret())
+                .property(OIDC_TOKEN_ENDPOINT, configuration.tokenEndpoint())
+                .property(GROUP_PREFIX, groupId)
+                .property(TOPIC, dataAddress.getStringProperty(TOPIC))
+                .property(BOOTSTRAP_SERVERS, dataAddress.getStringProperty(BOOTSTRAP_SERVERS))
+                .property(SECURITY_PROTOCOL, dataAddress.getStringProperty(SECURITY_PROTOCOL))
+                .property(SASL_MECHANISM, dataAddress.getStringProperty(SASL_MECHANISM))
                 .build();
     }
 
