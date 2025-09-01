@@ -9,7 +9,7 @@ val edcGroupId = "org.eclipse.edc"
 
 dependencies {
     runtimeOnly(project(":launchers:connector-inmemory")) {
-        // TODO: currently there's no way around this, it will disable EDR for HTTP-Data, only here for the sake of Kafka solution
+        // TODO(upstream): currently there's no way around this, it will disable EDR for HTTP-Data, only here for the sake of Kafka solution
         exclude("org.eclipse.edc", "data-plane-iam")
     }
 

@@ -1,23 +1,14 @@
 package eu.dataspace.connector.tests.extensions;
 
 import org.apache.kafka.clients.CommonClientConfigs;
-import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.admin.CreateAclsResult;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.acl.AccessControlEntry;
-import org.apache.kafka.common.acl.AclBinding;
-import org.apache.kafka.common.acl.AclOperation;
-import org.apache.kafka.common.acl.AclPermissionType;
 import org.apache.kafka.common.config.SaslConfigs;
-import org.apache.kafka.common.resource.PatternType;
-import org.apache.kafka.common.resource.ResourcePattern;
-import org.apache.kafka.common.resource.ResourceType;
 import org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginCallbackHandler;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -37,17 +28,14 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.MountableFile;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import static java.util.Map.entry;
 import static org.apache.kafka.common.config.internals.BrokerSecurityConfigs.ALLOWED_SASL_OAUTHBEARER_URLS_CONFIG;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * JUnit extension that sets up Kafka and Keycloak containers for testing.
@@ -152,7 +140,6 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, edrData.kafkaGroupPrefix());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.put("auto.offset.reset", "earliest");
 
         props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, edrData.kafkaSecurityProtocol());
         props.put(SaslConfigs.SASL_MECHANISM, edrData.kafkaSaslMechanism());
@@ -244,9 +231,8 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
         return "http://localhost:%s/realms/%s/.well-known/openid-configuration".formatted(getOAuthServicePort(), OAUTH_REALM);
     }
 
-    public CreateAclsResult createAcls(AclBinding... bindings) {
+    public @NotNull Properties getAdminProperties() {
         var adminProperties = new Properties();
-
         adminProperties.put(AdminClientConfig.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
         adminProperties.put(SaslConfigs.SASL_MECHANISM, "OAUTHBEARER");
         adminProperties.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required clientId=\"%s\" clientSecret=\"%s\";"
@@ -254,20 +240,7 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
         adminProperties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, getBootstrapServers());
         adminProperties.put(SaslConfigs.SASL_LOGIN_CALLBACK_HANDLER_CLASS, OAuthBearerLoginCallbackHandler.class.getName());
         adminProperties.put(SaslConfigs.SASL_OAUTHBEARER_TOKEN_ENDPOINT_URL, getTokenUrl());
-
-        System.setProperty(ALLOWED_SASL_OAUTHBEARER_URLS_CONFIG, getTokenUrl());
-
-        try (var adminClient = AdminClient.create(adminProperties)) {
-            var result = adminClient.createAcls(Arrays.stream(bindings).toList());
-            assertThat(result.all()).succeedsWithin(5, TimeUnit.SECONDS);
-            return result;
-        }
-    }
-
-    public AclBinding userCanDoAll(String principalName, ResourceType resourceType, String resourceName) {
-        var pattern = new ResourcePattern(resourceType, resourceName, PatternType.LITERAL);
-        var entry = new AccessControlEntry("User:" + principalName, "*", AclOperation.ALL, AclPermissionType.ALLOW);
-        return new AclBinding(pattern, entry);
+        return adminProperties;
     }
 
     public @NotNull String getBootstrapServers() {

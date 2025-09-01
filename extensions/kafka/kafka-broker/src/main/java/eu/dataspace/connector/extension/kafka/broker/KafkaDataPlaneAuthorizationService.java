@@ -4,16 +4,16 @@ import eu.dataspace.connector.extension.kafka.broker.openid.ClientRegistrationRe
 import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConfiguration;
 import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConnectService;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.common.acl.AccessControlEntry;
+import org.apache.kafka.common.acl.AccessControlEntryFilter;
 import org.apache.kafka.common.acl.AclBinding;
+import org.apache.kafka.common.acl.AclBindingFilter;
 import org.apache.kafka.common.acl.AclOperation;
 import org.apache.kafka.common.acl.AclPermissionType;
-import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.resource.PatternType;
 import org.apache.kafka.common.resource.ResourcePattern;
+import org.apache.kafka.common.resource.ResourcePatternFilter;
 import org.apache.kafka.common.resource.ResourceType;
-import org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginCallbackHandler;
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.spi.result.Result;
@@ -21,14 +21,19 @@ import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
 import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.BOOTSTRAP_SERVERS;
 import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.GROUP_PREFIX;
+import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.KAFKA_ADMIN_PROPERTIES_KEY;
 import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_CLIENT_ID;
 import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_CLIENT_SECRET;
 import static eu.dataspace.connector.extension.dataaddress.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_DISCOVERY_URL;
@@ -45,6 +50,7 @@ import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIM
 class KafkaDataPlaneAuthorizationService implements DataPlaneAuthorizationService {
     private final OpenIdConnectService openIdConnectService;
     private final Vault vault;
+    private final ConcurrentHashMap<String, Properties> adminPropertiesCache = new ConcurrentHashMap<>(); // TODO: please note that this needs to change, likely upstream (likey revoke method should get the data address)
 
     public KafkaDataPlaneAuthorizationService(OpenIdConnectService openIdConnectService, Vault vault) {
         this.openIdConnectService = openIdConnectService;
@@ -58,18 +64,25 @@ class KafkaDataPlaneAuthorizationService implements DataPlaneAuthorizationServic
         var tokenKey = dataAddress.getStringProperty(OIDC_REGISTER_CLIENT_TOKEN_KEY);
         var token = vault.resolveSecret(tokenKey);
 
-        ServiceResult<DataAddress> compose = openIdConnectService.fetchOpenIdConfiguration(discoveryUrl)
+        var compose = openIdConnectService.fetchOpenIdConfiguration(discoveryUrl)
                 .compose(configuration -> openIdConnectService.registerNewClient(configuration, token)
                         .compose(client -> openIdConnectService.userInfo(configuration, client)
-                                .map(userInfo -> {
+                                .compose(userInfo -> {
                                     var groupId = UUID.randomUUID().toString();
+                                    var adminPropertiesKey = dataAddress.getStringProperty(KAFKA_ADMIN_PROPERTIES_KEY);
+                                    var adminProperties = vault.resolveSecret(adminPropertiesKey);
 
-                                    createAcls(dataAddress.getStringProperty(BOOTSTRAP_SERVERS), configuration.tokenEndpoint(),
-                                            userCanAccess(userInfo.sub(), ResourceType.TOPIC, dataAddress.getStringProperty(TOPIC)),
-                                            userCanAccess(userInfo.sub(), ResourceType.GROUP, groupId)
-                                    );
-
-                                    return createEdr(configuration, client, dataAddress, groupId);
+                                    ServiceResult<DataAddress> edr = adminProperties(adminProperties)
+                                            .compose(properties -> {
+                                                adminPropertiesCache.put(dataFlow.getId(), properties);
+                                                return createAcls(properties,
+                                                        userCanAccess(userInfo.sub(), ResourceType.TOPIC, dataAddress.getStringProperty(TOPIC)),
+                                                        userCanAccess(userInfo.sub(), ResourceType.GROUP, groupId)
+                                                );
+                                            })
+                                            .map(v -> createEdr(configuration, client, dataAddress, groupId));
+                                    return edr
+                                            .onSuccess(a -> vault.storeSecret("kafka-principal-name-" + dataFlow.getId(), userInfo.sub()));
                                 })));
 
         return compose
@@ -104,24 +117,45 @@ class KafkaDataPlaneAuthorizationService implements DataPlaneAuthorizationServic
 
     @Override
     public ServiceResult<Void> revokeEndpointDataReference(String transferProcessId, String reason) {
-        return null;
+        var principalName = vault.resolveSecret("kafka-principal-name-" + transferProcessId);
+        if (principalName == null) {
+            return ServiceResult.notFound("Principal name not found for data flow " + transferProcessId);
+        }
+
+        var properties = adminPropertiesCache.get(transferProcessId);
+
+        try (var adminClient = AdminClient.create(properties)) {
+            adminClient.deleteAcls(List.of(new AclBindingFilter(
+                    ResourcePatternFilter.ANY,
+                    new AccessControlEntryFilter("User:" + principalName, "*", AclOperation.READ, AclPermissionType.ALLOW)
+            ))).all().get();
+        } catch (ExecutionException | InterruptedException e) {
+            return ServiceResult.unexpected("Cannot delete ACLs: " + e.getMessage());
+        }
+
+        vault.deleteSecret("kafka-principal-name-" + transferProcessId);
+
+        return ServiceResult.success();
     }
 
-    private void createAcls(String bootstrapServers, String tokenEndpointUrl, AclBinding... bindings) {
-        var adminProperties = new Properties();
-        // TODO: these should be passed in the address/vault
-        adminProperties.put(AdminClientConfig.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
-        adminProperties.put(SaslConfigs.SASL_MECHANISM, "OAUTHBEARER");
-        adminProperties.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required clientId=\"%s\" clientSecret=\"%s\";"
-                .formatted("myclient", "mysecret"));
-        adminProperties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        adminProperties.put(SaslConfigs.SASL_LOGIN_CALLBACK_HANDLER_CLASS, OAuthBearerLoginCallbackHandler.class.getName());
-        adminProperties.put(SaslConfigs.SASL_OAUTHBEARER_TOKEN_ENDPOINT_URL, tokenEndpointUrl);
+    private ServiceResult<Void> createAcls(Properties adminProperties, AclBinding... bindings) {
         try (var adminClient = AdminClient.create(adminProperties)) {
             adminClient.createAcls(Arrays.stream(bindings).toList()).all().get();
         } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
+            return ServiceResult.unexpected("Cannot create ACLs: " + e.getMessage());
         }
+
+        return ServiceResult.success();
+    }
+
+    private ServiceResult<Properties> adminProperties(String serializedProperties) {
+        var properties = new Properties();
+        try (var reader = new StringReader(serializedProperties)) {
+            properties.load(reader);
+        } catch (IOException e) {
+            return ServiceResult.unexpected("Cannot get Kafka Admin properties: " + e.getMessage());
+        }
+        return ServiceResult.success(properties);
     }
 
     private AclBinding userCanAccess(String principalName, ResourceType resourceType, String resourceName) {

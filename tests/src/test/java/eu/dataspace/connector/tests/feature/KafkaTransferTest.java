@@ -10,7 +10,7 @@ import eu.dataspace.connector.tests.extensions.VaultExtension;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
-import org.apache.kafka.common.resource.ResourceType;
+import org.apache.kafka.common.errors.TopicAuthorizationException;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.security.Vault;
 import org.junit.jupiter.api.Order;
@@ -19,9 +19,11 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -29,7 +31,9 @@ import java.util.concurrent.Executors;
 import static java.util.Map.entry;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
+import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.DEPROVISIONED;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
@@ -68,48 +72,68 @@ class KafkaTransferTest {
         var topic = "topic-" + UUID.randomUUID();
         var oidcRegisterClientTokenKey = UUID.randomUUID().toString();
 
-        KAFKA_EXTENSION.createAcls(KAFKA_EXTENSION.userCanDoAll("myclient", ResourceType.TOPIC, topic));
         var producer = KAFKA_EXTENSION.initializeKafkaProducer();
         Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory())
                 .scheduleAtFixedRate(() -> KafkaExtension.sendMessage(producer, topic, "key", "payload"), 0, 1, SECONDS);
 
         var providerVault = PROVIDER.getService(Vault.class);
+        var kafkaAdminPropertiesKey = "kafkaAdminProperties";
         providerVault.storeSecret(oidcRegisterClientTokenKey, KAFKA_EXTENSION.createInitialAccessToken());
+        providerVault.storeSecret(kafkaAdminPropertiesKey, serializeToString(KAFKA_EXTENSION.getAdminProperties()));
 
         // provider creates the asset, policy and offer on EDC
-        var dataAddressProperties = createKafkaDataAddress(topic, oidcRegisterClientTokenKey);
+        var dataAddressProperties = createKafkaDataAddress(topic, oidcRegisterClientTokenKey, kafkaAdminPropertiesKey);
         var assetId = PROVIDER.createOffer(dataAddressProperties);
 
         // consumer initiates a kafka transfer with proper resource tracking
         var consumerEdrReceiver = ClientAndServer.startClientAndServer(getFreePort());
         consumerEdrReceiver.when(request("/edr")).respond(response());
 
-        var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
+        var consumerTransferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                 .withTransferType("Kafka-PULL")
                 .withCallbacks(Json.createArrayBuilder()
                         .add(createCallback("http://localhost:%s/edr".formatted(consumerEdrReceiver.getPort()), true, Set.of("transfer.process.started")))
                         .build())
                 .execute();
 
-        CONSUMER.awaitTransferToBeInState(transferProcessId, STARTED);
+        CONSUMER.awaitTransferToBeInState(consumerTransferProcessId, STARTED);
 
         var edrRequests = await().until(() -> consumerEdrReceiver.retrieveRecordedRequests(request("/edr")), it -> it.length > 0);
         var objectMapper = new JacksonTypeManager().getMapper();
         var edr = objectMapper.readTree(edrRequests[0].getBodyAsRawBytes()).get("payload").get("dataAddress").get("properties");
-
         var edrData = objectMapper.convertValue(edr, KafkaEdr.class);
 
-        try (var consumer = KafkaExtension.createKafkaConsumer(edrData)) {
-            var edrDataTopic = edrData.topic();
-            consumer.subscribe(List.of(edrDataTopic));
+        var kafkaConsumer = KafkaExtension.createKafkaConsumer(edrData);
+        kafkaConsumer.subscribe(List.of(edrData.topic()));
 
-            var records = consumer.poll(Duration.ofSeconds(10));
-            assertThat(records).isNotEmpty();
-            assertThat(records.records(edrDataTopic)).isNotEmpty();
+        var records = kafkaConsumer.poll(Duration.ofSeconds(10));
+        assertThat(records).isNotEmpty();
+        assertThat(records.records(edrData.topic())).isNotEmpty();
+
+        // revocation side of things. WIP
+        var providerTransferProcessId = PROVIDER.getTransferProcesses().stream()
+                .filter(filter -> filter.asJsonObject().getString("correlationId").equals(consumerTransferProcessId))
+                .map(id -> id.asJsonObject().getString("@id")).findFirst().orElseThrow();
+
+        PROVIDER.terminateTransfer(providerTransferProcessId);
+        PROVIDER.awaitTransferToBeInState(providerTransferProcessId, DEPROVISIONED);
+
+        await().untilAsserted(() -> {
+            assertThatThrownBy(() -> kafkaConsumer.poll(Duration.ZERO)).isInstanceOf(TopicAuthorizationException.class);
+        });
+
+    }
+
+    private String serializeToString(Properties properties) {
+        try (var writer = new StringWriter()) {
+            properties.store(writer, "Serialized kafka admin properties");
+            return writer.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private Map<String, Object> createKafkaDataAddress(String topic, String oidcRegisterClientTokenKey) {
+    private Map<String, Object> createKafkaDataAddress(String topic, String oidcRegisterClientTokenKey, String kafkaAdminPropertiesKey) {
         Map<String, Object> properties = Map.ofEntries(
                 entry(EDC_NAMESPACE + "type", "Kafka"),
                 entry(EDC_NAMESPACE + "kafka.bootstrap.servers", KAFKA_EXTENSION.getBootstrapServers()),
@@ -117,7 +141,8 @@ class KafkaTransferTest {
                 entry(EDC_NAMESPACE + "kafka.security.protocol", "SASL_PLAINTEXT"),
                 entry(EDC_NAMESPACE + "topic", topic),
                 entry(EDC_NAMESPACE + "oidcDiscoveryUrl", KAFKA_EXTENSION.oidcDiscoveryUrl()),
-                entry(EDC_NAMESPACE + "oidcRegisterClientTokenKey", oidcRegisterClientTokenKey)
+                entry(EDC_NAMESPACE + "oidcRegisterClientTokenKey", oidcRegisterClientTokenKey),
+                entry(EDC_NAMESPACE + "kafkaAdminPropertiesKey", kafkaAdminPropertiesKey)
         );
 
         return properties;
