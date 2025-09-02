@@ -43,6 +43,7 @@ include(":extensions:kafka:kafka-spi")
 include(":extensions:kafka:validator-data-address-kafka")
 
 include(":launchers:connector-inmemory")
+include(":launchers:connector-kafka")
 include(":launchers:connector-vault-postgresql")
 include(":launchers:connector-vault-postgresql-edp")
 include(":tests")

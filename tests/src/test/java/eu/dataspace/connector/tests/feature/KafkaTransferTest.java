@@ -61,11 +61,11 @@ class KafkaTransferTest {
 
     @RegisterExtension
     @Order(4)
-    private static final MdsParticipant PROVIDER = MdsParticipantFactory.hashicorpVault("provider", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
+    private static final MdsParticipant PROVIDER = MdsParticipantFactory.kafka("provider", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
 
     @RegisterExtension
     @Order(4)
-    private static final MdsParticipant CONSUMER = MdsParticipantFactory.hashicorpVault("consumer", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
+    private static final MdsParticipant CONSUMER = MdsParticipantFactory.kafka("consumer", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
 
     @Test
     void shouldSupportKafkaPullTransfer() throws IOException {
@@ -110,7 +110,6 @@ class KafkaTransferTest {
         assertThat(records).isNotEmpty();
         assertThat(records.records(edrData.topic())).isNotEmpty();
 
-        // revocation side of things. WIP
         var providerTransferProcessId = PROVIDER.getTransferProcesses().stream()
                 .filter(filter -> filter.asJsonObject().getString("correlationId").equals(consumerTransferProcessId))
                 .map(id -> id.asJsonObject().getString("@id")).findFirst().orElseThrow();
