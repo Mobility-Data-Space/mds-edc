@@ -23,9 +23,9 @@ dependencies {
     testImplementation(libs.testcontainers.kafka)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.vault)
-    testImplementation("com.auth0:java-jwt:4.5.0")
 
     testCompileOnly(project(":launchers:connector-inmemory"))
+    testCompileOnly(project(":launchers:connector-kafka"))
     testCompileOnly(project(":launchers:connector-vault-postgresql"))
     testCompileOnly(project(":launchers:connector-vault-postgresql-edp"))
 

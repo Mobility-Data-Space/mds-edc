@@ -51,8 +51,6 @@ edc-policy-engine-spi = { module = "org.eclipse.edc:policy-engine-spi", version.
 edc-token-lib = { module = "org.eclipse.edc:token-lib", version.ref = "edc" }
 edc-token-spi = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
 edc-transaction-spi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
-edc-transfer-spi = { module = "org.eclipse.edc:transfer-spi", version.ref = "edc" }
-edc-transfer-data-plane-signaling = { module = "org.eclipse.edc:transfer-data-plane-signaling", version.ref = "edc" }
 edc-transform-spi = { module = "org.eclipse.edc:transform-spi", version.ref = "edc" }
 edc-util-lib = { module = "org.eclipse.edc:util-lib", version.ref = "edc" }
 edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
