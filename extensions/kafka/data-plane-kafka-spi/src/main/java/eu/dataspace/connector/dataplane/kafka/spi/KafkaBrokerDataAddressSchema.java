@@ -17,15 +17,9 @@ public interface KafkaBrokerDataAddressSchema {
     String OIDC_DISCOVERY_URL = EDC_NAMESPACE + "oidcDiscoveryUrl";
     String OIDC_REGISTER_CLIENT_TOKEN_KEY = EDC_NAMESPACE + "oidcRegisterClientTokenKey";
     String KAFKA_ADMIN_PROPERTIES_KEY = EDC_NAMESPACE + "kafkaAdminPropertiesKey";
-    @Deprecated
-    String OAUTH_REVOKE_URL = EDC_NAMESPACE + "revokeUrl";
-    @Deprecated
-    String OIDC_TOKEN_URL = EDC_NAMESPACE + "tokenUrl";
-    @Deprecated
-    String OIDC_CLIENT_SECRET_KEY = EDC_NAMESPACE + "clientSecretKey";
+    String KAFKA_CONSUMER_PROPERTIES = EDC_NAMESPACE + "kafkaConsumerProperties";
 
     String BOOTSTRAP_SERVERS = EDC_NAMESPACE + "kafka.bootstrap.servers";
-    String GROUP_PREFIX = EDC_NAMESPACE + "kafka.group.prefix";
     String SECURITY_PROTOCOL = EDC_NAMESPACE + "kafka.security.protocol";
     String SASL_MECHANISM = EDC_NAMESPACE + "kafka.sasl.mechanism";
 

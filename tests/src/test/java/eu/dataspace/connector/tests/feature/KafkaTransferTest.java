@@ -10,6 +10,7 @@ import eu.dataspace.connector.tests.extensions.VaultExtension;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.TopicAuthorizationException;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.security.Vault;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockserver.integration.ClientAndServer;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.time.Duration;
 import java.util.List;
@@ -103,7 +105,8 @@ class KafkaTransferTest {
         var edr = objectMapper.readTree(edrRequests[0].getBodyAsRawBytes()).get("payload").get("dataAddress").get("properties");
         var edrData = objectMapper.convertValue(edr, KafkaEdr.class);
 
-        var kafkaConsumer = KafkaExtension.createKafkaConsumer(edrData);
+        var props = deserialize(edrData.kafkaConsumerProperties());
+        var kafkaConsumer = new KafkaConsumer<>(props);
         kafkaConsumer.subscribe(List.of(edrData.topic()));
 
         var records = kafkaConsumer.poll(Duration.ofSeconds(10));
@@ -157,6 +160,16 @@ class KafkaTransferTest {
                         .collect(Json::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add)
                         .build())
                 .build();
+    }
+
+    private static Properties deserialize(String serializedProperties) {
+        var properties = new Properties();
+        try (var reader = new StringReader(serializedProperties)) {
+            properties.load(reader);
+            return properties;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

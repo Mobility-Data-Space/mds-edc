@@ -1,43 +1,35 @@
 package eu.dataspace.connector.extension.kafka.broker;
 
+import eu.dataspace.connector.dataplane.kafka.spi.AccessControlLists;
 import eu.dataspace.connector.dataplane.kafka.spi.IdentityProvider;
 import eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema;
-import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConnectService;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.connector.dataplane.spi.iam.PublicEndpointGeneratorService;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSourceFactory;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
-import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.jetbrains.annotations.NotNull;
 
-@Extension(value = KafkaBrokerExtension.NAME)
-public class KafkaBrokerExtension implements ServiceExtension {
+@Extension(value = DataPlaneKafkaExtension.NAME)
+public class DataPlaneKafkaExtension implements ServiceExtension {
 
-    public static final String NAME = "Kafka stream extension";
+    public static final String NAME = "Data Plane Kafka";
 
-    @Inject
-    private TypeManager typeManager;
-    @Inject
-    private EdcHttpClient httpClient;
     @Inject
     private PublicEndpointGeneratorService publicEndpointGeneratorService;
     @Inject
     private PipelineService pipelineService;
     @Inject
-    private Vault vault;
-    @Inject
     private IdentityProvider identityProvider;
-
+    @Inject
+    private AccessControlLists accessControlLists;
 
     @Override
     public void initialize(final ServiceExtensionContext context) {
@@ -51,9 +43,7 @@ public class KafkaBrokerExtension implements ServiceExtension {
 
     @Provider
     public DataPlaneAuthorizationService dataPlaneAuthorizationService() {
-        var mapper = typeManager.getMapper();
-        var openIdConnectService = new OpenIdConnectService(httpClient, mapper);
-        return new KafkaDataPlaneAuthorizationService(identityProvider, vault);
+        return new DataPlaneKafkaAuthorizationService(identityProvider, accessControlLists);
     }
 
     private static class KafkaDummySourceFactory implements DataSourceFactory {

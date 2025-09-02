@@ -2,15 +2,12 @@ package eu.dataspace.connector.tests.extensions;
 
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginCallbackHandler;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -134,26 +131,6 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
         return keycloakContainer.getMappedPort(8080);
     }
 
-    public static KafkaConsumer<String, String> createKafkaConsumer(final KafkaEdr edrData) {
-        var props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, edrData.kafkaBootstrapServers());
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, edrData.kafkaGroupPrefix());
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-
-        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, edrData.kafkaSecurityProtocol());
-        props.put(SaslConfigs.SASL_MECHANISM, edrData.kafkaSaslMechanism());
-
-        props.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required clientId=\"%s\" clientSecret=\"%s\";"
-                .formatted(edrData.clientId(), edrData.clientSecret()));
-        props.put(SaslConfigs.SASL_OAUTHBEARER_TOKEN_ENDPOINT_URL, edrData.tokenEndpoint());
-        props.put(SaslConfigs.SASL_LOGIN_CALLBACK_HANDLER_CLASS, OAuthBearerLoginCallbackHandler.class.getName());
-
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
-        props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
-        return new KafkaConsumer<>(props);
-    }
-
     public KafkaProducer<String, String> initializeKafkaProducer() {
         var tokenUrl = getTokenUrl();
 
@@ -260,5 +237,6 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
                 .clientId("admin-cli")
                 .build();
     }
+
 
 }

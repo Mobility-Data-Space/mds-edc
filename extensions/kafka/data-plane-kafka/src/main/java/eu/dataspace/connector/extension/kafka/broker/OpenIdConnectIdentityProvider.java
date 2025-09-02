@@ -21,7 +21,7 @@ public class OpenIdConnectIdentityProvider implements IdentityProvider {
     }
 
     @Override
-    public ServiceResult<Credentials> grantAccess(DataAddress dataAddress) {
+    public ServiceResult<Credentials> grantAccess(String dataFlowId, DataAddress dataAddress) {
         var discoveryUrl = dataAddress.getStringProperty(OIDC_DISCOVERY_URL);
         var tokenKey = dataAddress.getStringProperty(OIDC_REGISTER_CLIENT_TOKEN_KEY);
         var token = vault.resolveSecret(tokenKey);
@@ -31,5 +31,10 @@ public class OpenIdConnectIdentityProvider implements IdentityProvider {
                         .compose(client -> openIdConnectService.userInfo(configuration, client)
                                 .map(userInfo -> new Credentials(
                                         userInfo.sub(), configuration.tokenEndpoint(), client.clientId(), client.clientSecret()))));
+    }
+
+    @Override
+    public ServiceResult<Void> revokeAccess(String dataFlowId) {
+        return ServiceResult.success(); // TODO: client removal
     }
 }
