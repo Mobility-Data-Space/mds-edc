@@ -1,1 +1,2 @@
+eu.dataspace.connector.extension.kafka.broker.DataPlaneKafkaDefaultServices
 eu.dataspace.connector.extension.kafka.broker.KafkaBrokerExtension

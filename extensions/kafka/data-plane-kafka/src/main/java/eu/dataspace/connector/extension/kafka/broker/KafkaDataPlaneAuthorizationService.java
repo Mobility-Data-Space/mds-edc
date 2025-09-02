@@ -1,8 +1,7 @@
 package eu.dataspace.connector.extension.kafka.broker;
 
-import eu.dataspace.connector.extension.kafka.broker.openid.ClientRegistrationResponse;
-import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConfiguration;
-import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConnectService;
+import eu.dataspace.connector.dataplane.kafka.spi.Credentials;
+import eu.dataspace.connector.dataplane.kafka.spi.IdentityProvider;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.common.acl.AccessControlEntry;
 import org.apache.kafka.common.acl.AccessControlEntryFilter;
@@ -36,8 +35,6 @@ import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressS
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.KAFKA_ADMIN_PROPERTIES_KEY;
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_CLIENT_ID;
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_CLIENT_SECRET;
-import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_DISCOVERY_URL;
-import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_REGISTER_CLIENT_TOKEN_KEY;
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_TOKEN_ENDPOINT;
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.SASL_MECHANISM;
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.SECURITY_PROTOCOL;
@@ -48,44 +45,37 @@ import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIM
  * Manages the authentication and the EDR creation for Kafka-PULL transfers
  */
 class KafkaDataPlaneAuthorizationService implements DataPlaneAuthorizationService {
-    private final OpenIdConnectService openIdConnectService;
+    private final IdentityProvider identityProvider;
     private final Vault vault;
     private final ConcurrentHashMap<String, Properties> adminPropertiesCache = new ConcurrentHashMap<>(); // TODO: please note that this needs to change, likely upstream (likey revoke method should get the data address)
 
-    public KafkaDataPlaneAuthorizationService(OpenIdConnectService openIdConnectService, Vault vault) {
-        this.openIdConnectService = openIdConnectService;
+    public KafkaDataPlaneAuthorizationService(IdentityProvider identityProvider, Vault vault) {
+        this.identityProvider = identityProvider;
         this.vault = vault;
     }
 
     @Override
     public Result<DataAddress> createEndpointDataReference(DataFlow dataFlow) {
         var dataAddress = dataFlow.getSource();
-        var discoveryUrl = dataAddress.getStringProperty(OIDC_DISCOVERY_URL);
-        var tokenKey = dataAddress.getStringProperty(OIDC_REGISTER_CLIENT_TOKEN_KEY);
-        var token = vault.resolveSecret(tokenKey);
 
-        var compose = openIdConnectService.fetchOpenIdConfiguration(discoveryUrl)
-                .compose(configuration -> openIdConnectService.registerNewClient(configuration, token)
-                        .compose(client -> openIdConnectService.userInfo(configuration, client)
-                                .compose(userInfo -> {
-                                    var groupId = UUID.randomUUID().toString();
-                                    var adminPropertiesKey = dataAddress.getStringProperty(KAFKA_ADMIN_PROPERTIES_KEY);
-                                    var adminProperties = vault.resolveSecret(adminPropertiesKey);
+        return identityProvider.grantAccess(dataAddress)
+                .compose(credentials -> {
+                    var groupId = UUID.randomUUID().toString();
+                    var adminPropertiesKey = dataAddress.getStringProperty(KAFKA_ADMIN_PROPERTIES_KEY);
+                    var adminProperties = vault.resolveSecret(adminPropertiesKey);
 
-                                    ServiceResult<DataAddress> edr = adminProperties(adminProperties)
-                                            .compose(properties -> {
-                                                adminPropertiesCache.put(dataFlow.getId(), properties);
-                                                return createAcls(properties,
-                                                        userCanAccess(userInfo.sub(), ResourceType.TOPIC, dataAddress.getStringProperty(TOPIC)),
-                                                        userCanAccess(userInfo.sub(), ResourceType.GROUP, groupId)
-                                                );
-                                            })
-                                            .map(v -> createEdr(configuration, client, dataAddress, groupId));
-                                    return edr
-                                            .onSuccess(a -> vault.storeSecret("kafka-principal-name-" + dataFlow.getId(), userInfo.sub()));
-                                })));
-
-        return compose
+                    ServiceResult<DataAddress> edr = adminProperties(adminProperties)
+                            .compose(properties -> {
+                                adminPropertiesCache.put(dataFlow.getId(), properties);
+                                return createAcls(properties,
+                                        userCanAccess(credentials.subject(), ResourceType.TOPIC, dataAddress.getStringProperty(TOPIC)),
+                                        userCanAccess(credentials.subject(), ResourceType.GROUP, groupId)
+                                );
+                            })
+                            .map(v -> createEdr(credentials, dataAddress, groupId));
+                    return edr
+                            .onSuccess(a -> vault.storeSecret("kafka-principal-name-" + dataFlow.getId(), credentials.subject()));
+                })
                 .flatMap(result -> {
                     if (result.succeeded()) {
                         return Result.success(result.getContent());
@@ -93,15 +83,14 @@ class KafkaDataPlaneAuthorizationService implements DataPlaneAuthorizationServic
                         return Result.failure(result.getFailureDetail());
                     }
                 });
-
     }
 
-    private DataAddress createEdr(OpenIdConfiguration configuration, ClientRegistrationResponse client, DataAddress dataAddress, String groupId) {
+    private DataAddress createEdr(Credentials credentials, DataAddress dataAddress, String groupId) {
         return DataAddress.Builder.newInstance()
                 .type(EDR_SIMPLE_TYPE)
-                .property(OIDC_CLIENT_ID, client.clientId())
-                .property(OIDC_CLIENT_SECRET, client.clientSecret())
-                .property(OIDC_TOKEN_ENDPOINT, configuration.tokenEndpoint())
+                .property(OIDC_CLIENT_ID, credentials.clientId())
+                .property(OIDC_CLIENT_SECRET, credentials.clientSecret())
+                .property(OIDC_TOKEN_ENDPOINT, credentials.tokenEndpoint())
                 .property(GROUP_PREFIX, groupId)
                 .property(TOPIC, dataAddress.getStringProperty(TOPIC))
                 .property(BOOTSTRAP_SERVERS, dataAddress.getStringProperty(BOOTSTRAP_SERVERS))

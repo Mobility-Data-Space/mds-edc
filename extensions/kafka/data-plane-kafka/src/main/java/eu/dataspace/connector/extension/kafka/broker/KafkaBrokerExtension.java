@@ -1,5 +1,6 @@
 package eu.dataspace.connector.extension.kafka.broker;
 
+import eu.dataspace.connector.dataplane.kafka.spi.IdentityProvider;
 import eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema;
 import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConnectService;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
@@ -26,18 +27,17 @@ public class KafkaBrokerExtension implements ServiceExtension {
 
     @Inject
     private TypeManager typeManager;
-
     @Inject
     private EdcHttpClient httpClient;
-
     @Inject
     private PublicEndpointGeneratorService publicEndpointGeneratorService;
-
     @Inject
     private PipelineService pipelineService;
-
     @Inject
     private Vault vault;
+    @Inject
+    private IdentityProvider identityProvider;
+
 
     @Override
     public void initialize(final ServiceExtensionContext context) {
@@ -53,7 +53,7 @@ public class KafkaBrokerExtension implements ServiceExtension {
     public DataPlaneAuthorizationService dataPlaneAuthorizationService() {
         var mapper = typeManager.getMapper();
         var openIdConnectService = new OpenIdConnectService(httpClient, mapper);
-        return new KafkaDataPlaneAuthorizationService(openIdConnectService, vault);
+        return new KafkaDataPlaneAuthorizationService(identityProvider, vault);
     }
 
     private static class KafkaDummySourceFactory implements DataSourceFactory {
