@@ -38,9 +38,8 @@ include(":extensions:policy:policy-referring-connector")
 include(":extensions:policy:policy-time-interval")
 include(":extensions:semantic-validator")
 
-include(":extensions:kafka:kafka-broker")
-include(":extensions:kafka:kafka-spi")
-include(":extensions:kafka:validator-data-address-kafka")
+include(":extensions:kafka:data-plane-kafka")
+include(":extensions:kafka:data-plane-kafka-spi")
 
 include(":launchers:connector-inmemory")
 include(":launchers:connector-kafka")

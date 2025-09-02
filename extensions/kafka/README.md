@@ -10,10 +10,9 @@ while maintaining full control over access permissions.
 
 The extension consists of the following modules:
 
-- **kafka-broker**: Core Control Plane extension that manages access to Kafka topics by creating credentials
+- **data-plane-kafka**: Data Plane extension that manages access to Kafka topics by creating credentials
   and tokens
-- **kafka-spi**: Defines the data address format for Kafka assets
-- **validator-data-address-kafka**: Validates Kafka data addresses
+- **data-plane-kafka-spi**: Defines the data address format for Kafka assets
 
 ## Technical Implementation
 

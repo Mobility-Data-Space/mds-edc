@@ -28,7 +28,7 @@ dependencies {
 
     runtimeOnly(libs.logging.house.client)
 
-    implementation(project(":extensions:kafka:kafka-broker"))
+    implementation(project(":extensions:kafka:data-plane-kafka"))
 }
 
 application {
