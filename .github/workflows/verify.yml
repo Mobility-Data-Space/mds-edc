@@ -1,9 +1,7 @@
-name: verify
+name: verify pull request
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -25,7 +23,6 @@ jobs:
           distribution: 'temurin'
       - name: test and build
         run: |
-          ./gradlew build -x test
           ./gradlew build
         env:
           USERNAME: ${{ github.actor }}
