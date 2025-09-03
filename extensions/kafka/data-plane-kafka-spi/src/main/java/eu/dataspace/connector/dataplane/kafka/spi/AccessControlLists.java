@@ -6,7 +6,7 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 /**
  * Manages access control on Kafka
  */
-public interface AccessControlLists {
+    public interface AccessControlLists {
 
     /**
      * Allow access to a user

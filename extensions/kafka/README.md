@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Kafka Broker Extension is a Control Plane extension that enables secure, dynamic access to Kafka topics within the
+The Kafka Broker Extension is a Data Plane extension that enables secure, dynamic access to Kafka topics within the
 Eclipse Dataspace Connector (EDC) framework. This extension allows data providers to share Kafka streams with consumers
 while maintaining full control over access permissions.
 
@@ -32,7 +32,7 @@ When creating a Kafka asset, use the following properties in the DataAddress:
 
 These properties point to `vault` entries:
 - `oidcRegisterClientTokenKey`: the vault entry contains a string object with the token that can be used to register the client
-- `kafkaAdminPropertes` the vault entry contains the properties that can be used to instantiate a `KafkaAdminClient` to be used
+- `kafkaAdminProperties` the vault entry contains the properties that can be used to instantiate a `KafkaAdminClient` to be used
   to manage the ACLs. It's a `Properties` object serialized to String.
 
 ## Example
