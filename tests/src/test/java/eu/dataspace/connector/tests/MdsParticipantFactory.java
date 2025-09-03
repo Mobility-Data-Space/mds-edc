@@ -17,9 +17,7 @@ public interface MdsParticipantFactory {
         return MdsParticipant.Builder.newInstance()
                 .id(name)
                 .name(name)
-                .runtime(participant -> new EmbeddedRuntime(name, ":launchers:connector-inmemory")
-                        .configurationProvider(participant::getConfiguration)
-                        .registerSystemExtension(ServiceExtension.class, participant.seedVaultKeys()))
+                .runtime(participant -> baseRuntime(name, ":launchers:connector-inmemory", participant))
                 .build();
     }
 
@@ -27,10 +25,21 @@ public interface MdsParticipantFactory {
         return MdsParticipant.Builder.newInstance()
                 .id(name)
                 .name(name)
-                .runtime(participant -> new EmbeddedRuntime(name, ":launchers:connector-vault-postgresql")
-                        .configurationProvider(participant::getConfiguration)
+                .runtime(participant -> baseRuntime(name, ":launchers:connector-vault-postgresql", participant)
                         .configurationProvider(() -> vault.getConfig(name))
-                        .registerSystemExtension(ServiceExtension.class, participant.seedVaultKeys())
+                        .configurationProvider(() -> daps.dapsConfig(name))
+                        .registerSystemExtension(ServiceExtension.class, daps.seedDapsKeyPair())
+                        .configurationProvider(() -> postgres.getConfig(name))
+                )
+                .build();
+    }
+
+    static MdsParticipant kafka(String name, VaultExtension vault, SovityDapsExtension daps, PostgresqlExtension postgres) {
+        return MdsParticipant.Builder.newInstance()
+                .id(name)
+                .name(name)
+                .runtime(participant -> baseRuntime(name, ":launchers:connector-kafka", participant)
+                        .configurationProvider(() -> vault.getConfig(name))
                         .configurationProvider(() -> daps.dapsConfig(name))
                         .registerSystemExtension(ServiceExtension.class, daps.seedDapsKeyPair())
                         .configurationProvider(() -> postgres.getConfig(name))
@@ -42,10 +51,8 @@ public interface MdsParticipantFactory {
         return MdsParticipant.Builder.newInstance()
                 .id(name)
                 .name(name)
-                .runtime(participant -> new EmbeddedRuntime(name, ":launchers:connector-vault-postgresql-edp")
-                        .configurationProvider(participant::getConfiguration)
+                .runtime(participant -> baseRuntime(name, ":launchers:connector-vault-postgresql-edp", participant)
                         .configurationProvider(() -> vault.getConfig(name))
-                        .registerSystemExtension(ServiceExtension.class, participant.seedVaultKeys())
                         .configurationProvider(() -> daps.dapsConfig(name))
                         .registerSystemExtension(ServiceExtension.class, daps.seedDapsKeyPair())
                         .configurationProvider(() -> postgres.getConfig(name))
@@ -55,5 +62,11 @@ public interface MdsParticipantFactory {
                         )
                 )
                 .build();
+    }
+
+    private static EmbeddedRuntime baseRuntime(String name, String module, MdsParticipant participant) {
+        return new EmbeddedRuntime(name, module)
+                .configurationProvider(participant::getConfiguration)
+                .registerSystemExtension(ServiceExtension.class, participant.seedVaultKeys());
     }
 }
