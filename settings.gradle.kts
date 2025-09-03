@@ -38,7 +38,11 @@ include(":extensions:policy:policy-referring-connector")
 include(":extensions:policy:policy-time-interval")
 include(":extensions:semantic-validator")
 
+include(":extensions:kafka:data-plane-kafka")
+include(":extensions:kafka:data-plane-kafka-spi")
+
 include(":launchers:connector-inmemory")
+include(":launchers:connector-kafka")
 include(":launchers:connector-vault-postgresql")
 include(":launchers:connector-vault-postgresql-edp")
 include(":tests")
