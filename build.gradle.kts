@@ -140,12 +140,13 @@ subprojects {
 
 fun getAllProjectInternalDependencies(project: Project): List<ProjectDependency> {
     val projectDependencies = project.configurations
-        .flatMap { it -> it.dependencies }
+        .filter { !it.name.startsWith("test") }
+        .flatMap { it.dependencies }
         .filterIsInstance<ProjectDependency>()
 
 
     val inner = projectDependencies.stream().flatMap { projectDependency ->
-        allprojects.find { it -> it.path == projectDependency.path }
+        allprojects.find { it.path == projectDependency.path }
             ?.let { getAllProjectInternalDependencies(it) }
             ?.stream()
     }.toList()
