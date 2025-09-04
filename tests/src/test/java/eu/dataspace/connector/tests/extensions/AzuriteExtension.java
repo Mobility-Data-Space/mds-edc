@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.joining;
 public class AzuriteExtension implements BeforeAllCallback, AfterAllCallback {
 
     private static final int port = 10_000;
-    private static final String IMAGE_NAME = "mcr.microsoft.com/azure-storage/azurite:3.34.0";
+    private static final String IMAGE_NAME = "mcr.microsoft.com/azure-storage/azurite:3.35.0";
 
     private final AzuriteContainer azuriteContainer;
 
