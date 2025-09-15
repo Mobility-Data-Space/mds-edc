@@ -16,7 +16,7 @@ rest-assured = "5.5.6"
 swagger = "2.2.36"
 testcontainers = "1.21.3"
 testcontainers-keycloak = "3.8.0"
-tractusx-edc = "0.11.0-RC1"
+tractusx-edc = "0.11.0-RC2"
 yasson = "3.0.4"
 
 [libraries]
