@@ -3,7 +3,6 @@ package eu.dataspace.connector.extension.logginghouse.publisher;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.truzzt.extension.logginghouse.client.events.CustomLoggingHouseEvent;
-import eu.dataspace.connector.extension.contract.retirement.event.ContractAgreementEvent;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.event.Event;
@@ -14,6 +13,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.tractusx.edc.agreements.retirement.spi.event.ContractAgreementEvent;
 
 import java.time.Clock;
 import java.util.UUID;
@@ -41,12 +41,7 @@ public class LoggingHousePublisherExtension implements ServiceExtension {
 
             var wrappedEvent = createWrapperEvent(payload);
             if (wrappedEvent != null) {
-                var envelope = EventEnvelope.Builder
-                        .newInstance()
-                        .payload(wrappedEvent)
-                        .at(clock.millis())
-                        .build();
-                eventRouter.publish(envelope);
+                eventRouter.publish(wrappedEvent);
             }
         }
 
