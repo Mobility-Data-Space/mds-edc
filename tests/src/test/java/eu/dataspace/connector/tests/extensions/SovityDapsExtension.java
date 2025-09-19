@@ -100,7 +100,8 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
                 "edc.oauth.token.expiration", "60",
                 "edc.iam.token.scope", "idsc:IDS_CONNECTOR_ATTRIBUTES_ALL",
                 "edc.oauth.provider.audience", keycloakRealmUser,
-                "edc.oauth.endpoint.audience", "idsc:IDS_CONNECTORS_ALL"
+                "edc.oauth.endpoint.audience", "idsc:IDS_CONNECTORS_ALL",
+                "edc.agent.identity.key", "referringConnector"
         );
 
         return ConfigFactory.fromMap(settings);

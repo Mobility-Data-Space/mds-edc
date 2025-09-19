@@ -48,6 +48,7 @@ edc-oauth2-spi = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
 edc-participant-spi = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
 edc-policy-spi = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
 edc-policy-engine-spi = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
+edc-protocol-spi = { module = "org.eclipse.edc:protocol-spi", version.ref = "edc" }
 edc-token-lib = { module = "org.eclipse.edc:token-lib", version.ref = "edc" }
 edc-token-spi = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
 edc-transaction-spi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }

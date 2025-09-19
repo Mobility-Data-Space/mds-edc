@@ -1,17 +1,20 @@
 package eu.dataspace.connector.iam.oauth2;
 
-import org.eclipse.edc.http.spi.EdcHttpClient;
 import eu.dataspace.connector.iam.oauth2.identity.IdentityProviderKeyResolver;
 import eu.dataspace.connector.iam.oauth2.identity.Oauth2ServiceImpl;
 import eu.dataspace.connector.iam.oauth2.jwt.X509CertificateDecorator;
+import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.oauth2.spi.Oauth2AssertionDecorator;
 import org.eclipse.edc.iam.oauth2.spi.client.Oauth2Client;
 import org.eclipse.edc.jwt.signer.spi.JwsSignerProvider;
 import org.eclipse.edc.keys.spi.CertificateResolver;
+import org.eclipse.edc.protocol.spi.DefaultParticipantIdExtractionFunction;
 import org.eclipse.edc.runtime.metamodel.annotation.Configuration;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
+import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.iam.IdentityService;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -44,32 +47,33 @@ public class Oauth2ServiceExtension implements ServiceExtension {
 
     @Configuration
     private Oauth2ServiceConfiguration config;
-    private IdentityProviderKeyResolver providerKeyResolver;
+    @Setting(
+            key = "edc.agent.identity.key",
+            description = "The claim that contains the counter-part identity",
+            defaultValue = "referringConnector"
+    )
+    private String agentIdentityKey;
 
     @Inject
     private EdcHttpClient httpClient;
-
     @Inject
     private CertificateResolver certificateResolver;
-
     @Inject
     private Clock clock;
-
     @Inject
     private Oauth2Client oauth2Client;
-
     @Inject
     private TypeManager typeManager;
-
     @Inject
     private TokenValidationRulesRegistry tokenValidationRulesRegistry;
-
     @Inject
     private TokenValidationService tokenValidationService;
     @Inject
     private TokenDecoratorRegistry jwtDecoratorRegistry;
     @Inject
     private JwsSignerProvider jwsSignerProvider;
+
+    private IdentityProviderKeyResolver providerKeyResolver;
 
     @Override
     public String name() {
@@ -103,14 +107,6 @@ public class Oauth2ServiceExtension implements ServiceExtension {
         tokenValidationRulesRegistry.addRule(OAUTH2_TOKEN_CONTEXT, new ExpirationIssuedAtValidationRule(clock, config.getIssuedAtLeeway(), false));
     }
 
-    private Oauth2ServiceConfiguration withDefaults(Oauth2ServiceConfiguration config, ServiceExtensionContext context) {
-        var providerAudience = ofNullable(config.getProviderAudience()).orElseGet(context::getComponentId);
-        return config.toBuilder()
-                .providerAudience(providerAudience)
-                .endpointAudience(ofNullable(config.getEndpointAudience()).orElse(providerAudience))
-                .build();
-    }
-
     @Override
     public void start() {
         providerKeyResolver.start();
@@ -119,6 +115,19 @@ public class Oauth2ServiceExtension implements ServiceExtension {
     @Override
     public void shutdown() {
         providerKeyResolver.stop();
+    }
+
+    @Provider
+    public DefaultParticipantIdExtractionFunction defaultParticipantIdExtractionFunction() {
+        return claimToken -> claimToken.getStringClaim(agentIdentityKey);
+    }
+
+    private Oauth2ServiceConfiguration withDefaults(Oauth2ServiceConfiguration config, ServiceExtensionContext context) {
+        var providerAudience = ofNullable(config.getProviderAudience()).orElseGet(context::getComponentId);
+        return config.toBuilder()
+                .providerAudience(providerAudience)
+                .endpointAudience(ofNullable(config.getEndpointAudience()).orElse(providerAudience))
+                .build();
     }
 
     private IdentityProviderKeyResolver identityProviderKeyResolver(ServiceExtensionContext context) {

@@ -4,8 +4,9 @@ plugins {
 
 dependencies {
     api(libs.edc.http.spi)
-    api(libs.edc.oauth2.spi)
     api(libs.edc.jwt.signer.spi)
+    api(libs.edc.oauth2.spi)
+    api(libs.edc.protocol.spi)
     implementation(libs.edc.token.lib)
 
     testImplementation(libs.assertj)
