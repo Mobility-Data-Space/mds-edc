@@ -8,11 +8,11 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginCallbackHandler;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -43,11 +43,11 @@ class DataPlaneKafkaAuthorizationService implements DataPlaneAuthorizationServic
     }
 
     @Override
-    public Result<DataAddress> createEndpointDataReference(DataFlow dataFlow) {
-        var dataAddress = dataFlow.getSource();
+    public Result<DataAddress> createEndpointDataReference(DataFlowStartMessage dataFlow) {
+        var dataAddress = dataFlow.getSourceDataAddress();
 
         var edr = identityProvider.grantAccess(dataFlow.getId(), dataAddress)
-                .<DataAddress, ServiceResult<DataAddress>>compose(credentials -> accessControlLists.allowAccessTo(credentials.subject(), dataFlow.getId(), dataAddress)
+                .<DataAddress, ServiceResult<DataAddress>>compose(credentials -> accessControlLists.allowAccessTo(credentials.subject(), dataFlow.getProcessId(), dataAddress)
                         .map(response -> {
                             var kafkaConsumerProperties = kafkaConsumerProperties(credentials, dataAddress, response.groupId());
                             return createEdr(kafkaConsumerProperties, credentials, dataAddress);
@@ -69,9 +69,16 @@ class DataPlaneKafkaAuthorizationService implements DataPlaneAuthorizationServic
     }
 
     @Override
-    public ServiceResult<Void> revokeEndpointDataReference(String transferProcessId, String reason) {
+    public Result<Void> revokeEndpointDataReference(String transferProcessId, String reason) {
         return accessControlLists.denyAccessTo(transferProcessId)
-                .compose(v -> identityProvider.revokeAccess(transferProcessId));
+                .compose(v -> identityProvider.revokeAccess(transferProcessId))
+                .flatMap(result -> {
+                    if (result.succeeded()) {
+                        return Result.success(result.getContent());
+                    } else {
+                        return Result.failure(result.getFailureDetail());
+                    }
+                });
     }
 
     private DataAddress createEdr(Properties kafkaConsumerProperties, Credentials credentials, DataAddress dataAddress) {
