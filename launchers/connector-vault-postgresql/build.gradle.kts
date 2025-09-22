@@ -8,7 +8,7 @@ plugins {
 val edcGroupId = "org.eclipse.edc"
 
 dependencies {
-    runtimeOnly(project(":launchers:connector-inmemory"))
+    runtimeOnly(project(":launchers:launcher-base"))
 
     implementation(project(":extensions:daps:oauth2-daps"))
     implementation(project(":extensions:daps:oauth2-identity-service"))
