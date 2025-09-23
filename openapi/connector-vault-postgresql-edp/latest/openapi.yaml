@@ -293,19 +293,173 @@ paths:
   /v3/catalog/request:
     $ref: ./catalog-api.yaml#/paths/~1v3~1catalog~1request
   /v3/contractnegotiations/{id}/agreement:
-    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}~1agreement"
+    get:
+      description: Gets a contract agreement for a contract negotiation with the given
+        ID
+      operationId: getAgreementForNegotiationV3
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractAgreement"
+          description: "The contract agreement that is attached to the negotiation,\
+            \ or null"
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: An contract negotiation with the given ID does not exist
+      tags:
+      - Contract Negotiation V3
   /v3/edrs/request:
-    $ref: ./edr-cache-api.yaml#/paths/~1v3~1edrs~1request
+    post:
+      description: Request all Edr entries according to a particular query
+      operationId: requestEdrEntriesV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuerySpec"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/EndpointDataReferenceEntry"
+                type: array
+          description: The edr entries matching the query
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request body was malformed
+      tags:
+      - EDR Cache V3
   /v3/transferprocesses/{id}/terminate:
     $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1terminate"
   /v3/contractnegotiations:
-    $ref: ./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations
+    post:
+      description: "Initiates a contract negotiation for a given offer and with the\
+        \ given counter part. Please note that successfully invoking this endpoint\
+        \ only means that the negotiation was initiated. Clients must poll the /{id}/state\
+        \ endpoint to track the state"
+      operationId: initiateContractNegotiationV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResponse"
+          description: The negotiation was successfully initiated. Returns the contract
+            negotiation ID and created timestamp
+          links:
+            poll-state:
+              operationId: getNegotiationStateV3
+              parameters:
+                id: $response.body#/id
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Contract Negotiation V3
   /v3/contractagreements/{id}:
     $ref: "./contract-agreement-api.yaml#/paths/~1v3~1contractagreements~1{id}"
   /v3/contractnegotiations/request:
-    $ref: ./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1request
+    post:
+      description: Returns all contract negotiations according to a query
+      operationId: queryNegotiationsV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuerySpec"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ContractNegotiation"
+                type: array
+          description: The contract negotiations that match the query
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request was malformed
+      tags:
+      - Contract Negotiation V3
   /v3/edrs/{transferProcessId}/dataaddress:
-    $ref: "./edr-cache-api.yaml#/paths/~1v3~1edrs~1{transferProcessId}~1dataaddress"
+    get:
+      description: Gets the EDR data address with the given transfer process ID
+      operationId: getEdrEntryDataAddressV3
+      parameters:
+      - in: path
+        name: transferProcessId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataAddress"
+          description: The data address
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: An EDR data address with the given transfer process ID does
+            not exist
+      tags:
+      - EDR Cache V3
   /v3/contractdefinitions/request:
     post:
       description: Returns all contract definitions according to a query
@@ -369,13 +523,64 @@ paths:
   /v4alpha/contractagreements/{id}/negotiation:
     $ref: "./contract-agreement-api.yaml#/paths/~1v4alpha~1contractagreements~1{id}~1negotiation"
   /v3/contractnegotiations/{id}/terminate:
-    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}~1terminate"
+    post:
+      description: Terminates the contract negotiation.
+      operationId: terminateNegotiationV3
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TerminateNegotiationSchema"
+      responses:
+        "200":
+          description: ContractNegotiation is terminating
+          links:
+            poll-state:
+              operationId: getNegotiationStateV3
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request was malformed
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: A contract negotiation with the given ID does not exist
+      tags:
+      - Contract Negotiation V3
   /v3/transferprocesses/{id}/deprovision:
     $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1deprovision"
   /{any}:
     $ref: "./data-plane-public-api-v2.yaml#/paths/~1{any}"
   /v3/dataplanes:
-    $ref: ./data-plane-selector-api.yaml#/paths/~1v3~1dataplanes
+    get:
+      description: Returns a list of all currently registered data plane instances
+      operationId: getAllDataPlaneInstancesV3
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/DataPlaneInstanceSchemaV3"
+                type: array
+          description: A (potentially empty) list of currently registered data plane
+            instances
+      tags:
+      - Dataplane Selector V3
   /v3/catalog/dataset/request:
     $ref: ./catalog-api.yaml#/paths/~1v3~1catalog~1dataset~1request
   /v3/transferprocesses/request:
@@ -538,7 +743,36 @@ paths:
       tags:
       - Contract Definition V3
   /v3/edrs/{transferProcessId}:
-    $ref: "./edr-cache-api.yaml#/paths/~1v3~1edrs~1{transferProcessId}"
+    delete:
+      description: Removes an EDR entry given the transfer process ID
+      operationId: removeEdrEntryV3
+      parameters:
+      - in: path
+        name: transferProcessId
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: EDR entry was deleted successfully
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: An EDR entry with the given ID does not exist
+      tags:
+      - EDR Cache V3
   /v3/policydefinitions/request:
     post:
       description: Returns all policy definitions according to a query
@@ -651,13 +885,136 @@ paths:
       tags:
       - Policy Definition v3
   /v4alpha/dataplanes:
-    $ref: ./data-plane-selector-api.yaml#/paths/~1v4alpha~1dataplanes
+    get:
+      description: Returns a list of all currently registered data plane instances
+      operationId: getAllDataPlaneInstancesV4
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/DataPlaneInstanceSchemaV4"
+                type: array
+          description: A (potentially empty) list of currently registered data plane
+            instances
+      tags:
+      - Dataplane Selector v4alpha
   /v3/transferprocesses:
     $ref: ./transfer-process-api.yaml#/paths/~1v3~1transferprocesses
   /v3/contractnegotiations/{id}:
-    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}"
+    delete:
+      description: Deletes the contract negotiation with the given ID. Only terminated
+        negotiations without agreement will be deleted
+      operationId: deleteNegotiationV3
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: ContractNegotiation is deleted
+          links:
+            poll-state:
+              operationId: getNegotiationStateV3
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: A contract negotiation with the given ID does not exist
+        "409":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: The given contract negotiation cannot be deleted due to a wrong
+            state or has existing contract agreement
+      tags:
+      - Contract Negotiation V3
+    get:
+      description: Gets a contract negotiation with the given ID
+      operationId: getNegotiationV3
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractNegotiation"
+          description: The contract negotiation
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: An contract negotiation with the given ID does not exist
+      tags:
+      - Contract Negotiation V3
   /v3/contractnegotiations/{id}/state:
-    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}~1state"
+    get:
+      description: Gets the state of a contract negotiation with the given ID
+      operationId: getNegotiationStateV3
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NegotiationState"
+          description: The contract negotiation's state
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: An contract negotiation with the given ID does not exist
+      tags:
+      - Contract Negotiation V3
   /v3/assets:
     post:
       description: Creates a new asset together with a data address
@@ -752,6 +1109,9 @@ components:
           type: object
       type: object
     DataAddress:
+      example:
+        '@type': https://w3id.org/edc/v0.0.1/ns/DataAddress
+        type: type
       properties:
         '@type':
           example: https://w3id.org/edc/v0.0.1/ns/DataAddress
@@ -995,6 +1355,228 @@ components:
       - '@context'
       - policy
       type: object
+    ContractAgreement:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/ContractAgreement
+        '@id': negotiation-id
+        providerId: provider-id
+        consumerId: consumer-id
+        assetId: asset-id
+        contractSigningDate: 1688465655
+        policy:
+          '@context': http://www.w3.org/ns/odrl.jsonld
+          '@type': Set
+          '@id': offer-id
+          permission:
+          - target: asset-id
+            action: display
+      properties:
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/ContractAgreement
+          type: string
+        assetId:
+          type: string
+        consumerId:
+          type: string
+        contractSigningDate:
+          format: int64
+          type: integer
+        policy:
+          description: ODRL policy
+          example:
+            '@context': http://www.w3.org/ns/odrl.jsonld
+            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
+            '@type': odrl:Set
+            permission:
+              target: http://example.com/asset:9898.movie
+              action:
+                type: http://www.w3.org/ns/odrl/2/use
+              constraint:
+                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
+                operator: eq
+                rightOperand: value
+            prohibition: []
+            obligation: []
+          type: object
+        providerId:
+          type: string
+      type: object
+    EndpointDataReferenceEntry:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': transfer-process-id
+        transferProcessId: transfer-process-id
+        agreementId: agreement-id
+        contractNegotiationId: contract-negotiation-id
+        assetId: asset-id
+        providerId: provider-id
+        createdAt: 1688465655
+      properties:
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/EndpointDataReferenceEntry
+          type: string
+      type: object
+    IdResponse:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': id-value
+        createdAt: 1688465655
+      properties:
+        '@id':
+          type: string
+        createdAt:
+          format: int64
+          type: integer
+      type: object
+    ContractRequest:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/ContractRequest
+        counterPartyAddress: http://provider-address
+        protocol: dataspace-protocol-http
+        policy:
+          '@context': http://www.w3.org/ns/odrl.jsonld
+          '@type': odrl:Offer
+          '@id': offer-id
+          assigner: providerId
+          permission: []
+          prohibition: []
+          obligation: []
+          target: assetId
+        callbackAddresses:
+        - transactional: false
+          uri: http://callback/url
+          events:
+          - contract.negotiation
+          - transfer.process
+          authKey: auth-key
+          authCodeId: auth-code-id
+      properties:
+        '@context':
+          type: object
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/ContractRequest
+          type: string
+        callbackAddresses:
+          items:
+            $ref: "#/components/schemas/CallbackAddress"
+          type: array
+        counterPartyAddress:
+          type: string
+        policy:
+          $ref: "#/components/schemas/Offer"
+        protocol:
+          type: string
+      required:
+      - '@context'
+      - counterPartyAddress
+      - policy
+      - protocol
+      type: object
+    CallbackAddress:
+      properties:
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/CallbackAddress
+          type: string
+        authCodeId:
+          type: string
+        authKey:
+          type: string
+        events:
+          items:
+            type: string
+          type: array
+          uniqueItems: true
+        transactional:
+          type: boolean
+        uri:
+          type: string
+      type: object
+    Offer:
+      description: ODRL offer
+      example:
+        '@context': http://www.w3.org/ns/odrl.jsonld
+        '@type': odrl:Offer
+        '@id': offer-id
+        assigner: providerId
+        target: assetId
+        permission: []
+        prohibition: []
+        obligation: []
+      properties:
+        '@id':
+          type: string
+        '@type':
+          example: http://www.w3.org/ns/odrl/2/Offer
+          type: string
+        assigner:
+          type: string
+        target:
+          type: string
+      required:
+      - '@id'
+      - assigner
+      - target
+      type: object
+    ContractNegotiation:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/ContractNegotiation
+        '@id': negotiation-id
+        type: PROVIDER
+        protocol: dataspace-protocol-http
+        counterPartyId: counter-party-id
+        counterPartyAddress: http://counter/party/address
+        state: VERIFIED
+        contractAgreementId: contract:agreement:id
+        errorDetail: eventual-error-detail
+        createdAt: 1688465655
+        callbackAddresses:
+        - transactional: false
+          uri: http://callback/url
+          events:
+          - contract.negotiation
+          - transfer.process
+          authKey: auth-key
+          authCodeId: auth-code-id
+      properties:
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/ContractNegotiation
+          type: string
+        callbackAddresses:
+          items:
+            $ref: "#/components/schemas/CallbackAddress"
+          type: array
+        contractAgreementId:
+          type: string
+        counterPartyAddress:
+          type: string
+        counterPartyId:
+          type: string
+        errorDetail:
+          type: string
+        protocol:
+          type: string
+        state:
+          type: string
+        type:
+          enum:
+          - CONSUMER
+          - PROVIDER
+          type: string
+      type: object
     ContractDefinitionOutput:
       example:
         '@context':
@@ -1061,6 +1643,78 @@ components:
         policyScope:
           type: string
       type: object
+    TerminateNegotiationSchema:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TerminateNegotiation
+        '@id': negotiation-id
+        reason: a reason to terminate
+      properties:
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/TerminateNegotiation
+          type: string
+        reason:
+          type: string
+      type: object
+    DataPlaneInstanceSchemaV3:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': your-dataplane-id
+        url: http://somewhere.com:1234/api/v1
+        allowedSourceTypes:
+        - source-type1
+        - source-type2
+        allowedDestTypes:
+        - your-dest-type
+        allowedTransferTypes:
+        - transfer-type
+        state: AVAILABLE
+        stateTimestamp: 1688465655
+      properties:
+        '@context':
+          type: object
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/DataPlaneInstance
+          type: string
+        allowedDestTypes:
+          deprecated: true
+          items:
+            deprecated: true
+            type: string
+          type: array
+          uniqueItems: true
+        allowedSourceTypes:
+          items:
+            type: string
+          type: array
+          uniqueItems: true
+        lastActive:
+          format: int64
+          type: integer
+        state:
+          type: string
+        stateTimestamp:
+          format: int64
+          type: integer
+        turnCount:
+          deprecated: true
+          format: int32
+          type: integer
+        url:
+          format: url
+          type: string
+      required:
+      - '@context'
+      - allowedDestTypes
+      - allowedSourceTypes
+      - url
+      type: object
     ContractDefinitionInput:
       example:
         '@context':
@@ -1091,19 +1745,6 @@ components:
       - assetsSelector
       - contractPolicyId
       type: object
-    IdResponse:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': id-value
-        createdAt: 1688465655
-      properties:
-        '@id':
-          type: string
-        createdAt:
-          format: int64
-          type: integer
-      type: object
     PolicyValidationResultSchema:
       example:
         '@context':
@@ -1120,6 +1761,55 @@ components:
           type: array
         isValid:
           type: boolean
+      type: object
+    DataPlaneInstanceSchemaV4:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': your-dataplane-id
+        url: http://somewhere.com:1234/api/v1
+        allowedSourceTypes:
+        - source-type1
+        - source-type2
+        allowedTransferTypes:
+        - transfer-type
+        state: AVAILABLE
+        stateTimestamp: 1688465655
+      properties:
+        '@context':
+          type: object
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/DataPlaneInstance
+          type: string
+        allowedSourceTypes:
+          items:
+            type: string
+          type: array
+          uniqueItems: true
+        lastActive:
+          format: int64
+          type: integer
+        state:
+          type: string
+        stateTimestamp:
+          format: int64
+          type: integer
+        url:
+          format: url
+          type: string
+      required:
+      - '@context'
+      - allowedSourceTypes
+      - url
+      type: object
+    NegotiationState:
+      example:
+        state: state
+      properties:
+        state:
+          type: string
       type: object
     AssetInput:
       example:
