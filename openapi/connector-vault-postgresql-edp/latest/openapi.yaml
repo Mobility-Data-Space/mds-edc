@@ -4,7 +4,7 @@ info:
   title: merged spec
   version: 1.0.0
 servers:
-- url: http://localhost:8080
+- url: /
 paths:
   /v3/assets/request:
     $ref: ./asset-api.yaml#/paths/~1v3~1assets~1request
