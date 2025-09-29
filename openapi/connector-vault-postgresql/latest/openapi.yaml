@@ -375,23 +375,34 @@ paths:
             \ exists"
       tags:
       - Policy Definition v3
-  /v3/catalog/request:
+  /v3/edrs/request:
     post:
-      operationId: requestCatalogV3
+      description: Request all Edr entries according to a particular query
+      operationId: requestEdrEntriesV3
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CatalogRequest"
+              $ref: "#/components/schemas/QuerySpec"
       responses:
-        default:
+        "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Catalog"
-          description: Gets contract offers (=catalog) of a single connector
+                items:
+                  $ref: "#/components/schemas/EndpointDataReferenceEntry"
+                type: array
+          description: The edr entries matching the query
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request body was malformed
       tags:
-      - Catalog V3
+      - EDR Cache V3
   /v3/contractnegotiations/{id}/agreement:
     get:
       description: Gets a contract agreement for a contract negotiation with the given
@@ -429,34 +440,23 @@ paths:
           description: An contract negotiation with the given ID does not exist
       tags:
       - Contract Negotiation V3
-  /v3/edrs/request:
+  /v3/catalog/request:
     post:
-      description: Request all Edr entries according to a particular query
-      operationId: requestEdrEntriesV3
+      operationId: requestCatalogV3
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/QuerySpec"
+              $ref: "#/components/schemas/CatalogRequest"
       responses:
-        "200":
+        default:
           content:
             application/json:
               schema:
-                items:
-                  $ref: "#/components/schemas/EndpointDataReferenceEntry"
-                type: array
-          description: The edr entries matching the query
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: Request body was malformed
+                $ref: "#/components/schemas/Catalog"
+          description: Gets contract offers (=catalog) of a single connector
       tags:
-      - EDR Cache V3
+      - Catalog V3
   /v3/transferprocesses/{id}/terminate:
     post:
       description: "Requests the termination of a transfer process. Due to the asynchronous\
@@ -544,6 +544,34 @@ paths:
           description: Request body was malformed
       tags:
       - Contract Negotiation V3
+  /v3/contractdefinitions/request:
+    post:
+      description: Returns all contract definitions according to a query
+      operationId: queryContractDefinitionsV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuerySpec"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ContractDefinitionOutput"
+                type: array
+          description: The contract definitions matching the query
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request was malformed
+      tags:
+      - Contract Definition V3
   /v3/contractagreements/{id}:
     get:
       description: Gets an contract agreement with the given ID
@@ -579,34 +607,6 @@ paths:
           description: An contract agreement with the given ID does not exist
       tags:
       - Contract Agreement V3
-  /v3/contractnegotiations/request:
-    post:
-      description: Returns all contract negotiations according to a query
-      operationId: queryNegotiationsV3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/QuerySpec"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ContractNegotiation"
-                type: array
-          description: The contract negotiations that match the query
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: Request was malformed
-      tags:
-      - Contract Negotiation V3
   /v3/edrs/{transferProcessId}/dataaddress:
     get:
       description: Gets the EDR data address with the given transfer process ID
@@ -643,10 +643,10 @@ paths:
             not exist
       tags:
       - EDR Cache V3
-  /v3/contractdefinitions/request:
+  /v3/contractnegotiations/request:
     post:
-      description: Returns all contract definitions according to a query
-      operationId: queryContractDefinitionsV3
+      description: Returns all contract negotiations according to a query
+      operationId: queryNegotiationsV3
       requestBody:
         content:
           application/json:
@@ -658,9 +658,9 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/ContractDefinitionOutput"
+                  $ref: "#/components/schemas/ContractNegotiation"
                 type: array
-          description: The contract definitions matching the query
+          description: The contract negotiations that match the query
         "400":
           content:
             application/json:
@@ -670,7 +670,7 @@ paths:
                 type: array
           description: Request was malformed
       tags:
-      - Contract Definition V3
+      - Contract Negotiation V3
   /v3/policydefinitions/{id}/evaluationplan:
     post:
       description: "Creates an execution plane for an existing Policy, If the Policy\
@@ -1287,6 +1287,20 @@ paths:
           description: Request was malformed
       tags:
       - Policy Definition v3
+  /check/startup:
+    get:
+      description: Performs a startup probe to determine whether the runtime has completed
+        startup.
+      operationId: getStartup
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+          description: The runtime has completed startup.
+      tags:
+      - Application Observability
   /v3/transferprocesses/{id}/resume:
     post:
       description: "Requests the resumption of a suspended transfer process. Due to\
@@ -1360,20 +1374,6 @@ paths:
             \ with that ID already exists"
       tags:
       - Policy Definition v3
-  /check/startup:
-    get:
-      description: Performs a startup probe to determine whether the runtime has completed
-        startup.
-      operationId: getStartup
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/HealthStatus"
-          description: The runtime has completed startup.
-      tags:
-      - Application Observability
   /v4alpha/protocol-versions/request:
     post:
       operationId: requestProtocolVersionV4alpha
@@ -2020,6 +2020,74 @@ components:
       - '@context'
       - policy
       type: object
+    EndpointDataReferenceEntry:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': transfer-process-id
+        transferProcessId: transfer-process-id
+        agreementId: agreement-id
+        contractNegotiationId: contract-negotiation-id
+        assetId: asset-id
+        providerId: provider-id
+        createdAt: 1688465655
+      properties:
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/EndpointDataReferenceEntry
+          type: string
+      type: object
+    ContractAgreement_1:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/ContractAgreement
+        '@id': negotiation-id
+        providerId: provider-id
+        consumerId: consumer-id
+        assetId: asset-id
+        contractSigningDate: 1688465655
+        policy:
+          '@context': http://www.w3.org/ns/odrl.jsonld
+          '@type': Set
+          '@id': offer-id
+          permission:
+          - target: asset-id
+            action: display
+      properties:
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/ContractAgreement
+          type: string
+        assetId:
+          type: string
+        consumerId:
+          type: string
+        contractSigningDate:
+          format: int64
+          type: integer
+        policy:
+          description: ODRL policy
+          example:
+            '@context': http://www.w3.org/ns/odrl.jsonld
+            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
+            '@type': odrl:Set
+            permission:
+              target: http://example.com/asset:9898.movie
+              action:
+                type: http://www.w3.org/ns/odrl/2/use
+              constraint:
+                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
+                operator: eq
+                rightOperand: value
+            prohibition: []
+            obligation: []
+          type: object
+        providerId:
+          type: string
+      type: object
     Catalog:
       description: DCAT catalog
       example:
@@ -2107,74 +2175,6 @@ components:
       - '@context'
       - counterPartyAddress
       - protocol
-      type: object
-    ContractAgreement_1:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': https://w3id.org/edc/v0.0.1/ns/ContractAgreement
-        '@id': negotiation-id
-        providerId: provider-id
-        consumerId: consumer-id
-        assetId: asset-id
-        contractSigningDate: 1688465655
-        policy:
-          '@context': http://www.w3.org/ns/odrl.jsonld
-          '@type': Set
-          '@id': offer-id
-          permission:
-          - target: asset-id
-            action: display
-      properties:
-        '@id':
-          type: string
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/ContractAgreement
-          type: string
-        assetId:
-          type: string
-        consumerId:
-          type: string
-        contractSigningDate:
-          format: int64
-          type: integer
-        policy:
-          description: ODRL policy
-          example:
-            '@context': http://www.w3.org/ns/odrl.jsonld
-            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
-            '@type': odrl:Set
-            permission:
-              target: http://example.com/asset:9898.movie
-              action:
-                type: http://www.w3.org/ns/odrl/2/use
-              constraint:
-                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
-                operator: eq
-                rightOperand: value
-            prohibition: []
-            obligation: []
-          type: object
-        providerId:
-          type: string
-      type: object
-    EndpointDataReferenceEntry:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': transfer-process-id
-        transferProcessId: transfer-process-id
-        agreementId: agreement-id
-        contractNegotiationId: contract-negotiation-id
-        assetId: asset-id
-        providerId: provider-id
-        createdAt: 1688465655
-      properties:
-        '@id':
-          type: string
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/EndpointDataReferenceEntry
-          type: string
       type: object
     TerminateTransfer:
       example:
@@ -2293,6 +2293,33 @@ components:
       - assigner
       - target
       type: object
+    ContractDefinitionOutput:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': definition-id
+        accessPolicyId: asset-policy-id
+        contractPolicyId: contract-policy-id
+        assetsSelector: []
+        createdAt: 1688465655
+      properties:
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/ContractDefinition
+          type: string
+        accessPolicyId:
+          type: string
+        assetsSelector:
+          items:
+            $ref: "#/components/schemas/Criterion"
+          type: array
+        contractPolicyId:
+          type: string
+        createdAt:
+          format: int64
+          type: integer
+      type: object
     ContractNegotiation:
       example:
         '@context':
@@ -2342,33 +2369,6 @@ components:
           - CONSUMER
           - PROVIDER
           type: string
-      type: object
-    ContractDefinitionOutput:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': definition-id
-        accessPolicyId: asset-policy-id
-        contractPolicyId: contract-policy-id
-        assetsSelector: []
-        createdAt: 1688465655
-      properties:
-        '@id':
-          type: string
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/ContractDefinition
-          type: string
-        accessPolicyId:
-          type: string
-        assetsSelector:
-          items:
-            $ref: "#/components/schemas/Criterion"
-          type: array
-        contractPolicyId:
-          type: string
-        createdAt:
-          format: int64
-          type: integer
       type: object
     PolicyEvaluationPlanSchema:
       example:
