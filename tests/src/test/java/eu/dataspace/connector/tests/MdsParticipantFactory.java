@@ -34,19 +34,6 @@ public interface MdsParticipantFactory {
                 .build();
     }
 
-    static MdsParticipant kafka(String name, VaultExtension vault, SovityDapsExtension daps, PostgresqlExtension postgres) {
-        return MdsParticipant.Builder.newInstance()
-                .id(name)
-                .name(name)
-                .runtime(participant -> baseRuntime(name, ":launchers:connector-kafka", participant)
-                        .configurationProvider(() -> vault.getConfig(name))
-                        .configurationProvider(() -> daps.dapsConfig(name))
-                        .registerSystemExtension(ServiceExtension.class, daps.seedDapsKeyPair())
-                        .configurationProvider(() -> postgres.getConfig(name))
-                )
-                .build();
-    }
-
     static MdsParticipant edp(String name, VaultExtension vault, SovityDapsExtension daps, PostgresqlExtension postgres) {
         return MdsParticipant.Builder.newInstance()
                 .id(name)
