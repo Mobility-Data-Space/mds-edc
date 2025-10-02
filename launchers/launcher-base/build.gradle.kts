@@ -20,6 +20,7 @@ dependencies {
     runtimeOnly(libs.tractusx.edc.retirement.evaluation.api)
     runtimeOnly(libs.tractusx.edc.retirement.evaluation.core)
 
+    implementation(project(":extensions:kafka:data-plane-kafka"))
     implementation(project(":extensions:logging-house-publisher"))
     implementation(project(":extensions:manual-negotiation-approval"))
     implementation(project(":extensions:policy:policy-always-true"))

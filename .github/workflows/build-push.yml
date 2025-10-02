@@ -57,12 +57,6 @@ jobs:
 
       - uses: ./.github/actions/publish-docker-image
         with:
-          runtime: connector-kafka
-          image-title: MDS EDC Kafka
-          image-description: MDS EDC Kafka connector.
-
-      - uses: ./.github/actions/publish-docker-image
-        with:
           runtime: connector-vault-postgresql
           image-title: MDS EDC
           image-description: MDS EDC Vault Postgresql connector for production use.

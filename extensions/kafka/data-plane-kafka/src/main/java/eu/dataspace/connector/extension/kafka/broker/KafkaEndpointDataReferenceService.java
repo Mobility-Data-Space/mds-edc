@@ -9,7 +9,7 @@ import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginCallbackHandler;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
-import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
+import org.eclipse.edc.connector.dataplane.spi.edr.EndpointDataReferenceService;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Map;
 import java.util.Properties;
 
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.BOOTSTRAP_SERVERS;
@@ -31,13 +30,13 @@ import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressS
 import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIMPLE_TYPE;
 
 /**
- * Manages the authentication and the EDR creation for Kafka-PULL transfers
+ * Manages EDR creation and revocation for Kafka-PULL transfers
  */
-class DataPlaneKafkaAuthorizationService implements DataPlaneAuthorizationService {
+class KafkaEndpointDataReferenceService implements EndpointDataReferenceService {
     private final IdentityProvider identityProvider;
     private final AccessControlLists accessControlLists;
 
-    public DataPlaneKafkaAuthorizationService(IdentityProvider identityProvider, AccessControlLists accessControlLists) {
+    public KafkaEndpointDataReferenceService(IdentityProvider identityProvider, AccessControlLists accessControlLists) {
         this.identityProvider = identityProvider;
         this.accessControlLists = accessControlLists;
     }
@@ -61,11 +60,6 @@ class DataPlaneKafkaAuthorizationService implements DataPlaneAuthorizationServic
                         return Result.failure(result.getFailureDetail());
                     }
                 });
-    }
-
-    @Override
-    public Result<DataAddress> authorize(String token, Map<String, Object> requestData) {
-        return null;
     }
 
     @Override

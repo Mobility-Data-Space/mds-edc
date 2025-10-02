@@ -40,7 +40,6 @@ include(":extensions:kafka:data-plane-kafka")
 include(":extensions:kafka:data-plane-kafka-spi")
 
 include(":launchers:connector-inmemory")
-include(":launchers:connector-kafka")
 include(":launchers:connector-vault-postgresql")
 include(":launchers:connector-vault-postgresql-edp")
 include(":launchers:launcher-base")

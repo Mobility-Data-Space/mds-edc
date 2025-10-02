@@ -18,7 +18,6 @@ public class DockerImagesTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "connector-inmemory",
-            "connector-kafka",
             "connector-vault-postgresql",
             "connector-vault-postgresql-edp"
     })

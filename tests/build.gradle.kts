@@ -25,7 +25,6 @@ dependencies {
     testImplementation(libs.testcontainers.vault)
 
     testCompileOnly(project(":launchers:connector-inmemory"))
-    testCompileOnly(project(":launchers:connector-kafka"))
     testCompileOnly(project(":launchers:connector-vault-postgresql"))
     testCompileOnly(project(":launchers:connector-vault-postgresql-edp"))
 
