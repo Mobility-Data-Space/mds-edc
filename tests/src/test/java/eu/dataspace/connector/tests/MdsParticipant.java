@@ -57,6 +57,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
     private ClientAndServer eventReceiver;
     private EmbeddedRuntime runtime;
     private final BlockingQueue<JsonObject> events = new LinkedBlockingDeque<>();
+    private boolean eventReceiverEnabled = true;
 
     private MdsParticipant() {
 
@@ -66,13 +67,15 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
     public void beforeAll(ExtensionContext context) {
         if (runtime != null) {
             runtime.boot(false);
-            eventReceiver = ClientAndServer.startClientAndServer(eventReceiverPort.get());
-            eventReceiver.when(request()).respond(httpRequest -> {
-                var bodyAsRawBytes = httpRequest.getBodyAsRawBytes();
-                var event = Json.createReader(new ByteArrayInputStream(bodyAsRawBytes)).readObject();
-                events.add(event);
-                return HttpResponse.response();
-            });
+            if (eventReceiverEnabled) {
+                eventReceiver = ClientAndServer.startClientAndServer(eventReceiverPort.get());
+                eventReceiver.when(request()).respond(httpRequest -> {
+                    var bodyAsRawBytes = httpRequest.getBodyAsRawBytes();
+                    var event = Json.createReader(new ByteArrayInputStream(bodyAsRawBytes)).readObject();
+                    events.add(event);
+                    return HttpResponse.response();
+                });
+            }
         }
     }
 
@@ -80,7 +83,9 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
     public void afterAll(ExtensionContext context) {
         if (runtime != null) {
             runtime.shutdown();
-            eventReceiver.stop();
+            if (eventReceiverEnabled) {
+                eventReceiver.stop();
+            }
         }
     }
 
@@ -110,18 +115,27 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 entry("web.http.version.port", getFreePort() + ""),
                 entry("web.http.public.path", "/public"),
                 entry("web.http.public.port", getFreePort() + ""),
+                entry("edc.dsp.callback.address", controlPlaneProtocol.get().toString()),
                 entry("edc.core.retry.retries.max", "0"),
                 entry("edc.transfer.proxy.token.verifier.publickey.alias", "public-key-alias"),
                 entry("edc.transfer.proxy.token.signer.privatekey.alias", "private-key-alias"),
 
-                entry("edc.callback.default.events", "contract"),
-                entry("edc.callback.default.uri", "http://localhost:" + eventReceiverPort.get()),
-                entry("edc.callback.default.transactional", "true"),
-
                 entry("edc.logginghouse.extension.enabled", "false")
         );
 
-        return ConfigFactory.fromMap(settings);
+        var config = ConfigFactory.fromMap(settings);
+
+        if (eventReceiverEnabled) {
+            var eventReceiverSettings = Map.ofEntries(
+                    entry("edc.callback.default.events", "contract"),
+                    entry("edc.callback.default.uri", "http://localhost:" + eventReceiverPort.get()),
+                    entry("edc.callback.default.transactional", "true")
+            );
+
+            return config.merge(ConfigFactory.fromMap(eventReceiverSettings));
+        }
+
+        return config;
     }
 
     public ServiceExtension seedVaultKeys() {
@@ -343,6 +357,11 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
         public Builder runtime(Function<MdsParticipant, EmbeddedRuntime> runtimeSupplier) {
             participant.runtime = runtimeSupplier.apply(participant);
+            return this;
+        }
+
+        public Builder eventReceiver(boolean enabled) {
+            participant.eventReceiverEnabled = enabled;
             return this;
         }
     }
