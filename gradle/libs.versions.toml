@@ -1,7 +1,7 @@
 [versions]
 assertj = "3.27.6"
 awaitility = "4.3.0"
-aws = "2.35.0"
+aws = "2.35.9"
 azure-storage-blob = "12.31.3"
 bouncycastle = "1.82"
 dsp-tck = "1.0.0-RC5"
