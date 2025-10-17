@@ -12,5 +12,7 @@ dependencies {
     testImplementation(libs.assertj)
     testImplementation(libs.edc.json.ld.lib)
     testImplementation(libs.edc.junit)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.platform.launcher)
     testImplementation(libs.mockito.core)
 }

@@ -8,8 +8,10 @@ dependencies {
 
     testImplementation(project(":extensions:daps:oauth2-identity-service"))
     testImplementation(libs.assertj)
-    testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.edc.junit)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.platform.launcher)
+    testImplementation(libs.testcontainers.junit.jupiter)
 }
 
 

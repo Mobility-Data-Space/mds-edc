@@ -15,19 +15,28 @@ plugins {
 allprojects {
     apply(plugin = "java")
 
-    testing {
-        suites {
-            val test by getting(JvmTestSuite::class) {
-                useJUnitJupiter()
-            }
+    tasks.test {
+        useJUnitPlatform {
+            excludeTags("Tck")
         }
-    }
 
-    tasks.withType<Test> {
         testLogging {
             events(TestLogEvent.FAILED)
             showStackTraces = true
             exceptionFormat = TestExceptionFormat.FULL
+        }
+    }
+
+    tasks.register<Test>("tck") {
+        testClassesDirs = sourceSets.test.get().output.classesDirs
+        classpath = sourceSets.test.get().runtimeClasspath
+
+        useJUnitPlatform {
+            includeTags("Tck")
+        }
+
+        testLogging {
+            showStandardStreams = true
         }
     }
 
