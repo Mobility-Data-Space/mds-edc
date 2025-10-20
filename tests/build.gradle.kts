@@ -17,6 +17,7 @@ dependencies {
     testImplementation(libs.dsp.tck.core)
     testImplementation(libs.dsp.tck.runtime)
     testImplementation(libs.dsp.tck.system)
+    testImplementation(libs.jose4j)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.launcher)
     testImplementation(libs.kafka.clients)
@@ -38,6 +39,7 @@ dependencies {
     testCompileOnly(project(":launchers:connector-tck"))
     testCompileOnly(project(":launchers:connector-vault-postgresql"))
     testCompileOnly(project(":launchers:connector-vault-postgresql-edp"))
+
 
     testFixturesApi(libs.bouncycastle.bcpkix)
 }

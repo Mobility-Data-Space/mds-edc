@@ -6,8 +6,9 @@ azure-storage-blob = "12.31.3"
 bouncycastle = "1.82"
 dsp-tck = "1.0.0-RC5"
 edc = "0.14.1"
+jose4j = "0.9.6"
 junit-jupiter = "6.0.0"
-kafka = "4.0.0"
+kafka = "4.1.0"
 keycloak = "26.0.7"
 logging-house-client = "1.0.0-rc.3"
 mockito = "5.20.0"
@@ -93,6 +94,7 @@ dsp-tck-transfer-process = { module = "org.eclipse.dataspacetck.dsp:dsp-transfer
 dsp-tck-system = { module = "org.eclipse.dataspacetck.dsp:dsp-system", version.ref = "dsp-tck" }
 kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka" }
 keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak" }
+jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "jose4j" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "6.0.0" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
