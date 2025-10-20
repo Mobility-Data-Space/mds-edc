@@ -11,6 +11,8 @@ dependencies {
 
     testImplementation(libs.assertj)
     testImplementation(libs.edc.junit)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.platform.launcher)
     testImplementation(libs.mockito.core)
     testImplementation(testFixtures(libs.edc.http.lib))
     testImplementation(testFixtures(project(":tests")))

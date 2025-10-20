@@ -22,6 +22,7 @@ import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -41,10 +42,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.dataspacetck.core.api.system.SystemsConstants.TCK_LAUNCHER;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
+@Tag("Tck")
 public class DspTckTest {
 
     private static final LazySupplier<URI> WEBHOOK = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/tck"));
-    private static final String TEST_PACKAGE = "org.eclipse.dataspacetck.dsp.verification";
 
     @RegisterExtension
     protected static MdsParticipant runtime = MdsParticipantFactory.tck("CUT")
@@ -69,7 +70,7 @@ public class DspTckTest {
                 .properties(loadProperties())
                 .property(TCK_LAUNCHER, DspSystemLauncher.class.getName())
                 .property("dataspacetck.debug", "true")
-                .addPackage(TEST_PACKAGE)
+                .addPackage("org.eclipse.dataspacetck.dsp.verification")
                 .monitor(monitor)
                 .build()
                 .execute();

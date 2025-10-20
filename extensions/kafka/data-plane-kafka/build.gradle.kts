@@ -16,6 +16,7 @@ dependencies {
     testImplementation(libs.assertj)
     testImplementation(libs.edc.junit)
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.platform.launcher)
     testImplementation(libs.keycloak.admin.client)
     testImplementation(libs.mockito.core)
     testImplementation(libs.parsson)
