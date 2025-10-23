@@ -16,7 +16,7 @@ import static java.util.Map.entry;
 public class VaultExtension implements BeforeAllCallback, AfterAllCallback {
 
     private final String token = UUID.randomUUID().toString();
-    private final VaultContainer<?> vaultContainer = new VaultContainer<>("hashicorp/vault:1.18.4").withVaultToken(token);
+    private final VaultContainer<?> vaultContainer = new VaultContainer<>("hashicorp/vault:1.21.0").withVaultToken(token);
 
     @Override
     public void beforeAll(ExtensionContext context) {
