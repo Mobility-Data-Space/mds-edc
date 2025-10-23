@@ -58,6 +58,7 @@ edc-participant-context-spi = { module = "org.eclipse.edc:participant-context-sp
 edc-policy-spi = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
 edc-policy-engine-spi = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
 edc-protocol-spi = { module = "org.eclipse.edc:protocol-spi", version.ref = "edc" }
+edc-request-policy-context-spi = { module = "org.eclipse.edc:request-policy-context-spi", version.ref = "edc" }
 edc-tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc" }
 edc-token-lib = { module = "org.eclipse.edc:token-lib", version.ref = "edc" }
 edc-token-spi = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }

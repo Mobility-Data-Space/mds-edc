@@ -1,28 +1,9 @@
-/*
- * Copyright (c) 2025 Mobility Data Space
- *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * SPDX-License-Identifier: Apache-2.0
- *
- * Contributors:
- *      Think-it GmbH - initial API and implementation
- */
-
 package eu.dataspace.connector.tests;
 
+import io.restassured.http.ContentType;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
-import org.eclipse.edc.iam.did.spi.document.Service;
-import org.eclipse.edc.identityhub.spi.participantcontext.ParticipantContextService;
-import org.eclipse.edc.identityhub.spi.participantcontext.model.CreateParticipantContextResponse;
-import org.eclipse.edc.identityhub.spi.participantcontext.model.KeyDescriptor;
-import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManifest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
-import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -31,9 +12,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import java.net.URI;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static eu.dataspace.connector.tests.Crypto.generateEcKey;
 import static io.restassured.RestAssured.given;
@@ -41,14 +22,16 @@ import static io.restassured.http.ContentType.JSON;
 import static java.util.Map.entry;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 
 public class IdentityHub implements BeforeAllCallback, AfterAllCallback {
 
+    private static final String SUPER_USER = "super-user";
+    private static final String SUPER_USER_API_KEY = Base64.getEncoder().encodeToString(SUPER_USER.getBytes()) + "." + UUID.randomUUID();
+
     private final EmbeddedRuntime runtime;
     private final String[] participants;
-    private final Map<String, CreateParticipantContextResponse> participantContexts = new HashMap<>();
+    private final Map<String, IdentityHubParticipantContext> participantContexts = new HashMap<>();
     private final LazySupplier<URI> stsEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/sts"));
     private final LazySupplier<URI> didEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/"));
     private final LazySupplier<URI> credentialsEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/credentials"));
@@ -70,12 +53,17 @@ public class IdentityHub implements BeforeAllCallback, AfterAllCallback {
                 entry("web.http.identity.path", identityEndpoint.get().getPath()),
                 entry("web.http.sts.port", String.valueOf(stsEndpoint.get().getPort())),
                 entry("web.http.sts.path", stsEndpoint.get().getPath()),
+                entry("edc.identityhub.superuser.id", SUPER_USER),
+                entry("edc.identityhub.superuser.api.key", SUPER_USER_API_KEY),
                 entry("edc.iam.did.web.use.https", "false")
         )));
-        for (var participant : participants) {
-            runtime.registerSystemExtension(ServiceExtension.class, new CreateParticipantContextExtension(didFor(participant)));
-        }
+
         runtime.boot();
+
+        for (var participant : participants) {
+            var did = didFor(participant);
+            participantContexts.put(did.get(), registerParticipantContext(did));
+        }
     }
 
     @Override
@@ -84,34 +72,35 @@ public class IdentityHub implements BeforeAllCallback, AfterAllCallback {
     }
 
     public void requestCredentialIssuance(String participantDid, String issuerDid) {
-        // TODO: holderPid should be random generated
-        // TODO: use json object or map
-        var request = """
-                    {
-                      "issuerDid": "%s",
-                      "holderPid": "test-request-id",
-                      "credentials": [{ "format": "VC1_0_JWT", "id": "membershipCredential-id", "type": "MembershipCredential" }]
-                    }
-                    """.formatted(issuerDid);
+        var holderPid = UUID.randomUUID().toString();
+        var requestCredentialIssuance = Map.of(
+                "holderPid", holderPid,
+                "issuerDid", issuerDid,
+                "credentials", List.of(Map.of(
+                        "id", "membershipCredential-id",
+                        "type", "MembershipCredential",
+                        "format", "VC1_0_JWT"
+                ))
+        );
 
-        var statusPath = given()
+        given()
                 .baseUri(identityEndpoint.get().toString())
                 .contentType(JSON)
                 .header("x-api-key", participantContexts.get(participantDid).apiKey())
-                .body(request)
+                .body(requestCredentialIssuance)
                 .post("/v1alpha/participants/%s/credentials/request".formatted(Base64.getEncoder().encodeToString(participantDid.getBytes())))
                 .then()
                 .log().ifValidationFails()
-                .statusCode(201)
-                .header("Location", endsWith("/credentials/request/test-request-id"))
-                .extract().header("Location");
+                .statusCode(201);
 
+        await().untilAsserted(() -> {
+            var path = "/v1alpha/participants/%s/credentials/request/%s"
+                    .formatted(Base64.getEncoder().encodeToString(participantDid.getBytes()), holderPid);
 
-        await().atMost(60, TimeUnit.SECONDS).untilAsserted(() -> { // TODO: remove timeout
             given()
                     .baseUri(identityEndpoint.get().toString())
                     .header("x-api-key", participantContexts.get(participantDid).apiKey())
-                    .get("/v1alpha/participants/%s/credentials/request/test-request-id".formatted(Base64.getEncoder().encodeToString(participantDid.getBytes())))
+                    .get(path)
                     .then()
                     .statusCode(200)
                     .body("status", is("ISSUED"));
@@ -126,51 +115,44 @@ public class IdentityHub implements BeforeAllCallback, AfterAllCallback {
         return stsEndpoint.get() + "/token";
     }
 
-    public CreateParticipantContextResponse participantContext(String did) {
+    public IdentityHubParticipantContext participantContext(String did) {
         return participantContexts.get(did);
     }
 
-    public class CreateParticipantContextExtension implements ServiceExtension {
+    private IdentityHubParticipantContext registerParticipantContext(LazySupplier<String> did) {
+        var participantKey = generateEcKey("%s#key1".formatted(did.get()));
 
-        @Inject
-        private Vault vault;
-        @Inject
-        private ParticipantContextService participantContextService;
+        var privateKeyAlias = "%s-privatekey-alias".formatted(did.get());
+        runtime.getService(Vault.class).storeSecret(privateKeyAlias, participantKey.toJSONString());
 
-        private final LazySupplier<String> did;
-
-        public CreateParticipantContextExtension(LazySupplier<String> did) {
-            this.did = did;
-        }
-
-        @Override
-        public void prepare() {
-            // TODO do it through API call
-
-            var participantKey = generateEcKey("%s#key1".formatted(did.get()));
-
-            // STS secret
-            vault.storeSecret(did.get() + "-sts-client-secret", did.get());
-
-            var privateKeyAlias = "%s-privatekey-alias".formatted(did.get());
-            vault.storeSecret(privateKeyAlias, participantKey.toJSONString());
-            var manifest = ParticipantManifest.Builder.newInstance()
-                    .participantId(did.get())
-                    .did(did.get())
-                    .active(true)
-                    .serviceEndpoint(new Service(
-                            UUID.randomUUID().toString(), "CredentialService",
-                            "%s/v1/participants/%s".formatted(credentialsEndpoint.get().toString(), Base64.getEncoder().encodeToString(did.get().getBytes())))
-                    )
-                    .key(KeyDescriptor.Builder.newInstance()
-                            .publicKeyJwk(participantKey.toPublicJWK().toJSONObject())
-                            .privateKeyAlias(privateKeyAlias)
-                            .keyId(participantKey.getKeyID())
-                            .build())
-                    .build();
-
-            var createParticipantContextResponse = participantContextService.createParticipantContext(manifest).orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
-            participantContexts.put(did.get(), createParticipantContextResponse);
-        }
+        return given()
+                .baseUri(identityEndpoint.get().toString())
+                .header("x-api-key", SUPER_USER_API_KEY)
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "participantId", did.get(),
+                        "did", did.get(),
+                        "active", "true",
+                        "serviceEndpoint", Map.of(
+                                "id", UUID.randomUUID().toString(),
+                                "type", "CredentialService",
+                                "serviceEndpoint", "%s/v1/participants/%s".formatted(
+                                        credentialsEndpoint.get().toString(),
+                                        Base64.getEncoder().encodeToString(did.get().getBytes())
+                                )
+                        ),
+                        "key", Map.of(
+                                "keyId", participantKey.getKeyID(),
+                                "privateKeyAlias", privateKeyAlias,
+                                "publicKeyJwk", participantKey.toPublicJWK().toJSONObject()
+                        )
+                ))
+                .post("/v1alpha/participants")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .extract()
+                .body().as(IdentityHubParticipantContext.class);
     }
+
 }
