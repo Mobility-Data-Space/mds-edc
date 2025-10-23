@@ -1,6 +1,11 @@
 package eu.dataspace.connector.tests;
 
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.ECKey;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
@@ -21,6 +26,17 @@ import java.util.Base64;
 import java.util.Date;
 
 public interface Crypto {
+
+    ECKeyGenerator EC_KEY_GENERATOR = new ECKeyGenerator(Curve.P_256);
+
+    static ECKey generateEcKey(String kid) {
+        try {
+            return EC_KEY_GENERATOR.keyUse(KeyUse.SIGNATURE).keyID(kid).generate();
+        } catch (JOSEException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     static KeyPair generateKeyPair() {
         try {

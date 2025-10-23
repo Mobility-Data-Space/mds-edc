@@ -56,15 +56,19 @@ public class PostgresqlExtension implements BeforeAllCallback, AfterAllCallback 
     }
 
     public Config getConfig(String databaseName) {
-        var jdbcUrl = baseJdbcUrl() + databaseName.toLowerCase() + "?currentSchema=" + DB_SCHEMA_NAME;
+        var jdbcUrl = baseJdbcUrl() + databaseName.toLowerCase() + "?currentSchema=" + getSchema();
 
         var settings = Map.ofEntries(
                 entry("edc.datasource.default.url", jdbcUrl),
                 entry("edc.datasource.default.user", USER),
                 entry("edc.datasource.default.password", PASSWORD),
-                entry("edc.postgresql.migration.schema", DB_SCHEMA_NAME)
+                entry("edc.postgresql.migration.schema", DB_SCHEMA_NAME) // TODO: this should be extracted and set in the factory
         );
         return ConfigFactory.fromMap(settings);
+    }
+
+    public String getSchema() {
+        return DB_SCHEMA_NAME;
     }
 
     private void createDatabases() {
@@ -77,7 +81,6 @@ public class PostgresqlExtension implements BeforeAllCallback, AfterAllCallback 
     }
 
     private String baseJdbcUrl() {
-        var url = format("jdbc:postgresql://%s:%s/", postgreSqlContainer.getHost(), exposedPort);
-        return url;
+        return format("jdbc:postgresql://%s:%s/", postgreSqlContainer.getHost(), exposedPort);
     }
 }
