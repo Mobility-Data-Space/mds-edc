@@ -14,6 +14,7 @@ keycloak = "26.0.7"
 logging-house-client = "0.0.2-SNAPSHOT"
 mockito = "5.21.0"
 mockserver = "5.15.0"
+nimbus = "10.0.1"
 postgres = "42.7.8"
 rest-assured = "6.0.0"
 swagger = "2.2.26" # cannot be upgraded because of a bug: https://github.com/swagger-api/swagger-core/issues/4841
@@ -30,6 +31,7 @@ edc-catalog-spi = { module = "org.eclipse.edc:catalog-spi", version.ref = "edc" 
 edc-contract-spi = { module = "org.eclipse.edc:contract-spi", version.ref = "edc" }
 edc-control-plane-spi = { module = "org.eclipse.edc:control-plane-spi", version.ref = "edc" }
 edc-controlplane-base-bom = { module = "org.eclipse.edc:controlplane-base-bom", version.ref = "edc" }
+edc-controlplane-dcp-bom = { module = "org.eclipse.edc:controlplane-dcp-bom", version.ref = "edc" }
 edc-controlplane-feature-sql-bom = { module = "org.eclipse.edc:controlplane-feature-sql-bom", version.ref = "edc" }
 edc-data-plane-spi = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
 edc-data-plane-http-spi = { module = "org.eclipse.edc:data-plane-http-spi", version.ref = "edc" }
@@ -39,6 +41,8 @@ edc-dataplane-feature-sql-bom = { module = "org.eclipse.edc:dataplane-feature-sq
 edc-edr-store-spi = { module = "org.eclipse.edc:edr-store-spi", version.ref = "edc" }
 edc-http-lib = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
 edc-http-spi = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
+edc-identity-did-spi = { module = "org.eclipse.edc:identity-did-spi", version.ref = "edc" }
+edc-identityhub-bom = { module = "org.eclipse.edc:identityhub-bom", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-jersey-core = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
 edc-json-ld-spi = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
@@ -49,6 +53,7 @@ edc-jwt-signer-spi = { module = "org.eclipse.edc:jwt-signer-spi", version.ref = 
 edc-management-api-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }
 edc-oauth2-spi = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
 edc-participant-spi = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
+edc-participant-context-spi = { module = "org.eclipse.edc:participant-context-spi", version.ref = "edc" }
 edc-policy-spi = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
 edc-policy-engine-spi = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
 edc-policy-monitor-spi = { module = "org.eclipse.edc:policy-monitor-spi", version.ref = "edc" }
@@ -103,6 +108,7 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jun
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "6.0.1" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "mockserver" }
+nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
 parsson = { module = "org.eclipse.parsson:parsson", version = "1.1.7" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
