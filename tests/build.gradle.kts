@@ -47,4 +47,5 @@ dependencies {
     // TODO: these have been added for tests purposes but these operations should be done through apis, not spis!
     testImplementation(libs.edc.participant.context.spi)
     testImplementation(libs.edc.identity.did.spi)
+    testImplementation(libs.edc.issuerservice.issuance.spi)
 }

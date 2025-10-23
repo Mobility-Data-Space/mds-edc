@@ -2,6 +2,7 @@ package eu.dataspace.connector.tests.feature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dataspace.connector.tests.IdentityHub;
+import eu.dataspace.connector.tests.Issuer;
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;
 import jakarta.json.Json;
@@ -25,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.COMPLETED;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
@@ -39,19 +39,27 @@ class ManagementApiDcpTransferTest {
 
     @RegisterExtension
     @Order(0)
+    private static final Issuer ISSUER = MdsParticipantFactory.issuer();
+
+    @RegisterExtension
+    @Order(1)
     private static final IdentityHub IDENTITY_HUB = MdsParticipantFactory.identityHub("consumer", "provider");
 
     @RegisterExtension
-    @Order(1)
+    @Order(2)
     private static final MdsParticipant PROVIDER = MdsParticipantFactory.inMemoryDcp("provider", IDENTITY_HUB);
 
     @RegisterExtension
-    @Order(1)
+    @Order(2)
     private static final MdsParticipant CONSUMER = MdsParticipantFactory.inMemoryDcp("consumer", IDENTITY_HUB);
 
     @BeforeEach
     void setUp() {
-        // create participant contexts
+        ISSUER.registerAttestationAndCredentialDefinition();
+        ISSUER.registerHolder(IDENTITY_HUB.didFor("consumer").get());
+        ISSUER.registerHolder(IDENTITY_HUB.didFor("provider").get());
+        IDENTITY_HUB.requestCredentialIssuance(IDENTITY_HUB.didFor("consumer").get(), ISSUER.did().get());
+        IDENTITY_HUB.requestCredentialIssuance(IDENTITY_HUB.didFor("provider").get(), ISSUER.did().get());
     }
 
     @Test
