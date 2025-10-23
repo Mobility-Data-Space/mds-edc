@@ -3,6 +3,7 @@ package eu.dataspace.connector.tests;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
+import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.security.Vault;
@@ -24,19 +25,20 @@ public interface MdsParticipantFactory {
                 .build();
     }
 
-    static MdsParticipant inMemoryDcp(String name, IdentityHub identityHub) {
+    static MdsParticipant inMemoryDcp(String name, IdentityHub identityHub, LazySupplier<String> issuerDid) {
+        var did = identityHub.didFor(name).get();
         return MdsParticipant.Builder.newInstance()
-                .id(name)
+                .id(did)
                 .name(name)
                 .runtime(participant -> baseRuntime(name, ":launchers:connector-inmemory-dcp", participant)
-                        .registerSystemExtension(ServiceExtension.class, new DcpServiceExtension())
                         .configurationProvider(() -> {
-                            var did = identityHub.didFor(name);
                             identityHub.tokenEndpoint();
                             return ConfigFactory.fromMap(Map.ofEntries(
-                                    Map.entry("edc.iam.sts.oauth.client.id", did.get()),
-                                    Map.entry("edc.iam.sts.oauth.client.secret.alias", did.get() + "-sts-client-secret"),
-                                    Map.entry("edc.iam.sts.oauth.token.url", identityHub.tokenEndpoint())
+                                    Map.entry("edc.iam.sts.oauth.client.id", did),
+                                    Map.entry("edc.iam.sts.oauth.client.secret.alias", did + "-sts-client-secret"),
+                                    Map.entry("edc.iam.sts.oauth.token.url", identityHub.tokenEndpoint()),
+                                    Map.entry("edc.iam.trusted-issuer.issuer.id", issuerDid.get()),
+                                    Map.entry("edc.iam.trusted-issuer.issuer.supportedtypes", "[\"MembershipCredential\"]")
                             ));
                         })
                         .registerSystemExtension(ServiceExtension.class, new ServiceExtension() {
@@ -45,7 +47,6 @@ public interface MdsParticipantFactory {
 
                             @Override
                             public void initialize(ServiceExtensionContext context) {
-                                var did = identityHub.didFor(name).get();
                                 var participantContext = identityHub.participantContext(did);
                                 // TODO: is there a way to get the alias as well?
                                 vault.storeSecret(did + "-sts-client-secret", participantContext.clientSecret());

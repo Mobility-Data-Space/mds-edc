@@ -1,16 +1,3 @@
-/*
- * Copyright (c) 2025 Mobility Data Space
- *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * SPDX-License-Identifier: Apache-2.0
- *
- * Contributors:
- *      Think-it GmbH - initial API and implementation
- */
-
 package eu.dataspace.connector.tests;
 
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
@@ -33,7 +20,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static eu.dataspace.connector.tests.Crypto.generateEcKey;
 import static io.restassured.RestAssured.given;
@@ -84,17 +70,17 @@ public class IdentityHub implements BeforeAllCallback, AfterAllCallback {
     }
 
     public void requestCredentialIssuance(String participantDid, String issuerDid) {
-        // TODO: holderPid should be random generated
+        var holderPid = UUID.randomUUID().toString();
         // TODO: use json object or map
         var request = """
                     {
                       "issuerDid": "%s",
-                      "holderPid": "test-request-id",
+                      "holderPid": "%s",
                       "credentials": [{ "format": "VC1_0_JWT", "id": "membershipCredential-id", "type": "MembershipCredential" }]
                     }
-                    """.formatted(issuerDid);
+                    """.formatted(issuerDid, holderPid);
 
-        var statusPath = given()
+        given()
                 .baseUri(identityEndpoint.get().toString())
                 .contentType(JSON)
                 .header("x-api-key", participantContexts.get(participantDid).apiKey())
@@ -102,16 +88,16 @@ public class IdentityHub implements BeforeAllCallback, AfterAllCallback {
                 .post("/v1alpha/participants/%s/credentials/request".formatted(Base64.getEncoder().encodeToString(participantDid.getBytes())))
                 .then()
                 .log().ifValidationFails()
-                .statusCode(201)
-                .header("Location", endsWith("/credentials/request/test-request-id"))
-                .extract().header("Location");
+                .statusCode(201);
 
+        await().untilAsserted(() -> {
+            var path = "/v1alpha/participants/%s/credentials/request/%s"
+                    .formatted(Base64.getEncoder().encodeToString(participantDid.getBytes()), holderPid);
 
-        await().atMost(60, TimeUnit.SECONDS).untilAsserted(() -> { // TODO: remove timeout
             given()
                     .baseUri(identityEndpoint.get().toString())
                     .header("x-api-key", participantContexts.get(participantDid).apiKey())
-                    .get("/v1alpha/participants/%s/credentials/request/test-request-id".formatted(Base64.getEncoder().encodeToString(participantDid.getBytes())))
+                    .get(path)
                     .then()
                     .statusCode(200)
                     .body("status", is("ISSUED"));

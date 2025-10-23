@@ -26,6 +26,7 @@ fun RepositoryHandler.mavenGpr(project: String) {
     }
 }
 
+include(":extensions:dcp")
 include(":extensions:edp")
 include(":extensions:logging-house-publisher")
 include(":extensions:manual-negotiation-approval")

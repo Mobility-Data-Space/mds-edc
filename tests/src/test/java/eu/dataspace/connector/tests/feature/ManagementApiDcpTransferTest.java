@@ -47,19 +47,19 @@ class ManagementApiDcpTransferTest {
 
     @RegisterExtension
     @Order(2)
-    private static final MdsParticipant PROVIDER = MdsParticipantFactory.inMemoryDcp("provider", IDENTITY_HUB);
+    private static final MdsParticipant PROVIDER = MdsParticipantFactory.inMemoryDcp("provider", IDENTITY_HUB, ISSUER.did());
 
     @RegisterExtension
     @Order(2)
-    private static final MdsParticipant CONSUMER = MdsParticipantFactory.inMemoryDcp("consumer", IDENTITY_HUB);
+    private static final MdsParticipant CONSUMER = MdsParticipantFactory.inMemoryDcp("consumer", IDENTITY_HUB, ISSUER.did());
 
     @BeforeEach
     void setUp() {
         ISSUER.registerAttestationAndCredentialDefinition();
-        ISSUER.registerHolder(IDENTITY_HUB.didFor("consumer").get());
-        ISSUER.registerHolder(IDENTITY_HUB.didFor("provider").get());
-        IDENTITY_HUB.requestCredentialIssuance(IDENTITY_HUB.didFor("consumer").get(), ISSUER.did().get());
-        IDENTITY_HUB.requestCredentialIssuance(IDENTITY_HUB.didFor("provider").get(), ISSUER.did().get());
+        ISSUER.registerHolder(PROVIDER.getId());
+        ISSUER.registerHolder(CONSUMER.getId());
+        IDENTITY_HUB.requestCredentialIssuance(PROVIDER.getId(), ISSUER.did().get());
+        IDENTITY_HUB.requestCredentialIssuance(CONSUMER.getId(), ISSUER.did().get());
     }
 
     @Test
