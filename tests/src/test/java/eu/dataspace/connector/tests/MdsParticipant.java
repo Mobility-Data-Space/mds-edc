@@ -54,8 +54,6 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
     private final LazySupplier<Integer> eventReceiverPort = new LazySupplier<>(Ports::getFreePort);
     private final LazySupplier<URI> stsEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/sts"));
-    private final LazySupplier<URI> didEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/"));
-    private final LazySupplier<String> did = new LazySupplier<>(() -> "did:web:localhost%%3A%s".formatted(didEndpoint.get().getPort()));
     private final String managementAuthKey = UUID.randomUUID().toString();
     private ClientAndServer eventReceiver;
     private EmbeddedRuntime runtime;
@@ -127,10 +125,11 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
                 // DCP settings
                 entry("edc.iam.did.web.use.https", "false"),
-                entry("edc.iam.issuer.id", did.get()),
-                entry("edc.iam.sts.oauth.client.id", did.get()),
-                entry("edc.iam.sts.oauth.client.secret.alias", did.get() + "-sts-client-secret"),
-                entry("edc.iam.sts.oauth.token.url", stsEndpoint.get() + "/token")
+                entry("edc.iam.issuer.id", id),
+                entry("edc.iam.sts.oauth.client.id", id),
+                entry("edc.iam.sts.oauth.client.secret.alias", id + "-sts-client-secret"),
+                entry("edc.iam.sts.oauth.token.url", stsEndpoint.get() + "/token"),
+                entry("edc.iam.credential.revocation.mimetype", "application/json")
         );
 
         var config = ConfigFactory.fromMap(settings);

@@ -65,6 +65,7 @@ edc-query-lib = { module = "org.eclipse.edc:query-lib", version.ref = "edc" }
 edc-sql-lib = { module = "org.eclipse.edc:sql-lib", version.ref = "edc" }
 edc-sql-test-fixtures = { module = "org.eclipse.edc:sql-test-fixtures", version.ref = "edc" }
 edc-store-lib = { module = "org.eclipse.edc:store-lib", version.ref = "edc" }
+edc-request-policy-context-spi = { module = "org.eclipse.edc:request-policy-context-spi", version.ref = "edc" }
 edc-tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc" }
 edc-token-lib = { module = "org.eclipse.edc:token-lib", version.ref = "edc" }
 edc-token-spi = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }

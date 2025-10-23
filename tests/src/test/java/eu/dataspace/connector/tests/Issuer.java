@@ -1,25 +1,7 @@
-/*
- * Copyright (c) 2025 Mobility Data Space
- *
- * This program and the accompanying materials are made available under the
- * terms of the Apache License, Version 2.0 which is available at
- * https://www.apache.org/licenses/LICENSE-2.0
- *
- * SPDX-License-Identifier: Apache-2.0
- *
- * Contributors:
- *      Think-it GmbH - initial API and implementation
- */
-
 package eu.dataspace.connector.tests;
 
 import io.restassured.http.ContentType;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
-import org.eclipse.edc.iam.did.spi.document.Service;
-import org.eclipse.edc.identityhub.spi.participantcontext.ParticipantContextService;
-import org.eclipse.edc.identityhub.spi.participantcontext.model.CreateParticipantContextResponse;
-import org.eclipse.edc.identityhub.spi.participantcontext.model.KeyDescriptor;
-import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManifest;
 import org.eclipse.edc.issuerservice.spi.issuance.attestation.AttestationContext;
 import org.eclipse.edc.issuerservice.spi.issuance.attestation.AttestationDefinitionValidatorRegistry;
 import org.eclipse.edc.issuerservice.spi.issuance.attestation.AttestationSource;
@@ -52,12 +34,17 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
 
 public class Issuer implements BeforeAllCallback, AfterAllCallback {
 
+    private static final String SUPER_USER = "super-user";
+    private static final String SUPER_USER_API_KEY = Base64.getEncoder().encodeToString(SUPER_USER.getBytes()) + "." + UUID.randomUUID();
+
     private final EmbeddedRuntime runtime;
     private final LazySupplier<URI> didEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/"));
     private final LazySupplier<URI> issuanceEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/issuance"));
     private final LazySupplier<URI> issueradminEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/issueradmin"));
+    private final LazySupplier<URI> identityEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/identity"));
     private final LazySupplier<String> did = new LazySupplier<>(() -> "did:web:localhost%%3A%d:issuer".formatted(didEndpoint.get().getPort()));
-    private CreateParticipantContextResponse createParticipantContextResponse;
+
+    private String issuerParticipantApiKey;
 
     public Issuer(EmbeddedRuntime runtime) {
         this.runtime = runtime;
@@ -72,42 +59,21 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
                 entry("web.http.version.path", "/version"),
                 entry("web.http.did.port", String.valueOf(didEndpoint.get().getPort())),
                 entry("web.http.did.path", didEndpoint.get().getPath()),
+                entry("web.http.identity.port", String.valueOf(identityEndpoint.get().getPort())),
+                entry("web.http.identity.path", identityEndpoint.get().getPath()),
                 entry("web.http.issuance.port", String.valueOf(issuanceEndpoint.get().getPort())),
                 entry("web.http.issuance.path", issuanceEndpoint.get().getPath()),
                 entry("web.http.issueradmin.port", String.valueOf(issueradminEndpoint.get().getPort())),
                 entry("web.http.issueradmin.path", issueradminEndpoint.get().getPath()),
+                entry("edc.identityhub.superuser.id", SUPER_USER),
+                entry("edc.identityhub.superuser.api.key", SUPER_USER_API_KEY),
                 entry("edc.iam.did.web.use.https", "false"),
                 entry("edc.issuer.statuslist.signing.key.alias", "%s-privatekey-alias".formatted(did.get()))
         )));
-        runtime.registerSystemExtension(ServiceExtension.class, new CreateParticipantContextExtension(did));
-        runtime.registerSystemExtension(ServiceExtension.class, new ServiceExtension() {
 
-            @Inject
-            private AttestationSourceFactoryRegistry attestationSourceFactoryRegistry;
-
-            @Inject
-            private AttestationDefinitionValidatorRegistry attestationDefinitionValidatorRegistry;
-
-            @Override
-            public void initialize(ServiceExtensionContext context) {
-                // TODO: this is necessary because in DcpHolderTokenVerifierImpl there are no claims put in the DcpRequestContext
-                attestationSourceFactoryRegistry.registerFactory("demo", new AttestationSourceFactory() {
-                    @Override
-                    public AttestationSource createSource(AttestationDefinition definition) {
-                        return new AttestationSource() {
-                            @Override
-                            public Result<Map<String, Object>> execute(AttestationContext context) {
-                                // TODO: what?
-                                return Result.success(Map.of("onboarding", Map.of("signedDocuments", true), "participant", Map.of("name", "Alice")));
-                            }
-                        };
-                    }
-                });
-
-                attestationDefinitionValidatorRegistry.registerValidator("demo", _ -> ValidationResult.success());
-            }
-        });
         runtime.boot();
+
+        registerIssuerParticipantContext();
     }
 
     @Override
@@ -122,7 +88,7 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
     public void registerHolder(String holderDid) {
         given()
                 .baseUri(issueradminEndpoint.get().toString())
-                .header("x-api-key", createParticipantContextResponse.apiKey())
+                .header("x-api-key", issuerParticipantApiKey)
                 .contentType(ContentType.JSON)
                 .body(Map.of(
                         "holderId", holderDid,
@@ -137,14 +103,15 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
     public void registerAttestationAndCredentialDefinition() {
         given()
                 .baseUri(issueradminEndpoint.get().toString())
-                .header("x-api-key", createParticipantContextResponse.apiKey())
+                .header("x-api-key", issuerParticipantApiKey)
                 .contentType(ContentType.JSON)
                 .body(Map.of(
                         "id", "attestation-id",
                         "attestationType", "demo",
                         "configuration", Map.of(
-                                "credentialType", "aaa", // TODO: what?
-                                "outputClaim", "participant" // TODO: what?
+                                // TODO: how to manage attestation?
+                                "credentialType", "aaa",
+                                "outputClaim", "participant"
                         )
                 ))
                 .post("/v1alpha/participants/{participantContextId}/attestations", Base64.getEncoder().encodeToString(did.get().getBytes()))
@@ -153,7 +120,7 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
 
         given()
                 .baseUri(issueradminEndpoint.get().toString())
-                .header("x-api-key", createParticipantContextResponse.apiKey())
+                .header("x-api-key", issuerParticipantApiKey)
                 .contentType(ContentType.JSON)
                 .body(Map.ofEntries(
                         entry("id", "membershipCredential-id"),
@@ -164,9 +131,9 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
                         entry("validity", Duration.ofDays(365).toSeconds()),
                         entry("mappings", List.of(
                                 Map.ofEntries(
-                                    entry("input", "participant.name"),
-                                    entry("output", "credentialSubject.name"),
-                                    entry("required", "true")
+                                        entry("input", "participant.name"),
+                                        entry("output", "credentialSubject.name"),
+                                        entry("required", "true")
                                 )
                         )),
 //                        entry("rules", List.of(
@@ -186,46 +153,39 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
                 .statusCode(201);
     }
 
-    public class CreateParticipantContextExtension implements ServiceExtension {
+    private void registerIssuerParticipantContext() {
+        var participantKey = generateEcKey("%s#key1".formatted(did.get()));
 
-        @Inject
-        private Vault vault;
-        @Inject
-        private ParticipantContextService participantContextService;
+        var privateKeyAlias = "%s-privatekey-alias".formatted(did.get());
+        runtime.getService(Vault.class).storeSecret(privateKeyAlias, participantKey.toJSONString());
 
-        private final LazySupplier<String> did;
-
-        public CreateParticipantContextExtension(LazySupplier<String> did) {
-            this.did = did;
-        }
-
-        @Override
-        public void prepare() {
-            // TODO do it through API call
-
-            var participantKey = generateEcKey("%s#key1".formatted(did.get()));
-
-            // STS secret
-            vault.storeSecret(did.get() + "-sts-client-secret", did.get());
-
-            var privateKeyAlias = "%s-privatekey-alias".formatted(did.get());
-            vault.storeSecret(privateKeyAlias, participantKey.toJSONString());
-            var manifest = ParticipantManifest.Builder.newInstance()
-                    .participantId(did.get())
-                    .did(did.get())
-                    .active(true)
-                    .serviceEndpoint(new Service(
-                            UUID.randomUUID().toString(), "IssuerService",
-                            "%s/v1alpha/participants/%s".formatted(issuanceEndpoint.get().toString(), Base64.getEncoder().encodeToString(did.get().getBytes())))
-                    )
-                    .key(KeyDescriptor.Builder.newInstance()
-                            .publicKeyJwk(participantKey.toPublicJWK().toJSONObject())
-                            .privateKeyAlias(privateKeyAlias)
-                            .keyId(participantKey.getKeyID())
-                            .build())
-                    .build();
-
-            createParticipantContextResponse = participantContextService.createParticipantContext(manifest).orElseThrow(f -> new RuntimeException(f.getFailureDetail()));
-        }
+        issuerParticipantApiKey = given()
+                .baseUri(identityEndpoint.get().toString())
+                .header("x-api-key", SUPER_USER_API_KEY)
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "participantId", did.get(),
+                        "did", did.get(),
+                        "active", "true",
+                        "serviceEndpoint", Map.of(
+                                "id", UUID.randomUUID().toString(),
+                                "type", "IssuerService",
+                                "serviceEndpoint", "%s/v1alpha/participants/%s".formatted(
+                                        issuanceEndpoint.get().toString(),
+                                        Base64.getEncoder().encodeToString(did.get().getBytes())
+                                )
+                        ),
+                        "key", Map.of(
+                                "keyId", participantKey.getKeyID(),
+                                "privateKeyAlias", privateKeyAlias,
+                                "publicKeyJwk", participantKey.toPublicJWK().toJSONObject()
+                        )
+                ))
+                .post("/v1alpha/participants")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().jsonPath().getString("apiKey");
     }
+
 }

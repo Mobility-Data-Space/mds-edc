@@ -11,7 +11,7 @@
  *      Think-it GmbH - initial API and implementation
  */
 
-package eu.dataspace.connector.tests;
+package eu.dataspace.connector.dcp;
 
 import org.eclipse.edc.policy.context.request.spi.RequestCatalogPolicyContext;
 import org.eclipse.edc.policy.context.request.spi.RequestContractNegotiationPolicyContext;
@@ -33,19 +33,16 @@ import java.util.Set;
 
 import static java.lang.String.format;
 
-public class DcpServiceExtension implements ServiceExtension {
+public class DcpExtension implements ServiceExtension {
 
     @Inject
     private PolicyEngine policyEngine;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var defaultScopes = Set.of("eu.dataspace.mds.vc.type:MembershipCredential:read");
+        // TODO: should the first part something related to MDS instead of generic org.eclipse.edc.vc.type?
+        var defaultScopes = Set.of("org.eclipse.edc.vc.type:MembershipCredential:read");
         var defaultScopesProtocols = Map.of(
-                // TODO: is v0.8 still relevant?
-//                "DSP:v0.8", defaultScopes, // use DSP_SCOPE_V_08 constant in dsp-spi
-//                "DSP:2025-1", defaultScopes // use DSP_SCOPE_V_2025_1 constant in dsp-spi
-                // TODO: why in Tx they are different? (see lines above)
                 "dataspace-protocol-http", defaultScopes, // use DSP_SCOPE_V_08 constant in dsp-spi
                 "dataspace-protocol-http:2025-1", defaultScopes // use DSP_SCOPE_V_2025_1 constant in dsp-spi
         );
