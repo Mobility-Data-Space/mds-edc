@@ -24,6 +24,7 @@ import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
 
 import java.io.ByteArrayInputStream;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -53,13 +54,16 @@ import static org.mockserver.model.HttpRequest.request;
 public class MdsParticipant extends Participant implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback {
 
     private final LazySupplier<Integer> eventReceiverPort = new LazySupplier<>(Ports::getFreePort);
+    private final LazySupplier<URI> stsEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/sts"));
+    private final LazySupplier<URI> didEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/"));
+    private final LazySupplier<String> did = new LazySupplier<>(() -> "did:web:localhost%%3A%s".formatted(didEndpoint.get().getPort()));
     private final String managementAuthKey = UUID.randomUUID().toString();
     private ClientAndServer eventReceiver;
     private EmbeddedRuntime runtime;
     private final BlockingQueue<JsonObject> events = new LinkedBlockingDeque<>();
     private boolean eventReceiverEnabled = true;
 
-    private MdsParticipant() {
+    protected MdsParticipant() {
 
     }
 
@@ -120,7 +124,14 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 entry("edc.transfer.proxy.token.verifier.publickey.alias", "public-key-alias"),
                 entry("edc.transfer.proxy.token.signer.privatekey.alias", "private-key-alias"),
 
-                entry("edc.logginghouse.extension.enabled", "false")
+                entry("edc.logginghouse.extension.enabled", "false"),
+
+                // DCP settings
+                entry("edc.iam.did.web.use.https", "false"),
+                entry("edc.iam.issuer.id", did.get()),
+                entry("edc.iam.sts.oauth.client.id", did.get()),
+                entry("edc.iam.sts.oauth.client.secret.alias", did.get() + "-sts-client-secret"),
+                entry("edc.iam.sts.oauth.token.url", stsEndpoint.get() + "/token")
         );
 
         var config = ConfigFactory.fromMap(settings);
