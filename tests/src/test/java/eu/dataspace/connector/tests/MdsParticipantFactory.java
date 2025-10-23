@@ -3,7 +3,6 @@ package eu.dataspace.connector.tests;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
-import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.security.Vault;
@@ -98,6 +97,11 @@ public interface MdsParticipantFactory {
     static IdentityHub identityHub(String... participants) {
         var runtime = new EmbeddedRuntime("identity-hub", ":launchers:identity-hub");
         return new IdentityHub(runtime, participants);
+    }
+
+    static Issuer issuer() {
+        var runtime = new EmbeddedRuntime("issuer", ":launchers:issuer");
+        return new Issuer(runtime);
     }
 
     private static EmbeddedRuntime baseRuntime(String name, String module, MdsParticipant participant) {

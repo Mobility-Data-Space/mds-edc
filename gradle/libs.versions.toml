@@ -46,6 +46,8 @@ edc-identity-did-spi = { module = "org.eclipse.edc:identity-did-spi", version.re
 edc-identityhub-bom = { module = "org.eclipse.edc:identityhub-bom", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-jersey-core = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
+edc-issuerservice-bom = { module = "org.eclipse.edc:issuerservice-bom", version.ref = "edc" }
+edc-issuerservice-issuance-spi = { module = "org.eclipse.edc:issuerservice-issuance-spi", version.ref = "edc" }
 edc-json-ld-spi = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-json-ld-lib = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
