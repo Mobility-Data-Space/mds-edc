@@ -35,10 +35,16 @@ dependencies {
     testRuntimeOnly(libs.dsp.tck.transfer.process)
 
     testCompileOnly(project(":launchers:connector-inmemory"))
+    testCompileOnly(project(":launchers:connector-inmemory-dcp"))
     testCompileOnly(project(":launchers:connector-tck"))
     testCompileOnly(project(":launchers:connector-vault-postgresql"))
     testCompileOnly(project(":launchers:connector-vault-postgresql-edp"))
-
+    testCompileOnly(project(":launchers:identity-hub"))
 
     testFixturesApi(libs.bouncycastle.bcpkix)
+    testFixturesApi(libs.nimbus.jwt)
+
+    // TODO: these have been added for tests purposes but these operations should be done through apis, not spis!
+    testImplementation(libs.edc.participant.context.spi)
+    testImplementation(libs.edc.identity.did.spi)
 }
