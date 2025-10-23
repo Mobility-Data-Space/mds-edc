@@ -28,6 +28,7 @@ dependencies {
     testImplementation(libs.testcontainers.kafka)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.vault)
+    testImplementation(libs.wiremock)
 
     testRuntimeOnly(libs.dsp.tck.metadata)
     testRuntimeOnly(libs.dsp.tck.catalog)
@@ -35,9 +36,13 @@ dependencies {
     testRuntimeOnly(libs.dsp.tck.transfer.process)
 
     testCompileOnly(project(":launchers:connector-inmemory"))
+    testCompileOnly(project(":launchers:connector-inmemory-dcp"))
     testCompileOnly(project(":launchers:connector-tck"))
     testCompileOnly(project(":launchers:connector-vault-postgresql"))
     testCompileOnly(project(":launchers:connector-vault-postgresql-edp"))
+    testCompileOnly(project(":launchers:issuer"))
+    testCompileOnly(project(":launchers:wallet"))
 
     testFixturesApi(libs.bouncycastle.bcpkix)
+    testFixturesApi(libs.nimbus.jwt)
 }
