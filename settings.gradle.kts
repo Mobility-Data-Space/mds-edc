@@ -28,10 +28,10 @@ fun RepositoryHandler.mavenGpr(project: String) {
 
 include(":extensions:daps:oauth2-daps")
 include(":extensions:daps:oauth2-identity-service")
-include(":extensions:identity-hub:database-schema-migration-issuer")
 include(":extensions:dcp")
 include(":extensions:edp")
-include(":extensions:identity-hub:demo-attestation")
+include(":extensions:identity-hub:database-attestation-api")
+include(":extensions:identity-hub:database-schema-migration-issuer")
 include(":extensions:identity-hub:super-user-seeder")
 include(":extensions:kafka:data-plane-kafka")
 include(":extensions:kafka:data-plane-kafka-spi")

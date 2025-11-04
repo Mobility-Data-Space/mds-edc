@@ -10,8 +10,9 @@ val edcGroupId = "org.eclipse.edc"
 dependencies {
     runtimeOnly(libs.edc.issuerservice.bom)
     runtimeOnly(libs.edc.issuerservice.feature.sql.bom)
+    runtimeOnly(libs.edc.issuerservice.database.attestations)
 
-    implementation(project(":extensions:identity-hub:demo-attestation"))
+    implementation(project(":extensions:identity-hub:database-attestation-api"))
     implementation(project(":extensions:identity-hub:super-user-seeder"))
     implementation(project(":extensions:identity-hub:database-schema-migration-issuer"))
 }

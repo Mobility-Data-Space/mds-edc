@@ -56,13 +56,12 @@ public class PostgresqlExtension implements BeforeAllCallback, AfterAllCallback 
     }
 
     public Config getConfig(String databaseName) {
-        var jdbcUrl = baseJdbcUrl() + databaseName.toLowerCase() + "?currentSchema=" + DB_SCHEMA_NAME;
+        var jdbcUrl = baseJdbcUrl() + databaseName.toLowerCase() + "?currentSchema=" + getSchema();
 
         var settings = Map.ofEntries(
                 entry("edc.datasource.default.url", jdbcUrl),
                 entry("edc.datasource.default.user", USER),
-                entry("edc.datasource.default.password", PASSWORD),
-                entry("org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME) // TODO: this should be extracted and set in the factory
+                entry("edc.datasource.default.password", PASSWORD)
         );
         return ConfigFactory.fromMap(settings);
     }
