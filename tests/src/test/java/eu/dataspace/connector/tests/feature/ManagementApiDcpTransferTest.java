@@ -5,6 +5,7 @@ import eu.dataspace.connector.tests.IdentityHub;
 import eu.dataspace.connector.tests.Issuer;
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;
+import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -39,18 +40,22 @@ class ManagementApiDcpTransferTest {
 
     @RegisterExtension
     @Order(0)
-    private static final Issuer ISSUER = MdsParticipantFactory.issuer();
+    private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension("issuer");
 
     @RegisterExtension
     @Order(1)
+    private static final Issuer ISSUER = MdsParticipantFactory.issuer(POSTGRES_EXTENSION);
+
+    @RegisterExtension
+    @Order(2)
     private static final IdentityHub IDENTITY_HUB = MdsParticipantFactory.identityHub("consumer", "provider");
 
     @RegisterExtension
-    @Order(2)
+    @Order(3)
     private static final MdsParticipant PROVIDER = MdsParticipantFactory.inMemoryDcp("provider", IDENTITY_HUB, ISSUER.did());
 
     @RegisterExtension
-    @Order(2)
+    @Order(3)
     private static final MdsParticipant CONSUMER = MdsParticipantFactory.inMemoryDcp("consumer", IDENTITY_HUB, ISSUER.did());
 
     @BeforeAll
