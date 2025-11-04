@@ -2,26 +2,16 @@ package eu.dataspace.connector.tests;
 
 import io.restassured.http.ContentType;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
-import org.eclipse.edc.issuerservice.spi.issuance.attestation.AttestationContext;
-import org.eclipse.edc.issuerservice.spi.issuance.attestation.AttestationDefinitionValidatorRegistry;
-import org.eclipse.edc.issuerservice.spi.issuance.attestation.AttestationSource;
-import org.eclipse.edc.issuerservice.spi.issuance.attestation.AttestationSourceFactory;
-import org.eclipse.edc.issuerservice.spi.issuance.attestation.AttestationSourceFactoryRegistry;
-import org.eclipse.edc.issuerservice.spi.issuance.model.AttestationDefinition;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
-import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.system.ServiceExtension;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
-import org.eclipse.edc.validator.spi.ValidationResult;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.net.URI;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +75,7 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
         return did;
     }
 
-    public void registerHolder(String holderDid) {
+    public void registerHolder(String holderDid, String name) {
         given()
                 .baseUri(issueradminEndpoint.get().toString())
                 .header("x-api-key", issuerParticipantApiKey)
@@ -93,11 +83,30 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
                 .body(Map.of(
                         "holderId", holderDid,
                         "did", holderDid,
-                        "name", holderDid
+                        "name", name
                 ))
                 .post("/v1alpha/participants/{participantContextId}/holders", Base64.getEncoder().encodeToString(did.get().getBytes()))
                 .then()
+                .log().ifValidationFails()
                 .statusCode(201);
+
+        // register attestation for holder
+        given()
+                .baseUri(issueradminEndpoint.get().toString())
+                .header("x-api-key", issuerParticipantApiKey)
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "participantName", name,
+                        "membershipType", "standard member",
+                        "membershipStartDate", Instant.now().getEpochSecond()
+                ))
+                .post("/v1alpha/participants/{participantContextId}/holders/{holderId}/attestation",
+                        Base64.getEncoder().encodeToString(did.get().getBytes()),
+                        Base64.getEncoder().encodeToString(holderDid.getBytes())
+                )
+                .then()
+                .log().ifValidationFails()
+                .statusCode(204);
     }
 
     public void registerAttestationAndCredentialDefinition() {
@@ -107,15 +116,15 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
                 .contentType(ContentType.JSON)
                 .body(Map.of(
                         "id", "attestation-id",
-                        "attestationType", "demo",
+                        "attestationType", "database",
                         "configuration", Map.of(
-                                // TODO: how to manage attestation?
-                                "credentialType", "aaa",
-                                "outputClaim", "participant"
+                                "dataSourceName", "default",
+                                "tableName", "membership_attestation"
                         )
                 ))
                 .post("/v1alpha/participants/{participantContextId}/attestations", Base64.getEncoder().encodeToString(did.get().getBytes()))
                 .then()
+                .log().ifValidationFails()
                 .statusCode(201);
 
         given()
@@ -131,11 +140,12 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
                         entry("validity", Duration.ofDays(365).toSeconds()),
                         entry("mappings", List.of(
                                 Map.ofEntries(
-                                        entry("input", "participant.name"),
+                                        entry("input", "participant_name"),
                                         entry("output", "credentialSubject.name"),
                                         entry("required", "true")
                                 )
                         )),
+                        // TODO: enable rules?
 //                        entry("rules", List.of(
 //                                Map.ofEntries(
 //                                    entry("type", "expression"),
