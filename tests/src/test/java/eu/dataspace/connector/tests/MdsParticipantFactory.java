@@ -100,8 +100,13 @@ public interface MdsParticipantFactory {
         return new IdentityHub(runtime, participants);
     }
 
-    static Issuer issuer() {
-        var runtime = new EmbeddedRuntime("issuer", ":launchers:issuer");
+    static Issuer issuer(PostgresqlExtension postgres) {
+        var name = "issuer";
+        var runtime = new EmbeddedRuntime(name, ":launchers:issuer")
+                .configurationProvider(() -> postgres.getConfig(name))
+                .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
+                        "eu.dataspace.issuer.postgresql.migration.schema", postgres.getSchema()
+                )));
         return new Issuer(runtime);
     }
 
