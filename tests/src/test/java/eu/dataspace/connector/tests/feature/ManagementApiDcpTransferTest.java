@@ -61,8 +61,8 @@ class ManagementApiDcpTransferTest {
     @BeforeAll
     static void setUp() {
         ISSUER.registerAttestationAndCredentialDefinition();
-        ISSUER.registerHolder(PROVIDER.getId());
-        ISSUER.registerHolder(CONSUMER.getId());
+        ISSUER.registerHolder(PROVIDER.getId(), PROVIDER.getName());
+        ISSUER.registerHolder(CONSUMER.getId(), CONSUMER.getName());
         IDENTITY_HUB.requestCredentialIssuance(PROVIDER.getId(), ISSUER.did().get());
         IDENTITY_HUB.requestCredentialIssuance(CONSUMER.getId(), ISSUER.did().get());
     }

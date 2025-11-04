@@ -125,3 +125,12 @@ CREATE TABLE IF NOT EXISTS participant_context (
     roles                   JSON,
     properties              JSON DEFAULT '{}'
 );
+
+-- TODO: attestation stuff, to be removed (see https://github.com/eclipse-edc/IdentityHub/issues/851)
+create table if not exists membership_attestation (
+    id                    text default gen_random_uuid() not null,
+    holder_id             text not null,
+    participant_name      text not null,
+    membership_type       text,
+    membership_start_date bigint not null
+);

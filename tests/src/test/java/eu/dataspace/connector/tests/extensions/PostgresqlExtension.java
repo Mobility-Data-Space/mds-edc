@@ -56,7 +56,7 @@ public class PostgresqlExtension implements BeforeAllCallback, AfterAllCallback 
     }
 
     public Config getConfig(String databaseName) {
-        var jdbcUrl = baseJdbcUrl() + databaseName.toLowerCase() + "?currentSchema=" + DB_SCHEMA_NAME;
+        var jdbcUrl = baseJdbcUrl() + databaseName.toLowerCase() + "?currentSchema=" + getSchema();
 
         var settings = Map.ofEntries(
                 entry("edc.datasource.default.url", jdbcUrl),
