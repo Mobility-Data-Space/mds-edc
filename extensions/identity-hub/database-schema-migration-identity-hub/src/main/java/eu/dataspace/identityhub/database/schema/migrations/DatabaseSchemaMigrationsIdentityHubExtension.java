@@ -11,7 +11,7 @@
  *      Think-it GmbH - initial API and implementation
  */
 
-package eu.dataspace.issuer.database.schema.migrations;
+package eu.dataspace.identityhub.database.schema.migrations;
 
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.EdcException;
@@ -26,18 +26,18 @@ import java.util.Properties;
 
 import static org.flywaydb.core.api.MigrationVersion.LATEST;
 
-public class DatabaseSchemaMigrationsIssuerExtension implements ServiceExtension {
+public class DatabaseSchemaMigrationsIdentityHubExtension implements ServiceExtension {
 
     private static final String DEFAULT_SCHEMA = "public";
 
     private ConnectionFactoryDataSource dataSource;
 
-    @Setting(key = "eu.dataspace.issuer.postgresql.migration.schema", defaultValue = DEFAULT_SCHEMA, description = "Schema on which the migrations will be applied")
+    @Setting(key = "eu.dataspace.identityhub.postgresql.migration.schema", defaultValue = DEFAULT_SCHEMA, description = "Schema on which the migrations will be applied")
     private String schema;
 
     @Override
     public String name() {
-        return "Issuer Database Schema Migrations";
+        return "Identity Hub Database Schema Migrations";
     }
 
     @Override
