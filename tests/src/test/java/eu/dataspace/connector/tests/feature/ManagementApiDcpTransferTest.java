@@ -6,6 +6,7 @@ import eu.dataspace.connector.tests.Issuer;
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
+import eu.dataspace.connector.tests.extensions.VaultExtension;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -40,15 +41,19 @@ class ManagementApiDcpTransferTest {
 
     @RegisterExtension
     @Order(0)
+    private static final VaultExtension VAULT_EXTENSION = new VaultExtension();
+
+    @RegisterExtension
+    @Order(0)
     private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension("issuer", "identityhub");
 
     @RegisterExtension
     @Order(1)
-    private static final Issuer ISSUER = MdsParticipantFactory.issuer(POSTGRES_EXTENSION);
+    private static final Issuer ISSUER = MdsParticipantFactory.issuer(POSTGRES_EXTENSION, VAULT_EXTENSION);
 
     @RegisterExtension
     @Order(2)
-    private static final IdentityHub IDENTITY_HUB = MdsParticipantFactory.identityHub(POSTGRES_EXTENSION, "consumer", "provider");
+    private static final IdentityHub IDENTITY_HUB = MdsParticipantFactory.identityHub(POSTGRES_EXTENSION, VAULT_EXTENSION, "consumer", "provider");
 
     @RegisterExtension
     @Order(3)
