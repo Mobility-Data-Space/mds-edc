@@ -101,9 +101,10 @@ public interface MdsParticipantFactory {
                 .build();
     }
 
-    static IdentityHub identityHub(PostgresqlExtension postgres, String... participants) {
+    static IdentityHub identityHub(PostgresqlExtension postgres, VaultExtension vault, String... participants) {
         var name = "identityhub";
         var runtime = new EmbeddedRuntime(name, ":launchers:identity-hub")
+                .configurationProvider(() -> vault.getConfig(name))
                 .configurationProvider(() -> postgres.getConfig(name))
                 .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
                         "eu.dataspace.identityhub.postgresql.migration.schema", postgres.getSchema()
@@ -111,9 +112,10 @@ public interface MdsParticipantFactory {
         return new IdentityHub(runtime, participants);
     }
 
-    static Issuer issuer(PostgresqlExtension postgres) {
+    static Issuer issuer(PostgresqlExtension postgres, VaultExtension vault) {
         var name = "issuer";
         var runtime = new EmbeddedRuntime(name, ":launchers:issuer")
+                .configurationProvider(() -> vault.getConfig(name))
                 .configurationProvider(() -> postgres.getConfig(name))
                 .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
                         "eu.dataspace.issuer.postgresql.migration.schema", postgres.getSchema()
