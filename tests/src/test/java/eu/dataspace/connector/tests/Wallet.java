@@ -24,20 +24,20 @@ import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 import static org.hamcrest.Matchers.is;
 
-public class IdentityHub implements BeforeAllCallback, AfterAllCallback {
+public class Wallet implements BeforeAllCallback, AfterAllCallback {
 
     private static final String SUPER_USER = "super-user";
     private static final String SUPER_USER_API_KEY = Base64.getEncoder().encodeToString(SUPER_USER.getBytes()) + "." + UUID.randomUUID();
 
     private final EmbeddedRuntime runtime;
     private final String[] participants;
-    private final Map<String, IdentityHubParticipantContext> participantContexts = new HashMap<>();
+    private final Map<String, WalletParticipantContext> participantContexts = new HashMap<>();
     private final LazySupplier<URI> stsEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/sts"));
     private final LazySupplier<URI> didEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/"));
     private final LazySupplier<URI> credentialsEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/credentials"));
     private final LazySupplier<URI> identityEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/identity"));
 
-    public IdentityHub(EmbeddedRuntime runtime, String[] participants) {
+    public Wallet(EmbeddedRuntime runtime, String[] participants) {
         this.runtime = runtime;
         this.participants = participants;
     }
@@ -115,11 +115,11 @@ public class IdentityHub implements BeforeAllCallback, AfterAllCallback {
         return stsEndpoint.get() + "/token";
     }
 
-    public IdentityHubParticipantContext participantContext(String did) {
+    public WalletParticipantContext participantContext(String did) {
         return participantContexts.get(did);
     }
 
-    private IdentityHubParticipantContext registerParticipantContext(LazySupplier<String> did) {
+    private WalletParticipantContext registerParticipantContext(LazySupplier<String> did) {
         var participantKey = generateEcKey("%s#key1".formatted(did.get()));
 
         var privateKeyAlias = "%s-privatekey-alias".formatted(did.get());
@@ -152,7 +152,7 @@ public class IdentityHub implements BeforeAllCallback, AfterAllCallback {
                 .log().ifValidationFails()
                 .statusCode(200)
                 .extract()
-                .body().as(IdentityHubParticipantContext.class);
+                .body().as(WalletParticipantContext.class);
     }
 
 }
