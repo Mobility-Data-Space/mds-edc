@@ -45,6 +45,7 @@ edc-http-lib = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
 edc-http-spi = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
 edc-identity-hub-spi = { module = "org.eclipse.edc:identity-hub-spi", version.ref = "edc" }
 edc-identityhub-bom = { module = "org.eclipse.edc:identityhub-bom", version.ref = "edc" }
+edc-identityhub-feature-sql-bom = { module = "org.eclipse.edc:identityhub-feature-sql-bom", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-issuerservice-bom = { module = "org.eclipse.edc:issuerservice-bom", version.ref = "edc" }
 edc-issuerservice-feature-sql-bom = { module = "org.eclipse.edc:issuerservice-feature-sql-bom", version.ref = "edc" }

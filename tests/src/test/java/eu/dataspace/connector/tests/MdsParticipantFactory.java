@@ -101,8 +101,13 @@ public interface MdsParticipantFactory {
                 .build();
     }
 
-    static IdentityHub identityHub(String... participants) {
-        var runtime = new EmbeddedRuntime("identity-hub", ":launchers:identity-hub");
+    static IdentityHub identityHub(PostgresqlExtension postgres, String... participants) {
+        var name = "identityhub";
+        var runtime = new EmbeddedRuntime(name, ":launchers:identity-hub")
+                .configurationProvider(() -> postgres.getConfig(name))
+                .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
+                        "eu.dataspace.identityhub.postgresql.migration.schema", postgres.getSchema()
+                )));
         return new IdentityHub(runtime, participants);
     }
 

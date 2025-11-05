@@ -40,7 +40,7 @@ class ManagementApiDcpTransferTest {
 
     @RegisterExtension
     @Order(0)
-    private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension("issuer");
+    private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension("issuer", "identityhub");
 
     @RegisterExtension
     @Order(1)
@@ -48,7 +48,7 @@ class ManagementApiDcpTransferTest {
 
     @RegisterExtension
     @Order(2)
-    private static final IdentityHub IDENTITY_HUB = MdsParticipantFactory.identityHub("consumer", "provider");
+    private static final IdentityHub IDENTITY_HUB = MdsParticipantFactory.identityHub(POSTGRES_EXTENSION, "consumer", "provider");
 
     @RegisterExtension
     @Order(3)
