@@ -1,7 +1,7 @@
 package eu.dataspace.connector.tests.feature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.dataspace.connector.tests.IdentityHub;
+import eu.dataspace.connector.tests.Wallet;
 import eu.dataspace.connector.tests.Issuer;
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;
@@ -45,7 +45,7 @@ class ManagementApiDcpTransferTest {
 
     @RegisterExtension
     @Order(0)
-    private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension("issuer", "identityhub");
+    private static final PostgresqlExtension POSTGRES_EXTENSION = new PostgresqlExtension("issuer", "wallet");
 
     @RegisterExtension
     @Order(1)
@@ -53,7 +53,7 @@ class ManagementApiDcpTransferTest {
 
     @RegisterExtension
     @Order(2)
-    private static final IdentityHub IDENTITY_HUB = MdsParticipantFactory.identityHub(POSTGRES_EXTENSION, VAULT_EXTENSION, "consumer", "provider");
+    private static final Wallet IDENTITY_HUB = MdsParticipantFactory.wallet(POSTGRES_EXTENSION, VAULT_EXTENSION, "consumer", "provider");
 
     @RegisterExtension
     @Order(3)

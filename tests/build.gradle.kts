@@ -40,8 +40,8 @@ dependencies {
     testCompileOnly(project(":launchers:connector-tck"))
     testCompileOnly(project(":launchers:connector-vault-postgresql"))
     testCompileOnly(project(":launchers:connector-vault-postgresql-edp"))
-    testCompileOnly(project(":launchers:identity-hub"))
     testCompileOnly(project(":launchers:issuer"))
+    testCompileOnly(project(":launchers:wallet"))
 
     testFixturesApi(libs.bouncycastle.bcpkix)
     testFixturesApi(libs.nimbus.jwt)
