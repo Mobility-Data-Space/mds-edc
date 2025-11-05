@@ -25,30 +25,27 @@ public interface MdsParticipantFactory {
                 .build();
     }
 
-    static MdsParticipant inMemoryDcp(String name, IdentityHub identityHub, LazySupplier<String> issuerDid) {
-        var did = identityHub.didFor(name).get();
+    static MdsParticipant inMemoryDcp(String name, Wallet wallet, LazySupplier<String> issuerDid) {
+        var did = wallet.didFor(name).get();
         var stsClientSecretAlias = did + "-sts-client-secret";
         return MdsParticipant.Builder.newInstance()
                 .id(did)
                 .name(name)
                 .runtime(participant -> baseRuntime(name, ":launchers:connector-inmemory-dcp", participant)
-                        .configurationProvider(() -> {
-                            identityHub.tokenEndpoint();
-                            return ConfigFactory.fromMap(Map.ofEntries(
-                                    Map.entry("edc.iam.sts.oauth.client.id", did),
-                                    Map.entry("edc.iam.sts.oauth.client.secret.alias", stsClientSecretAlias),
-                                    Map.entry("edc.iam.sts.oauth.token.url", identityHub.tokenEndpoint()),
-                                    Map.entry("edc.iam.trusted-issuer.issuer.id", issuerDid.get()),
-                                    Map.entry("edc.iam.trusted-issuer.issuer.supportedtypes", "[\"MembershipCredential\"]")
-                            ));
-                        })
+                        .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
+                                Map.entry("edc.iam.sts.oauth.client.id", did),
+                                Map.entry("edc.iam.sts.oauth.client.secret.alias", stsClientSecretAlias),
+                                Map.entry("edc.iam.sts.oauth.token.url", wallet.tokenEndpoint()),
+                                Map.entry("edc.iam.trusted-issuer.issuer.id", issuerDid.get()),
+                                Map.entry("edc.iam.trusted-issuer.issuer.supportedtypes", "[\"MembershipCredential\"]")
+                        )))
                         .registerSystemExtension(ServiceExtension.class, new ServiceExtension() {
                             @Inject
                             private Vault vault;
 
                             @Override
                             public void initialize(ServiceExtensionContext context) {
-                                var participantContext = identityHub.participantContext(did);
+                                var participantContext = wallet.participantContext(did);
                                 vault.storeSecret(stsClientSecretAlias, participantContext.clientSecret());
                             }
                         })
@@ -101,15 +98,15 @@ public interface MdsParticipantFactory {
                 .build();
     }
 
-    static IdentityHub identityHub(PostgresqlExtension postgres, VaultExtension vault, String... participants) {
-        var name = "identityhub";
-        var runtime = new EmbeddedRuntime(name, ":launchers:identity-hub")
+    static Wallet wallet(PostgresqlExtension postgres, VaultExtension vault, String... participants) {
+        var name = "wallet";
+        var runtime = new EmbeddedRuntime(name, ":launchers:wallet")
                 .configurationProvider(() -> vault.getConfig(name))
                 .configurationProvider(() -> postgres.getConfig(name))
                 .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
-                        "eu.dataspace.identityhub.postgresql.migration.schema", postgres.getSchema()
+                        "eu.dataspace.wallet.postgresql.migration.schema", postgres.getSchema()
                 )));
-        return new IdentityHub(runtime, participants);
+        return new Wallet(runtime, participants);
     }
 
     static Issuer issuer(PostgresqlExtension postgres, VaultExtension vault) {

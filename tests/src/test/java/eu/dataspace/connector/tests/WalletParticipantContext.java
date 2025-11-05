@@ -13,5 +13,5 @@
 
 package eu.dataspace.connector.tests;
 
-public record IdentityHubParticipantContext(String apiKey, String clientId, String clientSecret) {
+public record WalletParticipantContext(String apiKey, String clientId, String clientSecret) {
 }
