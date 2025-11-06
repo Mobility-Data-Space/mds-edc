@@ -1,6 +1,8 @@
 package eu.dataspace.connector.tests;
 
 import io.restassured.http.ContentType;
+import io.restassured.response.ResponseBodyExtractionOptions;
+import io.restassured.response.ValidatableResponse;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.spi.security.Vault;
@@ -122,7 +124,7 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
                                 "tableName", "membership_attestation"
                         )
                 ))
-                .post("/v1alpha/participants/{participantContextId}/attestations", Base64.getEncoder().encodeToString(did.get().getBytes()))
+                .post("/v1alpha/participants/{participantContextId}/attestations", encodeToString(did.get()))
                 .then()
                 .log().ifValidationFails()
                 .statusCode(201);
@@ -157,7 +159,7 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
 //                        )),
                         entry("format", "VC1_0_JWT")
                 ))
-                .post("/v1alpha/participants/{participantContextId}/credentialdefinitions", Base64.getEncoder().encodeToString(did.get().getBytes()))
+                .post("/v1alpha/participants/{participantContextId}/credentialdefinitions", encodeToString(did.get()))
                 .then()
                 .log().ifValidationFails()
                 .statusCode(201);
@@ -182,7 +184,7 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
                                 "type", "IssuerService",
                                 "serviceEndpoint", "%s/v1alpha/participants/%s".formatted(
                                         issuanceEndpoint.get().toString(),
-                                        Base64.getEncoder().encodeToString(did.get().getBytes())
+                                        encodeToString(did.get())
                                 )
                         ),
                         "key", Map.of(
@@ -198,4 +200,40 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
                 .body().jsonPath().getString("apiKey");
     }
 
+    public ValidatableResponse revokeCredentials(String participantId) {
+        var body = given()
+                .baseUri(issueradminEndpoint.get().toString())
+                .header("x-api-key", issuerParticipantApiKey)
+                .contentType(ContentType.JSON)
+                .body(Map.of(
+                        "filterExpression", List.of(
+                                Map.of(
+                                        "operandLeft", "holderId",
+                                        "operator", "=",
+                                        "operandRight", participantId
+                                )
+                        )
+                ))
+                .post("/v1alpha/participants/{participantId}/credentials/query", encodeToString(did.get()))
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .extract()
+                .body();
+        var soasdsa = body.asString();
+        System.out.println(soasdsa);
+        var credentialId = body.jsonPath().getString("[0].credential.id");
+
+        return given()
+                .baseUri(issueradminEndpoint.get().toString())
+                .header("x-api-key", issuerParticipantApiKey)
+                .contentType(ContentType.JSON)
+                .post("/v1alpha/participants/{participantId}/credentials/{credentialId}/revoke", encodeToString(did.get()), credentialId)
+                .then()
+                .log().ifValidationFails();
+    }
+
+    private String encodeToString(String value) {
+        return Base64.getEncoder().encodeToString(value.getBytes());
+    }
 }
