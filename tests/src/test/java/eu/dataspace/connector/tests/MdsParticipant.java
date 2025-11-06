@@ -2,11 +2,15 @@ package eu.dataspace.connector.tests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
+import org.assertj.core.api.Assertions;
+import org.awaitility.Awaitility;
 import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
@@ -33,6 +37,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -346,6 +351,23 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
     public MdsParticipant configurationProvider(Supplier<Config> configurationProvider) {
         runtime.configurationProvider(configurationProvider);
         return this;
+    }
+
+    public ValidatableResponse getCatalog(MdsParticipant provider) {
+        var requestBodyBuilder = Json.createObjectBuilder()
+                .add("@context", Json.createObjectBuilder().add("@vocab", "https://w3id.org/edc/v0.0.1/ns/"))
+                .add("@type", "CatalogRequest")
+                .add("counterPartyId", provider.id)
+                .add("counterPartyAddress", provider.getProtocolUrl())
+                .add("protocol", protocol);
+
+        return baseManagementRequest()
+                .contentType(ContentType.JSON)
+                .when()
+                .body(requestBodyBuilder.build())
+                .post("/v3/catalog/request")
+                .then()
+                .log().ifValidationFails();
     }
 
     public static class Builder extends Participant.Builder<MdsParticipant, Builder> {
