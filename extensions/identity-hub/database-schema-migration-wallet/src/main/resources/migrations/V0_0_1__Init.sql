@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS credential_resource (
     raw_vc                VARCHAR,
     vc_format             INTEGER NOT NULL,
     verifiable_credential JSON NOT NULL,
-    participant_context_id VARCHAR
+    participant_context_id VARCHAR,
+    usage VARCHAR NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS did_resources (
@@ -23,10 +24,12 @@ CREATE TABLE IF NOT EXISTS did_resources (
 );
 
 CREATE TABLE IF NOT EXISTS edc_lease (
-    lease_id       VARCHAR PRIMARY KEY,
-    leased_by      VARCHAR NOT NULL,
-    leased_at      BIGINT,
-    lease_duration INTEGER NOT NULL
+     leased_by         VARCHAR NOT NULL,
+     leased_at         BIGINT,
+     lease_duration    INTEGER NOT NULL,
+     resource_id       VARCHAR NOT NULL,
+     resource_kind     VARCHAR NOT NULL,
+     PRIMARY KEY(resource_id, resource_kind)
 );
 
 CREATE TABLE IF NOT EXISTS edc_holder_credentialrequest (
@@ -39,7 +42,6 @@ CREATE TABLE IF NOT EXISTS edc_holder_credentialrequest (
     trace_context          JSON,
     error_detail           VARCHAR,
     pending                BOOLEAN DEFAULT FALSE,
-    lease_id               VARCHAR CONSTRAINT credreq_lease_lease_id_fk REFERENCES edc_lease ON DELETE SET NULL,
     participant_context_id VARCHAR NOT NULL,
     issuer_did             VARCHAR NOT NULL,
     ids_and_formats        JSON NOT NULL,
@@ -54,14 +56,13 @@ CREATE TABLE IF NOT EXISTS edc_jti_validation (
 );
 
 CREATE TABLE IF NOT EXISTS edc_sts_client (
-    id                      VARCHAR PRIMARY KEY,
-    client_id               VARCHAR NOT NULL,
-    did                     VARCHAR NOT NULL,
-    name                    VARCHAR NOT NULL,
-    secret_alias            VARCHAR NOT NULL,
-    private_key_alias       VARCHAR NOT NULL,
-    public_key_reference    VARCHAR NOT NULL,
-    created_at              BIGINT  NOT NULL
+    id                     VARCHAR PRIMARY KEY,
+    client_id              VARCHAR NOT NULL,
+    did                    VARCHAR NOT NULL,
+    name                   VARCHAR NOT NULL,
+    secret_alias           VARCHAR NOT NULL,
+    created_at             BIGINT  NOT NULL,
+    participant_context_id VARCHAR NOT NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS sts_client_client_id_index ON edc_sts_client (client_id);
 
@@ -77,7 +78,8 @@ CREATE TABLE IF NOT EXISTS keypair_resource (
     serialized_public_key   VARCHAR NOT NULL,
     private_key_alias       VARCHAR NOT NULL,
     state                   INT NOT NULL DEFAULT 100,
-    key_context             VARCHAR
+    key_context             VARCHAR,
+    usage                   VARCHAR NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS participant_context (

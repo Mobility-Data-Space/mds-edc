@@ -4,7 +4,7 @@ awaitility = "4.3.0"
 aws = "2.40.16"
 azure-storage-blob = "12.32.0"
 bouncycastle = "1.83"
-dsp-tck = "1.0.0-RC5"
+dsp-tck = "1.0.0-SNAPSHOT"
 edc = "0.15.1"
 flyway = "11.20.0"
 jose4j = "0.9.6"
@@ -22,6 +22,7 @@ testcontainers = "2.0.3"
 testcontainers-keycloak = "4.0.1"
 tractusx-edc = "0.11.2"
 yasson = "3.0.4"
+wiremock = "3.13.2"
 
 [libraries]
 edc-asset-spi = { module = "org.eclipse.edc:asset-spi", version.ref = "edc" }
@@ -65,11 +66,10 @@ edc-policy-engine-spi = { module = "org.eclipse.edc:policy-engine-spi", version.
 edc-policy-monitor-spi = { module = "org.eclipse.edc:policy-monitor-spi", version.ref = "edc" }
 edc-protocol-spi = { module = "org.eclipse.edc:protocol-spi", version.ref = "edc" }
 edc-query-lib = { module = "org.eclipse.edc:query-lib", version.ref = "edc" }
+edc-request-policy-context-spi = { module = "org.eclipse.edc:request-policy-context-spi", version.ref = "edc" }
 edc-sql-lib = { module = "org.eclipse.edc:sql-lib", version.ref = "edc" }
 edc-sql-test-fixtures = { module = "org.eclipse.edc:sql-test-fixtures", version.ref = "edc" }
 edc-store-lib = { module = "org.eclipse.edc:store-lib", version.ref = "edc" }
-edc-request-policy-context-spi = { module = "org.eclipse.edc:request-policy-context-spi", version.ref = "edc" }
-edc-sql-lib = { module = "org.eclipse.edc:sql-lib", version.ref = "edc" }
 edc-tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc" }
 edc-token-lib = { module = "org.eclipse.edc:token-lib", version.ref = "edc" }
 edc-token-spi = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
@@ -130,6 +130,7 @@ testcontainers-localstack = { module = "org.testcontainers:testcontainers-locals
 testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
 testcontainers-vault = { module = "org.testcontainers:testcontainers-vault", version.ref = "testcontainers" }
 yasson = { module = "org.eclipse:yasson", version.ref = "yasson" }
+wiremock = { module = "org.wiremock:wiremock-jetty12", version.ref = "wiremock" }
 
 [plugins]
 openapi-generator = { id = "org.openapi.generator", version = "7.17.0" }

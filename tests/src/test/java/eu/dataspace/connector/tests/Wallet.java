@@ -1,8 +1,8 @@
 package eu.dataspace.connector.tests;
 
 import io.restassured.http.ContentType;
-import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -130,7 +130,7 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
                 .header("x-api-key", SUPER_USER_API_KEY)
                 .contentType(ContentType.JSON)
                 .body(Map.of(
-                        "participantId", did.get(),
+                        "participantContextId", did.get(),
                         "did", did.get(),
                         "active", "true",
                         "serviceEndpoint", Map.of(

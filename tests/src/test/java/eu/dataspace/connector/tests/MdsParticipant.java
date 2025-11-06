@@ -1,6 +1,10 @@
 package eu.dataspace.connector.tests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.extension.Parameters;
+import com.github.tomakehurst.wiremock.extension.ServeEventListener;
+import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
@@ -20,8 +24,6 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.HttpResponse;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
@@ -36,6 +38,10 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.any;
+import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static eu.dataspace.connector.tests.Crypto.encode;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.json.Json.createArrayBuilder;
@@ -48,14 +54,13 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.mockserver.model.HttpRequest.request;
 
 public class MdsParticipant extends Participant implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback {
 
     private final LazySupplier<Integer> eventReceiverPort = new LazySupplier<>(Ports::getFreePort);
     private final LazySupplier<URI> stsEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/sts"));
     private final String managementAuthKey = UUID.randomUUID().toString();
-    private ClientAndServer eventReceiver;
+    private WireMockServer eventReceiver;
     private EmbeddedRuntime runtime;
     private final BlockingQueue<JsonObject> events = new LinkedBlockingDeque<>();
     private boolean eventReceiverEnabled = true;
@@ -69,13 +74,16 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         if (runtime != null) {
             runtime.boot(false);
             if (eventReceiverEnabled) {
-                eventReceiver = ClientAndServer.startClientAndServer(eventReceiverPort.get());
-                eventReceiver.when(request()).respond(httpRequest -> {
-                    var bodyAsRawBytes = httpRequest.getBodyAsRawBytes();
-                    var event = Json.createReader(new ByteArrayInputStream(bodyAsRawBytes)).readObject();
-                    events.add(event);
-                    return HttpResponse.response();
-                });
+                var edcEventSubscriber = new EdcEventSubscriber();
+                eventReceiver = new WireMockServer(options().port(eventReceiverPort.get()).extensions(edcEventSubscriber));
+                eventReceiver.stubFor(any(anyUrl()).willReturn(aResponse().withStatus(200).withTransformers(edcEventSubscriber.getName())));
+                eventReceiver.start();
+//                eventReceiver.when(request()).respond(httpRequest -> {
+//                    var bodyAsRawBytes = httpRequest.getBodyAsRawBytes();
+//                    var event = Json.createReader(new ByteArrayInputStream(bodyAsRawBytes)).readObject();
+//                    events.add(event);
+//                    return HttpResponse.response();
+//                });
             }
         }
     }
@@ -84,7 +92,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
     public void afterAll(ExtensionContext context) {
         if (runtime != null) {
             runtime.shutdown();
-            if (eventReceiverEnabled) {
+            if (eventReceiverEnabled && eventReceiver != null) {
                 eventReceiver.stop();
             }
         }
@@ -350,6 +358,23 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         return this;
     }
 
+    public ValidatableResponse getCatalog(MdsParticipant provider) {
+        var requestBodyBuilder = Json.createObjectBuilder()
+                .add("@context", Json.createObjectBuilder().add("@vocab", "https://w3id.org/edc/v0.0.1/ns/"))
+                .add("@type", "CatalogRequest")
+                .add("counterPartyId", provider.id)
+                .add("counterPartyAddress", provider.getProtocolUrl())
+                .add("protocol", protocol);
+
+        return baseManagementRequest()
+                .contentType(ContentType.JSON)
+                .when()
+                .body(requestBodyBuilder.build())
+                .post("/v3/catalog/request")
+                .then()
+                .log().ifValidationFails();
+    }
+
     public static class Builder extends Participant.Builder<MdsParticipant, Builder> {
 
         public static Builder newInstance() {
@@ -377,4 +402,17 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         }
     }
 
+    private class EdcEventSubscriber implements ServeEventListener {
+        @Override
+        public String getName() {
+            return "events";
+        }
+
+        @Override
+        public void onEvent(RequestPhase requestPhase, ServeEvent serveEvent, Parameters parameters) {
+            var bodyAsRawBytes = serveEvent.getRequest().getBody();
+            var event = Json.createReader(new ByteArrayInputStream(bodyAsRawBytes)).readObject();
+            events.add(event);
+        }
+    }
 }

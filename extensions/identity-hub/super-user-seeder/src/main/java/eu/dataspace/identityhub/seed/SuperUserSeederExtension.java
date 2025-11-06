@@ -59,7 +59,7 @@ public class SuperUserSeederExtension implements ServiceExtension {
         }
 
         var manifest = ParticipantManifest.Builder.newInstance()
-                .participantId(superUserId)
+                .participantContextId(superUserId)
                 .did("did:web:%s".formatted(superUserId)) // doesn't matter, not intended for resolution
                 .active(true)
                 .key(KeyDescriptor.Builder.newInstance()

@@ -1,27 +1,36 @@
 package eu.dataspace.connector.tests.feature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.dataspace.connector.tests.Wallet;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import eu.dataspace.connector.tests.Issuer;
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;
+import eu.dataspace.connector.tests.Wallet;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.edc.util.io.Ports;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockserver.integration.ClientAndServer;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.jsonResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.requestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static io.restassured.RestAssured.given;
 import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,14 +39,13 @@ import static org.eclipse.edc.connector.controlplane.transfer.spi.types.Transfer
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.mockserver.integration.ClientAndServer.startClientAndServer;
-import static org.mockserver.model.BinaryBody.binary;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
-import static org.mockserver.model.JsonBody.json;
 
 class ManagementApiDcpTransferTest {
+
+    static {
+        System.setProperty("mockserver.logLevel", "TRACE");
+        System.setProperty("root.logLevel", "TRACE");
+    }
 
     @RegisterExtension
     @Order(0)
@@ -74,27 +82,29 @@ class ManagementApiDcpTransferTest {
 
     @Test
     void shouldSupportHttpPushTransfer() {
-        var providerDataSource = startClientAndServer(getFreePort());
-        providerDataSource.when(request("/source")).respond(response("data"));
-        var consumerDataDestination = startClientAndServer(getFreePort());
-        consumerDataDestination.when(request("/destination")).respond(response());
+        var providerDataSource = new WireMockServer(Ports.getFreePort());
+        providerDataSource.stubFor(get(urlPathEqualTo("/source")).willReturn(ok("data")));
+        providerDataSource.start();
+        var consumerDataDestination = new WireMockServer(Ports.getFreePort());
+        consumerDataDestination.stubFor(post(urlPathEqualTo("/destination")).willReturn(ok()));
+        consumerDataDestination.start();
         Map<String, Object> dataAddressProperties = Map.of(
                 EDC_NAMESPACE + "type", "HttpData",
-                EDC_NAMESPACE + "baseUrl", "http://localhost:%s/source".formatted(providerDataSource.getPort())
+                EDC_NAMESPACE + "baseUrl", "http://localhost:%s/source".formatted(providerDataSource.port())
         );
 
         var assetId = PROVIDER.createOffer(dataAddressProperties);
 
         var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                 .withTransferType("HttpData-PUSH")
-                .withDestination(httpDataAddress("http://localhost:" + consumerDataDestination.getPort() + "/destination"))
+                .withDestination(httpDataAddress("http://localhost:" + consumerDataDestination.port() + "/destination"))
                 .execute();
 
         CONSUMER.awaitTransferToBeInState(transferProcessId, COMPLETED);
 
         await().untilAsserted(() -> {
-            providerDataSource.verify(request("/source").withMethod("GET"));
-            consumerDataDestination.verify(request("/destination").withBody(binary("data".getBytes())));
+            providerDataSource.verify(anyRequestedFor(urlPathEqualTo("/source")));
+            consumerDataDestination.verify(anyRequestedFor(urlPathEqualTo("/destination")).withRequestBody(equalTo("data")));
         });
 
         consumerDataDestination.stop();
@@ -103,13 +113,15 @@ class ManagementApiDcpTransferTest {
 
     @Test
     void shouldSupportHttpPullTransfer() throws IOException {
-        var providerDataSource = startClientAndServer(getFreePort());
-        providerDataSource.when(request("/source")).respond(response("data"));
-        var consumerEdrReceiver = ClientAndServer.startClientAndServer(getFreePort());
-        consumerEdrReceiver.when(request("/edr")).respond(response());
+        var providerDataSource = new WireMockServer(Ports.getFreePort());
+        providerDataSource.stubFor(get(urlPathEqualTo("/source")).willReturn(ok("data")));
+        providerDataSource.start();
+        var consumerEdrReceiver = new WireMockServer(Ports.getFreePort());
+        consumerEdrReceiver.stubFor(post(urlPathEqualTo("/edr")).willReturn(ok()));
+        consumerEdrReceiver.start();
         Map<String, Object> dataAddressProperties = Map.of(
                 EDC_NAMESPACE + "type", "HttpData",
-                EDC_NAMESPACE + "baseUrl", "http://localhost:%s/source".formatted(providerDataSource.getPort())
+                EDC_NAMESPACE + "baseUrl", "http://localhost:%s/source".formatted(providerDataSource.port())
         );
 
         var assetId = PROVIDER.createOffer(dataAddressProperties);
@@ -117,15 +129,15 @@ class ManagementApiDcpTransferTest {
         var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                 .withTransferType("HttpData-PULL")
                 .withCallbacks(Json.createArrayBuilder()
-                        .add(createCallback("http://localhost:%s/edr".formatted(consumerEdrReceiver.getPort()), true, Set.of("transfer.process.started")))
+                        .add(createCallback("http://localhost:%s/edr".formatted(consumerEdrReceiver.port()), true, Set.of("transfer.process.started")))
                         .build())
                 .execute();
 
         CONSUMER.awaitTransferToBeInState(transferProcessId, STARTED);
 
-        var edrRequests = await().until(() -> consumerEdrReceiver.retrieveRecordedRequests(request("/edr")), it -> it.length > 0);
+        var edrRequests = await().until(() -> consumerEdrReceiver.findRequestsMatching(requestedFor("POST", urlPathEqualTo("/edr")).build()), it -> !it.getRequests().isEmpty());
 
-        var edr = new ObjectMapper().readTree(edrRequests[0].getBodyAsRawBytes()).get("payload").get("dataAddress").get("properties");
+        var edr = new ObjectMapper().readTree(edrRequests.getRequests().get(0).getBody()).get("payload").get("dataAddress").get("properties");
 
         var endpoint = edr.get(EDC_NAMESPACE + "endpoint").asText();
         var authCode = edr.get(EDC_NAMESPACE + "authorization").asText();
@@ -146,36 +158,40 @@ class ManagementApiDcpTransferTest {
 
     @Test
     void shouldSupportOauth2OnProviderSide() {
-        var sourceBackend = ClientAndServer.startClientAndServer(getFreePort());
-        sourceBackend.when(request("/source")).respond(response("data"));
-        var oauth2server = ClientAndServer.startClientAndServer(getFreePort());
-        oauth2server.when(request("/token")).respond(response().withBody(json(Map.of("access_token", "token"))));
-        var destinationBackend = ClientAndServer.startClientAndServer(getFreePort());
-        destinationBackend.when(request("/destination")).respond(response());
+        var sourceBackend = new WireMockServer(Ports.getFreePort());
+        sourceBackend.stubFor(get(urlPathEqualTo("/source")).willReturn(ok("data")));
+        sourceBackend.start();
+        var oauth2server = new WireMockServer(Ports.getFreePort());
+        oauth2server.stubFor(post(urlPathEqualTo("/token")).willReturn(jsonResponse(Map.of("access_token", "token"), 200)));
+        oauth2server.start();
+        var destinationBackend = new WireMockServer(Ports.getFreePort());
+        destinationBackend.stubFor(post(urlPathEqualTo("/destination")).willReturn(ok()));
+        destinationBackend.start();
 
         var clientSecretKey = UUID.randomUUID().toString();
         PROVIDER.getService(Vault.class).storeSecret(clientSecretKey, "clientSecretValue");
 
         Map<String, Object> dataSource = Map.of(
                 EDC_NAMESPACE + "type", "HttpData",
-                EDC_NAMESPACE + "baseUrl", "http://localhost:%s/source".formatted(sourceBackend.getPort()),
+                EDC_NAMESPACE + "baseUrl", "http://localhost:%s/source".formatted(sourceBackend.port()),
                 EDC_NAMESPACE + "oauth2:clientId", "clientId",
                 EDC_NAMESPACE + "oauth2:clientSecretKey", clientSecretKey,
-                EDC_NAMESPACE + "oauth2:tokenUrl", "http://localhost:%s/token".formatted(oauth2server.getPort())
+                EDC_NAMESPACE + "oauth2:tokenUrl", "http://localhost:%s/token".formatted(oauth2server.port())
         );
 
         var assetId = PROVIDER.createOffer(dataSource);
 
         var transferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                 .withTransferType("HttpData-PUSH")
-                .withDestination(httpDataAddress("http://localhost:" + destinationBackend.getPort() + "/destination"))
+                .withDestination(httpDataAddress("http://localhost:" + destinationBackend.port() + "/destination"))
                 .execute();
 
         CONSUMER.awaitTransferToBeInState(transferProcessId, COMPLETED);
 
-        oauth2server.verify(request("/token").withBody("grant_type=client_credentials&client_secret=clientSecretValue&client_id=clientId"));
-        sourceBackend.verify(request("/source").withMethod("GET").withHeader("Authorization", "Bearer token"));
-        destinationBackend.verify(request("/destination").withBody(binary("data".getBytes())));
+        oauth2server.verify(anyRequestedFor(urlPathEqualTo("/token"))
+                .withRequestBody(equalTo("grant_type=client_credentials&client_secret=clientSecretValue&client_id=clientId")));
+        sourceBackend.verify(anyRequestedFor(urlPathEqualTo("/source")).withHeader("Authorization", equalTo("Bearer token")));
+        destinationBackend.verify(anyRequestedFor(urlPathEqualTo("/destination")).withRequestBody(equalTo("data")));
 
         oauth2server.stop();
         sourceBackend.stop();
