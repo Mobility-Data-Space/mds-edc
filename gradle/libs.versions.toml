@@ -96,7 +96,7 @@ kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafk
 keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak" }
 jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "jose4j" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "6.0.1" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "junit-jupiter" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "mockserver" }
 parsson = { module = "org.eclipse.parsson:parsson", version = "1.1.7" }
