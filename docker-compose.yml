@@ -16,6 +16,7 @@ services:
   edc:
     image: ghcr.io/mobility-data-space/mds-edc/connector-vault-postgresql:latest
     environment:
+      EDC_HOSTNAME: ${EDC_HOSTNAME:-localhost}
       # Participant Configuration
       EDC_PARTICIPANT_ID: ${EDC_PARTICIPANT_ID:-my_participant_id}
       EDC_COMPONENT_ID: "${EDC_PARTICIPANT_ID:-my_participant_id}_MDS_COMPONENT"
