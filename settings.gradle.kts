@@ -10,6 +10,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
+        maven("https://central.sonatype.com/repository/maven-snapshots/")
         mavenGpr("Mobility-Data-Space/mds-logging-house-client")
         mavenGpr("ids-basecamp/ids-infomodel-java")
         mavenLocal()
@@ -26,18 +27,19 @@ fun RepositoryHandler.mavenGpr(project: String) {
     }
 }
 
-include(":extensions:edp")
-include(":extensions:logging-house-publisher")
-include(":extensions:manual-negotiation-approval")
 include(":extensions:daps:oauth2-daps")
 include(":extensions:daps:oauth2-identity-service")
+include(":extensions:database-schema-migration-connector")
+include(":extensions:data-plane-public-api-v2")
+include(":extensions:edp")
+include(":extensions:kafka:data-plane-kafka")
+include(":extensions:kafka:data-plane-kafka-spi")
+include(":extensions:logging-house-publisher")
+include(":extensions:manual-negotiation-approval")
 include(":extensions:policy:policy-always-true")
 include(":extensions:policy:policy-referring-connector")
 include(":extensions:policy:policy-time-interval")
 include(":extensions:semantic-validator")
-
-include(":extensions:kafka:data-plane-kafka")
-include(":extensions:kafka:data-plane-kafka-spi")
 
 include(":launchers:connector-inmemory")
 include(":launchers:connector-tck")
