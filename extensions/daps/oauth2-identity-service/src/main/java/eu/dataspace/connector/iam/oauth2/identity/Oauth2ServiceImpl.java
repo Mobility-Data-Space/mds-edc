@@ -64,14 +64,14 @@ public class Oauth2ServiceImpl implements IdentityService {
     }
 
     @Override
-    public Result<TokenRepresentation> obtainClientCredentials(TokenParameters parameters) {
+    public Result<TokenRepresentation> obtainClientCredentials(String participantId, TokenParameters parameters) {
         return generateClientAssertion()
                 .map(assertion -> createRequest(parameters, assertion))
                 .compose(client::requestToken);
     }
 
     @Override
-    public Result<ClaimToken> verifyJwtToken(TokenRepresentation tokenRepresentation, VerificationContext context) {
+    public Result<ClaimToken> verifyJwtToken(String participantId, TokenRepresentation tokenRepresentation, VerificationContext context) {
         return tokenValidationService.validate(tokenRepresentation, publicKeyResolver, tokenValidationRuleRegistry.getRules(OAUTH2_TOKEN_CONTEXT));
     }
 
@@ -95,5 +95,4 @@ public class Oauth2ServiceImpl implements IdentityService {
         }
         return builder.build();
     }
-
 }

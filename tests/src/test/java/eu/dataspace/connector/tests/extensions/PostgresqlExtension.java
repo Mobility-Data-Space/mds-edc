@@ -62,7 +62,7 @@ public class PostgresqlExtension implements BeforeAllCallback, AfterAllCallback 
                 entry("edc.datasource.default.url", jdbcUrl),
                 entry("edc.datasource.default.user", USER),
                 entry("edc.datasource.default.password", PASSWORD),
-                entry("org.eclipse.tractusx.edc.postgresql.migration.schema", DB_SCHEMA_NAME)
+                entry("eu.dataspace.connector.postgresql.migration.schema", DB_SCHEMA_NAME)
         );
         return ConfigFactory.fromMap(settings);
     }
@@ -77,7 +77,6 @@ public class PostgresqlExtension implements BeforeAllCallback, AfterAllCallback 
     }
 
     private String baseJdbcUrl() {
-        var url = format("jdbc:postgresql://%s:%s/", postgreSqlContainer.getHost(), exposedPort);
-        return url;
+        return format("jdbc:postgresql://%s:%s/", postgreSqlContainer.getHost(), exposedPort);
     }
 }
