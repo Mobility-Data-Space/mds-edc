@@ -109,7 +109,7 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
 
     public SystemExtension seedDapsKeyPair() {
         return SeedVault.fromMap(context -> {
-            var client = Client.valueOf(context.getParticipantId());
+            var client = Client.valueOf(context.getSetting("edc.participant.id", "anonymous"));
             return Map.of(
                     "daps-private-key", client.encodedPrivateKey(),
                     "daps-certificate", client.encodedCertificate()
