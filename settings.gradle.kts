@@ -26,6 +26,10 @@ fun RepositoryHandler.mavenGpr(project: String) {
     }
 }
 
+include(":extensions:agreements:retirement-evaluation-core")
+include(":extensions:agreements:retirement-evaluation-api")
+include(":extensions:agreements:retirement-evaluation-spi")
+include(":extensions:agreements:retirement-evaluation-store-sql")
 include(":extensions:edp")
 include(":extensions:logging-house-publisher")
 include(":extensions:manual-negotiation-approval")

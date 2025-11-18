@@ -1,0 +1,47 @@
+package eu.dataspace.connector.agreements.retirement.store.sql;
+
+import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.sql.translation.PostgresqlOperatorTranslator;
+import org.eclipse.edc.sql.translation.SqlOperatorTranslator;
+import org.eclipse.edc.sql.translation.SqlQueryStatement;
+
+import static java.lang.String.format;
+
+public class PostgresAgreementRetirementStatements implements SqlAgreementsRetirementStatements {
+
+    private final SqlOperatorTranslator operatorTranslator;
+
+    public PostgresAgreementRetirementStatements() {
+        this.operatorTranslator = new PostgresqlOperatorTranslator();
+    }
+
+    @Override
+    public String insertTemplate() {
+        return executeStatement()
+                .column(getIdColumn())
+                .column(getReasonColumn())
+                .column(getRetirementDateColumn())
+                .insertInto(getTable());
+    }
+
+    @Override
+    public String getDeleteByIdTemplate() {
+        return executeStatement().delete(getTable(), getIdColumn());
+    }
+
+    @Override
+    public String getCountByIdClause() {
+        return format("SELECT COUNT (*) FROM %s WHERE %s = ?", getTable(), getIdColumn());
+    }
+
+    @Override
+    public String getCountVariableName() {
+        return "COUNT";
+    }
+
+    @Override
+    public SqlQueryStatement createQuery(QuerySpec querySpec) {
+        var select = format("SELECT * FROM %s", getTable());
+        return new SqlQueryStatement(select, querySpec, new AgreementRetirementMapping(this), operatorTranslator);
+    }
+}

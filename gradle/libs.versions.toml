@@ -40,6 +40,7 @@ edc-edr-store-spi = { module = "org.eclipse.edc:edr-store-spi", version.ref = "e
 edc-http-lib = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
 edc-http-spi = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
+edc-jersey-core = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
 edc-json-ld-spi = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-json-ld-lib = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
@@ -50,7 +51,12 @@ edc-oauth2-spi = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
 edc-participant-spi = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
 edc-policy-spi = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
 edc-policy-engine-spi = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
+edc-policy-monitor-spi = { module = "org.eclipse.edc:policy-monitor-spi", version.ref = "edc" }
 edc-protocol-spi = { module = "org.eclipse.edc:protocol-spi", version.ref = "edc" }
+edc-query-lib = { module = "org.eclipse.edc:query-lib", version.ref = "edc" }
+edc-sql-lib = { module = "org.eclipse.edc:sql-lib", version.ref = "edc" }
+edc-sql-test-fixtures = { module = "org.eclipse.edc:sql-test-fixtures", version.ref = "edc" }
+edc-store-lib = { module = "org.eclipse.edc:store-lib", version.ref = "edc" }
 edc-tck-extension = { module = "org.eclipse.edc:tck-extension", version.ref = "edc" }
 edc-token-lib = { module = "org.eclipse.edc:token-lib", version.ref = "edc" }
 edc-token-spi = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
@@ -71,10 +77,6 @@ tractusx-edc-core-spi = { module = "org.eclipse.tractusx.edc:core-spi", version.
 tractusx-edc-control-plane-migration = { module = "org.eclipse.tractusx.edc:control-plane-migration", version.ref = "tractusx-edc" }
 tractusx-edc-data-plane-migration = { module = "org.eclipse.tractusx.edc:data-plane-migration", version.ref = "tractusx-edc" }
 tractusx-edc-postgresql-migration = { module = "org.eclipse.tractusx.edc:postgresql-migration-lib", version.ref = "tractusx-edc" }
-tractusx-edc-retirement-evaluation-api = { module = "org.eclipse.tractusx.edc:retirement-evaluation-api", version.ref = "tractusx-edc" }
-tractusx-edc-retirement-evaluation-core = { module = "org.eclipse.tractusx.edc:retirement-evaluation-core", version.ref = "tractusx-edc" }
-tractusx-edc-retirement-evaluation-store-sql = { module = "org.eclipse.tractusx.edc:retirement-evaluation-store-sql", version.ref = "tractusx-edc" }
-tractusx-edc-retirement-evaluation-spi = { module = "org.eclipse.tractusx.edc:retirement-evaluation-spi", version.ref = "tractusx-edc" }
 
 logging-house-client = { module = "mds-logging-house:client", version.ref = "logging-house-client" }
 

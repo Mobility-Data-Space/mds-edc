@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.tractusx.edc.retirement.evaluation.spi)
+    implementation(project(":extensions:agreements:retirement-evaluation-spi"))
     implementation(libs.edc.core.spi)
     implementation(libs.logging.house.client)
 
