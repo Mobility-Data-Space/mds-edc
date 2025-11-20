@@ -1,4 +1,4 @@
-# Productive Deployment Guide
+# Production Deployment Guide using the MDS EDC Docker Image
 
 ## About this Guide
 
@@ -16,8 +16,7 @@ This is a productive deployment guide for self-hosting a functional MDS Connecto
 
 - Must have a running DAPS that follows the subset of OAuth2 as described in the DSP Specification.
 - You must have a valid Connector Certificate in the form of a .p12 and a password.
-- You must have a valid Participant ID / Connector ID, which is configured in the claim "referringConnector" in the
-  DAPS.
+- You must have a valid Participant ID / Connector ID, which is configured in the claim "referringConnector" in the DAPS.
 - You must have a Postgres database available and a Hashicorp instance. If not, feel encouraged to use the provided docker images.
 
 ## Deployment Units
@@ -33,6 +32,21 @@ To deploy an EDC multiple deployment units must be deployed and configured.
 | Connector                                                         | MDS-EDC |
 
 ## Configuration
+
+### What ports does the MDS EDC Connector use?
+
+Default port mapping (can be configured):
+
+| Port | Component | Purpose | Public Exposure |
+|------|-----------|---------|-----------------|
+| 8181 | Default API | General/Health endpoints | Optional |
+| 8182 | Management API | Asset/Policy/Contract management | Optional |
+| 8183 | Protocol API (DSP) | Connector-to-connector communication | Yes (required) |
+| 8184 | Version API | Versions endpoint | Optional |
+| 8185 | Public API | Public data plane endpoint | Yes (required) |
+| 8186 | Control API | Control plane operations | No (internal only) |
+
+In production, these are typically merged behind a reverse proxy under a single domain with different paths.
 
 ### Reverse Proxy Configuration
 
@@ -65,21 +79,10 @@ proxy (at least the protocol endpoint needs to be).
   - Limit the access rate to the API endpoints and monitor access for attacks like brute force attacks.
 
 ### Vault Configuration
+
 Add a key pair for securing the data plane and the DAPS certificate to your vault with the same names used in the connector configuration.
 See our helper script `init_vault.sh` for guidance.
 
 ### EDC Connector Configuration
 
-You can find the list of connector configuration [here](mds_connector_configuration.md).
-
-## FAQ
-
-### Can I run a connector locally and consume data from an online connector?
-
-No, locally run connectors cannot exchange data with online connectors. A connector must have a proper URL + configuration and be accesible from the data provider via REST calls.
-
-### Can I change the Participant ID of my connector?
-
-You can always re-start your connector with a different Participant ID. Please make sure your changed Participant ID is deposited in the DAPS as new Contract Negotiations or Transfer Processes will validate the Participant ID of each connector. Both connectors must also be configured to check for the same claim.
-
-After changing your Participant ID old Contract Agreements will stop working, because the Participant ID is heavily referenced in both connectors, and there is no way for the other connector to know what your Participant ID changed to.
+[Example of how to configure MDS EDC connector](mds_connector_default_configuration.md).
