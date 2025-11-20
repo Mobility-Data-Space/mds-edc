@@ -1,7 +1,6 @@
-
 # Contract Agreement Retirement
 
-The endpoint allows participants to retire contract agreements.
+The retirement endpoint allows participants to retire contract agreements.
 
 ## Retire Agreement
 
@@ -17,3 +16,4 @@ Content-Type: application/json
   "agreementId": "contract-agreement-id",
   "tx:reason": "This contract agreement was retired since the physical counterpart is no longer valid."
 }
+```
