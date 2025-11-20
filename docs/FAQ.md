@@ -35,17 +35,20 @@ The Management API should be secured using:
 **Partially.** The docker-compose configuration is designed as a **quick-start development and testing environment**. Some components require additional configuration for production use.
 
 **Production-Ready Components:**
-- ✅ PostgreSQL with persistent volumes
-- ✅ Nginx with Let's Encrypt SSL
-- ✅ EDC connector runtime
+
+- PostgreSQL with persistent volumes
+- Nginx with Let's Encrypt SSL
+- EDC connector runtime
 
 **Requires Production Configuration:**
-- ⚠️ **Vault is running in dev mode** (in-memory storage, auto-unseal)
-- ⚠️ **No automated backup strategy** included
-- ⚠️ **No high availability** configuration
-- ⚠️ **No monitoring/alerting** setup
+
+- **Vault is running in dev mode** (in-memory storage, auto-unseal)
+- **No automated backup strategy** included
+- **No high availability** configuration
+- **No monitoring/alerting** setup
 
 For production deployments, see:
+
 - [Production Vault Setup Guide](deployment/production_vault_setup.md)
 - [Backup and Recovery Guide](deployment/backup_and_recovery.md)
 - [Data Persistence Considerations](deployment/production_blueprint_nginx.md#data-persistence-and-production-considerations)
@@ -58,21 +61,6 @@ This depends on which secrets and whether Vault is in dev mode or production mod
 
 Vault runs in **development mode** (`command: server -dev`), which stores data **in-memory only**.
 
-*Secrets that persist (recreated by init-vault.sh):*
-- ✅ Transfer proxy signing keys
-- ✅ DAPS certificate and private key
-- ✅ Any secrets defined in init-vault.sh
-
-*Secrets that are LOST on restart:*
-- ❌ OAuth2 client secrets created by EDC at runtime
-- ❌ Dynamically created access tokens
-- ❌ Any secrets added manually via Vault UI
-- ❌ Runtime-generated keys and credentials
-
-**Impact:**
-If you have configured OAuth2-protected data sources or other runtime secrets, they will stop working after a Vault container restart. You'll need to reconfigure them.
-
-**Solution:**
 For production deployments, configure Vault with persistent storage (Raft backend). See the [Production Vault Setup Guide](deployment/production_vault_setup.md).
 
 ### Why is Vault running in dev mode and what are the implications?
@@ -80,30 +68,25 @@ For production deployments, configure Vault with persistent storage (Raft backen
 **Development mode** is used in the default docker-compose setup for ease of getting started, but it has significant limitations.
 
 **Dev Mode Characteristics:**
+
 - Stores all data **in-memory only** (ignores volume mounts)
 - Auto-unseals on startup (no seal/unseal required)
 - Uses fixed root token (security risk)
 - No TLS encryption
-- Not suitable for production use
 
-**Production Mode Requirements:**
+**Production Mode Recommendation:**
+
 - Persistent storage backend (Raft, Consul, etc.)
 - Proper seal/unseal mechanism (manual or auto-unseal with KMS)
 - TLS encryption for all communication
 - Authentication methods (AppRole, OIDC, etc.)
 - Audit logging enabled
 
-**When to migrate to production mode:**
-- When deploying to production environments
-- When runtime secrets must survive restarts
-- When security compliance is required
-- When high availability is needed
-
 See [Production Vault Setup Guide](deployment/production_vault_setup.md) for migration instructions.
 
 ### How do I store secrets in Vault for use with EDC?
 
-**⚠️ CRITICAL**: All secrets stored in HashiCorp Vault for EDC must follow a specific format. This is a common source of configuration errors.
+**CRITICAL**: All secrets stored in HashiCorp Vault for EDC must follow a specific format. This is a common source of configuration errors.
 
 **Required Format:**
 
@@ -115,145 +98,9 @@ Secrets must be stored with a `content` field wrapper:
 }
 ```
 
-**Common Mistakes:**
-
-These formats will **NOT work**:
-
-```json
-// ❌ Wrong - flat structure
-{
-  "secretKey": "value",
-  "accessKey": "value"
-}
-
-// ❌ Wrong - direct value only
-"your-secret-value"
-```
-
-**Secret Types and Examples:**
-
-**1. Simple String Secrets (OAuth2, API keys, Azure access keys):**
-
-```bash
-# Vault CLI
-vault kv put secret/my-api-secret \
-  content='my-actual-secret-value'
-
-# curl
-curl -X POST \
-  -H "X-Vault-Token: $VAULT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"content":"my-actual-secret-value"}' \
-  http://vault:8200/v1/secret/my-api-secret
-```
-
-**2. Complex JSON Secrets (AWS S3 credentials):**
-
-The JSON must be **serialized as a string** inside the `content` field:
-
-```bash
-# Vault CLI
-vault kv put secret/my-s3-credentials \
-  content='{"accessKeyId":"AKIA...","secretAccessKey":"secret..."}'
-
-# curl
-curl -X POST \
-  -H "X-Vault-Token: $VAULT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"content":"{\"accessKeyId\":\"AKIA...\",\"secretAccessKey\":\"secret...\"}"}' \
-  http://vault:8200/v1/secret/my-s3-credentials
-```
-
-**Verification:**
-
-Always verify your secrets are stored correctly:
-
-```bash
-vault kv get -format=json secret/my-api-secret
-
-# Should return:
-{
-  "data": {
-    "content": "my-actual-secret-value"
-  }
-}
-```
-
-**Use Cases:**
-
-- **OAuth2 Client Secrets**: See [OAuth2 Protected Data Sources](usage/mds_features/oauth2-protected-data-source.md#vault-configuration)
-- **AWS S3 Credentials**: See [AWS S3 Authentication](usage/mds_transfer_modes/aws-s3.md#critical-vault-secret-format)
-- **Azure Storage Access Keys**: See [Azure Blob Authentication](usage/mds_transfer_modes/azure-blob.md#critical-vault-secret-format)
-
-### How do I backup my connector data?
-
-The MDS EDC deployment has two critical data stores that require backup:
-
-**1. PostgreSQL Database**
-
-Contains:
-- Assets, policies, contracts, and transfer history
-- All connector operational data
-
-Backup methods:
-```bash
-# Logical backup with pg_dump (recommended)
-docker exec <postgres-container> pg_dump -U edc -d edc | gzip > postgres-backup.sql.gz
-
-# Volume backup (faster for large databases)
-docker run --rm -v mds-edc_postgres-data:/data:ro -v $(pwd)/backups:/backup \
-  alpine tar czf /backup/postgres-$(date +%Y%m%d).tar.gz -C /data .
-```
-
-**2. HashiCorp Vault**
-
-**Dev Mode:** Runtime secrets are not backed up (in-memory only). Only init-vault.sh script needs backup.
-
-**Production Mode:** Use Raft snapshots:
-```bash
-# Create snapshot
-docker exec <vault-container> vault operator raft snapshot save /tmp/vault.snap
-docker cp <vault-container>:/tmp/vault.snap ./backups/
-```
-
-**Recommended Backup Frequency:**
-- Development: Daily or on-demand
-- Staging: Daily
-- Production: Every 4-6 hours with automated retention
-
-See [Backup and Recovery Guide](deployment/backup_and_recovery.md) for comprehensive procedures.
-
 ### What happens if I delete Docker volumes?
 
-**⚠️ CRITICAL WARNING:** Deleting volumes **permanently destroys all data**.
-
-```bash
-# ❌ DANGEROUS: Destroys all data
-docker compose down -v
-
-# ✅ SAFE: Stops containers but preserves volumes
-docker compose down
-```
-
-**Impact of volume deletion:**
-
-*PostgreSQL volume (postgres-data):*
-- All assets, policies, and contracts are lost
-- All contract agreements and negotiations are deleted
-- Transfer history is gone
-- **Recovery: Only possible from backups**
-
-*Vault volume (vault-data):*
-- In dev mode: No impact (data is in-memory anyway)
-- In production mode: All secrets permanently lost
-- **Recovery: Only possible from backups**
-
-**Best Practice:**
-- Never use `-v` flag in production
-- Always backup before maintenance
-- Test restore procedures regularly
-
-See [Volume Management Best Practices](deployment/production_blueprint_nginx.md#volume-management-best-practices).
+**CRITICAL WARNING:** Deleting volumes **permanently destroys all data**.
 
 ### Can I run a connector locally and consume data from an online connector?
 
