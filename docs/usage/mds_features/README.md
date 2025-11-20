@@ -69,15 +69,6 @@ Provider-side controls for:
 - Contract negotiation state management
 - Fine-grained access control
 
-## Integration with EDC Core
-
-All MDS features are built on top of Eclipse EDC core capabilities:
-
-- **Policy Framework** - ODRL-based access control
-- **Transfer Processes** - Asynchronous data transfer orchestration
-- **Catalog Service** - DCAT-based dataset discovery
-- **Contract Management** - Automated contract negotiation
-
 ## See Also
 
 - [Transfer Modes Documentation](../mds_transfer_modes/README.md)
