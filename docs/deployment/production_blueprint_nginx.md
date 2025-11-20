@@ -122,47 +122,6 @@ See [Production Vault Setup Guide](production_vault_setup.md) for detailed confi
 
 See [Backup and Recovery Guide](backup_and_recovery.md) for comprehensive procedures.
 
-#### 3. Volume Management Best Practices
-
-**Never delete volumes in production** unless you intend to lose all data:
-
-```bash
-# ❌ DANGEROUS: Deletes all persistent data
-docker compose down -v
-
-# ✅ SAFE: Stops containers but preserves volumes
-docker compose down
-
-# ✅ SAFE: Restart services with data intact
-docker compose up -d
-```
-
-**Volume backup before maintenance:**
-
-```bash
-# Backup PostgreSQL data
-docker run --rm \
-  -v mds-edc_postgres-data:/data \
-  -v $(pwd)/backups:/backup \
-  alpine tar czf /backup/postgres-data-$(date +%Y%m%d-%H%M%S).tar.gz -C /data .
-
-# Backup Vault data (when using production mode with file storage)
-docker run --rm \
-  -v mds-edc_vault-data:/data \
-  -v $(pwd)/backups:/backup \
-  alpine tar czf /backup/vault-data-$(date +%Y%m%d-%H%M%S).tar.gz -C /data .
-```
-
-### Recommendations by Environment
-
-| Requirement | Development/Testing | Production |
-|-------------|-------------------|------------|
-| **PostgreSQL** | Docker volume (current setup) | Docker volume + automated backups + HA clustering |
-| **Vault** | Dev mode (current setup) | Production mode with Raft storage + TLS + auto-unseal |
-| **Backups** | Optional | **Mandatory** - automated daily backups with retention policy |
-| **Monitoring** | Optional | **Mandatory** - health checks, alerting, log aggregation |
-| **Volume Management** | Can recreate if needed | **Never delete** - implement backup/restore procedures |
-
 ### Additional Resources
 
 - [HashiCorp Vault Production Hardening](https://developer.hashicorp.com/vault/tutorials/operations/production-hardening)
