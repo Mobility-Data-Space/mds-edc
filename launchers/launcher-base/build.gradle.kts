@@ -17,9 +17,8 @@ dependencies {
     runtimeOnly(libs.edc.aws.validator.data.address.s3)
     runtimeOnly(libs.edc.azure.data.plane.azure.storage)
 
-    runtimeOnly(libs.tractusx.edc.retirement.evaluation.api)
-    runtimeOnly(libs.tractusx.edc.retirement.evaluation.core)
-
+    implementation(project(":extensions:agreements:retirement-evaluation-api"))
+    implementation(project(":extensions:agreements:retirement-evaluation-core"))
     implementation(project(":extensions:kafka:data-plane-kafka"))
     implementation(project(":extensions:logging-house-publisher"))
     implementation(project(":extensions:manual-negotiation-approval"))
