@@ -1584,7 +1584,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\",\n    \"tx\": \"https://w3id.org/tractusx/v0.0.1/ns/\"\n  },\n  \"agreementId\": \"{{contract-agreement-id}}\",\n  \"tx:reason\": \"{{This contract agreement was retired since the physical counterpart is no longer valid.}}\"\n}"
+							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"agreementId\": \"{{contract-agreement-id}}\",\n  \"reason\": \"{{This contract agreement was retired since the physical counterpart is no longer valid.}}\"\n}"
 						},
 						"url": {
 							"raw": "{{provider_management_url}}/v3.1alpha/retireagreements",

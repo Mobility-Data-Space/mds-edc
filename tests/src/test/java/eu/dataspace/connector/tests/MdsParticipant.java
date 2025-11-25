@@ -47,7 +47,6 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.eclipse.tractusx.edc.edr.spi.CoreConstants.TX_NAMESPACE;
 import static org.mockserver.model.HttpRequest.request;
 
 public class MdsParticipant extends Participant implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback {
@@ -190,7 +189,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         var body = createObjectBuilder()
                 .add(TYPE, EDC_NAMESPACE + "AgreementsRetirementEntry")
                 .add(EDC_NAMESPACE + "agreementId", agreementId)
-                .add(TX_NAMESPACE + "reason", "a good reason")
+                .add(EDC_NAMESPACE + "reason", "a good reason")
                 .build();
         return baseManagementRequest()
                 .contentType(JSON)

@@ -47,7 +47,7 @@ public class AgreementsRetirementApiExtension implements ServiceExtension {
         var managementTypeTransformerRegistry = transformerRegistry.forContext("management-api");
 
         managementTypeTransformerRegistry.register(new JsonObjectFromAgreementRetirementTransformer(jsonFactory));
-        managementTypeTransformerRegistry.register(new JsonObjectToAgreementsRetirementEntryTransformer());
+        managementTypeTransformerRegistry.register(new JsonObjectToAgreementsRetirementEntryTransformer(monitor));
 
         webService.registerResource(ApiContext.MANAGEMENT, new AgreementsRetirementApiV3Controller(agreementsRetirementService, managementTypeTransformerRegistry, validator, monitor));
     }
