@@ -12,11 +12,6 @@ CREATE TABLE edc_asset (
     data_address json
 );
 
-CREATE TABLE edc_business_partner_group (
-    bpn character varying NOT NULL,
-    groups json DEFAULT '[]'::json NOT NULL
-);
-
 CREATE TABLE edc_contract_agreement (
     agr_id character varying NOT NULL,
     provider_agent_id character varying(255),
@@ -28,12 +23,6 @@ CREATE TABLE edc_contract_agreement (
     policy_id character varying(255),
     serialized_policy text,
     policy json
-);
-
-CREATE TABLE edc_contract_agreement_bpns (
-    agreement_id character varying NOT NULL,
-    provider_bpn character varying(255) NOT NULL,
-    consumer_bpn character varying(255) NOT NULL
 );
 
 CREATE TABLE edc_contract_definitions (
@@ -80,12 +69,6 @@ CREATE TABLE edc_edr_entry (
     provider_id character varying NOT NULL,
     contract_negotiation_id character varying,
     created_at bigint NOT NULL
-);
-
-CREATE TABLE edc_federated_catalog (
-    id character varying NOT NULL,
-    catalog json,
-    marked boolean DEFAULT false
 );
 
 CREATE TABLE edc_jti_validation (
@@ -159,9 +142,6 @@ CREATE TABLE edc_transfer_process (
     data_destination json
 );
 
-ALTER TABLE ONLY edc_contract_agreement_bpns
-    ADD CONSTRAINT contract_agreement_bpns_contract_agreement_id_fk PRIMARY KEY (agreement_id);
-
 ALTER TABLE ONLY edc_contract_agreement
     ADD CONSTRAINT contract_agreement_pk PRIMARY KEY (agr_id);
 
@@ -174,9 +154,6 @@ ALTER TABLE ONLY edc_agreement_retirement
 ALTER TABLE ONLY edc_asset
     ADD CONSTRAINT edc_asset_pkey PRIMARY KEY (asset_id);
 
-ALTER TABLE ONLY edc_business_partner_group
-    ADD CONSTRAINT edc_business_partner_group_pk PRIMARY KEY (bpn);
-
 ALTER TABLE ONLY edc_contract_definitions
     ADD CONSTRAINT edc_contract_definitions_pkey PRIMARY KEY (contract_definition_id);
 
@@ -185,9 +162,6 @@ ALTER TABLE ONLY edc_data_plane_instance
 
 ALTER TABLE ONLY edc_edr_entry
     ADD CONSTRAINT edc_edr_entry_pkey PRIMARY KEY (transfer_process_id);
-
-ALTER TABLE ONLY edc_federated_catalog
-    ADD CONSTRAINT edc_federated_catalog_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY edc_jti_validation
     ADD CONSTRAINT edc_jti_validation_pkey PRIMARY KEY (token_id);
@@ -240,9 +214,6 @@ ALTER TABLE ONLY edc_contract_negotiation
 
 ALTER TABLE ONLY edc_data_plane_instance
     ADD CONSTRAINT data_plane_instance_lease_id_fk FOREIGN KEY (lease_id) REFERENCES edc_lease(lease_id) ON DELETE SET NULL;
-
-ALTER TABLE ONLY edc_contract_agreement_bpns
-    ADD CONSTRAINT edc_contract_agreement_bpns_agreement_id_fkey FOREIGN KEY (agreement_id) REFERENCES edc_contract_agreement(agr_id);
 
 ALTER TABLE ONLY edc_policy_monitor
     ADD CONSTRAINT policy_monitor_lease_lease_id_fk FOREIGN KEY (lease_id) REFERENCES edc_lease(lease_id) ON DELETE SET NULL;

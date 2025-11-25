@@ -43,6 +43,7 @@ public record DatabaseMigrationConfiguration(
         )
         String schema,
 
+        @Deprecated(since = "1.0.0")
         @Setting(
                 key = DEPRECATED_MIGRATION_SCHEMA_KEY,
                 description = "Deprecated key: Schema used for the migration",
@@ -70,6 +71,7 @@ public record DatabaseMigrationConfiguration(
 ) {
     private static final String DEFAULT_MIGRATION_ENABLED_TEMPLATE = "true";
     private static final String DEFAULT_MIGRATION_SCHEMA = "public";
+    @Deprecated(since = "1.0.0")
     public static final String DEPRECATED_MIGRATION_SCHEMA_KEY = "org.eclipse.tractusx.edc.postgresql.migration.schema";
     public static final String MIGRATION_SCHEMA_KEY = "edc.postgresql.migration.schema";
 
