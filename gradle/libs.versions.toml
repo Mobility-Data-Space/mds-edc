@@ -6,6 +6,7 @@ azure-storage-blob = "12.32.0"
 bouncycastle = "1.82"
 dsp-tck = "1.0.0-RC5"
 edc = "0.14.1"
+flyway = "11.17.1"
 jose4j = "0.9.6"
 junit-jupiter = "6.0.1"
 kafka = "4.1.1"
@@ -94,6 +95,8 @@ dsp-tck-catalog = { module = "org.eclipse.dataspacetck.dsp:dsp-catalog", version
 dsp-tck-contract-negotiation = { module = "org.eclipse.dataspacetck.dsp:dsp-contract-negotiation", version.ref = "dsp-tck" }
 dsp-tck-transfer-process = { module = "org.eclipse.dataspacetck.dsp:dsp-transfer-process", version.ref = "dsp-tck" }
 dsp-tck-system = { module = "org.eclipse.dataspacetck.dsp:dsp-system", version.ref = "dsp-tck" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+flyway-database-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka" }
 keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak" }
 jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "jose4j" }

@@ -21,7 +21,7 @@ public class SqlAgreementsRetirementStoreExtension implements ServiceExtension {
     protected static final String NAME = "SQL Agreement Retirement Store.";
 
     @Setting(value = "Datasource name for the SQL AgreementsRetirement store", defaultValue = DataSourceRegistry.DEFAULT_DATASOURCE)
-    private static final String DATASOURCE_SETTING_NAME = "tx.edc.sql.store.agreementretirement.datasource";
+    private static final String DATASOURCE_SETTING_NAME = "edc.sql.store.agreementretirement.datasource";
 
     @Inject
     private DataSourceRegistry dataSourceRegistry;

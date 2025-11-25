@@ -40,7 +40,7 @@ services:
       EDC_DATASOURCE_DEFAULT_URL: "jdbc:postgresql://postgres:5432/edc?currentSchema=mds_edc_schema"
       EDC_DATASOURCE_DEFAULT_USER: ${POSTGRES_USER:-edc}
       EDC_DATASOURCE_DEFAULT_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      ORG_ECLIPSE_TRACTUSX_EDC_POSTGRESQL_MIGRATION_SCHEMA: "mds_edc_schema"
+      EDC_POSTGRESQL_MIGRATION_SCHEMA: "mds_edc_schema"
 
       # Web Server Configuration
       WEB_HTTP_PATH: "/api"
