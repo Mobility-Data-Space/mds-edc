@@ -8,12 +8,181 @@ servers:
 paths:
   /v3/assets/request:
     $ref: ./asset-api.yaml#/paths/~1v3~1assets~1request
+  /v3/assets/{id}:
+    $ref: "./asset-api.yaml#/paths/~1v3~1assets~1{id}"
+  /v3/contractnegotiations/{id}/agreement:
+    get:
+      description: Gets a contract agreement for a contract negotiation with the given
+        ID
+      operationId: getAgreementForNegotiationV3
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractAgreement"
+          description: "The contract agreement that is attached to the negotiation,\
+            \ or null"
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: An contract negotiation with the given ID does not exist
+      tags:
+      - Contract Negotiation V3
+  /v3/contractnegotiations:
+    post:
+      description: "Initiates a contract negotiation for a given offer and with the\
+        \ given counter part. Please note that successfully invoking this endpoint\
+        \ only means that the negotiation was initiated. Clients must poll the /{id}/state\
+        \ endpoint to track the state"
+      operationId: initiateContractNegotiationV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResponse"
+          description: The negotiation was successfully initiated. Returns the contract
+            negotiation ID and created timestamp
+          links:
+            poll-state:
+              operationId: getNegotiationStateV3
+              parameters:
+                id: $response.body#/id
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Contract Negotiation V3
+  /v3/contractdefinitions/request:
+    $ref: ./contract-definition-api.yaml#/paths/~1v3~1contractdefinitions~1request
+  /v3/contractagreements/{id}:
+    $ref: "./contract-agreement-api.yaml#/paths/~1v3~1contractagreements~1{id}"
+  /v3/edrs/{transferProcessId}/dataaddress:
+    $ref: "./edr-cache-api.yaml#/paths/~1v3~1edrs~1{transferProcessId}~1dataaddress"
+  /v3/contractnegotiations/request:
+    post:
+      description: Returns all contract negotiations according to a query
+      operationId: queryNegotiationsV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuerySpec"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ContractNegotiation"
+                type: array
+          description: The contract negotiations that match the query
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request was malformed
+      tags:
+      - Contract Negotiation V3
+  /v3/contractagreements/retirements/request:
+    $ref: ./retirement-evaluation-api.yaml#/paths/~1v3~1contractagreements~1retirements~1request
+  /{any}:
+    $ref: "./data-plane-public-api-v2.yaml#/paths/~1{any}"
+  /v3/transferprocesses/{id}/suspend:
+    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1suspend"
+  /v4alpha/contractagreements/{id}:
+    $ref: "./contract-agreement-api.yaml#/paths/~1v4alpha~1contractagreements~1{id}"
+  /v3/contractnegotiations/{id}/approve:
+    post:
+      description: Approve a pending negotiation
+      operationId: approveNegotiation
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            '*/*': {}
+          description: default response
+      tags:
+      - Manual Negotiation Approval
+  /v3/contractdefinitions:
+    $ref: ./contract-definition-api.yaml#/paths/~1v3~1contractdefinitions
+  /v3/policydefinitions/request:
+    post:
+      description: Returns all policy definitions according to a query
+      operationId: queryPolicyDefinitionsV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuerySpec"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/PolicyDefinitionOutput"
+                type: array
+          description: The policy definitions matching the query
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request was malformed
+      tags:
+      - Policy Definition v3
+  /check/startup:
+    $ref: ./api-observability.yaml#/paths/~1check~1startup
+  /v4alpha/protocol-versions/request:
+    $ref: ./protocol-version-api.yaml#/paths/~1v4alpha~1protocol-versions~1request
+  /v3/assets:
+    $ref: ./asset-api.yaml#/paths/~1v3~1assets
   /check/health:
     $ref: ./api-observability.yaml#/paths/~1check~1health
   /v3/transferprocesses/{id}/state:
     $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1state"
-  /v3/assets/{id}:
-    $ref: "./asset-api.yaml#/paths/~1v3~1assets~1{id}"
+  /v3/contractagreements/retirements/{agreementId}:
+    $ref: "./retirement-evaluation-api.yaml#/paths/~1v3~1contractagreements~1retirements~1{agreementId}"
   /v3/contractnegotiations/{id}/reject:
     post:
       description: Reject a pending negotiation
@@ -154,43 +323,6 @@ paths:
       - Policy Definition v3
   /v3/edrs/request:
     $ref: ./edr-cache-api.yaml#/paths/~1v3~1edrs~1request
-  /v3/contractnegotiations/{id}/agreement:
-    get:
-      description: Gets a contract agreement for a contract negotiation with the given
-        ID
-      operationId: getAgreementForNegotiationV3
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ContractAgreement"
-          description: "The contract agreement that is attached to the negotiation,\
-            \ or null"
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: "Request was malformed, e.g. id was null"
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: An contract negotiation with the given ID does not exist
-      tags:
-      - Contract Negotiation V3
   /v3/catalog/request:
     post:
       operationId: requestCatalogV3
@@ -210,75 +342,6 @@ paths:
       - Catalog V3
   /v3/transferprocesses/{id}/terminate:
     $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1terminate"
-  /v3/contractnegotiations:
-    post:
-      description: "Initiates a contract negotiation for a given offer and with the\
-        \ given counter part. Please note that successfully invoking this endpoint\
-        \ only means that the negotiation was initiated. Clients must poll the /{id}/state\
-        \ endpoint to track the state"
-      operationId: initiateContractNegotiationV3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ContractRequest"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IdResponse"
-          description: The negotiation was successfully initiated. Returns the contract
-            negotiation ID and created timestamp
-          links:
-            poll-state:
-              operationId: getNegotiationStateV3
-              parameters:
-                id: $response.body#/id
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: Request body was malformed
-      tags:
-      - Contract Negotiation V3
-  /v3/contractdefinitions/request:
-    $ref: ./contract-definition-api.yaml#/paths/~1v3~1contractdefinitions~1request
-  /v3/contractagreements/{id}:
-    $ref: "./contract-agreement-api.yaml#/paths/~1v3~1contractagreements~1{id}"
-  /v3/edrs/{transferProcessId}/dataaddress:
-    $ref: "./edr-cache-api.yaml#/paths/~1v3~1edrs~1{transferProcessId}~1dataaddress"
-  /v3/contractnegotiations/request:
-    post:
-      description: Returns all contract negotiations according to a query
-      operationId: queryNegotiationsV3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/QuerySpec"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ContractNegotiation"
-                type: array
-          description: The contract negotiations that match the query
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: Request was malformed
-      tags:
-      - Contract Negotiation V3
   /v3/policydefinitions/{id}/evaluationplan:
     post:
       description: "Creates an execution plane for an existing Policy, If the Policy\
@@ -354,8 +417,6 @@ paths:
       - Contract Negotiation V3
   /v3/transferprocesses/{id}/deprovision:
     $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1deprovision"
-  /{any}:
-    $ref: "./data-plane-public-api-v2.yaml#/paths/~1{any}"
   /v3/dataplanes:
     get:
       description: Returns a list of all currently registered data plane instances
@@ -391,65 +452,14 @@ paths:
       - Catalog V3
   /v3/transferprocesses/request:
     $ref: ./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1request
-  /v3/transferprocesses/{id}/suspend:
-    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1suspend"
+  /v3/contractagreements/retirements:
+    $ref: ./retirement-evaluation-api.yaml#/paths/~1v3~1contractagreements~1retirements
   /v3/transferprocesses/{id}:
     $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}"
-  /v4alpha/contractagreements/{id}:
-    $ref: "./contract-agreement-api.yaml#/paths/~1v4alpha~1contractagreements~1{id}"
-  /v3/contractnegotiations/{id}/approve:
-    post:
-      description: Approve a pending negotiation
-      operationId: approveNegotiation
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          content:
-            '*/*': {}
-          description: default response
-      tags:
-      - Manual Negotiation Approval
-  /v3/contractdefinitions:
-    $ref: ./contract-definition-api.yaml#/paths/~1v3~1contractdefinitions
   /v3/contractdefinitions/{id}:
     $ref: "./contract-definition-api.yaml#/paths/~1v3~1contractdefinitions~1{id}"
   /v3/edrs/{transferProcessId}:
     $ref: "./edr-cache-api.yaml#/paths/~1v3~1edrs~1{transferProcessId}"
-  /v3/policydefinitions/request:
-    post:
-      description: Returns all policy definitions according to a query
-      operationId: queryPolicyDefinitionsV3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/QuerySpec"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/PolicyDefinitionOutput"
-                type: array
-          description: The policy definitions matching the query
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: Request was malformed
-      tags:
-      - Policy Definition v3
-  /check/startup:
-    $ref: ./api-observability.yaml#/paths/~1check~1startup
   /v3/transferprocesses/{id}/resume:
     $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1resume"
   /v3/policydefinitions:
@@ -488,8 +498,6 @@ paths:
             \ with that ID already exists"
       tags:
       - Policy Definition v3
-  /v4alpha/protocol-versions/request:
-    $ref: ./protocol-version-api.yaml#/paths/~1v4alpha~1protocol-versions~1request
   /v3/contractagreements/{id}/negotiation:
     $ref: "./contract-agreement-api.yaml#/paths/~1v3~1contractagreements~1{id}~1negotiation"
   /v3/policydefinitions/{id}/validate:
@@ -650,132 +658,8 @@ paths:
           description: An contract negotiation with the given ID does not exist
       tags:
       - Contract Negotiation V3
-  /v3/assets:
-    $ref: ./asset-api.yaml#/paths/~1v3~1assets
 components:
   schemas:
-    PolicyDefinitionOutput:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': definition-id
-        policy:
-          '@context': http://www.w3.org/ns/odrl.jsonld
-          '@type': Set
-          uid: http://example.com/policy:1010
-          permission:
-          - target: http://example.com/asset:9898.movie
-            action: display
-            constraint:
-            - leftOperand: spatial
-              operator: eq
-              rightOperand: https://www.wikidata.org/wiki/Q183
-              comment: i.e Germany
-        createdAt: 1688465655
-      properties:
-        '@id':
-          type: string
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/PolicyDefinition
-          type: string
-        policy:
-          description: ODRL policy
-          example:
-            '@context': http://www.w3.org/ns/odrl.jsonld
-            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
-            '@type': odrl:Set
-            permission:
-              target: http://example.com/asset:9898.movie
-              action:
-                type: http://www.w3.org/ns/odrl/2/use
-              constraint:
-                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
-                operator: eq
-                rightOperand: value
-            prohibition: []
-            obligation: []
-          type: object
-      type: object
-    Policy:
-      description: ODRL policy
-      example:
-        '@context': http://www.w3.org/ns/odrl.jsonld
-        '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
-        '@type': odrl:Set
-        permission:
-          target: http://example.com/asset:9898.movie
-          action:
-            type: http://www.w3.org/ns/odrl/2/use
-          constraint:
-            leftOperand: https://w3id.org/edc/v0.0.1/ns/left
-            operator: eq
-            rightOperand: value
-        prohibition: []
-        obligation: []
-      type: object
-    ApiErrorDetail:
-      example:
-        message: error message
-        type: ErrorType
-        path: object.error.path
-        invalidValue: this value is not valid
-      properties:
-        invalidValue:
-          type: string
-        message:
-          type: string
-        path:
-          type: string
-        type:
-          type: string
-      type: object
-    PolicyDefinitionInput:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': definition-id
-        policy:
-          '@context': http://www.w3.org/ns/odrl.jsonld
-          '@type': Set
-          uid: http://example.com/policy:1010
-          profile: http://example.com/odrl:profile:02
-          permission:
-          - target: http://example.com/asset:9898.movie
-            action: display
-            constraint:
-            - leftOperand: spatial
-              operator: eq
-              rightOperand: https://www.wikidata.org/wiki/Q183
-              comment: i.e Germany
-      properties:
-        '@context':
-          type: object
-        '@id':
-          type: string
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/PolicyDefinition
-          type: string
-        policy:
-          description: ODRL policy
-          example:
-            '@context': http://www.w3.org/ns/odrl.jsonld
-            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
-            '@type': odrl:Set
-            permission:
-              target: http://example.com/asset:9898.movie
-              action:
-                type: http://www.w3.org/ns/odrl/2/use
-              constraint:
-                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
-                operator: eq
-                rightOperand: value
-            prohibition: []
-            obligation: []
-          type: object
-      required:
-      - '@context'
-      - policy
-      type: object
     ContractAgreement:
       example:
         '@context':
@@ -826,148 +710,38 @@ components:
         providerId:
           type: string
       type: object
-    Catalog:
-      description: DCAT catalog
+    Policy:
+      description: ODRL policy
       example:
-        '@id': 7df65569-8c59-4013-b1c0-fa14f6641bf2
-        '@type': dcat:Catalog
-        dcat:dataset:
-          '@id': bcca61be-e82e-4da6-bfec-9716a56cef35
-          '@type': dcat:Dataset
-          odrl:hasPolicy:
-            '@id': OGU0ZTMzMGMtODQ2ZS00ZWMxLThmOGQtNWQxNWM0NmI2NmY4:YmNjYTYxYmUtZTgyZS00ZGE2LWJmZWMtOTcxNmE1NmNlZjM1:NDY2ZTZhMmEtNjQ1Yy00ZGQ0LWFlZDktMjdjNGJkZTU4MDNj
-            '@type': odrl:Set
-            odrl:permission:
-              odrl:target: bcca61be-e82e-4da6-bfec-9716a56cef35
-              odrl:action:
-                odrl:type: http://www.w3.org/ns/odrl/2/use
-              odrl:constraint:
-                odrl:and:
-                - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
-                  odrl:operator:
-                    '@id': odrl:gteq
-                  odrl:rightOperand: 2023-07-07T07:19:58.585601395Z
-                - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
-                  odrl:operator:
-                    '@id': odrl:lteq
-                  odrl:rightOperand: 2023-07-12T07:19:58.585601395Z
-            odrl:prohibition: []
-            odrl:obligation: []
-          dcat:distribution:
-          - '@type': dcat:Distribution
-            dct:format:
-              '@id': HttpData
-            dcat:accessService: 5e839777-d93e-4785-8972-1005f51cf367
-          description: description
-          id: bcca61be-e82e-4da6-bfec-9716a56cef35
-        dcat:service:
-          '@id': 5e839777-d93e-4785-8972-1005f51cf367
-          '@type': dcat:DataService
-          dct:terms: connector
-          dcat:endpointURL: http://localhost:16806/protocol
-        dspace:participantId: urn:connector:provider
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-          dct: http://purl.org/dc/terms/
-          edc: https://w3id.org/edc/v0.0.1/ns/
-          dcat: http://www.w3.org/ns/dcat#
-          odrl: http://www.w3.org/ns/odrl/2/
-          dspace: https://w3id.org/dspace/v0.8/
+        '@context': http://www.w3.org/ns/odrl.jsonld
+        '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
+        '@type': odrl:Set
+        permission:
+          target: http://example.com/asset:9898.movie
+          action:
+            type: http://www.w3.org/ns/odrl/2/use
+          constraint:
+            leftOperand: https://w3id.org/edc/v0.0.1/ns/left
+            operator: eq
+            rightOperand: value
+        prohibition: []
+        obligation: []
       type: object
-    CatalogRequest:
+    ApiErrorDetail:
       example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': CatalogRequest
-        counterPartyAddress: http://provider-address
-        counterPartyId: providerId
-        protocol: dataspace-protocol-http
-        additionalScopes:
-        - org.eclipse.edc.vc.type:SomeCredential:read
-        - org.eclipse.edc.vc.type:AnotherCredential:write
-        querySpec:
-          offset: 0
-          limit: 50
-          sortOrder: DESC
-          sortField: fieldName
-          filterExpression: []
+        message: error message
+        type: ErrorType
+        path: object.error.path
+        invalidValue: this value is not valid
       properties:
-        '@context':
-          type: object
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/CatalogRequest
+        invalidValue:
           type: string
-        additionalScopes:
-          items:
-            type: string
-          type: array
-        counterPartyAddress:
+        message:
           type: string
-        counterPartyId:
+        path:
           type: string
-        protocol:
+        type:
           type: string
-        querySpec:
-          $ref: "#/components/schemas/QuerySpec"
-      required:
-      - '@context'
-      - counterPartyAddress
-      - protocol
-      type: object
-    QuerySpec:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': QuerySpec
-        offset: 5
-        limit: 10
-        sortOrder: DESC
-        sortField: fieldName
-        filterExpression: []
-      properties:
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/QuerySpec
-          type: string
-        filterExpression:
-          items:
-            $ref: "#/components/schemas/Criterion"
-          type: array
-        limit:
-          format: int32
-          type: integer
-        offset:
-          format: int32
-          type: integer
-        sortField:
-          type: string
-        sortOrder:
-          enum:
-          - ASC
-          - DESC
-          type: string
-      type: object
-    Criterion:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': Criterion
-        operandLeft: fieldName
-        operator: =
-        operandRight: some value
-      properties:
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/Criterion
-          type: string
-        operandLeft:
-          type: object
-        operandRight:
-          type: object
-        operator:
-          type: string
-      required:
-      - operandLeft
-      - operandRight
-      - operator
       type: object
     IdResponse:
       example:
@@ -1122,6 +896,238 @@ components:
           - CONSUMER
           - PROVIDER
           type: string
+      type: object
+    QuerySpec:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': QuerySpec
+        offset: 5
+        limit: 10
+        sortOrder: DESC
+        sortField: fieldName
+        filterExpression: []
+      properties:
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/QuerySpec
+          type: string
+        filterExpression:
+          items:
+            $ref: "#/components/schemas/Criterion"
+          type: array
+        limit:
+          format: int32
+          type: integer
+        offset:
+          format: int32
+          type: integer
+        sortField:
+          type: string
+        sortOrder:
+          enum:
+          - ASC
+          - DESC
+          type: string
+      type: object
+    Criterion:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': Criterion
+        operandLeft: fieldName
+        operator: =
+        operandRight: some value
+      properties:
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/Criterion
+          type: string
+        operandLeft:
+          type: object
+        operandRight:
+          type: object
+        operator:
+          type: string
+      required:
+      - operandLeft
+      - operandRight
+      - operator
+      type: object
+    PolicyDefinitionOutput:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': definition-id
+        policy:
+          '@context': http://www.w3.org/ns/odrl.jsonld
+          '@type': Set
+          uid: http://example.com/policy:1010
+          permission:
+          - target: http://example.com/asset:9898.movie
+            action: display
+            constraint:
+            - leftOperand: spatial
+              operator: eq
+              rightOperand: https://www.wikidata.org/wiki/Q183
+              comment: i.e Germany
+        createdAt: 1688465655
+      properties:
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/PolicyDefinition
+          type: string
+        policy:
+          description: ODRL policy
+          example:
+            '@context': http://www.w3.org/ns/odrl.jsonld
+            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
+            '@type': odrl:Set
+            permission:
+              target: http://example.com/asset:9898.movie
+              action:
+                type: http://www.w3.org/ns/odrl/2/use
+              constraint:
+                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
+                operator: eq
+                rightOperand: value
+            prohibition: []
+            obligation: []
+          type: object
+      type: object
+    PolicyDefinitionInput:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': definition-id
+        policy:
+          '@context': http://www.w3.org/ns/odrl.jsonld
+          '@type': Set
+          uid: http://example.com/policy:1010
+          profile: http://example.com/odrl:profile:02
+          permission:
+          - target: http://example.com/asset:9898.movie
+            action: display
+            constraint:
+            - leftOperand: spatial
+              operator: eq
+              rightOperand: https://www.wikidata.org/wiki/Q183
+              comment: i.e Germany
+      properties:
+        '@context':
+          type: object
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/PolicyDefinition
+          type: string
+        policy:
+          description: ODRL policy
+          example:
+            '@context': http://www.w3.org/ns/odrl.jsonld
+            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
+            '@type': odrl:Set
+            permission:
+              target: http://example.com/asset:9898.movie
+              action:
+                type: http://www.w3.org/ns/odrl/2/use
+              constraint:
+                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
+                operator: eq
+                rightOperand: value
+            prohibition: []
+            obligation: []
+          type: object
+      required:
+      - '@context'
+      - policy
+      type: object
+    Catalog:
+      description: DCAT catalog
+      example:
+        '@id': 7df65569-8c59-4013-b1c0-fa14f6641bf2
+        '@type': dcat:Catalog
+        dcat:dataset:
+          '@id': bcca61be-e82e-4da6-bfec-9716a56cef35
+          '@type': dcat:Dataset
+          odrl:hasPolicy:
+            '@id': OGU0ZTMzMGMtODQ2ZS00ZWMxLThmOGQtNWQxNWM0NmI2NmY4:YmNjYTYxYmUtZTgyZS00ZGE2LWJmZWMtOTcxNmE1NmNlZjM1:NDY2ZTZhMmEtNjQ1Yy00ZGQ0LWFlZDktMjdjNGJkZTU4MDNj
+            '@type': odrl:Set
+            odrl:permission:
+              odrl:target: bcca61be-e82e-4da6-bfec-9716a56cef35
+              odrl:action:
+                odrl:type: http://www.w3.org/ns/odrl/2/use
+              odrl:constraint:
+                odrl:and:
+                - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
+                  odrl:operator:
+                    '@id': odrl:gteq
+                  odrl:rightOperand: 2023-07-07T07:19:58.585601395Z
+                - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
+                  odrl:operator:
+                    '@id': odrl:lteq
+                  odrl:rightOperand: 2023-07-12T07:19:58.585601395Z
+            odrl:prohibition: []
+            odrl:obligation: []
+          dcat:distribution:
+          - '@type': dcat:Distribution
+            dct:format:
+              '@id': HttpData
+            dcat:accessService: 5e839777-d93e-4785-8972-1005f51cf367
+          description: description
+          id: bcca61be-e82e-4da6-bfec-9716a56cef35
+        dcat:service:
+          '@id': 5e839777-d93e-4785-8972-1005f51cf367
+          '@type': dcat:DataService
+          dct:terms: connector
+          dcat:endpointURL: http://localhost:16806/protocol
+        dspace:participantId: urn:connector:provider
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+          dct: http://purl.org/dc/terms/
+          edc: https://w3id.org/edc/v0.0.1/ns/
+          dcat: http://www.w3.org/ns/dcat#
+          odrl: http://www.w3.org/ns/odrl/2/
+          dspace: https://w3id.org/dspace/v0.8/
+      type: object
+    CatalogRequest:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': CatalogRequest
+        counterPartyAddress: http://provider-address
+        counterPartyId: providerId
+        protocol: dataspace-protocol-http
+        additionalScopes:
+        - org.eclipse.edc.vc.type:SomeCredential:read
+        - org.eclipse.edc.vc.type:AnotherCredential:write
+        querySpec:
+          offset: 0
+          limit: 50
+          sortOrder: DESC
+          sortField: fieldName
+          filterExpression: []
+      properties:
+        '@context':
+          type: object
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/CatalogRequest
+          type: string
+        additionalScopes:
+          items:
+            type: string
+          type: array
+        counterPartyAddress:
+          type: string
+        counterPartyId:
+          type: string
+        protocol:
+          type: string
+        querySpec:
+          $ref: "#/components/schemas/QuerySpec"
+      required:
+      - '@context'
+      - counterPartyAddress
+      - protocol
       type: object
     PolicyEvaluationPlanSchema:
       example:
