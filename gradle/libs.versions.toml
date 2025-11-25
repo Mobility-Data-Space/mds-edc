@@ -73,7 +73,6 @@ edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-da
 
 edc-azure-data-plane-azure-storage = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
 
-tractusx-edc-core-spi = { module = "org.eclipse.tractusx.edc:core-spi", version.ref = "tractusx-edc" }
 tractusx-edc-control-plane-migration = { module = "org.eclipse.tractusx.edc:control-plane-migration", version.ref = "tractusx-edc" }
 tractusx-edc-data-plane-migration = { module = "org.eclipse.tractusx.edc:data-plane-migration", version.ref = "tractusx-edc" }
 tractusx-edc-postgresql-migration = { module = "org.eclipse.tractusx.edc:postgresql-migration-lib", version.ref = "tractusx-edc" }

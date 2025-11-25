@@ -30,8 +30,8 @@ import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_TYPE;
 import static eu.dataspace.connector.agreements.retirement.spi.store.AgreementsRetirementStore.ALREADY_EXISTS_TEMPLATE;
 import static eu.dataspace.connector.agreements.retirement.spi.store.AgreementsRetirementStore.NOT_FOUND_IN_RETIREMENT_TEMPLATE;
 import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
-import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
-import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE;
+import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.DEPRECATED_AR_ENTRY_REASON;
+import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.DEPRECATED_AR_ENTRY_RETIREMENT_DATE;
 import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -197,8 +197,8 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
         return Json.createObjectBuilder()
                 .add(TYPE, AR_ENTRY_TYPE)
                 .add(AR_ENTRY_AGREEMENT_ID, agreementId)
-                .add(AR_ENTRY_REASON, "long-reason")
-                .add(AR_ENTRY_RETIREMENT_DATE, Instant.now().toString())
+                .add(DEPRECATED_AR_ENTRY_REASON, "long-reason")
+                .add(DEPRECATED_AR_ENTRY_RETIREMENT_DATE, Instant.now().toString())
                 .build();
     }
 
