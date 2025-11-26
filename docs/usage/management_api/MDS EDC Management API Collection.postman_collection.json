@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2f557b99-7555-41d5-918a-dd8e13be4390",
+		"_postman_id": "e065e9bd-71a3-4773-8a86-ec5e08a94755",
 		"name": "MDS EDC Management API Collection",
 		"description": "A comprehensive collection of API requests for the MDS EDC Management API\n\nProvided under open source terms by Mobility Data Space GmbH.\n\nMaintained by Think-it GmbH - [https://think-it.io](https://think-it.io)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -18,10 +18,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -29,9 +25,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"DatasetRequest\",\n  \"@id\": \"{{dataset-id}}\",\n  \"counterPartyAddress\": \"{{https://provider.dataspaces.think-it.io/api/dsp}}\",\n  \"counterPartyId\": \"{{MDS_ID}}\",\n  \"protocol\": \"dataspace-protocol-http\"\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3.1alpha/catalog/dataset/request",
+							"raw": "{{management_url}}/v3.1alpha/catalog/dataset/request",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3.1alpha",
@@ -51,10 +47,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -62,9 +54,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"DatasetRequest\",\n  \"@id\": \"{{dataset-id}}\",\n  \"counterPartyAddress\": \"{{http://counter-party-address}}\",\n  \"counterPartyId\": \"{{counter-party-id}}\",\n  \"protocol\": \"dataspace-protocol-http\"\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/catalog/dataset/request",
+							"raw": "{{management_url}}/v3/catalog/dataset/request",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -84,10 +76,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -95,9 +83,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"CatalogRequest\",\n  \"counterPartyAddress\": \"{{https://provider.dataspaces.think-it.io/api/dsp}}\",\n  \"counterPartyId\": \"{{MDS_ID}}\",\n  \"protocol\": \"dataspace-protocol-http\",\n  \"additionalScopes\": [\n  ]\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/catalog/request",
+							"raw": "{{management_url}}/v3/catalog/request",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -116,10 +104,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -127,9 +111,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"CatalogRequest\",\n  \"counterPartyAddress\": \"http://provider-address\",\n  \"counterPartyId\": \"providerId\",\n  \"protocol\": \"dataspace-protocol-http\",\n  \"additionalScopes\": [\n    \"org.eclipse.edc.vc.type:SomeCredential:read\",\n    \"org.eclipse.edc.vc.type:AnotherCredential:write\"\n  ],\n  \"querySpec\": {\n    \"offset\": 0,\n    \"limit\": 50,\n    \"sortOrder\": \"DESC\",\n    \"sortField\": \"fieldName\",\n    \"filterExpression\": []\n  }\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3.1alpha/catalog/request",
+							"raw": "{{management_url}}/v3.1alpha/catalog/request",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3.1alpha",
@@ -153,10 +137,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -164,9 +144,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"definition-id\",\n  \"policy\": {\n    \"@context\":\"http://www.w3.org/ns/odrl.jsonld\",\n    \"@type\":\"Set\",\n    \"permission\":[{\n      \"action\":\"use\",\n      \"constraint\":[{\n        \"and\":[{\n          \"leftOperand\":\"REFERRING_CONNECTOR\",\n          \"operator\":\"odrl:eq\",\n          \"rightOperand\":\"MDSLXXX.XXXXX\"\n        },\n        {\n          \"leftOperand\":\"POLICY_EVALUATION_TIME\",\n          \"operator\":\"odrl:lt\",\n          \"rightOperand\":\"26/06/2025\"\n        }]\n      }]\n    }],\n    \"obligation\":[],\n    \"prohibition\":[]\n  }\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3.1alpha/policydefinitions",
+							"raw": "{{management_url}}/v3.1alpha/policydefinitions",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3.1alpha",
@@ -184,10 +164,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -195,9 +171,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50,\n  \"filterExpression\": []\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3.1alpha/policydefinitions/request",
+							"raw": "{{management_url}}/v3.1alpha/policydefinitions/request",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3.1alpha",
@@ -212,16 +188,11 @@
 					"name": "Get Policy Definition V3.1",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3.1alpha/policydefinitions/{{id}}",
+							"raw": "{{management_url}}/v3.1alpha/policydefinitions/{{id}}",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3.1alpha",
@@ -240,10 +211,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -251,9 +218,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"definition-id\",\n  \"policy\": {\n    \"@context\":\"http://www.w3.org/ns/odrl.jsonld\",\n    \"@type\":\"Set\",\n    \"permission\":[{\n      \"action\":\"use\",\n      \"constraint\":[{\n        \"and\":[{\n          \"leftOperand\":\"REFERRING_CONNECTOR\",\n          \"operator\":\"odrl:eq\",\n          \"rightOperand\":\"MDSLXXX.XXXXX\"\n        },\n        {\n          \"leftOperand\":\"POLICY_EVALUATION_TIME\",\n          \"operator\":\"odrl:lt\",\n          \"rightOperand\":\"26/06/2025\"\n        }]\n      }]\n    }],\n    \"obligation\":[],\n    \"prohibition\":[]\n  }\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3.1alpha/policydefinitions/{{id}}",
+							"raw": "{{management_url}}/v3.1alpha/policydefinitions/{{id}}",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3.1alpha",
@@ -268,16 +235,11 @@
 					"name": "Delete Policy Definition V3.1",
 					"request": {
 						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3.1alpha/policydefinitions/{{id}}",
+							"raw": "{{management_url}}/v3.1alpha/policydefinitions/{{id}}",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3.1alpha",
@@ -296,10 +258,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -307,9 +265,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"PolicyEvaluationPlanRequest\",\n  \"policyScope\": \"catalog\"\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3.1alpha/policydefinitions/{{id}}/evaluationplan",
+							"raw": "{{management_url}}/v3.1alpha/policydefinitions/{{id}}/evaluationplan",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3.1alpha",
@@ -325,16 +283,11 @@
 					"name": "Validate Policy Definition V3",
 					"request": {
 						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3.1alpha/policydefinitions/{{id}}/validate",
+							"raw": "{{management_url}}/v3.1alpha/policydefinitions/{{id}}/validate",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3.1alpha",
@@ -359,10 +312,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -370,9 +319,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"TransferRequest\",\n  \"protocol\": \"dataspace-protocol-http\",\n  \"counterPartyAddress\": \"{{https://provider.dataspaces.think-it.io/api/dsp}}\",\n  \"contractId\": \"{{contract-id}}\",\n  \"transferType\": \"HttpData-PULL\"\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/transferprocesses",
+							"raw": "{{management_url}}/v3/transferprocesses",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -390,10 +339,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -401,9 +346,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50,\n  \"filterExpression\": [\n    \n  ]\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/transferprocesses/request",
+							"raw": "{{management_url}}/v3/transferprocesses/request",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -418,16 +363,11 @@
 					"name": "Get Transfer Process V3",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/transferprocesses/7944ba59-a1a9-4125-9200-75c8ee8b7bb5",
+							"raw": "{{management_url}}/v3/transferprocesses/7944ba59-a1a9-4125-9200-75c8ee8b7bb5",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -446,10 +386,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -457,9 +393,9 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/transferprocesses/{{id}}/deprovision",
+							"raw": "{{management_url}}/v3/transferprocesses/{{id}}/deprovision",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -479,10 +415,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -490,9 +422,9 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/transferprocesses/{{id}}/resume",
+							"raw": "{{management_url}}/v3/transferprocesses/{{id}}/resume",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -508,16 +440,11 @@
 					"name": "State Transfer Process V3",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/transferprocesses/1329ed9c-4646-46b8-9e5e-916d75241abb/state",
+							"raw": "{{management_url}}/v3/transferprocesses/1329ed9c-4646-46b8-9e5e-916d75241abb/state",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -537,10 +464,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -548,9 +471,9 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/transferprocesses/{{id}}/suspend",
+							"raw": "{{management_url}}/v3/transferprocesses/{{id}}/suspend",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -570,10 +493,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -581,9 +500,9 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/transferprocesses/{{id}}/terminate",
+							"raw": "{{management_url}}/v3/transferprocesses/{{id}}/terminate",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -608,10 +527,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -619,9 +534,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"definition-id\",\n  \"policy\": {\n    \"@context\":\"http://www.w3.org/ns/odrl.jsonld\",\n    \"@type\":\"Set\",\n    \"permission\":[{\n      \"action\":\"use\",\n      \"constraint\":[{\n        \"and\":[{\n          \"leftOperand\":\"REFERRING_CONNECTOR\",\n          \"operator\":\"odrl:eq\",\n          \"rightOperand\":\"MDSLXXX.XXXXX\"\n        },\n        {\n          \"leftOperand\":\"POLICY_EVALUATION_TIME\",\n          \"operator\":\"odrl:lt\",\n          \"rightOperand\":\"26/06/2025\"\n        }]\n      }]\n    }],\n    \"obligation\":[],\n    \"prohibition\":[]\n  }\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3/policydefinitions",
+							"raw": "{{management_url}}/v3/policydefinitions",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -639,10 +554,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -650,9 +561,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50,\n  \"filterExpression\": []\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3/policydefinitions/request",
+							"raw": "{{management_url}}/v3/policydefinitions/request",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -667,16 +578,11 @@
 					"name": "Get Policy Definition V3",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3/policydefinitions/{{id}}",
+							"raw": "{{management_url}}/v3/policydefinitions/{{id}}",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -695,10 +601,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -706,9 +608,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"definition-id\",\n  \"policy\": {\n    \"@context\":\"http://www.w3.org/ns/odrl.jsonld\",\n    \"@type\":\"Set\",\n    \"permission\":[{\n      \"action\":\"use\",\n      \"constraint\":[{\n        \"and\":[{\n          \"leftOperand\":\"REFERRING_CONNECTOR\",\n          \"operator\":\"odrl:eq\",\n          \"rightOperand\":\"MDSLXXX.XXXXX\"\n        },\n        {\n          \"leftOperand\":\"POLICY_EVALUATION_TIME\",\n          \"operator\":\"odrl:lt\",\n          \"rightOperand\":\"26/06/2025\"\n        }]\n      }]\n    }],\n    \"obligation\":[],\n    \"prohibition\":[]\n  }\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3/policydefinitions/{{id}}",
+							"raw": "{{management_url}}/v3/policydefinitions/{{id}}",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -723,16 +625,11 @@
 					"name": "Delete Policy Definition V3",
 					"request": {
 						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3.1alpha/policydefinitions/{{id}}",
+							"raw": "{{management_url}}/v3.1alpha/policydefinitions/{{id}}",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3.1alpha",
@@ -756,20 +653,16 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"@context\": {\n    \"@vocabulary\": \"https://w3id.org/edc/v0.0.1/ns/\",\n\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dct\": \"http://purl.org/dc/terms/\",\n    \"owl\": \"http://www.w3.org/2002/07/owl#\",\n    \"mobilitydcatap\": \"https://w3id.org/mobilitydcat-ap/\",\n    \"mobilitydcatap-theme\": \"https://w3id.org/mobilitydcat-ap/mobility-theme/\", \n    \"adms\": \"http://www.w3.org/ns/adms#\",\n    \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\",\n    \"skos\": \"http://www.w3.org/2004/02/skos/core#\",\n    \"rdf\": \"http://www.w3.org/2000/01/rdf-schema#\"\n  },\n  \"@id\": \"{{asset-id}}\",\n  \"properties\": {\n    \"dct:title\": \"My Asset\",\n    \"dct:description\": \"Lorem Ipsum ...\",\n    \"dct:language\": \"code/EN\",\n    \"dct:publisher\": \"https://data-source.my-org/about\",\n    \"dct:license\": \"https://data-source.my-org/license\",\n    \"dct:rightsHolder\": \"my-sovereign-legal-name\",\n    \"dct:accessRights\": \"usage policies and rights\",\n    \"dct:spatial\": {\n      \"skos:prefLabel\": \"my-geo-location\",\n      \"dct:identifier\": [\"DE\", \"DE636\"]\n    },\n    \"dct:isReferencedBy\": \"https://data-source.my-org/references\",\n    \"dct:temporal\": {\n      \"dcat:startDate\": \"2024-02-01\",\n      \"dcat:endDate\": \"2024-02-10\"\n    },\n    \"dct:accrualPeriodicity\": \"every month\",\n    \n    \"dcat:organization\": \"Company Name\",\n    \"dcat:keywords\": [\"some\", \"keywords\"],\n    \"dcat:mediaType\": \"application/json\",\n    \"dcat:landingPage\": \"https://data-source.my-org/docs\",\n    \n    \"owl:versionInfo\": \"1.1\",\n    \n    \"mobilitydcatap:mobilityTheme\": {\n      \"mobilitydcatap-theme:data-content-category\": \"INFRASTRUCTURE_AND_LOGISTICS\",\n      \"mobilitydcatap-theme:data-content-sub-category\": \"GENERAL_INFORMATION_ABOUT_PLANNING_OF_ROUTES\"\n    },\n    \"mobilitydcatap:mobilityDataStandard\": {\n      \"@id\": \"my-data-model-001\",\n      \"mobilitydcatap:schema\": {\n        \"dcat:downloadURL\": [\n          \"https://teamabc.departmentxyz.schema/a\",\n          \"https://teamabc.departmentxyz.schema/b\"\n        ],\n        \"rdf:Literal\": \"These reference files are important\"\n      }\n    },\n    \"mobilitydcatap:transportMode\": \"ROAD\",\n    \"mobilitydcatap:georeferencingMethod\": \"my-geo-reference-method\",\n    \n    \"adms:sample\": [\"https://teamabc.departmentxyz.sample/a\", \"https://teamabc.departmentxyz.sample/b\"],\n    \n    \"additionalProperties\": {}\n  },\n  \"privateProperties\": {\n    \"privateKey\": \"privateValue\"\n  },\n  \"dataAddress\": {\n    \"type\": \"HttpData\",\n    \"baseUrl\": \"https://jsonplaceholder.typicode.com/todos\"\n  }\n}"
+							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\",\n\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dct\": \"http://purl.org/dc/terms/\",\n    \"owl\": \"http://www.w3.org/2002/07/owl#\",\n    \"mobilitydcatap\": \"https://w3id.org/mobilitydcat-ap/\",\n    \"mobilitydcatap-theme\": \"https://w3id.org/mobilitydcat-ap/mobility-theme/\", \n    \"adms\": \"http://www.w3.org/ns/adms#\",\n    \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\",\n    \"skos\": \"http://www.w3.org/2004/02/skos/core#\",\n    \"rdf\": \"http://www.w3.org/2000/01/rdf-schema#\"\n  },\n  \"@id\": \"asset-id\",\n  \"properties\": {\n    \"dct:title\": \"My Asset\",\n    \"dct:description\": \"Lorem Ipsum ...\",\n    \"dct:language\": \"code/EN\",\n    \"dct:publisher\": \"https://data-source.my-org/about\",\n    \"dct:license\": \"https://data-source.my-org/license\",\n    \"dct:rightsHolder\": \"my-sovereign-legal-name\",\n    \"dct:accessRights\": \"usage policies and rights\",\n    \"dct:spatial\": {\n      \"skos:prefLabel\": \"my-geo-location\",\n      \"dct:identifier\": [\"DE\", \"DE636\"]\n    },\n    \"dct:isReferencedBy\": \"https://data-source.my-org/references\",\n    \"dct:temporal\": {\n      \"dcat:startDate\": \"2024-02-01\",\n      \"dcat:endDate\": \"2024-02-10\"\n    },\n    \"dct:accrualPeriodicity\": \"every month\",\n    \n    \"dcat:organization\": \"Company Name\",\n    \"dcat:keywords\": [\"some\", \"keywords\"],\n    \"dcat:mediaType\": \"application/json\",\n    \"dcat:landingPage\": \"https://data-source.my-org/docs\",\n    \n    \"owl:versionInfo\": \"1.1\",\n    \n    \"mobilitydcatap:mobilityTheme\": {\n      \"mobilitydcatap-theme:data-content-category\": \"INFRASTRUCTURE_AND_LOGISTICS\",\n      \"mobilitydcatap-theme:data-content-sub-category\": \"GENERAL_INFORMATION_ABOUT_PLANNING_OF_ROUTES\"\n    },\n    \"mobilitydcatap:mobilityDataStandard\": {\n      \"@id\": \"my-data-model-001\",\n      \"mobilitydcatap:schema\": {\n        \"dcat:downloadURL\": [\n          \"https://teamabc.departmentxyz.schema/a\",\n          \"https://teamabc.departmentxyz.schema/b\"\n        ],\n        \"rdf:Literal\": \"These reference files are important\"\n      }\n    },\n    \"mobilitydcatap:transportMode\": \"ROAD\",\n    \"mobilitydcatap:georeferencingMethod\": \"my-geo-reference-method\",\n    \"adms:sample\": [\"https://teamabc.departmentxyz.sample/a\", \"https://teamabc.departmentxyz.sample/b\"],\n    \"additionalProperties\": {}\n  },\n  \"dataAddress\": {\n    \"type\": \"HttpData\",\n      \"name\": \"Example\",\n      \"baseUrl\": \"https://example.com/\"\n  }\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3/assets",
+							"raw": "{{management_url}}/v3/assets",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -787,20 +680,70 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\",\n\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dct\": \"http://purl.org/dc/terms/\",\n    \"owl\": \"http://www.w3.org/2002/07/owl#\",\n    \"mobilitydcatap\": \"https://w3id.org/mobilitydcat-ap/\",\n    \"mobilitydcatap-theme\": \"https://w3id.org/mobilitydcat-ap/mobility-theme/\", \n    \"adms\": \"http://www.w3.org/ns/adms#\",\n    \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\",\n    \"skos\": \"http://www.w3.org/2004/02/skos/core#\",\n    \"rdf\": \"http://www.w3.org/2000/01/rdf-schema#\"\n  },\n  \"@id\": \"asset-id\",\n  \"properties\": {\n    \"dct:title\": \"My Asset\",\n    \"dct:description\": \"Lorem Ipsum ...\",\n    \"dct:language\": \"code/EN\",\n    \"dct:publisher\": \"https://data-source.my-org/about\",\n    \"dct:license\": \"https://data-source.my-org/license\",\n    \"dct:rightsHolder\": \"my-sovereign-legal-name\",\n    \"dct:accessRights\": \"usage policies and rights\",\n    \"dct:spatial\": {\n      \"skos:prefLabel\": \"my-geo-location\",\n      \"dct:identifier\": [\"DE\", \"DE636\"]\n    },\n    \"dct:isReferencedBy\": \"https://data-source.my-org/references\",\n    \"dct:temporal\": {\n      \"dcat:startDate\": \"2024-02-01\",\n      \"dcat:endDate\": \"2024-02-10\"\n    },\n    \"dct:accrualPeriodicity\": \"every month\",\n    \n    \"dcat:organization\": \"Company Name\",\n    \"dcat:keywords\": [\"some\", \"keywords\"],\n    \"dcat:mediaType\": \"application/json\",\n    \"dcat:landingPage\": \"https://data-source.my-org/docs\",\n    \n    \"owl:versionInfo\": \"1.1\",\n    \n    \"mobilitydcatap:mobilityTheme\": {\n      \"mobilitydcatap-theme:data-content-category\": \"INFRASTRUCTURE_AND_LOGISTICS\",\n      \"mobilitydcatap-theme:data-content-sub-category\": \"GENERAL_INFORMATION_ABOUT_PLANNING_OF_ROUTES\"\n    },\n    \"mobilitydcatap:mobilityDataStandard\": {\n      \"@id\": \"my-data-model-001\",\n      \"mobilitydcatap:schema\": {\n        \"dcat:downloadURL\": [\n          \"https://teamabc.departmentxyz.schema/a\",\n          \"https://teamabc.departmentxyz.schema/b\"\n        ],\n        \"rdf:Literal\": \"These reference files are important\"\n      }\n    },\n    \"mobilitydcatap:transportMode\": \"ROAD\",\n    \"mobilitydcatap:georeferencingMethod\": \"my-geo-reference-method\",\n    \n    \"adms:sample\": [\"https://teamabc.departmentxyz.sample/a\", \"https://teamabc.departmentxyz.sample/b\"],\n    \n    \"additionalProperties\": {}\n  },\n  \"privateProperties\": {\n    \"privateKey\": \"privateValue\"\n  },\n  \"dataAddress\": {\n    \"type\": \"HttpData\",\n      \"name\": \"Example\",\n      \"baseUrl\": \"https://example.com/\"\n  }\n}"
+							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\",\n\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dct\": \"http://purl.org/dc/terms/\",\n    \"owl\": \"http://www.w3.org/2002/07/owl#\",\n    \"mobilitydcatap\": \"https://w3id.org/mobilitydcat-ap/\",\n    \"mobilitydcatap-theme\": \"https://w3id.org/mobilitydcat-ap/mobility-theme/\", \n    \"adms\": \"http://www.w3.org/ns/adms#\",\n    \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\",\n    \"skos\": \"http://www.w3.org/2004/02/skos/core#\",\n    \"rdf\": \"http://www.w3.org/2000/01/rdf-schema#\"\n  },\n  \"@id\": \"asset-id\",\n  \"properties\": {\n    \"dct:title\": \"My Asset\",\n    \"dct:description\": \"Lorem Ipsum ...\",\n    \"dct:language\": \"code/EN\",\n    \"dct:publisher\": \"https://data-source.my-org/about\",\n    \"dct:license\": \"https://data-source.my-org/license\",\n    \"dct:rightsHolder\": \"my-sovereign-legal-name\",\n    \"dct:accessRights\": \"usage policies and rights\",\n    \"dct:spatial\": {\n      \"skos:prefLabel\": \"my-geo-location\",\n      \"dct:identifier\": [\"DE\", \"DE636\"]\n    },\n    \"dct:isReferencedBy\": \"https://data-source.my-org/references\",\n    \"dct:temporal\": {\n      \"dcat:startDate\": \"2024-02-01\",\n      \"dcat:endDate\": \"2024-02-10\"\n    },\n    \"dct:accrualPeriodicity\": \"every month\",\n    \n    \"dcat:organization\": \"Company Name\",\n    \"dcat:keywords\": [\"some\", \"keywords\"],\n    \"dcat:mediaType\": \"application/json\",\n    \"dcat:landingPage\": \"https://data-source.my-org/docs\",\n    \n    \"owl:versionInfo\": \"1.1\",\n    \n    \"mobilitydcatap:mobilityTheme\": {\n      \"mobilitydcatap-theme:data-content-category\": \"INFRASTRUCTURE_AND_LOGISTICS\",\n      \"mobilitydcatap-theme:data-content-sub-category\": \"GENERAL_INFORMATION_ABOUT_PLANNING_OF_ROUTES\"\n    },\n    \"mobilitydcatap:mobilityDataStandard\": {\n      \"@id\": \"my-data-model-001\",\n      \"mobilitydcatap:schema\": {\n        \"dcat:downloadURL\": [\n          \"https://teamabc.departmentxyz.schema/a\",\n          \"https://teamabc.departmentxyz.schema/b\"\n        ],\n        \"rdf:Literal\": \"These reference files are important\"\n      }\n    },\n    \"mobilitydcatap:transportMode\": \"ROAD\",\n    \"mobilitydcatap:georeferencingMethod\": \"my-geo-reference-method\",\n    \"adms:sample\": [\"https://teamabc.departmentxyz.sample/a\", \"https://teamabc.departmentxyz.sample/b\"],\n    \"additionalProperties\": {}\n  },\n  \"dataAddress\": {\n    \"type\": \"HttpData\",\n      \"name\": \"Example\",\n      \"baseUrl\": \"https://example.com/\"\n  }\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3/assets",
+							"raw": "{{management_url}}/v3/assets",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
+							],
+							"path": [
+								"v3",
+								"assets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create On Request Asset V3",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dct\": \"http://purl.org/dc/terms/\",\n    \"owl\": \"http://www.w3.org/2002/07/owl#\",\n    \"mobilitydcatap\": \"https://w3id.org/mobilitydcat-ap/\",\n    \"mobilitydcatap-theme\": \"https://w3id.org/mobilitydcat-ap/mobility-theme/\",\n    \"adms\": \"http://www.w3.org/ns/adms#\",\n    \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\",\n    \"skos\": \"http://www.w3.org/2004/02/skos/core#\",\n    \"rdf\": \"http://www.w3.org/2000/01/rdf-schema#\"\n  },\n  \"@id\": \"on-request-asset-id\",\n  \"properties\": {\n    \"dct:title\": \"On Request Asset\",\n    \"mobilitydcatap:mobilityTheme\": {\n      \"mobilitydcatap-theme:data-content-category\": \"INFRASTRUCTURE_AND_LOGISTICS\"\n    },\n    \"additionalProperties\": {\n      \"onrequest\": \"true\",\n      \"email\": \"contact@example.com\",\n      \"preferred_subject\": \"Data Access Request\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{management_url}}/v3/assets",
+							"host": [
+								"{{management_url}}"
+							],
+							"path": [
+								"v3",
+								"assets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Custom JSON Data Address Asset V3",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\",\n    \"dcat\": \"http://www.w3.org/ns/dcat#\",\n    \"dct\": \"http://purl.org/dc/terms/\",\n    \"mobilitydcatap\": \"https://w3id.org/mobilitydcat-ap/\",\n    \"mobilitydcatap-theme\": \"https://w3id.org/mobilitydcat-ap/mobility-theme/\"\n  },\n  \"@id\": \"custom-json-asset-id\",\n  \"properties\": {\n    \"dct:title\": \"Custom JSON Data Address Asset\",\n    \"mobilitydcatap:mobilityTheme\": {\n      \"mobilitydcatap-theme:data-content-category\": \"INFRASTRUCTURE_AND_LOGISTICS\"\n    }\n  },\n  \"dataAddress\": {\n    \"type\": \"CustomJsonData\",\n    \"customProperty1\": \"value1\",\n    \"customProperty2\": \"value2\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{management_url}}/v3/assets",
+							"host": [
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -818,10 +761,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -829,9 +768,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/assets/request",
+							"raw": "{{management_url}}/v3/assets/request",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -846,16 +785,11 @@
 					"name": "Get Asset V3",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/assets/{{asset-id}}",
+							"raw": "{{management_url}}/v3/assets/{{asset-id}}",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -870,21 +804,16 @@
 					"name": "Remove Asset V3",
 					"request": {
 						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3/assets/{{assetId}}",
+							"raw": "{{management_url}}/v3/assets/{{asset-id}}",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
 								"assets",
-								"{{assetId}}"
+								"{{asset-id}}"
 							]
 						}
 					},
@@ -903,10 +832,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -914,9 +839,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3/contractagreements/request",
+							"raw": "{{management_url}}/v3/contractagreements/request",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -931,16 +856,11 @@
 					"name": "Get Agreement By Id V3",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3/contractagreements/{{agreementId}}",
+							"raw": "{{management_url}}/v3/contractagreements/{{agreementId}}",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -955,16 +875,11 @@
 					"name": "Get Negotiation By Agreement Id V3",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3/contractagreements/{{agreementId}}/negotiation",
+							"raw": "{{management_url}}/v3/contractagreements/{{agreementId}}/negotiation",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -989,10 +904,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -1000,9 +911,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v4alpha/contractagreements/request",
+							"raw": "{{management_url}}/v4alpha/contractagreements/request",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v4alpha",
@@ -1017,16 +928,11 @@
 					"name": "Get Agreement By Id V4alpha",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v4alpha/contractagreements/{{agreementId}}",
+							"raw": "{{management_url}}/v4alpha/contractagreements/{{agreementId}}",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v4alpha",
@@ -1041,16 +947,11 @@
 					"name": "Get Negotiation By Agreement Id V4alpha",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v4alpha/contractagreements/{{agreementId}}/negotiation",
+							"raw": "{{management_url}}/v4alpha/contractagreements/{{agreementId}}/negotiation",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v4alpha",
@@ -1075,10 +976,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -1086,9 +983,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"{{definition-id}}\",\n  \"accessPolicyId\": \"{{asset-policy-id}}\",\n  \"contractPolicyId\": \"{{contract-policy-id}}\",\n  \"assetsSelector\": [],\n  \"privateProperties\": {\n    \"manualApproval\": \"{{false}}\"\n  }\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3/contractdefinitions",
+							"raw": "{{management_url}}/v3/contractdefinitions",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1106,10 +1003,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -1117,9 +1010,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@id\": \"{{new-offer-id}}\",\n  \"accessPolicyId\": \"always-true\",\n  \"contractPolicyId\": \"always-true\",\n  \"assetsSelector\": [],\n  \"privateProperties\": {\n    \"manualApproval\": \"{{false}}\"\n  }\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3/contractdefinitions",
+							"raw": "{{management_url}}/v3/contractdefinitions",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1137,10 +1030,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -1148,9 +1037,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3/contractdefinitions/request",
+							"raw": "{{management_url}}/v3/contractdefinitions/request",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1165,16 +1054,11 @@
 					"name": "Get Contract Definition V3",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3/contractdefinitions/{{definitionId}}",
+							"raw": "{{management_url}}/v3/contractdefinitions/{{definitionId}}",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1189,16 +1073,11 @@
 					"name": "Delete Contract Definition V3",
 					"request": {
 						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3/contractdefinitions/{{definitionId}}",
+							"raw": "{{management_url}}/v3/contractdefinitions/{{definitionId}}",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1218,16 +1097,11 @@
 					"name": "Get All Data Plane Instances V3",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3/dataplanes",
+							"raw": "{{management_url}}/v3/dataplanes",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1250,10 +1124,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -1261,9 +1131,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/edrs/request",
+							"raw": "{{management_url}}/v3/edrs/request",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1278,16 +1148,11 @@
 					"name": "Remove EDR Entry V3",
 					"request": {
 						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3/edrs/{{transferProcessId}}",
+							"raw": "{{management_url}}/v3/edrs/{{transferProcessId}}",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1302,16 +1167,11 @@
 					"name": "Get EDR Entry Data Address V3",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3/edrs/{{process-id}}/dataaddress",
+							"raw": "{{management_url}}/v3/edrs/{{process-id}}/dataaddress",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1336,20 +1196,16 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"https://w3id.org/edc/v0.0.1/ns/ContractRequest\",\n  \"counterPartyAddress\": \"{{https://provider.dataspaces.think-it.io/api/dsp}}\",\n  \"protocol\": \"dataspace-protocol-http\",\n  \"policy\": {\n    \"@context\": \"http://www.w3.org/ns/odrl.jsonld\",\n    \"@type\": \"odrl:Offer\",\n    \"@id\": \"{{data-offer-from-catalog}}\",\n    \"assigner\": \"{{assigner-mds-id}}\",\n    \"odrl:permission\": {\n        \"odrl:action\": {\n            \"@id\": \"use\"\n        }\n    },\n    \"odrl:prohibition\": [],\n    \"odrl:obligation\": [],\n    \"target\": \"{{asset-id}}\"\n  }\n}"
+							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\",\n    \"edc\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"https://w3id.org/edc/v0.0.1/ns/ContractRequest\",\n  \"counterPartyAddress\": \"{{https://provider.dataspaces.think-it.io/api/dsp}}\",\n  \"protocol\": \"dataspace-protocol-http\",\n  \"policy\": {\n    \"@context\": \"http://www.w3.org/ns/odrl.jsonld\",\n    \"@type\": \"odrl:Offer\",\n    \"@id\": \"{{data-offer-from-catalog}}\",\n    \"assigner\": \"{{assigner-mds-id}}\",\n    \"odrl:permission\": {\n      \"odrl:action\": {\n        \"@id\": \"use\"\n      }\n    },\n    \"odrl:prohibition\": [],\n    \"odrl:obligation\": [],\n    \"target\": \"{{asset-id}}\"\n  }\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/contractnegotiations",
+							"raw": "{{management_url}}/v3/contractnegotiations",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1367,10 +1223,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -1378,9 +1230,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/contractnegotiations/request",
+							"raw": "{{management_url}}/v3/contractnegotiations/request",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1395,16 +1247,11 @@
 					"name": "Get Negotiation V3",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/contractnegotiations/{{negotiationId}}",
+							"raw": "{{management_url}}/v3/contractnegotiations/{{negotiationId}}",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1419,16 +1266,11 @@
 					"name": "Get Agreement For Negotiation V3",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/contractnegotiations/{{negotiationId}}/agreement",
+							"raw": "{{management_url}}/v3/contractnegotiations/{{negotiationId}}/agreement",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1444,16 +1286,11 @@
 					"name": "Get Negotiation State V3",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/contractnegotiations/{{negotiationId}}/state",
+							"raw": "{{management_url}}/v3/contractnegotiations/{{negotiationId}}/state",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1473,10 +1310,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -1484,9 +1317,9 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"TerminateNegotiation\",\n  \"reason\": \"{{Termination reason}}\"\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/v3/contractnegotiations/{{negotiationId}}/terminate",
+							"raw": "{{management_url}}/v3/contractnegotiations/{{negotiationId}}/terminate",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v3",
@@ -1507,16 +1340,11 @@
 					"name": "Get All Data Plane Instances V4",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v4alpha/dataplanes",
+							"raw": "{{management_url}}/v4alpha/dataplanes",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v4alpha",
@@ -1539,10 +1367,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -1550,9 +1374,9 @@
 							"raw": "{}\n"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v4alpha/protocol-versions/request",
+							"raw": "{{management_url}}/v4alpha/protocol-versions/request",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"v4alpha",
@@ -1576,10 +1400,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -1587,13 +1407,14 @@
 							"raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"agreementId\": \"{{contract-agreement-id}}\",\n  \"reason\": \"{{This contract agreement was retired since the physical counterpart is no longer valid.}}\"\n}"
 						},
 						"url": {
-							"raw": "{{provider_management_url}}/v3.1alpha/retireagreements",
+							"raw": "{{management_url}}/v3/contractagreements/retirements",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
-								"v3.1alpha",
-								"retireagreements"
+								"v3",
+								"contractagreements",
+								"retirements"
 							]
 						}
 					},
@@ -1603,20 +1424,16 @@
 					"name": "Get All Retired V3",
 					"request": {
 						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3.1alpha/retireagreements/request",
+							"raw": "{{management_url}}/v3/contractagreements/retirements/request",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
-								"v3.1alpha",
-								"retireagreements",
+								"v3",
+								"contractagreements",
+								"retirements",
 								"request"
 							]
 						}
@@ -1627,20 +1444,16 @@
 					"name": "Reactivate Retired V3",
 					"request": {
 						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{provider_management_url}}/v3.1alpha/retireagreements/{{agreementId}}",
+							"raw": "{{management_url}}/v3/contractagreements/retirements/{{agreementId}}",
 							"host": [
-								"{{provider_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
-								"v3.1alpha",
-								"retireagreements",
+								"v3",
+								"contractagreements",
+								"retirements",
 								"{{agreementId}}"
 							]
 						}
@@ -1659,12 +1472,7 @@
 					},
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"body": {
 							"mode": "raw",
 							"raw": "",
@@ -1675,9 +1483,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/edp/edps/mds-asset/jobs",
+							"raw": "{{management_url}}/edp/edps/mds-asset/jobs",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"edp",
@@ -1697,10 +1505,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -1708,9 +1512,9 @@
 							"raw": "{\n  \"contractId\": \"{{a00789f2-a031-4b4b-b6a4-e21bef35a57e}}\"\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/edp/edps/mds-asset/jobs",
+							"raw": "{{management_url}}/edp/edps/mds-asset/jobs",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"edp",
@@ -1726,16 +1530,11 @@
 					"name": "Get EDPS Job Status",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{consumer_management_url}}/edp/edps/{{asset-id}}/jobs/",
+							"raw": "{{management_url}}/edp/edps/{{asset-id}}/jobs/",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"edp",
@@ -1756,10 +1555,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -1767,9 +1562,9 @@
 							"raw": "{\n  \"destinationAddress\": \"{{address}}\"\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/edp/edps/{{asset-id}}/jobs/{{job-id}}/result",
+							"raw": "{{management_url}}/edp/edps/{{asset-id}}/jobs/{{job-id}}/result",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"edp",
@@ -1791,10 +1586,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
@@ -1802,9 +1593,9 @@
 							"raw": "{\n  \"contractId\": \"{{contract-id}}\"\n}"
 						},
 						"url": {
-							"raw": "{{consumer_management_url}}/edp/daseen/{{asset-id}}",
+							"raw": "{{management_url}}/edp/daseen/{{asset-id}}",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"edp",
@@ -1819,16 +1610,11 @@
 					"name": "Update Daseen Resource",
 					"request": {
 						"method": "PUT",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{consumer_management_url}}/edp/daseen/{{assetId}}",
+							"raw": "{{management_url}}/edp/daseen/{{assetId}}",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"edp",
@@ -1843,16 +1629,11 @@
 					"name": "Delete Daseen Resource",
 					"request": {
 						"method": "DELETE",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}"
-							}
-						],
+						"header": [],
 						"url": {
-							"raw": "{{consumer_management_url}}/edp/daseen/{{assetId}}",
+							"raw": "{{management_url}}/edp/daseen/{{assetId}}",
 							"host": [
-								"{{consumer_management_url}}"
+								"{{management_url}}"
 							],
 							"path": [
 								"edp",
@@ -1866,12 +1647,28 @@
 			]
 		}
 	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{MyApiKey}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "X-Api-Key",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
+				"requests": {},
 				"exec": [
 					""
 				]
@@ -1882,6 +1679,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
+				"requests": {},
 				"exec": [
 					""
 				]
@@ -1890,14 +1688,12 @@
 	],
 	"variable": [
 		{
-			"key": "provider_management_url",
-			"value": "http://localhost:8182/api/management",
-			"type": "default"
+			"key": "management_url",
+			"value": "http://localhost:8182/api/management"
 		},
 		{
-			"key": "consumer_management_url",
-			"value": "http://localhost:9182/api/management",
-			"type": "string"
+			"key": "MyApiKey",
+			"value": ""
 		}
 	]
 }

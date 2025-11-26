@@ -1,23 +1,23 @@
 # Default configuration of the MDS Connector
 
-This document outlines an example of the configuration settings for deploying the MDS Connector. 
-The provided connector deployment is configured through environment variables in the `docker-compose.yml` file.
+This document outlines an example of the configuration settings for deploying the MDS Connector.
 
+The provided connector deployment is configured through environment variables in the `docker-compose.yml` file.
 
 ```properties
 # Connector Identification
 # Set the participant ID and hostname for your connector
+edc.hostname = my-connector-address
 edc.participant.id = my_participant_id
 
 # API Endpoints Configuration
 # Configure the paths and ports for various API endpoints
 web.http.path = /api
 web.http.port = 8181
-web.http.control.path = /api/control
-web.http.control.port = 8186
 web.http.management.path = /api/management
+# API Key for the Management API
 web.http.management.auth.type = tokenbased
-web.http.management.auth.key = x-api-key
+web.http.management.auth.key = myApiKey
 web.http.management.port = 8182
 web.http.protocol.path = /api/dsp
 web.http.protocol.port = 8183
@@ -25,6 +25,8 @@ web.http.version.path = /api/version
 web.http.version.port = 8184
 web.http.public.path = /public
 web.http.public.port = 8185
+web.http.control.path = /api/control
+web.http.control.port = 8186
 
 edc.dsp.callback.address = "https://my-connector-address/api/dsp"
 edc.dataplane.api.public.baseurl = "http://my-connector-address/public"
@@ -60,9 +62,6 @@ edc.agent.identity.key = "referringConnector"
 # Logging House configuration
 edc.logginghouse.extension.enabled = true
 edc.logginghouse.extension.url = "https://logging_house.url"
-edc.datasource.logginghouse.url = "jdbc:postgresql://postgres:5432/edc?currentSchema=mds_edc_schema"
-edc.datasource.logginghouse.user = user
-edc.datasource.logginghouse.password = password
 ```
 
-For more detailed information on each configuration property and advanced deployment scenarios, please refer to the full documentation or reach out in the discussion.
+For more detailed information on each configuration property and advanced deployment scenarios, reach out in the discussion.
