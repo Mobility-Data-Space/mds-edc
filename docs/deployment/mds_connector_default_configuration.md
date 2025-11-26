@@ -44,7 +44,7 @@ edc.vault.hashicorp.token = root
 edc.datasource.default.url = "jdbc:postgresql://postgres:5432/edc?currentSchema=mds_edc_schema"
 edc.datasource.default.user = user
 edc.datasource.default.password = password
-org.eclipse.tractusx.edc.postgresql.migration.schema = "mds_edc_schema"
+edc.postgresql.migration.schema = "mds_edc_schema"
 
 # DAPS Configuration
 edc.oauth.token.url = "https://daps_url/token"

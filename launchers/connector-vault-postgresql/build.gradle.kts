@@ -17,11 +17,8 @@ dependencies {
     runtimeOnly(libs.edc.controlplane.feature.sql.bom)
     runtimeOnly(libs.edc.dataplane.feature.sql.bom)
 
-    runtimeOnly(libs.tractusx.edc.postgresql.migration)
-    runtimeOnly(libs.tractusx.edc.data.plane.migration)
-    runtimeOnly(libs.tractusx.edc.control.plane.migration)
-
     implementation(project(":extensions:agreements:retirement-evaluation-store-sql"))
+    implementation(project(":extensions:database-schema-migration-connector"))
 
     runtimeOnly(libs.logging.house.client)
 
