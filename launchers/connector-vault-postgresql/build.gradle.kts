@@ -21,7 +21,7 @@ dependencies {
     runtimeOnly(libs.tractusx.edc.data.plane.migration)
     runtimeOnly(libs.tractusx.edc.control.plane.migration)
 
-    runtimeOnly(libs.tractusx.edc.retirement.evaluation.store.sql)
+    implementation(project(":extensions:agreements:retirement-evaluation-store-sql"))
 
     runtimeOnly(libs.logging.house.client)
 
