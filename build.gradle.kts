@@ -87,12 +87,12 @@ subprojects {
         plugins.withType<SwaggerPlugin> {
             tasks.withType<ResolveTask> {
                 outputFileName = project.name
-                outputDir = project.layout.buildDirectory.dir("openapi")
+                outputDir = project.layout.buildDirectory.dir("openapi").get().asFile
                 outputFormat = ResolveTask.Format.YAML
                 openApiFile = rootDir.resolve("resources").resolve("openapi-config.yml")
                 classpath = sourceSets.main.get().runtimeClasspath
                 buildClasspath = classpath
-                resourcePackages.add("eu.dataspace.connector")
+                resourcePackages = setOf<String>("eu.dataspace.connector")
             }
         }
 
