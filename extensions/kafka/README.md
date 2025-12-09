@@ -19,7 +19,7 @@ When creating a Kafka asset, use the following properties in the DataAddress:
 
 | Key                          | Description                                                      |
 |:-----------------------------|:-----------------------------------------------------------------|
-| `type`                       | Identifier of Kafka data address. Should be set as 'Kafka'       |
+| `type`                       | Identifier of Kafka data address. Should be set as 'Kafka-PULL'  |
 | `topic`                      | Defines the Kafka topic                                          |
 | `kafka.bootstrap.servers`    | Defines a custom endpoint URL to Kafka                           |
 | `kafka.sasl.mechanism`       | Defines the SASL Kafka mechanism (OAUTHBEARER)                   |
