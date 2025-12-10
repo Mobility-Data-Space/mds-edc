@@ -10,6 +10,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
+        maven("https://central.sonatype.com/repository/maven-snapshots/")
         mavenGpr("Mobility-Data-Space/mds-logging-house-client")
         mavenGpr("ids-basecamp/ids-infomodel-java")
         mavenLocal()
@@ -31,6 +32,7 @@ include(":extensions:agreements:retirement-evaluation-api")
 include(":extensions:agreements:retirement-evaluation-spi")
 include(":extensions:agreements:retirement-evaluation-store-sql")
 include(":extensions:database-schema-migration-connector")
+include(":extensions:data-plane-public-api-v2")
 include(":extensions:edp")
 include(":extensions:logging-house-publisher")
 include(":extensions:manual-negotiation-approval")

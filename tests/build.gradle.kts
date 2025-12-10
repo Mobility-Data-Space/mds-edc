@@ -39,6 +39,5 @@ dependencies {
     testCompileOnly(project(":launchers:connector-vault-postgresql"))
     testCompileOnly(project(":launchers:connector-vault-postgresql-edp"))
 
-
     testFixturesApi(libs.bouncycastle.bcpkix)
 }

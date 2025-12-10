@@ -104,7 +104,7 @@ class Oauth2ServiceImplTest {
 
     @Test
     void obtainClientCredentials() {
-        when(tokenGenerationService.generate(any(), any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("assertionToken").build()));
+        when(tokenGenerationService.generate(any(), any(), any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("assertionToken").build()));
 
         var tokenParameters = TokenParameters.Builder.newInstance()
                 .claims(AUDIENCE, "audience")
@@ -113,7 +113,7 @@ class Oauth2ServiceImplTest {
 
         when(client.requestToken(any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("accessToken").build()));
 
-        var result = authService.obtainClientCredentials(tokenParameters);
+        var result = authService.obtainClientCredentials("participantContextId", tokenParameters);
 
         assertThat(result.succeeded()).isTrue();
         assertThat(result.getContent().getToken()).isEqualTo("accessToken");
@@ -133,7 +133,7 @@ class Oauth2ServiceImplTest {
 
     @Test
     void obtainClientCredentials_verifyReturnsFailureIfOauth2ClientFails() {
-        when(tokenGenerationService.generate(any(), any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("assertionToken").build()));
+        when(tokenGenerationService.generate(any(), any(), any())).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("assertionToken").build()));
 
         var tokenParameters = TokenParameters.Builder.newInstance()
                 .claims(AUDIENCE, "audience")
@@ -142,7 +142,7 @@ class Oauth2ServiceImplTest {
 
         when(client.requestToken(any())).thenReturn(Result.failure("test error"));
 
-        var result = authService.obtainClientCredentials(tokenParameters);
+        var result = authService.obtainClientCredentials("participantContextId", tokenParameters);
 
         assertThat(result.failed()).isTrue();
         assertThat(result.getFailureDetail()).contains("test error");
@@ -152,7 +152,7 @@ class Oauth2ServiceImplTest {
     void verifyNoAudienceToken() {
         var jwt = createJwt(null, Date.from(now.minusSeconds(1000)), Date.from(now.plusSeconds(1000)));
 
-        var result = authService.verifyJwtToken(jwt, VERIFICATION_CONTEXT);
+        var result = authService.verifyJwtToken("participantContextId", jwt, VERIFICATION_CONTEXT);
 
         assertThat(result.succeeded()).isFalse();
         assertThat(result.getFailureMessages()).isNotEmpty();
@@ -162,7 +162,7 @@ class Oauth2ServiceImplTest {
     void verifyInvalidAudienceToken() {
         var jwt = createJwt("different.audience", Date.from(now.minusSeconds(1000)), Date.from(now.plusSeconds(1000)));
 
-        var result = authService.verifyJwtToken(jwt, VERIFICATION_CONTEXT);
+        var result = authService.verifyJwtToken("participantContextId", jwt, VERIFICATION_CONTEXT);
 
         assertThat(result.succeeded()).isFalse();
         assertThat(result.getFailureMessages()).isNotEmpty();
@@ -172,7 +172,7 @@ class Oauth2ServiceImplTest {
     void verifyInvalidAttemptUseNotBeforeToken() {
         var jwt = createJwt(PROVIDER_AUDIENCE, Date.from(now.plusSeconds(1000)), Date.from(now.plusSeconds(1000)));
 
-        var result = authService.verifyJwtToken(jwt, VERIFICATION_CONTEXT);
+        var result = authService.verifyJwtToken("participantContextId", jwt, VERIFICATION_CONTEXT);
 
         assertThat(result.succeeded()).isFalse();
         assertThat(result.getFailureMessages()).isNotEmpty();
@@ -182,7 +182,7 @@ class Oauth2ServiceImplTest {
     void verifyExpiredToken() {
         var jwt = createJwt(PROVIDER_AUDIENCE, Date.from(now.minusSeconds(1000)), Date.from(now.minusSeconds(1000)));
 
-        var result = authService.verifyJwtToken(jwt, VERIFICATION_CONTEXT);
+        var result = authService.verifyJwtToken("participantContextId", jwt, VERIFICATION_CONTEXT);
 
         assertThat(result.succeeded()).isFalse();
         assertThat(result.getFailureMessages()).isNotEmpty();
@@ -192,7 +192,7 @@ class Oauth2ServiceImplTest {
     void verifyValidJwt() {
         var jwt = createJwt(ENDPOINT_AUDIENCE, Date.from(now.minusSeconds(1000)), new Date(System.currentTimeMillis() + 1000000));
 
-        var result = authService.verifyJwtToken(jwt, VERIFICATION_CONTEXT);
+        var result = authService.verifyJwtToken("participantContextId", jwt, VERIFICATION_CONTEXT);
 
         assertThat(result.succeeded()).isTrue();
         assertThat(result.getContent().getClaims()).hasSize(3).containsKeys(AUDIENCE, NOT_BEFORE, EXPIRATION_TIME);
