@@ -7,9 +7,9 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.connector.controlplane.test.system.utils.Participant;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
+import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.Config;
@@ -100,6 +100,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
     public Config getConfiguration() {
         var settings = Map.ofEntries(
                 entry("edc.participant.id", id),
+                entry("edc.participant.context.id", id),
                 entry("web.http.path", "/api"),
                 entry("web.http.port", getFreePort() + ""),
                 entry("web.http.control.path", "/control"),
@@ -114,7 +115,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 entry("web.http.version.port", getFreePort() + ""),
                 entry("web.http.public.path", "/public"),
                 entry("web.http.public.port", getFreePort() + ""),
-                entry("edc.dsp.callback.address", controlPlaneProtocol.get().toString()),
+                entry("edc.dsp.callback.address", getProtocolUrl()),
                 entry("edc.core.retry.retries.max", "0"),
                 entry("edc.transfer.proxy.token.verifier.publickey.alias", "public-key-alias"),
                 entry("edc.transfer.proxy.token.signer.privatekey.alias", "private-key-alias"),
@@ -196,7 +197,8 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .body(body)
                 .when()
                 .post("/v3/contractagreements/retirements")
-                .then();
+                .then()
+                .log().ifValidationFails();
     }
 
     public JsonObject getTransferProcess(String transferProcessId) {

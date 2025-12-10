@@ -3,7 +3,7 @@ package eu.dataspace.connector.tests.extensions;
 import jakarta.json.Json;
 import okhttp3.MultipartBody;
 import okio.Buffer;
-import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
+import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.util.io.Ports;

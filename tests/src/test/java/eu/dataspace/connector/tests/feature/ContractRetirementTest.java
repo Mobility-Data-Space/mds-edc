@@ -53,18 +53,21 @@ public class ContractRetirementTest {
 
         CONSUMER.awaitTransferToBeInState(consumerTransferProcessId, STARTED);
 
-        var agreementId = CONSUMER.getTransferProcess(consumerTransferProcessId).getString("contractId");
+        var providerTransferProcess = PROVIDER.getTransferProcesses().stream()
+                .filter(it -> it.asJsonObject().getString("correlationId").equals(consumerTransferProcessId)).findFirst().get();
+        var providerAgreementId = providerTransferProcess.asJsonObject().getString("contractId");
 
-        PROVIDER.retireAgreement(agreementId)
+        PROVIDER.retireAgreement(providerAgreementId)
                 .statusCode(204);
 
         var event = PROVIDER.waitForEvent("ContractAgreementRetired");
         LOGGING_HOUSE.waitForEvent("ContractAgreementRetired");
 
-        assertThat(event.getJsonObject("payload").getString("contractAgreementId")).isEqualTo(agreementId);
+        assertThat(event.getJsonObject("payload").getString("contractAgreementId")).isEqualTo(providerAgreementId);
         CONSUMER.awaitTransferToBeInState(consumerTransferProcessId, TERMINATED);
 
-        var failedTransferId = CONSUMER.initiateTransfer(PROVIDER, agreementId, null, null, "HttpData-PULL");
+        var consumerAgreementId = CONSUMER.getTransferProcess(consumerTransferProcessId).getString("contractId");
+        var failedTransferId = CONSUMER.initiateTransfer(PROVIDER, consumerAgreementId, null, null, "HttpData-PULL");
         CONSUMER.awaitTransferToBeInState(failedTransferId, TERMINATED);
     }
 
@@ -72,6 +75,5 @@ public class ContractRetirementTest {
     void shouldFail_whenAgreementDoesNotExist() {
         PROVIDER.retireAgreement(UUID.randomUUID().toString()).statusCode(404);
     }
-
 
 }
