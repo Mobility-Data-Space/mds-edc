@@ -16,15 +16,19 @@ package eu.dataspace.connector.postgresql.migration;
 import org.eclipse.edc.runtime.metamodel.annotation.Configuration;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.flywaydb.core.Flyway;
+
+import java.util.Map;
+import java.util.UUID;
 
 import static eu.dataspace.connector.postgresql.migration.ConnectorPostgresqlMigration.NAME;
 import static eu.dataspace.connector.postgresql.migration.DatabaseMigrationConfiguration.DEPRECATED_MIGRATION_SCHEMA_KEY;
 import static eu.dataspace.connector.postgresql.migration.DatabaseMigrationConfiguration.MIGRATION_SCHEMA_KEY;
-import static org.flywaydb.core.api.MigrationVersion.LATEST;
 
 @Extension(NAME)
 public class ConnectorPostgresqlMigration implements ServiceExtension {
@@ -40,6 +44,18 @@ public class ConnectorPostgresqlMigration implements ServiceExtension {
     @Override
     public String name() {
         return NAME;
+    }
+
+    @Override
+    public void initialize(ServiceExtensionContext context) {
+        if (configuration.enabled() && configuration.participantContextId() == null) {
+            throw new EdcException("The participant context id has not been set, it is a mandatory setting now. You can " +
+                    "use this UUID generated randomly for you: %s, or you can generate one by yourself. Please note that"
+                            .formatted(UUID.randomUUID().toString()) +
+                    " once set, it must never change. Depending on how you are configuring the Connector, set it on the " +
+                    "`edc.participant.context.id` setting/system property or `EDC_PARTICIPANT_CONTEXT_ID` environment " +
+                    "variable, then restart the Connector");
+        }
     }
 
     @Override
@@ -67,7 +83,8 @@ public class ConnectorPostgresqlMigration implements ServiceExtension {
                 .table("flyway_schema_history")
                 .locations("classpath:migrations/connector")
                 .defaultSchema(schema)
-                .target(LATEST)
+                .target(configuration.target())
+                .placeholders(Map.of("ParticipantContextId", configuration.participantContextId()))
                 .load();
 
         var migrateResult = flyway.migrate();

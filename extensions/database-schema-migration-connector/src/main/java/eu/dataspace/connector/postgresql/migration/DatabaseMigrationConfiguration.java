@@ -43,6 +43,13 @@ public record DatabaseMigrationConfiguration(
         )
         String schema,
 
+        @Setting(
+                key = MIGRATION_TARGET_VERSION,
+                description = "Target version for the migration",
+                defaultValue = DEFAULT_TARGET_VERSION
+        )
+        String target,
+
         @Deprecated(since = "1.0.0")
         @Setting(
                 key = DEPRECATED_MIGRATION_SCHEMA_KEY,
@@ -50,6 +57,13 @@ public record DatabaseMigrationConfiguration(
                 required = false
         )
         String deprecatedSchema,
+
+        @Setting(
+                description = "Configures the participant context id for the single participant runtime",
+                key = "edc.participant.context.id",
+                required = false
+        )
+        String participantContextId,
 
         @Setting(
                 key = "edc.datasource.default.url",
@@ -71,9 +85,11 @@ public record DatabaseMigrationConfiguration(
 ) {
     private static final String DEFAULT_MIGRATION_ENABLED_TEMPLATE = "true";
     private static final String DEFAULT_MIGRATION_SCHEMA = "public";
+    private static final String DEFAULT_TARGET_VERSION = "latest";
     @Deprecated(since = "1.0.0")
     public static final String DEPRECATED_MIGRATION_SCHEMA_KEY = "org.eclipse.tractusx.edc.postgresql.migration.schema";
     public static final String MIGRATION_SCHEMA_KEY = "edc.postgresql.migration.schema";
+    public static final String MIGRATION_TARGET_VERSION = "edc.postgresql.migration.target";
 
     /**
      * Instance and return DataSource to be passed to Flyway for schema migrations

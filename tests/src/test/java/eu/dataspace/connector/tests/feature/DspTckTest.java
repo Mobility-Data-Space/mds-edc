@@ -18,8 +18,8 @@ import eu.dataspace.connector.tests.MdsParticipantFactory;
 import org.eclipse.dataspacetck.core.system.ConsoleMonitor;
 import org.eclipse.dataspacetck.dsp.system.DspSystemLauncher;
 import org.eclipse.dataspacetck.runtime.TckRuntime;
-import org.eclipse.edc.connector.controlplane.test.system.utils.LazySupplier;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
+import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Tag;
@@ -52,7 +52,8 @@ public class DspTckTest {
             .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
                     entry("web.http.tck.port", String.valueOf(WEBHOOK.get().getPort())),
                     entry("web.http.tck.path", WEBHOOK.get().getPath()),
-                    entry("edc.participant.id", "participantContextId"),
+                    entry("edc.participant.id", "participantContextId"), // see https://github.com/eclipse-edc/Connector/issues/5393
+                    entry("edc.participant.context.id", "participantContextId"),
                     entry("web.http.port", "8080"),
                     entry("web.http.path", "/api"),
                     entry("web.http.control.port", String.valueOf(getFreePort())),

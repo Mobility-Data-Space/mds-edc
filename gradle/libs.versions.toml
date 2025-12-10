@@ -5,13 +5,13 @@ aws = "2.40.13"
 azure-storage-blob = "12.32.0"
 bouncycastle = "1.83"
 dsp-tck = "1.0.0-RC5"
-edc = "0.14.1"
+edc = "0.15.1"
 flyway = "11.19.1"
 jose4j = "0.9.6"
 junit-jupiter = "6.0.1"
 kafka = "4.1.1"
 keycloak = "26.0.7"
-logging-house-client = "1.0.0"
+logging-house-client = "0.0.2-SNAPSHOT"
 mockito = "5.20.0"
 mockserver = "5.15.0"
 postgres = "42.7.8"
@@ -33,7 +33,6 @@ edc-controlplane-base-bom = { module = "org.eclipse.edc:controlplane-base-bom", 
 edc-controlplane-feature-sql-bom = { module = "org.eclipse.edc:controlplane-feature-sql-bom", version.ref = "edc" }
 edc-data-plane-spi = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
 edc-data-plane-http-spi = { module = "org.eclipse.edc:data-plane-http-spi", version.ref = "edc" }
-edc-data-plane-public-api-v2 = { module = "org.eclipse.edc:data-plane-public-api-v2", version.ref = "edc" }
 edc-data-plane-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
 edc-dataplane-base-bom = { module = "org.eclipse.edc:dataplane-base-bom", version.ref = "edc" }
 edc-dataplane-feature-sql-bom = { module = "org.eclipse.edc:dataplane-feature-sql-bom", version.ref = "edc" }
@@ -98,6 +97,7 @@ flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-database-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka" }
 keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak" }
+jakarta-ws-rs-api = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version = "4.0.0" }
 jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "jose4j" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "6.0.1" }
@@ -107,7 +107,7 @@ parsson = { module = "org.eclipse.parsson:parsson", version = "1.1.7" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
 swagger-annotations = { module = "io.swagger.core.v3:swagger-annotations", version.ref = "swagger" }
-swagger-jaxrs2-jakarta = { module = "io.swagger.core.v3:swagger-jaxrs2-jakarta", version.ref = "swagger" }
+swagger-jaxrs2-jakarta = { module = "io.swagger.core.v3:swagger-jaxrs2-jakarta", version.ref = "swagger" } # TODO: is this necessary?
 testcontainers-kafka = { module = "org.testcontainers:testcontainers-kafka", version.ref = "testcontainers" }
 testcontainers-keycloak = { module = "com.github.dasniko:testcontainers-keycloak", version.ref = "testcontainers-keycloak" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }

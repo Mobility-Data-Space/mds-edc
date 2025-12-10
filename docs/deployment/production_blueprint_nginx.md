@@ -144,6 +144,7 @@ See [Backup and Recovery Guide](backup_and_recovery.md) for comprehensive proced
    # MDS EDC Configuration
    EDC_HOSTNAME=yourdomain.com
    EDC_PARTICIPANT_ID=your-participant-id
+   EDC_PARTICIPANT_CONTEXT_ID=<random-generated-uuid>
    CERTBOT_EMAIL=your@email.com
 
    # DAPS (Dynamic Attribute Provisioning Service) Configuration

@@ -64,21 +64,21 @@ public class Oauth2ServiceImpl implements IdentityService {
     }
 
     @Override
-    public Result<TokenRepresentation> obtainClientCredentials(TokenParameters parameters) {
-        return generateClientAssertion()
+    public Result<TokenRepresentation> obtainClientCredentials(String participantContextId, TokenParameters parameters) {
+        return generateClientAssertion(participantContextId)
                 .map(assertion -> createRequest(parameters, assertion))
                 .compose(client::requestToken);
     }
 
     @Override
-    public Result<ClaimToken> verifyJwtToken(TokenRepresentation tokenRepresentation, VerificationContext context) {
+    public Result<ClaimToken> verifyJwtToken(String participantContextId, TokenRepresentation tokenRepresentation, VerificationContext context) {
         return tokenValidationService.validate(tokenRepresentation, publicKeyResolver, tokenValidationRuleRegistry.getRules(OAUTH2_TOKEN_CONTEXT));
     }
 
     @NotNull
-    private Result<String> generateClientAssertion() {
+    private Result<String> generateClientAssertion(String participantContextId) {
         var decorators = jwtDecoratorRegistry.getDecoratorsFor(OAUTH2_TOKEN_CONTEXT).toArray(TokenDecorator[]::new);
-        return tokenGenerationService.generate(privateKeySupplier.get(), decorators)
+        return tokenGenerationService.generate(participantContextId, privateKeySupplier.get(), decorators)
                 .map(TokenRepresentation::getToken);
     }
 
