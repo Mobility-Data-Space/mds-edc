@@ -51,6 +51,7 @@ import java.util.UUID;
 import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.flywaydb.core.api.CoreMigrationType.BASELINE;
 import static org.flywaydb.core.api.CoreMigrationType.SQL;
@@ -108,6 +109,27 @@ public class ConnectorPostgresqlMigrationTest {
             assertThat(testMigrationHasBeenApplied(connection)).isEqualTo(true);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Nested
+    class Lease {
+        @Test
+        void shouldRun110whenLeaseEntryAlreadyExists(ObjectFactory objectFactory, ServiceExtensionContext context) {
+            var participantContextId = UUID.randomUUID().toString();
+            migrateTo(objectFactory, context, "1.0.0", participantContextId);
+
+            try (var connection = createDataSource().getConnection()) {
+                var callableStatement = connection.prepareStatement("insert into edc_lease(leased_by, lease_duration, lease_id) values (?, ?, ?);");
+                callableStatement.setString(1, UUID.randomUUID().toString());
+                callableStatement.setLong(2, 60000L);
+                callableStatement.setString(3, UUID.randomUUID().toString());
+                callableStatement.execute();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+            assertThatNoException().isThrownBy(() -> migrateTo(objectFactory, context, "latest", participantContextId));
         }
     }
 
