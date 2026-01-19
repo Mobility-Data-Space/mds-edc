@@ -137,7 +137,7 @@ class ManagementApiTransferTest {
             await().untilAsserted(() -> {
                 providerDataSource.verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/source")));
                 consumerDataDestination.verify(WireMock.anyRequestedFor(WireMock.urlEqualTo("/destination"))
-                    .withRequestBody(WireMock.equalTo("data")));
+                    .withRequestBody(WireMock.binaryEqualTo("data".getBytes())));
             });
 
             consumerDataDestination.stop();
@@ -233,7 +233,7 @@ class ManagementApiTransferTest {
             sourceBackend.verify(WireMock.getRequestedFor(WireMock.urlEqualTo("/source"))
                 .withHeader("Authorization", WireMock.equalTo("Bearer token")));
             destinationBackend.verify(WireMock.anyRequestedFor(WireMock.urlEqualTo("/destination"))
-                .withRequestBody(WireMock.equalTo("data")));
+                .withRequestBody(WireMock.binaryEqualTo("data".getBytes())));
 
             oauth2server.stop();
             sourceBackend.stop();
