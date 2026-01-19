@@ -117,5 +117,5 @@ testcontainers-vault = { module = "org.testcontainers:testcontainers-vault", ver
 yasson = { module = "org.eclipse:yasson", version.ref = "yasson" }
 
 [plugins]
-openapi-generator = { id = "org.openapi.generator", version = "7.17.0" }
+openapi-generator = { id = "org.openapi.generator", version = "7.18.0" }
 swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version.ref = "swagger" }
