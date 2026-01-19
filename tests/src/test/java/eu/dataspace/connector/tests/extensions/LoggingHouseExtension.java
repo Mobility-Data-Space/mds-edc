@@ -36,6 +36,10 @@ public class LoggingHouseExtension implements BeforeAllCallback, AfterAllCallbac
         server = new WireMockServer(WireMockConfiguration.options().port(port.get()));
         server.start();
 
+        server.addMockServiceRequestListener((request, response) -> {
+            events.add(request.getBodyAsString());
+        });
+
         var header = Json.createObjectBuilder()
                 .add("@type", "ids:MessageProcessedNotificationMessage")
                 .add("@id", UUID.randomUUID().toString())
@@ -56,10 +60,6 @@ public class LoggingHouseExtension implements BeforeAllCallback, AfterAllCallbac
                 .withStatus(200)
                 .withBody(buffer.readByteArray())
                 .withHeader("Content-Type", body.contentType().type() + "/" + body.contentType().subtype() + "; boundary=" + body.boundary())));
-        
-        server.addMockServiceRequestListener((request, response) -> {
-            events.add(request.getBodyAsString());
-        });
 
     }
 

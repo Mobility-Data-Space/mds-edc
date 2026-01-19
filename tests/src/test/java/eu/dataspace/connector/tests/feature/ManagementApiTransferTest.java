@@ -174,7 +174,7 @@ class ManagementApiTransferTest {
                 .filter(e -> e.getRequest().getUrl().equals("/edr"))
                 .toList(), it -> !it.isEmpty());
 
-            var edr = new ObjectMapper().readTree(edrRequests.get(0).getRequest().getBody()).get("payload").get("dataAddress").get("properties");
+            var edr = new ObjectMapper().readTree(edrRequests.get(0).getRequest().getBodyAsString()).get("payload").get("dataAddress").get("properties");
 
             var endpoint = edr.get(EDC_NAMESPACE + "endpoint").asText();
             var authCode = edr.get(EDC_NAMESPACE + "authorization").asText();

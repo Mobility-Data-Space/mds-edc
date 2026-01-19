@@ -106,7 +106,7 @@ class KafkaTransferTest {
             .filter(e -> e.getRequest().getUrl().equals("/edr"))
             .toList(), it -> !it.isEmpty());
         var objectMapper = new JacksonTypeManager().getMapper();
-        var edr = objectMapper.readTree(edrRequests.get(0).getRequest().getBody()).get("payload").get("dataAddress").get("properties");
+        var edr = objectMapper.readTree(edrRequests.get(0).getRequest().getBodyAsString()).get("payload").get("dataAddress").get("properties");
         var edrData = objectMapper.convertValue(edr, KafkaEdr.class);
 
         var props = deserialize(edrData.kafkaConsumerProperties());
