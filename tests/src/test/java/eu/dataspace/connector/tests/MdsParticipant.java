@@ -20,8 +20,9 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.HttpResponse;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
@@ -47,13 +48,12 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.mockserver.model.HttpRequest.request;
 
 public class MdsParticipant extends Participant implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback {
 
     private final LazySupplier<Integer> eventReceiverPort = new LazySupplier<>(Ports::getFreePort);
     private final String managementAuthKey = UUID.randomUUID().toString();
-    private ClientAndServer eventReceiver;
+    private WireMockServer eventReceiver;
     private EmbeddedRuntime runtime;
     private final BlockingQueue<JsonObject> events = new LinkedBlockingDeque<>();
     private boolean eventReceiverEnabled = true;
@@ -67,12 +67,18 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         if (runtime != null) {
             runtime.boot(false);
             if (eventReceiverEnabled) {
-                eventReceiver = ClientAndServer.startClientAndServer(eventReceiverPort.get());
-                eventReceiver.when(request()).respond(httpRequest -> {
-                    var bodyAsRawBytes = httpRequest.getBodyAsRawBytes();
+                eventReceiver = new WireMockServer(WireMockConfiguration.options().port(eventReceiverPort.get()));
+                eventReceiver.start();
+                eventReceiver.stubFor(WireMock.any(WireMock.anyUrl())
+                    .willReturn(WireMock.aResponse()
+                        .withTransformers("event-recorder")));
+                eventReceiver.addStubMapping(WireMock.any(WireMock.anyUrl())
+                    .willReturn(WireMock.aResponse().withStatus(200))
+                    .build());
+                eventReceiver.addMockServiceRequestListener((request, response) -> {
+                    var bodyAsRawBytes = request.getBody();
                     var event = Json.createReader(new ByteArrayInputStream(bodyAsRawBytes)).readObject();
                     events.add(event);
-                    return HttpResponse.response();
                 });
             }
         }

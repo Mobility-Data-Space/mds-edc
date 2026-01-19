@@ -13,7 +13,7 @@ kafka = "4.1.1"
 keycloak = "26.0.8"
 logging-house-client = "0.0.2-SNAPSHOT"
 mockito = "5.21.0"
-mockserver = "5.15.0"
+wiremock = "3.10.0"
 postgres = "42.7.9"
 rest-assured = "6.0.0"
 swagger = "2.2.26" # cannot be upgraded because of a bug: https://github.com/swagger-api/swagger-core/issues/4841
@@ -102,7 +102,7 @@ jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "jose4j" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "6.0.2" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
-mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "mockserver" }
+wiremock = { module = "org.wiremock:wiremock", version.ref = "wiremock" }
 parsson = { module = "org.eclipse.parsson:parsson", version = "1.1.7" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }

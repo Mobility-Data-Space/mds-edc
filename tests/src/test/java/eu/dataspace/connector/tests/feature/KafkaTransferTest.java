@@ -17,7 +17,9 @@ import org.eclipse.edc.spi.security.Vault;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockserver.integration.ClientAndServer;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -40,8 +42,6 @@ import static org.eclipse.edc.connector.controlplane.transfer.spi.types.Transfer
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 class KafkaTransferTest {
 
@@ -88,21 +88,25 @@ class KafkaTransferTest {
         var assetId = PROVIDER.createOffer(dataAddressProperties);
 
         // consumer initiates a kafka transfer with proper resource tracking
-        var consumerEdrReceiver = ClientAndServer.startClientAndServer(getFreePort());
-        consumerEdrReceiver.when(request("/edr")).respond(response());
+        var consumerEdrReceiver = new WireMockServer(WireMockConfiguration.options().port(getFreePort()));
+        consumerEdrReceiver.start();
+        consumerEdrReceiver.stubFor(WireMock.any(WireMock.urlEqualTo("/edr"))
+            .willReturn(WireMock.aResponse()));
 
         var consumerTransferProcessId = CONSUMER.requestAssetFrom(assetId, PROVIDER)
                 .withTransferType("Kafka-PULL")
                 .withCallbacks(Json.createArrayBuilder()
-                        .add(createCallback("http://localhost:%s/edr".formatted(consumerEdrReceiver.getPort()), true, Set.of("transfer.process.started")))
+                        .add(createCallback("http://localhost:%s/edr".formatted(consumerEdrReceiver.port()), true, Set.of("transfer.process.started")))
                         .build())
                 .execute();
 
         CONSUMER.awaitTransferToBeInState(consumerTransferProcessId, STARTED);
 
-        var edrRequests = await().until(() -> consumerEdrReceiver.retrieveRecordedRequests(request("/edr")), it -> it.length > 0);
+        var edrRequests = await().until(() -> consumerEdrReceiver.getAllServeEvents().stream()
+            .filter(e -> e.getRequest().getUrl().equals("/edr"))
+            .toList(), it -> !it.isEmpty());
         var objectMapper = new JacksonTypeManager().getMapper();
-        var edr = objectMapper.readTree(edrRequests[0].getBodyAsRawBytes()).get("payload").get("dataAddress").get("properties");
+        var edr = objectMapper.readTree(edrRequests.get(0).getRequest().getBody()).get("payload").get("dataAddress").get("properties");
         var edrData = objectMapper.convertValue(edr, KafkaEdr.class);
 
         var props = deserialize(edrData.kafkaConsumerProperties());
