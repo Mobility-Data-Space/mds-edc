@@ -100,7 +100,7 @@ keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version
 jakarta-ws-rs-api = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version = "4.0.0" }
 jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "jose4j" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "6.0.1" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "6.0.2" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockserver-netty = { module = "org.mock-server:mockserver-netty", version.ref = "mockserver" }
 parsson = { module = "org.eclipse.parsson:parsson", version = "1.1.7" }
