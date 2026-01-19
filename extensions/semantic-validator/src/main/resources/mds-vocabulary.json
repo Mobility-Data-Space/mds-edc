@@ -47,53 +47,122 @@
     "enums": {
       "mobilitydcatap-theme:data-content-category": [
         {
-          "id": "TRAFFIC_INFORMATION",
-          "mobilitydcatap-theme:data-content-sub-category": [ "ACCIDENTS", "HAZARD_WARNINGS" ]
+          "id": "ROAD_EVENTS_AND_CONDITIONS",
+          "mobilitydcatap-theme:data-content-sub-category": [ "ACCIDENTS_AND_INCIDENTS", "POOR_ROAD_CONDITIONS", "ROAD_WEATHER_CONDITIONS", "HAZARD_WARNINGS" ] 
         },
         {
-          "id": "ROADWORKS_AND_ROAD_CONDITIONS",
-          "mobilitydcatap-theme:data-content-sub-category": [ "ROADWORKS", "ROAD_CONDITIONS" ]
+          "id": "ROAD_WORK_INFORMATION",
+          "mobilitydcatap-theme:data-content-sub-category": [ "LONG-TERM_ROAD_WORKS", "SHORT-TERM_ROAD_WORKS" ]
         },
         {
-          "id": "TRAFFIC_FLOW_INFORMATION",
-          "mobilitydcatap-theme:data-content-sub-category": [ "REALTIME_TRAFFIC_FLOW_DATA", "FORECAST_TRAFFIC_FLOW_DATA" ]
-        },
-        {
-          "id": "PARKING_INFORMATION",
-          "mobilitydcatap-theme:data-content-sub-category": [ "AVAILABILITY_AND_FORECAST", "PRICES" ]
-        },
-        {
-          "id": "ELECTROMOBILITY",
-          "mobilitydcatap-theme:data-content-sub-category": [ "AVAILABILITY_OF_CHARGING_STATION", "LOCATION_OF_CHARGING_STATION", "PRICES_OF_CHARGING_STATION" ]
-        },
-        {
-          "id": "TRAFFIC_SIGNS_AND_SPEED_INFORMATION",
-          "mobilitydcatap-theme:data-content-sub-category": [ "DYNAMIC_SPEED_INFORMATION", "DYNAMIC_TRAFFIC_SIGNS", "STATIC_TRAFFIC_SIGNS" ]
-        },
-        {
-          "id": "WEATHER_INFORMATION",
-          "mobilitydcatap-theme:data-content-sub-category": ["CURRENT_WEATHER_CONDITIONS", "WEATHER_FORECAST", "SPECIAL_EVENTS_OR_DISRUPTIONS"]
-        },
-        {
-          "id": "PUBLIC_TRANSPORT_INFORMATION",
-          "mobilitydcatap-theme:data-content-sub-category": [ "TIMETABLES", "FARE", "LOCATION_INFORMATION" ]
-        },
-        {
-          "id": "SHARED_AND_ON_DEMAND_MOBILITY",
-          "mobilitydcatap-theme:data-content-sub-category": [ "VEHICLE_INFORMATION", "AVAILABILITY", "LOCATION", "RANGE" ]
-        },
-        {
-          "id": "INFRASTRUCTURE_AND_LOGISTICS",
+          "id": "REAL-TIME_TRAFFIC_DATA",
           "mobilitydcatap-theme:data-content-sub-category": [
-            "GENERAL_INFORMATION_ABOUT_PLANNING_OF_ROUTES", "PEDESTRIAN_NETWORKS", "CYCLING_NETWORKS",
-            "ROAD_NETWORK", "WATER_ROUTES", "CARGO_AND_LOGISTICS", "TOLL_INFORMATION"
-          ]
+                                                              "CURRENT_TRAVEL_TIME", "EXPECTED_DELAYS", "LOCATION_AND_LENGTH_OF_QUEUES", 
+                                                              "PREDICTED_TRAVEL_TIME", "SPEED", "TRAFFIC_DATA_AT_BORDER_CROSSINGS_TO_THIRD_COUNTRIES",
+                                                              "TRAFFIC_VOLUME", "WAITING_TIME_AT_BORDER_CROSSINGS_TO_NON-EU_MEMBER_STATES" 
+                                                            ]
         },
         {
-          "id": "VARIOUS",
+          "id": " PARKING_SERVICE_AND_REST_AREA_INFORMATION",
+          "mobilitydcatap-theme:data-content-sub-category": [ 
+                                                              "BIKE-PARKING_LOCATIONS", "CAR_PARKING_AVAILABILITY", "CAR_PARKING_LOCATIONS_AND_CONDITIONS", 
+                                                              "PARK_AND_RIDE_STOPS", "SERVICE_AND_REST_AREA_AVAILABILITY", "SERVICE_AND_REST_AREA_LOCATIONS_AND_CONDITIONS",
+                                                              "TRUCK_PARKING_AVAILABILITY", "TRUCK_PARKING_LOCATIONS_AND_CONDITIONS" 
+                                                            ]
+        },     
+        {
+          "id": "FILLING_AND_CHARGING_STATIONS",
+          "mobilitydcatap-theme:data-content-sub-category": [ 
+                                                              "AVAILABILITY_OF_CHARGING_POINTS_FOR_ELECTRIC_VEHICLES", "LOCATION_AND_CONDITIONS_OF_CHARGING_POINTS", 
+                                                              "AVAILABILITY_OF_FILLING_STATIONS", "LOCATION_AND_CONDITIONS_OF_FILLING_STATIONS" 
+                                                            ]
+        },     
+        {
+          "id": "DYNAMIC_TRAFFIC_SIGNS_AND_REGULATIONS",
+          "mobilitydcatap-theme:data-content-sub-category": [ 
+                                                              "BRIDGE_CLOSURES_AND_ACCESS_CONDITIONS", "DIRECTION_OF_TRAVEL_ON_REVERSIBLE_LANES", "DYNAMIC_OVERTAKING_BANS_ON_HEAVY_GOODS_VEHICLES",
+                                                              "DYNAMIC SPEED LIMITS", "LANE_CLOSURES_AND_ACCESS_CONDITIONS", "OTHER_ACCESS_RESTRICTIONS_AND_TRAFFIC_REGULATIONS", 
+                                                              "OTHER_TEMPORARY_TRAFFIC_MANAGEMENT_MEASURES_OR_PLANS", "ROAD_CLOSURES_AND_ACCESS_CONDITIONS", "TUNNEL_CLOSURES_AND_ACCESS_CONDITIONS" 
+                                                            ]
+        },
+        {
+          "id": " STATIC_TRAFFIC_SIGNS_AND_REGULATIONS",
+          "mobilitydcatap-theme:data-content-sub-category": [ 
+                                                              "BRIDGE_ACCESS_CONDITIONS", "OTHER_STATIC_TRAFFIC_SIGNS", "OTHER_TRAFFIC_REGULATIONS", "PERMANENT_ACCESS_RESTRICTIONS",                
+                                                              "SPEED_LIMITS", "TRAFFIC_CIRCULATION_PLANS", "TUNNEL ACCESS CONDITIONS" 
+                                                            ]
+        },   
+        {
+          "id": "PUBLIC_TRANSPORT_SCHEDULED_TRANSPORT",
+          "mobilitydcatap-theme:data-content-sub-category": [ 
+                                                              "BASIC_COMMERCIAL_CONDITIONS", "BASIC_COMMON_STANDARD_FARES", "COMMON_FARE_PRODUCTS", "CONNECTION_LINKS", "DISRUPTIONS_DELAYS_CANCELLATIONS", 
+                                                              "ENVIRONMENTAL_STANDARDS_FOR_VEHICLES", "HOURS_OF_OPERATION", "NETWORK_TOPOLOGY_AND_ROUTES_LINES", "OPERATIONAL_CALENDAR",
+                                                              "PASSENGER CLASSES", "PLANNED_INTERCHANGES_BETWEEN_SCHEDULED_SERVICES", "PURCHASE_INFORMATION", "REAL-TIME_ESTIMATED_DEPARTURE_AND_ARRIVAL_TIMES",
+                                                              "SPECIAL_FARE_PRODUCTS", "STOP_FACILITIES_ACCESSIBILITY_AND_PATHS_WITHIN_FACILITY", "STOP_FACILITIES_GEOMETRY_AND_MAP_LAYOUT",
+                                                              "STOP_FACILITIES_LOCATION_AND_FEATURES", "STOP_FACILITIES_STATUS_OF_FEATURES", "TIMETABLES_STATIC", "TRANSPORT_OPERATORS", "VEHICLE_DETAILS" 
+                                                            ]
+        },
+        {
+          "id": "PUBLIC_TRANSPORT_NON-SCHEDULED_TRANSPORT",
+          "mobilitydcatap-theme:data-content-sub-category": [ 
+                                                              "ACCESIBILITY_INFORMATION_FOR_VEHICLES", "ENVIRONMENTAL_STANDARDS_FOR_VEHICLES", "FARES", "LOCATIONS_AND_STATIONS", "PROVIDER_DATA", 
+                                                              "RESERVATION_AND_PURCHASE_OPTIONS", "SERVICE_AREAS_AND_SERVICE_TIMES" 
+                                                            ]
+        },
+        {
+          "id": "SHARING_AND_HIRING_SERVICES",
+          "mobilitydcatap-theme:data-content-sub-category": [ 
+                                                              "BIKE-HIRING_AVAILABILITY", "BIKE-HIRING_STATIONS", "BIKE-SHARING_AVAILABILITY", "BIKE-SHARING_LOCATIONS_AND_STATIONS",
+                                                              "CAR-HIRING_STATIONS", "CAR-HIRING_AVAILABILITY", "CAR-SHARING_AVAILABILITY", "CAR-SHARING_LOCATIONS_AND_STATIONS",
+                                                              "ENVIRONMENTAL_STANDARDS_FOR_VEHICLES", "E-SCOOTER-SHARING_AVAILABILITY", "E-SCOOTER-SHARING_LOCATIONS_AND_STATIONS",
+                                                              "PAYMENT METHODS" 
+                                                            ]
+        },
+        {
+          "id": "CYCLE_NETWORK_DATA",
+          "mobilitydcatap-theme:data-content-sub-category": [ "NETWORK_CLOSURES_DIVERSIONS", "NETWORK_DETAILED_ATTRIBUTES", "NETWORK_GEOMETRY_AND_LANE_CHARACTER" ]
+        },
+        {
+          "id": "GENERAL_INFORMATION_FOR_TRIP-PLANNING",
+          "mobilitydcatap-theme:data-content-sub-category": [ 
+                                                              "ADDRESS_IDENTIFIERS", "PARAMETERS_NEEDED_TO_CALCULATE_COSTS", "PARAMETERS_NEEDED_TO_CALCULATE_ENVIRONMENTAL_FACTORS", 
+                                                              "POINTS OF INTERESTS", "TOPOGRAPHIC PLACES"
+                                                            ]
+        },
+        {
+          "id": "STATIC_ROAD_NETWORK_DATA",
+          "mobilitydcatap-theme:data-content-sub-category": [ "GEOMETRY", "GRADIENTS", "JUNCTIONS", "NUMBER_OF_LANES", "ROAD_CLASSIFICATION", "ROAD_WIDTH" ]
+        },   
+        {
+          "id": "PEDESTRIAN_NETWORK_DATA",
+          "mobilitydcatap-theme:data-content-sub-category": [ "PEDESTRIAN_ACCESSIBILITY_FACILITIES", "PEDESTRIAN_NETWORK_GEOMETRY" ]
+        },   
+        {
+          "id": "TOLL_INFORMATION",
+          "mobilitydcatap-theme:data-content-sub-category": [ "APPLICABLE_ROAD_USER_CHARGES_AND_PAYMENT_METHODS", "IDENTIFICATION_OF_TOLLED_ROADS", "LOCATION_OF_TOLLING_STATIONS", "PAYMENT_METHODS_FOR_TOLLS" ]
+        },   
+        {
+          "id": "FREIGHT_AND_LOGISTICS",
+          "mobilitydcatap-theme:data-content-sub-category": [ "AVAILABILITY_OF_DELIVERY_AREAS", "FREIGHT_DELIVERY_REGULATIONS", " LOCATION_OF_DELIVERYAREAS" ]
+        },
+        {
+          "id": "AIR_AND_SPACE_TRAVEL",
+          "mobilitydcatap-theme:data-content-sub-category": []
+        }
+        {
+          "id": "WATERWAYS_AND_WATER_BODIES",
+          "mobilitydcatap-theme:data-content-sub-category": []
+        }
+        {
+          "id": "OTHER",
           "mobilitydcatap-theme:data-content-sub-category": []
         }
       ],
-      "mobilitydcatap:transportMode": [ "ROAD", "RAIL", "WATER" , "AIR" ]
+      "mobilitydcatap:transportMode": [ 
+                                        "AIR", "BICYCLE", "BIKE_HIRE", "BIKE_SHARING", "BUS", "CAR", "CAR_HIRE", "CAR_POOLING",  
+                                        "CAR_SHARING", "E_SCOOTER", "LONG_DISTANCE_COACH", "LONG_DISTANCE_RAIL", "MARITIME", 
+                                        "METRO_SUBWAY_TRAIN", "MOTORCYCLE", "OTHER", "PEDESTRIAN", "REGIONAL_AND_LOCAL_RAIL", 
+                                        "RIDE_POOLING", "SHUTTLE_BUS",  "SHUTTLE_FERRY", "TAXI", "TRAM_LIGHT_RAIL", "BUS", "TRUCK"
+                                      ]
     }
   }
