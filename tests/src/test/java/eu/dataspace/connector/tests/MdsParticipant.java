@@ -70,11 +70,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 eventReceiver = new WireMockServer(WireMockConfiguration.options().port(eventReceiverPort.get()));
                 eventReceiver.start();
                 eventReceiver.stubFor(WireMock.any(WireMock.anyUrl())
-                    .willReturn(WireMock.aResponse()
-                        .withTransformers("event-recorder")));
-                eventReceiver.addStubMapping(WireMock.any(WireMock.anyUrl())
-                    .willReturn(WireMock.aResponse().withStatus(200))
-                    .build());
+                    .willReturn(WireMock.aResponse().withStatus(200)));
                 eventReceiver.addMockServiceRequestListener((request, response) -> {
                     var bodyAsRawBytes = request.getBody();
                     var event = Json.createReader(new ByteArrayInputStream(bodyAsRawBytes)).readObject();
