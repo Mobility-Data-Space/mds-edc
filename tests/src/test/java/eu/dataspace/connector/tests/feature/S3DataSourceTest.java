@@ -92,7 +92,7 @@ public class S3DataSourceTest {
 
         await().untilAsserted(() -> {
             consumerDataDestination.verify(WireMock.anyRequestedFor(WireMock.urlEqualTo("/destination"))
-                .withRequestBody(WireMock.equalTo(new String(fileContent))));
+                .withRequestBody(WireMock.binaryEqualTo(fileContent)));
         });
 
         consumerDataDestination.stop();
