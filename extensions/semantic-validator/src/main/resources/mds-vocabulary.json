@@ -115,7 +115,7 @@
                                                               "BIKE-HIRING_AVAILABILITY", "BIKE-HIRING_STATIONS", "BIKE-SHARING_AVAILABILITY", "BIKE-SHARING_LOCATIONS_AND_STATIONS",
                                                               "CAR-HIRING_STATIONS", "CAR-HIRING_AVAILABILITY", "CAR-SHARING_AVAILABILITY", "CAR-SHARING_LOCATIONS_AND_STATIONS",
                                                               "ENVIRONMENTAL_STANDARDS_FOR_VEHICLES", "E-SCOOTER-SHARING_AVAILABILITY", "E-SCOOTER-SHARING_LOCATIONS_AND_STATIONS",
-                                                              "PAYMENT METHODS" 
+                                                              "PAYMENT_METHODS" 
                                                             ]
         },
         {
@@ -143,7 +143,7 @@
         },   
         {
           "id": "FREIGHT_AND_LOGISTICS",
-          "mobilitydcatap-theme:data-content-sub-category": [ "AVAILABILITY_OF_DELIVERY_AREAS", "FREIGHT_DELIVERY_REGULATIONS", " LOCATION_OF_DELIVERYAREAS" ]
+          "mobilitydcatap-theme:data-content-sub-category": [ "AVAILABILITY_OF_DELIVERY_AREAS", "FREIGHT_DELIVERY_REGULATIONS", " LOCATION_OF_DELIVERY_AREAS" ]
         },
         {
           "id": "AIR_AND_SPACE_TRAVEL",
