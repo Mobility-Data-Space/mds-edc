@@ -11,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.mockserver.integration.ClientAndServer;
-import org.mockserver.model.HttpResponse;
-import org.mockserver.model.MediaType;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
 import java.io.IOException;
 import java.util.Map;
@@ -24,17 +24,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static java.util.Map.entry;
-import static org.mockserver.model.HttpRequest.request;
 
 public class LoggingHouseExtension implements BeforeAllCallback, AfterAllCallback {
 
     private final LazySupplier<Integer> port = new LazySupplier<>(Ports::getFreePort);
     private final BlockingQueue<String> events = new LinkedBlockingDeque<>();
-    private ClientAndServer server;
+    private WireMockServer server;
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        server = ClientAndServer.startClientAndServer(port.get());
+        server = new WireMockServer(WireMockConfiguration.options().port(port.get()));
+        server.start();
+
+        server.addMockServiceRequestListener((request, response) -> {
+            events.add(request.getBodyAsString());
+        });
 
         var header = Json.createObjectBuilder()
                 .add("@type", "ids:MessageProcessedNotificationMessage")
@@ -49,13 +53,13 @@ public class LoggingHouseExtension implements BeforeAllCallback, AfterAllCallbac
                 .addFormDataPart("payload", payload.toString())
                 .build();
 
-        server.when(request()).respond(httpRequest -> {
-            events.add(httpRequest.getBodyAsString());
-
-            var buffer = serialize(body);
-            return HttpResponse.response().withBody(buffer.readByteArray())
-                    .withContentType(new MediaType(body.contentType().type(), body.contentType().subtype(), Map.of("boundary", body.boundary())));
-        });
+        var buffer = serialize(body);
+        
+        server.stubFor(WireMock.any(WireMock.anyUrl())
+            .willReturn(WireMock.aResponse()
+                .withStatus(200)
+                .withBody(buffer.readByteArray())
+                .withHeader("Content-Type", body.contentType().type() + "/" + body.contentType().subtype() + "; boundary=" + body.boundary())));
 
     }
 

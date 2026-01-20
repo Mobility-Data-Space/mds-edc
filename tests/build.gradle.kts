@@ -21,7 +21,7 @@ dependencies {
     testImplementation(libs.junit.platform.launcher)
     testImplementation(libs.kafka.clients)
     testImplementation(libs.keycloak.admin.client)
-    testImplementation(libs.mockserver.netty)
+    testImplementation(libs.wiremock)
     testImplementation(libs.rest.assured)
     testImplementation(libs.postgres)
     testImplementation(libs.testcontainers.localstack)
