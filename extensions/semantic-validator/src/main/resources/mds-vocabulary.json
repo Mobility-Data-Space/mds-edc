@@ -89,7 +89,7 @@
           "id": " STATIC_TRAFFIC_SIGNS_AND_REGULATIONS",
           "mobilitydcatap-theme:data-content-sub-category": [ 
                                                               "BRIDGE_ACCESS_CONDITIONS", "OTHER_STATIC_TRAFFIC_SIGNS", "OTHER_TRAFFIC_REGULATIONS", "PERMANENT_ACCESS_RESTRICTIONS",                
-                                                              "SPEED_LIMITS", "TRAFFIC_CIRCULATION_PLANS", "TUNNEL ACCESS CONDITIONS" 
+                                                              "SPEED_LIMITS", "TRAFFIC_CIRCULATION_PLANS", "TUNNEL_ACCESS_CONDITIONS" 
                                                             ]
         },   
         {
@@ -126,7 +126,7 @@
           "id": "GENERAL_INFORMATION_FOR_TRIP-PLANNING",
           "mobilitydcatap-theme:data-content-sub-category": [ 
                                                               "ADDRESS_IDENTIFIERS", "PARAMETERS_NEEDED_TO_CALCULATE_COSTS", "PARAMETERS_NEEDED_TO_CALCULATE_ENVIRONMENTAL_FACTORS", 
-                                                              "POINTS OF INTERESTS", "TOPOGRAPHIC PLACES"
+                                                              "POINTS_OF_INTERESTS", "TOPOGRAPHIC_PLACES"
                                                             ]
         },
         {
