@@ -55,8 +55,8 @@ public class SemanticValidatorTest {
                         "owl:versionInfo": "1.1",
                     
                         "mobilitydcatap:mobilityTheme": {
-                          "mobilitydcatap-theme:data-content-category": "INFRASTRUCTURE_AND_LOGISTICS",
-                          "mobilitydcatap-theme:data-content-sub-category": "GENERAL_INFORMATION_ABOUT_PLANNING_OF_ROUTES"
+                          "mobilitydcatap-theme:data-content-category": "FILLING_AND_CHARGING_STATIONS",
+                          "mobilitydcatap-theme:data-content-sub-category": "AVAILABILITY_OF_CHARGING_POINTS_FOR_ELECTRIC_VEHICLES"
                         },
                         "mobilitydcatap:mobilityDataStandard": {
                           "@id": "my-data-model-001",
@@ -68,7 +68,7 @@ public class SemanticValidatorTest {
                             "rdf:Literal": "These reference files are important"
                           }
                         },
-                        "mobilitydcatap:transportMode": "ROAD",
+                        "mobilitydcatap:transportMode": "BICYCLE",
                         "mobilitydcatap:georeferencingMethod": "my-geo-reference-method",
                     
                         "adms:sample": ["https://teamabc.departmentxyz.sample/a", "https://teamabc.departmentxyz.sample/b"],

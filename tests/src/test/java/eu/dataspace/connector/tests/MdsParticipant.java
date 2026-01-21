@@ -160,7 +160,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         var baseProperties = createObjectBuilder(properties)
                 .add("dct:title", "any")
                 .add("mobilitydcatap:mobilityTheme", createObjectBuilder()
-                        .add("mobilitydcatap-theme:data-content-category", "VARIOUS")
+                        .add("mobilitydcatap-theme:data-content-category", "OTHER")
                 );
         var requestBody = Json.createObjectBuilder()
                 .add("@context", Json.createObjectBuilder()
