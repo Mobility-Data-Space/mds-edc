@@ -83,6 +83,7 @@ public class ConnectorPostgresqlMigration implements ServiceExtension {
                 .table("flyway_schema_history")
                 .locations("classpath:migrations/connector")
                 .defaultSchema(schema)
+                .ignoreMigrationPatterns(configuration.ignoreMigrationPatterns())
                 .target(configuration.target())
                 .placeholders(Map.of("ParticipantContextId", configuration.participantContextId()))
                 .load();

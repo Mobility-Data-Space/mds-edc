@@ -140,6 +140,10 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         return config;
     }
 
+    public EmbeddedRuntime getRuntime() {
+        return runtime;
+    }
+
     public ServiceExtension seedVaultKeys() {
         var keyPair = Crypto.generateKeyPair();
         var map = Map.of(
