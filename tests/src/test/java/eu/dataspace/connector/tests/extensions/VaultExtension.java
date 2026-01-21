@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.vault.VaultContainer;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,5 +36,14 @@ public class VaultExtension implements BeforeAllCallback, AfterAllCallback {
         );
 
         return ConfigFactory.fromMap(settings);
+    }
+
+    public void storeSecret(String folder, String key, String value) {
+        try {
+            vaultContainer.execInContainer("vault", "secrets", "enable", "kv-v2");
+            vaultContainer.execInContainer("vault", "kv", "put", "secret/" + folder + "/" + key, "content=" + value);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -50,6 +50,13 @@ public record DatabaseMigrationConfiguration(
         )
         String target,
 
+        @Setting(
+                key = MIGRATION_IGNORE_PATTERNS,
+                description = "Flyway ignore migration patterns",
+                defaultValue = DEFAULT_IGNORE_PATTERNS
+        )
+        String ignoreMigrationPatterns,
+
         @Deprecated(since = "1.0.0")
         @Setting(
                 key = DEPRECATED_MIGRATION_SCHEMA_KEY,
@@ -86,10 +93,12 @@ public record DatabaseMigrationConfiguration(
     private static final String DEFAULT_MIGRATION_ENABLED_TEMPLATE = "true";
     private static final String DEFAULT_MIGRATION_SCHEMA = "public";
     private static final String DEFAULT_TARGET_VERSION = "latest";
+    private static final String DEFAULT_IGNORE_PATTERNS = "*:ignored";
     @Deprecated(since = "1.0.0")
     public static final String DEPRECATED_MIGRATION_SCHEMA_KEY = "org.eclipse.tractusx.edc.postgresql.migration.schema";
     public static final String MIGRATION_SCHEMA_KEY = "edc.postgresql.migration.schema";
     public static final String MIGRATION_TARGET_VERSION = "edc.postgresql.migration.target";
+    public static final String MIGRATION_IGNORE_PATTERNS = "edc.postgresql.migration.ignore.patterns";
 
     /**
      * Instance and return DataSource to be passed to Flyway for schema migrations

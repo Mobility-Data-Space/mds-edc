@@ -131,6 +131,7 @@ public class ConnectorPostgresqlMigrationTest {
 
             assertThatNoException().isThrownBy(() -> migrateTo(objectFactory, context, "latest", participantContextId));
         }
+
     }
 
     @Nested
