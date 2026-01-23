@@ -41,11 +41,13 @@ edc-http-lib = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
 edc-http-spi = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-jersey-core = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
+edc-jersey-providers-lib = { module = "org.eclipse.edc:jersey-providers-lib", version.ref = "edc" }
 edc-json-ld-spi = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-json-ld-lib = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-jwt-spi = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
 edc-jwt-signer-spi = { module = "org.eclipse.edc:jwt-signer-spi", version.ref = "edc" }
+edc-management-api-lib = { module = "org.eclipse.edc:management-api-lib", version.ref = "edc" }
 edc-management-api-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }
 edc-oauth2-spi = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
 edc-participant-spi = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
