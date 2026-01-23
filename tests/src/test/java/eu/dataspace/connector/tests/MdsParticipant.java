@@ -1,6 +1,9 @@
 package eu.dataspace.connector.tests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
@@ -20,9 +23,6 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
@@ -194,10 +194,13 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
     public ValidatableResponse retireAgreement(String agreementId) {
         var body = createObjectBuilder()
-                .add(TYPE, EDC_NAMESPACE + "AgreementsRetirementEntry")
-                .add(EDC_NAMESPACE + "agreementId", agreementId)
-                .add(EDC_NAMESPACE + "reason", "a good reason")
+                .add(CONTEXT, createObjectBuilder()
+                        .add("@vocab", EDC_NAMESPACE))
+                .add(TYPE, "AgreementsRetirementEntry")
+                .add("agreementId", agreementId)
+                .add("reason", "a good reason")
                 .build();
+
         return baseManagementRequest()
                 .contentType(JSON)
                 .body(body)

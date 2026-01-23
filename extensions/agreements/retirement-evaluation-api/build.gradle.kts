@@ -8,6 +8,8 @@ dependencies {
     implementation(project(":extensions:agreements:retirement-evaluation-spi"))
     implementation(libs.edc.json.ld.spi)
     implementation(libs.edc.web.spi)
+    implementation(libs.edc.management.api.lib)
+    implementation(libs.edc.jersey.providers.lib)
 
     implementation(libs.swagger.annotations)
     implementation(libs.swagger.jaxrs2.jakarta)
