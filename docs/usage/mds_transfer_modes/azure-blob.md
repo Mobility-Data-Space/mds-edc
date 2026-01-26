@@ -38,13 +38,19 @@ Note: When both `blobPrefix` and `blobName` are specified, `blobPrefix` takes pr
 - Default block size: 4MB (configurable via `edc.azure.block.size.mb`)
 - Maximum file size with default settings: 200GB (due to Azure SDK's 50,000-block limit)
 
-**Authentication:**
+### Provider Vault Configuration
 
 - Provider connector requires access keys for **both** provider and consumer storage accounts
 - Source account: Provider uses its own vault-stored access key (referenced by `keyName`)
 - Destination account: Provider receives SAS token from consumer connector
 - If vault entry is unavailable, falls back to environment or system variables
 - Access key must match the storage account name for proper resolution
+
+```json
+{
+  "content": "your-azure-storage-access-key"
+}
+```
 
 ### Provider Configuration Examples
 
@@ -155,6 +161,15 @@ The transfer is completed asynchronously, and the consumer is notified upon comp
 - Default: 1 hour
 - Configuration property: `edc.azure.token.expiry.time`
 - Recommendation: Increase for long-running transfers
+
+### Consumer Vault Configuration
+
+Store the token in the following format: 
+```json
+{
+  "content": '{\n "edctype": "dataspaceconnector:azuretoken",\n "sas": "?",\n "expiration": -1\n}'
+}
+```
 
 ### Consumer Configuration Examples
 
