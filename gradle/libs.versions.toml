@@ -1,5 +1,5 @@
 [versions]
-assertj = "3.27.6"
+assertj = "3.27.7"
 awaitility = "4.3.0"
 aws = "2.41.14"
 azure-storage-blob = "12.32.0"
