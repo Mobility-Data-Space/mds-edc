@@ -26,13 +26,14 @@ class VocabularyProviderTest {
                 .contains(property("https://w3id.org/mobilitydcat-ap/mobilityDataStandard", property("@id", null)))
                 .contains(property("https://w3id.org/mobilitydcat-ap/mobilityTheme", property("https://w3id.org/mobilitydcat-ap/mobility-theme/data-content-category")))
                 .contains(property("https://w3id.org/edc/v0.0.1/ns/additionalProperties", property("https://w3id.org/edc/v0.0.1/ns/onrequest")));
-        assertThat(vocabulary.enums()).contains(entry("https://w3id.org/mobilitydcat-ap/transportMode",
-                Set.of(enumProperty("ROAD"), enumProperty("RAIL"), enumProperty("WATER"), enumProperty("AIR"))));
+        assertThat(vocabulary.enums()).hasEntrySatisfying("https://w3id.org/mobilitydcat-ap/transportMode", enums -> {
+                assertThat(enums).hasSizeGreaterThan(0).containsAll(Set.of(enumProperty("BICYCLE"), enumProperty("BIKE_SHARING"), enumProperty("CAR_HIRE"), enumProperty("AIR")));
+            });
         assertThat(vocabulary.enums()).hasEntrySatisfying("https://w3id.org/mobilitydcat-ap/mobility-theme/data-content-category", enums -> {
                 assertThat(enums).hasSizeGreaterThan(0).anySatisfy(enumItem -> {
-                    assertThat(enumItem.id()).isEqualTo("TRAFFIC_FLOW_INFORMATION");
+                    assertThat(enumItem.id()).isEqualTo("ROAD_WORK_INFORMATION");
                     assertThat(enumItem.sub()).hasEntrySatisfying("https://w3id.org/mobilitydcat-ap/mobility-theme/data-content-sub-category", subs -> {
-                        assertThat(subs).hasSize(2).extracting(Vocabulary.Enum::id).containsExactly("FORECAST_TRAFFIC_FLOW_DATA", "REALTIME_TRAFFIC_FLOW_DATA");
+                        assertThat(subs).hasSize(2).extracting(Vocabulary.Enum::id).containsExactlyInAnyOrder("LONG_TERM_ROAD_WORKS", "SHORT_TERM_ROAD_WORKS");
                     });
                 });
             });
