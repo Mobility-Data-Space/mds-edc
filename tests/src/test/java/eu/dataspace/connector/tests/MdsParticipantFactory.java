@@ -109,17 +109,6 @@ public interface MdsParticipantFactory {
         return new Wallet(runtime, participants);
     }
 
-    static Issuer issuer(PostgresqlExtension postgres, VaultExtension vault) {
-        var name = "issuer";
-        var runtime = new EmbeddedRuntime(name, ":launchers:issuer")
-                .configurationProvider(() -> vault.getConfig(name))
-                .configurationProvider(() -> postgres.getConfig(name))
-                .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
-                        "eu.dataspace.issuer.postgresql.migration.schema", postgres.getSchema()
-                )));
-        return new Issuer(runtime);
-    }
-
     private static EmbeddedRuntime baseRuntime(String name, String module, MdsParticipant participant) {
         return new EmbeddedRuntime(name, module)
                 .configurationProvider(participant::getConfiguration)

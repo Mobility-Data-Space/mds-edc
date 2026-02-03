@@ -13,10 +13,10 @@
 
 package eu.dataspace.connector.tests.feature;
 
-import eu.dataspace.connector.tests.Issuer;
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;
 import eu.dataspace.connector.tests.Wallet;
+import eu.dataspace.connector.tests.extensions.IssuerExtension;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
 import org.junit.jupiter.api.Disabled;
@@ -36,7 +36,7 @@ public class CredentialRevokationTest {
 
     @RegisterExtension
     @Order(1)
-    private static final Issuer ISSUER = MdsParticipantFactory.issuer(POSTGRES_EXTENSION, VAULT_EXTENSION);
+    private static final IssuerExtension ISSUER = new IssuerExtension(POSTGRES_EXTENSION, VAULT_EXTENSION);
 
     @RegisterExtension
     @Order(2)
@@ -49,7 +49,6 @@ public class CredentialRevokationTest {
     @RegisterExtension
     @Order(3)
     private static final MdsParticipant CONSUMER = MdsParticipantFactory.inMemoryDcp("consumer", IDENTITY_HUB, ISSUER.did());
-
 
     @Disabled // TODO: revocation cannot be requested because of: https://github.com/eclipse-edc/IdentityHub/issues/898
     @Test

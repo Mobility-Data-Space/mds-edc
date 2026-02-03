@@ -1,14 +1,26 @@
-package eu.dataspace.connector.tests;
+/*
+ * Copyright (c) 2026 Mobility Data Space
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Apache License, Version 2.0 which is available at
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Contributors:
+ *      Think-it GmbH - initial API and implementation
+ */
+
+package eu.dataspace.connector.tests.extensions;
 
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
-import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.utils.LazySupplier;
-import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.net.URI;
 import java.time.Duration;
@@ -24,27 +36,30 @@ import static java.util.Collections.emptyMap;
 import static java.util.Map.entry;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
-public class Issuer implements BeforeAllCallback, AfterAllCallback {
+public class IssuerExtension implements BeforeAllCallback, AfterAllCallback {
 
     private static final String SUPER_USER = "super-user";
     private static final String SUPER_USER_API_KEY = Base64.getEncoder().encodeToString(SUPER_USER.getBytes()) + "." + UUID.randomUUID();
 
-    private final EmbeddedRuntime runtime;
+    private final GenericContainer<?> container = new GenericContainer<>("ghcr.io/mobility-data-space/mds-identity-issuer/issuer:latest");
+
     private final LazySupplier<URI> didEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/"));
     private final LazySupplier<URI> issuanceEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/issuance"));
     private final LazySupplier<URI> issueradminEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/issueradmin"));
     private final LazySupplier<URI> identityEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/identity"));
     private final LazySupplier<String> did = new LazySupplier<>(() -> "did:web:localhost%%3A%d:issuer".formatted(didEndpoint.get().getPort()));
-
+    private final PostgresqlExtension postgresExtension;
+    private final VaultExtension vaultExtension;
     private String issuerParticipantApiKey;
 
-    public Issuer(EmbeddedRuntime runtime) {
-        this.runtime = runtime;
+    public IssuerExtension(PostgresqlExtension postgresExtension, VaultExtension vaultExtension) {
+        this.postgresExtension = postgresExtension;
+        this.vaultExtension = vaultExtension;
     }
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
-        runtime.configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
+        container.withEnv(Map.ofEntries(
                 entry("web.http.port", String.valueOf(getFreePort())),
                 entry("web.http.path", "/api"),
                 entry("web.http.version.port", String.valueOf(getFreePort())),
@@ -60,17 +75,25 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
                 entry("edc.identityhub.superuser.id", SUPER_USER),
                 entry("edc.identityhub.superuser.api.key", SUPER_USER_API_KEY),
                 entry("edc.iam.did.web.use.https", "false"),
-                entry("edc.issuer.statuslist.signing.key.alias", "%s-privatekey-alias".formatted(did.get()))
-        )));
-
-        runtime.boot();
+                entry("edc.issuer.statuslist.signing.key.alias", "%s-privatekey-alias".formatted(did.get())),
+                entry("eu.dataspace.issuer.postgresql.migration.schema", "test_schema") // TODO: make it pass from postgresql
+        ));
+        container.withEnv(postgresExtension.getConfig("issuer").getEntries());
+        container.withEnv(vaultExtension.getConfig("issuer").getEntries());
+        container.withNetworkMode("host");
+        container.withLogConsumer(o -> System.out.println("[issuer] " + o.getUtf8StringWithoutLineEnding()));
+        container.waitingFor(Wait.forLogMessage(".*Runtime.*ready.*", 1));
+        container.withCreateContainerCmdModifier(cmd -> cmd
+                .withEntrypoint("/bin/sh")
+                .withCmd("/app/bin/issuer", "--log-level=DEBUG"));
+        container.start();
 
         registerIssuerParticipantContext();
     }
 
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
-        runtime.shutdown();
+        container.stop();
     }
 
     public LazySupplier<String> did() {
@@ -153,7 +176,7 @@ public class Issuer implements BeforeAllCallback, AfterAllCallback {
         var participantKey = generateEcKey("%s#key1".formatted(did.get()));
 
         var privateKeyAlias = "%s-privatekey-alias".formatted(did.get());
-        runtime.getService(Vault.class).storeSecret(privateKeyAlias, participantKey.toJSONString());
+        vaultExtension.storeSecret("issuer", privateKeyAlias, participantKey.toJSONString());
 
         issuerParticipantApiKey = given()
                 .baseUri(identityEndpoint.get().toString())
