@@ -8,6 +8,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.vault.VaultContainer;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 
@@ -40,8 +42,8 @@ public class VaultExtension implements BeforeAllCallback, AfterAllCallback {
 
     public void storeSecret(String folder, String key, String value) {
         try {
-            vaultContainer.execInContainer("vault", "secrets", "enable", "kv-v2");
-            vaultContainer.execInContainer("vault", "kv", "put", "secret/" + folder + "/" + key, "content=" + value);
+            var secretKey = "secret/" + folder + "/" + URLEncoder.encode(key, StandardCharsets.UTF_8);
+            vaultContainer.execInContainer("vault", "kv", "put", secretKey, "content=" + value);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

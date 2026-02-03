@@ -120,11 +120,6 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
     }
 
     private WalletParticipantContext registerParticipantContext(LazySupplier<String> did) {
-        var participantKey = generateEcKey("%s#key1".formatted(did.get()));
-
-        var privateKeyAlias = "%s-privatekey-alias".formatted(did.get());
-        runtime.getService(Vault.class).storeSecret(privateKeyAlias, participantKey.toJSONString());
-
         return given()
                 .baseUri(identityEndpoint.get().toString())
                 .header("x-api-key", SUPER_USER_API_KEY)
@@ -142,9 +137,11 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
                                 )
                         ),
                         "key", Map.of(
-                                "keyId", participantKey.getKeyID(),
-                                "privateKeyAlias", privateKeyAlias,
-                                "publicKeyJwk", participantKey.toPublicJWK().toJSONObject()
+                                "keyId", "%s#key1".formatted(did.get()),
+                                "privateKeyAlias", "%s-privatekey-alias".formatted(did.get()),
+                                "keyGeneratorParams", Map.of(
+                                        "algorithm", "EC"
+                                )
                         )
                 ))
                 .post("/v1alpha/participants")

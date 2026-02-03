@@ -47,14 +47,7 @@ edc-identityhub-bom = { module = "org.eclipse.edc:identityhub-bom", version.ref 
 edc-identityhub-feature-sql-bom = { module = "org.eclipse.edc:identityhub-feature-sql-bom", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-jersey-core = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
-<<<<<<< HEAD
 edc-jersey-providers-lib = { module = "org.eclipse.edc:jersey-providers-lib", version.ref = "edc" }
-=======
-edc-issuerservice-bom = { module = "org.eclipse.edc:issuerservice-bom", version.ref = "edc" }
-edc-issuerservice-feature-sql-bom = { module = "org.eclipse.edc:issuerservice-feature-sql-bom", version.ref = "edc" }
-edc-issuerservice-database-attestations = { module = "org.eclipse.edc:issuerservice-database-attestations", version.ref = "edc" }
-edc-issuerservice-issuance-spi = { module = "org.eclipse.edc:issuerservice-issuance-spi", version.ref = "edc" }
->>>>>>> b9cc6e4 (dcp: first step)
 edc-json-ld-spi = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-json-ld-lib = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
