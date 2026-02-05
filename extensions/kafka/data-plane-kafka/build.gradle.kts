@@ -11,6 +11,7 @@ dependencies {
     implementation(libs.edc.jwt.spi)
     implementation(libs.edc.util.lib)
     implementation(libs.edc.validator.spi)
+    implementation(libs.jose4j)
     implementation(libs.kafka.clients)
 
     testImplementation(libs.assertj)
