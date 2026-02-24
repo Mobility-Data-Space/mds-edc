@@ -167,7 +167,7 @@ The transfer is completed asynchronously, and the consumer is notified upon comp
 Store the token in the following format: 
 ```json
 {
-  "content": '{ "edctype": "dataspaceconnector:azuretoken", "sas": "?", "expiration": -1}'
+  "content": "{ \n \"edctype\": \"dataspaceconnector:azuretoken\", \n \"sas\": \"?\", \n \"expiration\": -1\n}" 
 }
 ```
 
