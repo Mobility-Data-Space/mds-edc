@@ -22,7 +22,7 @@ The MDS EDC Connector builds upon the Eclipse Dataspace Components (EDC) framewo
 ## See Also
 
 - [Transfer Modes Documentation](../mds_transfer_modes/README.md)
-- [Management API Documentation](../management_api/overview.md)
+- [Management API Documentation](../management_api/README.md)
 - [Deployment Guide](../../deployment/production_docker_image.md)
 - [FAQ](../../FAQ.md)
 
