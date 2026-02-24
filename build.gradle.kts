@@ -82,65 +82,61 @@ subprojects {
         }
     }
 
-    afterEvaluate {
-
-        plugins.withType<SwaggerPlugin> {
-            tasks.withType<ResolveTask> {
-                outputFileName = project.name
-                outputDir = project.layout.buildDirectory.dir("openapi").get().asFile
-                outputFormat = ResolveTask.Format.YAML
-                openApiFile = rootDir.resolve("resources").resolve("openapi-config.yml")
-                classpath = sourceSets.main.get().runtimeClasspath
-                buildClasspath = classpath
-                resourcePackages = setOf<String>("eu.dataspace.connector")
-            }
+    plugins.withType<SwaggerPlugin> {
+        tasks.withType<ResolveTask>().configureEach {
+            outputFileName = project.name
+            outputDir = project.layout.buildDirectory.dir("openapi").get().asFile
+            outputFormat = ResolveTask.Format.YAML
+            openApiFile = rootDir.resolve("resources").resolve("openapi-config.yml")
+            classpath = sourceSets.main.get().runtimeClasspath
+            buildClasspath = classpath
+            resourcePackages = setOf<String>("eu.dataspace.connector")
         }
+    }
 
-        plugins.withType<OpenApiGeneratorPlugin> {
+    plugins.withType<OpenApiGeneratorPlugin> {
 
-            tasks.withType<GenerateTask> {
-                dependsOn("gatherOpenApi")
-                generatorName.set("openapi-yaml")
-                inputSpecRootDirectory.set("${layout.buildDirectory.get().asFile}/openapi")
-                outputDir.set("${layout.buildDirectory.get().asFile}/generated")
-                mergedFileName = project.name
-            }
+        tasks.withType<GenerateTask> {
+            dependsOn("gatherOpenApi")
+            generatorName.set("openapi-yaml")
+            inputSpecRootDirectory.set("${layout.buildDirectory.get().asFile}/openapi")
+            outputDir.set("${layout.buildDirectory.get().asFile}/generated")
+            mergedFileName = project.name
         }
+    }
 
-        plugins.withType<DistributionPlugin> {
+    plugins.withType<DistributionPlugin> {
 
-            tasks.register("gatherOpenApi") {
-                val outputDir = project.layout.buildDirectory.dir("openapi")
-                outputs.dir(outputDir)
+        tasks.register("gatherOpenApi") {
+            val outputDir = project.layout.buildDirectory.dir("openapi")
+            outputs.dir(outputDir)
 
-                doLast {
-                    val destinationDirectory = outputDir.get().asFile
+            doLast {
+                val destinationDirectory = outputDir.get().asFile
 
-                    // download from maven repository
-                    configurations.asMap.values
-                        .asSequence()
-                        .filter { it.isCanBeResolved }
-                        .map { it.resolvedConfiguration.firstLevelModuleDependencies }.flatten()
-                        .map { childrenDependencies(it) }.flatten()
-                        .distinct()
-                        .forEach { dep ->
-                            downloadYamlArtifact(dep, "management-api", destinationDirectory);
-                            downloadYamlArtifact(dep, "observability-api", destinationDirectory);
-                            downloadYamlArtifact(dep, "public-api", destinationDirectory);
-                        }
+                // download from maven repository
+                configurations.asMap.values
+                    .asSequence()
+                    .filter { it.isCanBeResolved }
+                    .map { it.resolvedConfiguration.firstLevelModuleDependencies }.flatten()
+                    .map { childrenDependencies(it) }.flatten()
+                    .distinct()
+                    .forEach { dep ->
+                        downloadYamlArtifact(dep, "management-api", destinationDirectory);
+                        downloadYamlArtifact(dep, "observability-api", destinationDirectory);
+                        downloadYamlArtifact(dep, "public-api", destinationDirectory);
+                    }
 
-                    // get internal libraries
-                    getAllProjectInternalDependencies(project)
-                        .map { it.path.drop(1).replace(":", "/") }
-                        .map { File(it) }
-                        .mapNotNull { it.resolve("build").resolve("openapi").listFiles() }
-                        .flatMap { it.asSequence() }
-                        .forEach {
-                            it.copyTo(destinationDirectory.resolve(it.name), overwrite = true)
-                        }
-                }
+                // get internal libraries
+                getAllProjectInternalDependencies(project)
+                    .map { it.path.drop(1).replace(":", "/") }
+                    .map { File(it) }
+                    .mapNotNull { it.resolve("build").resolve("openapi").listFiles() }
+                    .flatMap { it.asSequence() }
+                    .forEach {
+                        it.copyTo(destinationDirectory.resolve(it.name), overwrite = true)
+                    }
             }
-
         }
 
     }
@@ -169,7 +165,7 @@ fun childrenDependencies(dependency: ResolvedDependency): List<ResolvedDependenc
 
 fun downloadYamlArtifact(dep: ResolvedDependency, classifier: String, destinationDirectory: File) {
     try {
-        val managementApi = dependencies.create(dep.moduleGroup, dep.moduleName, dep.moduleVersion, classifier = classifier, ext = "yaml")
+        val managementApi = dependencies.create("${dep.moduleGroup}:${dep.moduleName}:${dep.moduleVersion}:${classifier}@yaml")
         configurations
             .detachedConfiguration(managementApi)
             .resolve()
