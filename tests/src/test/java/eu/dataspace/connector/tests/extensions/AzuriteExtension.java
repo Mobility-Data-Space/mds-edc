@@ -72,6 +72,7 @@ public class AzuriteExtension implements BeforeAllCallback, AfterAllCallback {
                     .collect(joining(";")));
             addExposedPort(port);
             withLogConsumer(o -> System.out.println(o.getUtf8StringWithoutLineEnding()));
+            withCommand("azurite", "-l", "/data", "--blobHost", "0.0.0.0", "--queueHost", "0.0.0.0", "--tableHost", "0.0.0.0", "--skipApiVersionCheck");
         }
 
     }
