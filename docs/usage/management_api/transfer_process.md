@@ -15,8 +15,8 @@ Content-Type: application/json
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "@type": "TransferRequest",
-  "protocol": "dataspace-protocol-http",
-  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp",
+  "protocol": "dataspace-protocol-http:2025-1",
+  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
   "contractId": "contract-id",
   "transferType": "HttpData-PUSH",
   "dataDestination": {
@@ -38,8 +38,8 @@ Content-Type: application/json
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "@type": "TransferRequest",
-  "protocol": "dataspace-protocol-http",
-  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp",
+  "protocol": "dataspace-protocol-http:2025-1",
+  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
   "contractId": "contract-id",
   "transferType": "HttpData-PULL"
 }
@@ -56,8 +56,8 @@ Content-Type: application/json
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "@type": "TransferRequest",
-  "protocol": "dataspace-protocol-http",
-  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp",
+  "protocol": "dataspace-protocol-http:2025-1",
+  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
   "contractId": "contract-id",
   "transferType": "AmazonS3-PUSH",
   "dataDestination": {
@@ -81,8 +81,8 @@ Content-Type: application/json
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "@type": "TransferRequest",
-  "protocol": "dataspace-protocol-http",
-  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp",
+  "protocol": "dataspace-protocol-http:2025-1",
+  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
   "contractId": "contract-id",
   "transferType": "AzureStorage-PUSH",
   "dataDestination": {
@@ -106,8 +106,8 @@ Content-Type: application/json
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "@type": "TransferRequest",
-  "protocol": "dataspace-protocol-http",
-  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp",
+  "protocol": "dataspace-protocol-http:2025-1",
+  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
   "contractId": "contract-id",
   "transferType": "Kafka-PULL"
 }

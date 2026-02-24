@@ -16,8 +16,8 @@ Content-Type: application/json
     "edc": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "@type": "https://w3id.org/edc/v0.0.1/ns/ContractRequest",
-  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp",
-  "protocol": "dataspace-protocol-http",
+  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
+  "protocol": "dataspace-protocol-http:2025-1",
   "policy": {
     "@context": "http://www.w3.org/ns/odrl.jsonld",
     "@type": "odrl:Offer",

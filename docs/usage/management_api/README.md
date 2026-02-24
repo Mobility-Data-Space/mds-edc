@@ -20,7 +20,6 @@ The `MANAGEMENT_URL` specifies the URL of the management API and the prefixes `v
 | Contract Agreement | `<MANAGEMENT_URL>/v3/contractagreements` | [Contract Agreement](./contract_agreement.md) |
 | Transfer Process | `<MANAGEMENT_URL>/v3/transferprocesses` | [Transfer Process](./transfer_process.md) |
 | EDR Cache | `<MANAGEMENT_URL>/v3/edrs` | [EDR Cache](./edr_cache.md) |
-| Dataplane Selector | `<MANAGEMENT_URL>/v3/dataplanes` | [Dataplane Selector](./dataplane_selector.md) |
 | Contract Retirement | `<MANAGEMENT_URL>/v3/contractagreements/retirements` | [Contract Retirement](./contract_retirement.md) |
 
 ## Brief JSON-LD Introduction

@@ -13,9 +13,9 @@ Content-Type: application/json
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "@type": "CatalogRequest",
-  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp",
+  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
   "counterPartyId": "PROVIDER_MDS_ID",
-  "protocol": "dataspace-protocol-http",
+  "protocol": "dataspace-protocol-http:2025-1",
   "additionalScopes": []
 }
 ```
@@ -33,8 +33,8 @@ Content-Type: application/json
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
   },
   "@type": "CatalogRequest",
-  "protocol": "dataspace-protocol-http",
-  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp",
+  "protocol": "dataspace-protocol-http:2025-1",
+  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
   "counterPartyId": "PROVIDER_MDS_ID",
   "querySpec": {
     "limit": 100,

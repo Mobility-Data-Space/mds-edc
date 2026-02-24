@@ -20,7 +20,7 @@ Resources for using the MDS Connector:
 
 #### Management API
 
-- [Management API Overview](docs/usage/management_api/overview.md) - Complete guide to all management endpoints
+- [Management API Overview](docs/usage/management_api/README.md) - Complete guide to all management endpoints
 - [Assets](docs/usage/management_api/assets.md) - Creating and managing assets
 - [Policy Definitions](docs/usage/management_api/policy_definition.md) - Defining access and usage policies
 - [Contract Definitions](docs/usage/management_api/contract_definition.md) - Linking assets with policies
@@ -36,7 +36,7 @@ Resources for using the MDS Connector:
 - [OAuth2 Protected Data Sources](docs/usage/mds_features/oauth2-protected-data-source.md) - Integrating OAuth2-protected APIs
 - [MDS Vocabulary & Semantics](docs/usage/mds_features/mds_vocabulary_semantics.md) - MDS metadata standards
 - [Manual Approval](docs/usage/mds_features/contract_negotiation_manual_approval_rejection.md) - Manual contract negotiation approval workflow
-- [On Request Data Offers](docs/usage/mds_features/on_request_data_offers.md) - Creating data offers available on request
+- [On Request Data Offers](docs/usage/mds_features/on-request-data-offers.md) - Creating data offers available on request
 
 #### Data Transfer Modes
 
