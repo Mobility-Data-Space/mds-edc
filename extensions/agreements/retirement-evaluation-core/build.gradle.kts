@@ -18,6 +18,7 @@ dependencies {
     testImplementation(libs.assertj)
     testImplementation(libs.mockito.core)
     testImplementation(libs.edc.junit)
+    testImplementation(libs.edc.control.plane.core)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.launcher)
 

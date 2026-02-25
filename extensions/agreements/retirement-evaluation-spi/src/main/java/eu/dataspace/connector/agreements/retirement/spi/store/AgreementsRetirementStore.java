@@ -1,5 +1,6 @@
 package eu.dataspace.connector.agreements.retirement.spi.store;
 
+import eu.dataspace.connector.agreements.retirement.spi.types.EnhancedContractAgreement;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
@@ -40,4 +41,11 @@ public interface AgreementsRetirementStore  {
      */
     Stream<AgreementsRetirementEntry> findRetiredAgreements(QuerySpec querySpec);
 
+    /**
+     * Returns the agreements with retirement info
+     *
+     * @param querySpec the query spec
+     * @return the list of agreements with retirement info
+     */
+    Stream<EnhancedContractAgreement> findEnhancedAgreements(QuerySpec querySpec);
 }
