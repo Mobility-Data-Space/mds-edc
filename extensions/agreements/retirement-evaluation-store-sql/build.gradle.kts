@@ -6,8 +6,11 @@ plugins {
 dependencies {
     implementation(project(":extensions:agreements:retirement-evaluation-spi"))
 
+    implementation(libs.edc.contract.negotiation.store.sql)
     implementation(libs.edc.core.spi)
     implementation(libs.edc.transaction.spi)
+    implementation(libs.edc.sql.lease.spi)
+    implementation(libs.edc.sql.lease)
     implementation(libs.edc.sql.lib)
 
     testImplementation(libs.junit.jupiter)
@@ -15,4 +18,7 @@ dependencies {
     testImplementation(testFixtures(libs.edc.sql.test.fixtures))
     testImplementation(testFixtures(libs.edc.junit))
     testImplementation(testFixtures(project(":extensions:agreements:retirement-evaluation-core")))
+    testImplementation(libs.flyway.core)
+    testImplementation(libs.postgres)
+    testRuntimeOnly(libs.flyway.database.postgres)
 }
