@@ -27,6 +27,26 @@ The provider configures the asset's `dataAddress` with:
 - OIDC provider for client registration and token validation
 - Kafka ACLs enabled for fine-grained access control
 
+### OAuthBearer Allowed URLs
+
+Kafka 4.0+ blocks all external OAuthBearer token/JWKS endpoint URLs by default to prevent SSRF attacks.
+
+The **provider connector** must allowlist these URLs because it instantiates a `KafkaAdminClient` with OAuthBearer to manage ACLs. Set the following on the provider connector JVM:
+
+```
+JAVA_TOOL_OPTIONS="-Dorg.apache.kafka.sasl.oauthbearer.allowed.urls=<token-endpoint-url>"
+```
+
+If the broker also uses a JWKS endpoint, include both comma-separated:
+
+```
+JAVA_TOOL_OPTIONS="-Dorg.apache.kafka.sasl.oauthbearer.allowed.urls=<token-endpoint-url>,<jwks-endpoint-url>"
+```
+
+The URLs must exactly match the values configured in `sasl.oauthbearer.token.endpoint.url` and `sasl.oauthbearer.jwks.endpoint.url`. Always use HTTPS in production.
+
+The **consumer connector** does not need this configuration — it only receives the EDR.
+
 ### Provider Configuration Example
 
 ```json
