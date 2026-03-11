@@ -10,19 +10,12 @@ paths:
     $ref: "./edr-cache-api.yaml#/paths/~1v4beta~1edrs~1{transferProcessId}~1dataaddress"
   /v3/assets/request:
     $ref: ./asset-api.yaml#/paths/~1v3~1assets~1request
-  /v4beta/transferprocesses/{id}/state:
-    $ref: "./transfer-process-api.yaml#/paths/~1v4beta~1transferprocesses~1{id}~1state"
   /v3/assets/{id}:
     $ref: "./asset-api.yaml#/paths/~1v3~1assets~1{id}"
-  /v4beta/assets/{id}:
-    $ref: "./asset-api.yaml#/paths/~1v4beta~1assets~1{id}"
-  /v4beta/contractdefinitions/request:
-    $ref: ./contract-definition-api.yaml#/paths/~1v4beta~1contractdefinitions~1request
-  /v3/contractnegotiations/{id}/agreement:
+  /v4beta/transferprocesses/{id}/state:
     get:
-      description: Gets a contract agreement for a contract negotiation with the given
-        ID
-      operationId: getAgreementForNegotiationV3
+      description: Gets the state of a transfer process with the given ID
+      operationId: getTransferProcessStateV4
       parameters:
       - in: path
         name: id
@@ -34,15 +27,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ContractAgreement"
-          description: "The contract agreement that is attached to the negotiation,\
-            \ or null"
+                $ref: "#/components/schemas/TransferState"
+          description: The  transfer process's state
         "400":
           content:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
+                  $ref: "#/components/schemas/api-error-schema"
                 type: array
           description: "Request was malformed, e.g. id was null"
         "404":
@@ -50,82 +42,64 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
+                  $ref: "#/components/schemas/api-error-schema"
                 type: array
-          description: An contract negotiation with the given ID does not exist
+          description: An  transfer process with the given ID does not exist
       tags:
-      - Contract Negotiation V3
+      - Transfer Process v4beta
+  /v4beta/assets/{id}:
+    $ref: "./asset-api.yaml#/paths/~1v4beta~1assets~1{id}"
+  /v3/contractnegotiations/{id}/agreement:
+    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}~1agreement"
+  /v4beta/contractdefinitions/request:
+    $ref: ./contract-definition-api.yaml#/paths/~1v4beta~1contractdefinitions~1request
   /v4beta/transferprocesses/{id}/resume:
-    $ref: "./transfer-process-api.yaml#/paths/~1v4beta~1transferprocesses~1{id}~1resume"
-  /v3/contractnegotiations:
     post:
-      description: "Initiates a contract negotiation for a given offer and with the\
-        \ given counter part. Please note that successfully invoking this endpoint\
-        \ only means that the negotiation was initiated. Clients must poll the /{id}/state\
-        \ endpoint to track the state"
-      operationId: initiateContractNegotiationV3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ContractRequestV3"
+      description: "Requests the resumption of a suspended transfer process. Due to\
+        \ the asynchronous nature of transfers, a successful response only indicates\
+        \ that the request was successfully received. This may take a long time, so\
+        \ clients must poll the /{id}/state endpoint to track the state."
+      operationId: resumeTransferProcessV4
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IdResponse"
-          description: The negotiation was successfully initiated. Returns the contract
-            negotiation ID and created timestamp
+        "204":
+          description: Request to resume the transfer process was successfully received
           links:
             poll-state:
-              operationId: getNegotiationStateV3
-              parameters:
-                id: $response.body#/id
+              operationId: resumeTransferProcessV3
         "400":
           content:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
+                  $ref: "#/components/schemas/api-error-schema"
                 type: array
-          description: Request body was malformed
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: A transfer process with the given ID does not exist
       tags:
-      - Contract Negotiation V3
-  /v3/contractdefinitions/request:
-    $ref: ./contract-definition-api.yaml#/paths/~1v3~1contractdefinitions~1request
-  /v3/contractagreements/{id}:
-    $ref: "./contract-agreement-api.yaml#/paths/~1v3~1contractagreements~1{id}"
+      - Transfer Process v4beta
+  /v3/contractnegotiations:
+    $ref: ./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations
   /v3/edrs/{transferProcessId}/dataaddress:
     $ref: "./edr-cache-api.yaml#/paths/~1v3~1edrs~1{transferProcessId}~1dataaddress"
   /v3/contractnegotiations/request:
-    post:
-      description: Returns all contract negotiations according to a query
-      operationId: queryNegotiationsV3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/QuerySpec"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ContractNegotiation"
-                type: array
-          description: The contract negotiations that match the query
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: Request was malformed
-      tags:
-      - Contract Negotiation V3
+    $ref: ./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1request
+  /v3/contractagreements/{id}:
+    $ref: "./contract-agreement-api.yaml#/paths/~1v3~1contractagreements~1{id}"
+  /v3/contractdefinitions/request:
+    $ref: ./contract-definition-api.yaml#/paths/~1v3~1contractdefinitions~1request
   /v4beta/assets:
     $ref: ./asset-api.yaml#/paths/~1v4beta~1assets
   /v3/contractagreements/retirements/request:
@@ -133,83 +107,33 @@ paths:
   /{any}:
     $ref: "./data-plane-public-api-v2.yaml#/paths/~1{any}"
   /v4beta/contractnegotiations/{id}/agreement:
-    get:
-      description: Gets a contract agreement for a contract negotiation with the given
-        ID
-      operationId: getAgreementForNegotiationV4
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/contract-agreement-schema"
-          description: "The contract agreement that is attached to the negotiation,\
-            \ or null"
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: "Request was malformed, e.g. id was null"
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: An contract negotiation with the given ID does not exist
-      tags:
-      - Contract Negotiation v4beta
-  /v3/transferprocesses/{id}/suspend:
-    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1suspend"
+    $ref: "./contract-negotiation-api.yaml#/paths/~1v4beta~1contractnegotiations~1{id}~1agreement"
   /v4beta/assets/request:
     $ref: ./asset-api.yaml#/paths/~1v4beta~1assets~1request
-  /v3/contractnegotiations/{id}/approve:
+  /v3/transferprocesses/{id}/suspend:
     post:
-      description: Approve a pending negotiation
-      operationId: approveNegotiation
+      description: "Requests the suspension of a transfer process. Due to the asynchronous\
+        \ nature of transfers, a successful response only indicates that the request\
+        \ was successfully received. This may take a long time, so clients must poll\
+        \ the /{id}/state endpoint to track the state."
+      operationId: suspendTransferProcessV3
       parameters:
       - in: path
         name: id
         required: true
         schema:
           type: string
-      responses:
-        default:
-          content:
-            '*/*': {}
-          description: default response
-      tags:
-      - Manual Negotiation Approval
-  /v3/contractdefinitions:
-    $ref: ./contract-definition-api.yaml#/paths/~1v3~1contractdefinitions
-  /v3/policydefinitions/request:
-    post:
-      description: Returns all policy definitions according to a query
-      operationId: queryPolicyDefinitionsV3
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/QuerySpec"
+              $ref: "#/components/schemas/SuspendTransferV3"
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/PolicyDefinitionOutputV3"
-                type: array
-          description: The policy definitions matching the query
+        "204":
+          description: Request to suspend the transfer process was successfully received
+          links:
+            poll-state:
+              operationId: suspendTransferProcessV3
         "400":
           content:
             application/json:
@@ -217,79 +141,75 @@ paths:
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
                 type: array
-          description: Request was malformed
-      tags:
-      - Policy Definition v3
-  /check/startup:
-    $ref: ./api-observability.yaml#/paths/~1check~1startup
-  /v4beta/transferprocesses:
-    $ref: ./transfer-process-api.yaml#/paths/~1v4beta~1transferprocesses
-  /v4beta/dataplanes:
-    get:
-      description: Returns a list of all currently registered data plane instances
-      operationId: getAllDataPlaneInstancesV4
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/DataPlaneInstanceSchemaV4"
-                type: array
-          description: A (potentially empty) list of currently registered data plane
-            instances
-      tags:
-      - Dataplane Selector v4beta
-  /v4beta/transferprocesses/request:
-    $ref: ./transfer-process-api.yaml#/paths/~1v4beta~1transferprocesses~1request
-  /v4beta/catalog/request:
-    post:
-      operationId: requestCatalogV4
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/catalog-request-schema"
-      responses:
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/catalog-schema"
-          description: Gets contract offers (=catalog) of a single connector
-      tags:
-      - Catalog v4beta
-  /v4beta/policydefinitions/{id}/validate:
-    post:
-      description: "Validates an existing Policy, If the Policy is not found, an error\
-        \ is reported"
-      operationId: validatePolicyDefinitionV4
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/policy-validation-result-schema"
-          description: Returns the validation result
+          description: "Request was malformed, e.g. id was null"
         "404":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/api-error-schema"
-          description: "policy definition could not be validated, because it does\
-            \ not exists"
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: A transfer process with the given ID does not exist
+        "409":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: "Could not suspend the transfer process, because it is already\
+            \ completed or terminated."
       tags:
-      - Policy Definition v4beta
-  /v4beta/contractnegotiations/request:
+      - Transfer Process V3
+  /v3/contractnegotiations/{id}/approve:
+    $ref: "./manual-negotiation-approval.yaml#/paths/~1v3~1contractnegotiations~1{id}~1approve"
+  /v3/contractdefinitions:
+    $ref: ./contract-definition-api.yaml#/paths/~1v3~1contractdefinitions
+  /v3/policydefinitions/request:
+    $ref: ./policy-definition-api.yaml#/paths/~1v3~1policydefinitions~1request
+  /check/startup:
+    $ref: ./api-observability.yaml#/paths/~1check~1startup
+  /v4beta/transferprocesses:
     post:
-      description: Returns all contract negotiations according to a query
-      operationId: queryNegotiationsV4
+      description: "Initiates a data transfer with the given parameters. Due to the\
+        \ asynchronous nature of transfers, a successful response only indicates that\
+        \ the request was successfully received. This may take a long time, so clients\
+        \ must poll the /{id}/state endpoint to track the state."
+      operationId: initiateTransferProcessV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/transfer-request-schema"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/id-response-schema"
+          description: The transfer was successfully initiated. Returns the transfer
+            process ID and created timestamp
+          links:
+            poll-state:
+              operationId: getTransferProcessStateV3
+              parameters:
+                id: $response.body#/id
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Transfer Process v4beta
+  /v4beta/dataplanes:
+    $ref: ./data-plane-selector-api.yaml#/paths/~1v4beta~1dataplanes
+  /v4beta/transferprocesses/request:
+    post:
+      description: Returns all transfer process according to a query
+      operationId: queryTransferProcessesV4
       requestBody:
         content:
           application/json:
@@ -301,9 +221,9 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/contract-negotiation-schema"
+                  $ref: "#/components/schemas/transfer-process-schema"
                 type: array
-          description: The contract negotiations that match the query
+          description: The transfer processes matching the query
         "400":
           content:
             application/json:
@@ -313,61 +233,39 @@ paths:
                 type: array
           description: Request was malformed
       tags:
-      - Contract Negotiation v4beta
+      - Transfer Process v4beta
+  /v4beta/catalog/request:
+    $ref: ./catalog-api.yaml#/paths/~1v4beta~1catalog~1request
+  /v4beta/policydefinitions/{id}/validate:
+    $ref: "./policy-definition-api.yaml#/paths/~1v4beta~1policydefinitions~1{id}~1validate"
+  /v4beta/contractnegotiations/request:
+    $ref: ./contract-negotiation-api.yaml#/paths/~1v4beta~1contractnegotiations~1request
   /v4beta/contractnegotiations/{id}/state:
-    get:
-      description: Gets the state of a contract negotiation with the given ID
-      operationId: getNegotiationStateV4
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NegotiationState"
-          description: The contract negotiation's state
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: "Request was malformed, e.g. id was null"
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: An contract negotiation with the given ID does not exist
-      tags:
-      - Contract Negotiation v4beta
+    $ref: "./contract-negotiation-api.yaml#/paths/~1v4beta~1contractnegotiations~1{id}~1state"
   /v4beta/transferprocesses/{id}/suspend:
-    $ref: "./transfer-process-api.yaml#/paths/~1v4beta~1transferprocesses~1{id}~1suspend"
-  /v4beta/contractnegotiations/{id}:
-    delete:
-      description: Deletes the contract negotiation with the given ID. Only terminated
-        negotiations without agreement will be deleted
-      operationId: deleteNegotiationV4
+    post:
+      description: "Requests the suspension of a transfer process. Due to the asynchronous\
+        \ nature of transfers, a successful response only indicates that the request\
+        \ was successfully received. This may take a long time, so clients must poll\
+        \ the /{id}/state endpoint to track the state."
+      operationId: suspendTransferProcessV4
       parameters:
       - in: path
         name: id
         required: true
         schema:
           type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/transfer-suspend-schema"
       responses:
         "204":
-          description: ContractNegotiation is deleted
+          description: Request to suspend the transfer process was successfully received
           links:
             poll-state:
-              operationId: getNegotiationStateV3
+              operationId: suspendTransferProcessV3
         "400":
           content:
             application/json:
@@ -383,7 +281,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/api-error-schema"
                 type: array
-          description: A contract negotiation with the given ID does not exist
+          description: A transfer process with the given ID does not exist
         "409":
           content:
             application/json:
@@ -391,44 +289,12 @@ paths:
                 items:
                   $ref: "#/components/schemas/api-error-schema"
                 type: array
-          description: The given contract negotiation cannot be deleted due to a wrong
-            state or has existing contract agreement
+          description: "Could not suspend the transfer process, because it is already\
+            \ completed or terminated."
       tags:
-      - Contract Negotiation v4beta
-    get:
-      description: Gets a contract negotiation with the given ID
-      operationId: getNegotiationV4
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/contract-negotiation-schema"
-          description: The contract negotiation
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: "Request was malformed, e.g. id was null"
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: An contract negotiation with the given ID does not exist
-      tags:
-      - Contract Negotiation v4beta
+      - Transfer Process v4beta
+  /v4beta/contractnegotiations/{id}:
+    $ref: "./contract-negotiation-api.yaml#/paths/~1v4beta~1contractnegotiations~1{id}"
   /v3/assets:
     $ref: ./asset-api.yaml#/paths/~1v3~1assets
   /v4beta/contractagreements/{id}:
@@ -437,70 +303,51 @@ paths:
     $ref: "./contract-agreement-api.yaml#/paths/~1v4beta~1contractagreements~1{id}~1negotiation"
   /check/health:
     $ref: ./api-observability.yaml#/paths/~1check~1health
+  /v4beta/contractnegotiations/{id}/terminate:
+    $ref: "./contract-negotiation-api.yaml#/paths/~1v4beta~1contractnegotiations~1{id}~1terminate"
   /v4beta/contractdefinitions/{id}:
     $ref: "./contract-definition-api.yaml#/paths/~1v4beta~1contractdefinitions~1{id}"
   /v3/transferprocesses/{id}/state:
-    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1state"
-  /v4beta/contractnegotiations/{id}/terminate:
-    post:
-      description: Terminates the contract negotiation.
-      operationId: terminateNegotiationV4
+    get:
+      description: Gets the state of a transfer process with the given ID
+      operationId: getTransferProcessStateV3
       parameters:
       - in: path
         name: id
         required: true
         schema:
           type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/contract-terminate-schema"
       responses:
         "200":
-          description: ContractNegotiation is terminating
-          links:
-            poll-state:
-              operationId: getNegotiationStateV3
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferStateV3"
+          description: The  transfer process's state
         "400":
           content:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/api-error-schema"
+                  $ref: "#/components/schemas/ApiErrorDetail"
                 type: array
-          description: Request was malformed
+          description: "Request was malformed, e.g. id was null"
         "404":
           content:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/api-error-schema"
+                  $ref: "#/components/schemas/ApiErrorDetail"
                 type: array
-          description: A contract negotiation with the given ID does not exist
+          description: An  transfer process with the given ID does not exist
       tags:
-      - Contract Negotiation v4beta
-  /v3/contractagreements/retirements/{agreementId}:
-    $ref: "./retirement-evaluation-api.yaml#/paths/~1v3~1contractagreements~1retirements~1{agreementId}"
+      - Transfer Process V3
   /v4beta/edrs/{transferProcessId}:
     $ref: "./edr-cache-api.yaml#/paths/~1v4beta~1edrs~1{transferProcessId}"
   /v3/contractnegotiations/{id}/reject:
-    post:
-      description: Reject a pending negotiation
-      operationId: rejectNegotiation
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          content:
-            '*/*': {}
-          description: default response
-      tags:
-      - Manual Negotiation Approval
+    $ref: "./manual-negotiation-approval.yaml#/paths/~1v3~1contractnegotiations~1{id}~1reject"
+  /v3/contractagreements/retirements/{agreementId}:
+    $ref: "./retirement-evaluation-api.yaml#/paths/~1v3~1contractagreements~1retirements~1{agreementId}"
   /check/liveness:
     $ref: ./api-observability.yaml#/paths/~1check~1liveness
   /check/readiness:
@@ -508,22 +355,36 @@ paths:
   /v3/contractagreements/request:
     $ref: ./contract-agreement-api.yaml#/paths/~1v3~1contractagreements~1request
   /v3/policydefinitions/{id}:
-    delete:
-      description: "Removes a policy definition with the given ID if possible. Deleting\
-        \ a policy definition is only possible if that policy definition is not yet\
-        \ referenced by a contract definition, in which case an error is returned.\
-        \ DANGER ZONE: Note that deleting policy definitions can have unexpected results,\
-        \ do this at your own risk!"
-      operationId: deletePolicyDefinitionV3
+    $ref: "./policy-definition-api.yaml#/paths/~1v3~1policydefinitions~1{id}"
+  /v3/edrs/request:
+    $ref: ./edr-cache-api.yaml#/paths/~1v3~1edrs~1request
+  /v3/catalog/request:
+    $ref: ./catalog-api.yaml#/paths/~1v3~1catalog~1request
+  /v3/transferprocesses/{id}/terminate:
+    post:
+      description: "Requests the termination of a transfer process. Due to the asynchronous\
+        \ nature of transfers, a successful response only indicates that the request\
+        \ was successfully received. This may take a long time, so clients must poll\
+        \ the /{id}/state endpoint to track the state."
+      operationId: terminateTransferProcessV3
       parameters:
       - in: path
         name: id
         required: true
         schema:
           type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TerminateTransferV3"
       responses:
         "204":
-          description: Policy definition was deleted successfully
+          description: Request to terminate the transfer process was successfully
+            received
+          links:
+            poll-state:
+              operationId: terminateTransferProcessV3
         "400":
           content:
             application/json:
@@ -539,7 +400,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
                 type: array
-          description: An policy definition with the given ID does not exist
+          description: A transfer process with the given ID does not exist
         "409":
           content:
             application/json:
@@ -547,13 +408,76 @@ paths:
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
                 type: array
-          description: "The policy definition cannot be deleted, because it is referenced\
-            \ by a contract definition"
+          description: "Could not terminate transfer process, because it is already\
+            \ completed or terminated."
       tags:
-      - Policy Definition v3
-    get:
-      description: Gets a policy definition with the given ID
-      operationId: getPolicyDefinitionV3
+      - Transfer Process V3
+  /v4beta/transferprocesses/{id}/terminate:
+    post:
+      description: "Requests the termination of a transfer process. Due to the asynchronous\
+        \ nature of transfers, a successful response only indicates that the request\
+        \ was successfully received. This may take a long time, so clients must poll\
+        \ the /{id}/state endpoint to track the state."
+      operationId: terminateTransferProcessV4
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/transfer-terminate-schema"
+      responses:
+        "204":
+          description: Request to terminate the transfer process was successfully
+            received
+          links:
+            poll-state:
+              operationId: terminateTransferProcessV3
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: A transfer process with the given ID does not exist
+        "409":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: "Could not terminate transfer process, because it is already\
+            \ completed or terminated."
+      tags:
+      - Transfer Process v4beta
+  /v4beta/contractagreements/request:
+    $ref: ./contract-agreement-api.yaml#/paths/~1v4beta~1contractagreements~1request
+  /v3/policydefinitions/{id}/evaluationplan:
+    $ref: "./policy-definition-api.yaml#/paths/~1v3~1policydefinitions~1{id}~1evaluationplan"
+  /v3/contractnegotiations/{id}/terminate:
+    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}~1terminate"
+  /v4beta/transferprocesses/{id}/deprovision:
+    post:
+      description: "Requests the deprovisioning of resources associated with a transfer\
+        \ process. Due to the asynchronous nature of transfers, a successful response\
+        \ only indicates that the request was successfully received. This may take\
+        \ a long time, so clients must poll the /{id}/state endpoint to track the\
+        \ state."
+      operationId: deprovisionTransferProcessV4
       parameters:
       - in: path
         name: id
@@ -561,12 +485,53 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        "204":
+          description: Request to deprovision the transfer process was successfully
+            received
+          links:
+            poll-state:
+              operationId: deprovisionTransferProcessV3
+        "400":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PolicyDefinitionOutputV3"
-          description: The  policy definition
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: A transfer process with the given ID does not exist
+      tags:
+      - Transfer Process v4beta
+  /v4beta/policydefinitions/request:
+    $ref: ./policy-definition-api.yaml#/paths/~1v4beta~1policydefinitions~1request
+  /v3/transferprocesses/{id}/deprovision:
+    post:
+      description: "Requests the deprovisioning of resources associated with a transfer\
+        \ process. Due to the asynchronous nature of transfers, a successful response\
+        \ only indicates that the request was successfully received. This may take\
+        \ a long time, so clients must poll the /{id}/state endpoint to track the\
+        \ state."
+      operationId: deprovisionTransferProcessV3
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Request to deprovision the transfer process was successfully
+            received
+          links:
+            poll-state:
+              operationId: deprovisionTransferProcessV3
         "400":
           content:
             application/json:
@@ -582,160 +547,30 @@ paths:
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail"
                 type: array
-          description: An  policy definition with the given ID does not exist
+          description: A transfer process with the given ID does not exist
       tags:
-      - Policy Definition v3
-    put:
-      description: "Updates an existing Policy, If the Policy is not found, an error\
-        \ is reported"
-      operationId: updatePolicyDefinitionV3
+      - Transfer Process V3
+  /v3/dataplanes:
+    $ref: ./data-plane-selector-api.yaml#/paths/~1v3~1dataplanes
+  /v4beta/contractnegotiations:
+    $ref: ./contract-negotiation-api.yaml#/paths/~1v4beta~1contractnegotiations
+  /v4beta/transferprocesses/{id}:
+    get:
+      description: Gets an transfer process with the given ID
+      operationId: getTransferProcessV4
       parameters:
       - in: path
         name: id
         required: true
         schema:
           type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PolicyDefinitionInputV3"
-      responses:
-        "204":
-          description: policy definition was updated successfully.
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: Request body was malformed
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorDetail"
-          description: "policy definition could not be updated, because it does not\
-            \ exists"
-      tags:
-      - Policy Definition v3
-  /v3/edrs/request:
-    $ref: ./edr-cache-api.yaml#/paths/~1v3~1edrs~1request
-  /v3/catalog/request:
-    post:
-      operationId: requestCatalogV3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CatalogRequestV3"
-      responses:
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CatalogV3"
-          description: Gets contract offers (=catalog) of a single connector
-      tags:
-      - Catalog V3
-  /v3/transferprocesses/{id}/terminate:
-    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1terminate"
-  /v4beta/transferprocesses/{id}/terminate:
-    $ref: "./transfer-process-api.yaml#/paths/~1v4beta~1transferprocesses~1{id}~1terminate"
-  /v4beta/contractagreements/request:
-    $ref: ./contract-agreement-api.yaml#/paths/~1v4beta~1contractagreements~1request
-  /v3/policydefinitions/{id}/evaluationplan:
-    post:
-      description: "Creates an execution plane for an existing Policy, If the Policy\
-        \ is not found, an error is reported"
-      operationId: createExecutionPlaneV3
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PolicyEvaluationPlanRequestSchemaV3"
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PolicyEvaluationPlanSchemaV3"
-          description: Returns the evaluation plan
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorDetail"
-          description: "An evaluation plan could not be created, because the policy\
-            \ definition does not exists"
-      tags:
-      - Policy Definition v3
-  /v4beta/transferprocesses/{id}/deprovision:
-    $ref: "./transfer-process-api.yaml#/paths/~1v4beta~1transferprocesses~1{id}~1deprovision"
-  /v3/contractnegotiations/{id}/terminate:
-    post:
-      description: Terminates the contract negotiation.
-      operationId: terminateNegotiationV3
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TerminateNegotiationV3"
-      responses:
-        "200":
-          description: ContractNegotiation is terminating
-          links:
-            poll-state:
-              operationId: getNegotiationStateV3
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: Request was malformed
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: A contract negotiation with the given ID does not exist
-      tags:
-      - Contract Negotiation V3
-  /v4beta/policydefinitions/request:
-    post:
-      description: Returns all policy definitions according to a query
-      operationId: queryPolicyDefinitionsV4
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/query-spec-schema"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/policy-definition-schema"
-                type: array
-          description: The policy definitions matching the query
+                $ref: "#/components/schemas/transfer-process-schema"
+          description: The transfer process
         "400":
           content:
             application/json:
@@ -743,50 +578,168 @@ paths:
                 items:
                   $ref: "#/components/schemas/api-error-schema"
                 type: array
-          description: Request was malformed
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: A transfer process with the given ID does not exist
       tags:
-      - Policy Definition v4beta
-  /v3/transferprocesses/{id}/deprovision:
-    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1deprovision"
-  /v3/dataplanes:
-    get:
-      description: Returns a list of all currently registered data plane instances
-      operationId: getAllDataPlaneInstancesV3
+      - Transfer Process v4beta
+  /v3/catalog/dataset/request:
+    $ref: ./catalog-api.yaml#/paths/~1v3~1catalog~1dataset~1request
+  /v3/transferprocesses/request:
+    post:
+      description: Returns all transfer process according to a query
+      operationId: queryTransferProcessesV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuerySpec"
       responses:
         "200":
           content:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/DataPlaneInstanceSchemaV3"
+                  $ref: "#/components/schemas/TransferProcessV3"
                 type: array
-          description: A (potentially empty) list of currently registered data plane
-            instances
+          description: The transfer processes matching the query
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request was malformed
       tags:
-      - Dataplane Selector V3
-  /v4beta/contractnegotiations:
-    post:
-      description: "Initiates a contract negotiation for a given offer and with the\
-        \ given counter part. Please note that successfully invoking this endpoint\
-        \ only means that the negotiation was initiated. Clients must poll the /{id}/state\
-        \ endpoint to track the state"
-      operationId: initiateContractNegotiationV4
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/contract-request-schema"
+      - Transfer Process V3
+  /v3/contractagreements/retirements:
+    $ref: ./retirement-evaluation-api.yaml#/paths/~1v3~1contractagreements~1retirements
+  /v3/transferprocesses/{id}:
+    get:
+      description: Gets an transfer process with the given ID
+      operationId: getTransferProcessV3
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/id-response-schema"
-          description: The negotiation was successfully initiated. Returns the contract
-            negotiation ID and created timestamp
+                $ref: "#/components/schemas/TransferProcessV3"
+          description: The transfer process
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: A transfer process with the given ID does not exist
+      tags:
+      - Transfer Process V3
+  /v4beta/policydefinitions:
+    $ref: ./policy-definition-api.yaml#/paths/~1v4beta~1policydefinitions
+  /v3/contractdefinitions/{id}:
+    $ref: "./contract-definition-api.yaml#/paths/~1v3~1contractdefinitions~1{id}"
+  /v4beta/policydefinitions/{id}/evaluationplan:
+    $ref: "./policy-definition-api.yaml#/paths/~1v4beta~1policydefinitions~1{id}~1evaluationplan"
+  /v3/edrs/{transferProcessId}:
+    $ref: "./edr-cache-api.yaml#/paths/~1v3~1edrs~1{transferProcessId}"
+  /v3/policydefinitions:
+    $ref: ./policy-definition-api.yaml#/paths/~1v3~1policydefinitions
+  /v3/transferprocesses/{id}/resume:
+    post:
+      description: "Requests the resumption of a suspended transfer process. Due to\
+        \ the asynchronous nature of transfers, a successful response only indicates\
+        \ that the request was successfully received. This may take a long time, so\
+        \ clients must poll the /{id}/state endpoint to track the state."
+      operationId: resumeTransferProcessV3
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Request to resume the transfer process was successfully received
           links:
             poll-state:
-              operationId: getNegotiationStateV3
+              operationId: resumeTransferProcessV3
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: A transfer process with the given ID does not exist
+      tags:
+      - Transfer Process V3
+  /v3/contractagreements/{id}/negotiation:
+    $ref: "./contract-agreement-api.yaml#/paths/~1v3~1contractagreements~1{id}~1negotiation"
+  /v3/policydefinitions/{id}/validate:
+    $ref: "./policy-definition-api.yaml#/paths/~1v3~1policydefinitions~1{id}~1validate"
+  /v4beta/edrs/request:
+    $ref: ./edr-cache-api.yaml#/paths/~1v4beta~1edrs~1request
+  /v4beta/contractdefinitions:
+    $ref: ./contract-definition-api.yaml#/paths/~1v4beta~1contractdefinitions
+  /v4beta/policydefinitions/{id}:
+    $ref: "./policy-definition-api.yaml#/paths/~1v4beta~1policydefinitions~1{id}"
+  /v3/contractnegotiations/{id}:
+    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}"
+  /v4beta/catalog/dataset/request:
+    $ref: ./catalog-api.yaml#/paths/~1v4beta~1catalog~1dataset~1request
+  /v3/transferprocesses:
+    post:
+      description: "Initiates a data transfer with the given parameters. Due to the\
+        \ asynchronous nature of transfers, a successful response only indicates that\
+        \ the request was successfully received. This may take a long time, so clients\
+        \ must poll the /{id}/state endpoint to track the state."
+      operationId: initiateTransferProcessV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferRequestV3"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResponse"
+          description: The transfer was successfully initiated. Returns the transfer
+            process ID and created timestamp
+          links:
+            poll-state:
+              operationId: getTransferProcessStateV3
               parameters:
                 id: $response.body#/id
         "400":
@@ -794,815 +747,21 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: Request body was malformed
-      tags:
-      - Contract Negotiation v4beta
-  /v4beta/transferprocesses/{id}:
-    $ref: "./transfer-process-api.yaml#/paths/~1v4beta~1transferprocesses~1{id}"
-  /v3/catalog/dataset/request:
-    post:
-      operationId: getDatasetV3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DatasetRequestV3"
-      responses:
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DatasetV3"
-          description: Gets single dataset from a connector
-      tags:
-      - Catalog V3
-  /v3/transferprocesses/request:
-    $ref: ./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1request
-  /v3/contractagreements/retirements:
-    $ref: ./retirement-evaluation-api.yaml#/paths/~1v3~1contractagreements~1retirements
-  /v3/transferprocesses/{id}:
-    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}"
-  /v4beta/policydefinitions:
-    post:
-      description: Creates a new policy definition
-      operationId: createPolicyDefinitionV4
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/policy-definition-schema"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/id-response-schema"
-          description: policy definition was created successfully. Returns the Policy
-            Definition Id and created timestamp
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: Request body was malformed
-        "409":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: "Could not create policy definition, because a contract definition\
-            \ with that ID already exists"
-      tags:
-      - Policy Definition v4beta
-  /v3/contractdefinitions/{id}:
-    $ref: "./contract-definition-api.yaml#/paths/~1v3~1contractdefinitions~1{id}"
-  /v4beta/policydefinitions/{id}/evaluationplan:
-    post:
-      description: "Creates an execution plane for an existing Policy, If the Policy\
-        \ is not found, an error is reported"
-      operationId: createExecutionPlanV4
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/policy-evaluation-plan-request-schema"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/policy-evaluation-plan-schema"
-          description: Returns the evaluation plan
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/api-error-schema"
-          description: "An evaluation plan could not be created, because the policy\
-            \ definition does not exists"
-      tags:
-      - Policy Definition v4beta
-  /v3/edrs/{transferProcessId}:
-    $ref: "./edr-cache-api.yaml#/paths/~1v3~1edrs~1{transferProcessId}"
-  /v3/transferprocesses/{id}/resume:
-    $ref: "./transfer-process-api.yaml#/paths/~1v3~1transferprocesses~1{id}~1resume"
-  /v3/policydefinitions:
-    post:
-      description: Creates a new policy definition
-      operationId: createPolicyDefinitionV3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PolicyDefinitionInputV3"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IdResponse"
-          description: policy definition was created successfully. Returns the Policy
-            Definition Id and created timestamp
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
                   $ref: "#/components/schemas/ApiErrorDetail"
                 type: array
           description: Request body was malformed
-        "409":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: "Could not create policy definition, because a contract definition\
-            \ with that ID already exists"
       tags:
-      - Policy Definition v3
-  /v3/contractagreements/{id}/negotiation:
-    $ref: "./contract-agreement-api.yaml#/paths/~1v3~1contractagreements~1{id}~1negotiation"
-  /v3/policydefinitions/{id}/validate:
-    post:
-      description: "Validates an existing Policy, If the Policy is not found, an error\
-        \ is reported"
-      operationId: validatePolicyDefinitionV3
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PolicyValidationResultSchemaV3"
-          description: Returns the validation result
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorDetail"
-          description: "policy definition could not be validated, because it does\
-            \ not exists"
-      tags:
-      - Policy Definition v3
-  /v4beta/edrs/request:
-    $ref: ./edr-cache-api.yaml#/paths/~1v4beta~1edrs~1request
-  /v4beta/contractdefinitions:
-    $ref: ./contract-definition-api.yaml#/paths/~1v4beta~1contractdefinitions
-  /v4beta/policydefinitions/{id}:
-    delete:
-      description: "Removes a policy definition with the given ID if possible. Deleting\
-        \ a policy definition is only possible if that policy definition is not yet\
-        \ referenced by a contract definition, in which case an error is returned.\
-        \ DANGER ZONE: Note that deleting policy definitions can have unexpected results,\
-        \ do this at your own risk!"
-      operationId: deletePolicyDefinitionV4
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "204":
-          description: Policy definition was deleted successfully
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: "Request was malformed, e.g. id was null"
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: An policy definition with the given ID does not exist
-        "409":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: "The policy definition cannot be deleted, because it is referenced\
-            \ by a contract definition"
-      tags:
-      - Policy Definition v4beta
-    get:
-      description: Gets a policy definition with the given ID
-      operationId: getPolicyDefinitionV4
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/policy-definition-schema"
-          description: The  policy definition
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: "Request was malformed, e.g. id was null"
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: An  policy definition with the given ID does not exist
-      tags:
-      - Policy Definition v4beta
-    put:
-      description: "Updates an existing Policy, If the Policy is not found, an error\
-        \ is reported"
-      operationId: updatePolicyDefinitionV4
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/policy-definition-schema"
-      responses:
-        "204":
-          description: policy definition was updated successfully.
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: Request body was malformed
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/api-error-schema"
-          description: "policy definition could not be updated, because it does not\
-            \ exists"
-      tags:
-      - Policy Definition v4beta
-  /v3/transferprocesses:
-    $ref: ./transfer-process-api.yaml#/paths/~1v3~1transferprocesses
-  /v3/contractnegotiations/{id}:
-    delete:
-      description: Deletes the contract negotiation with the given ID. Only terminated
-        negotiations without agreement will be deleted
-      operationId: deleteNegotiationV3
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "204":
-          description: ContractNegotiation is deleted
-          links:
-            poll-state:
-              operationId: getNegotiationStateV3
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: "Request was malformed, e.g. id was null"
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: A contract negotiation with the given ID does not exist
-        "409":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: The given contract negotiation cannot be deleted due to a wrong
-            state or has existing contract agreement
-      tags:
-      - Contract Negotiation V3
-    get:
-      description: Gets a contract negotiation with the given ID
-      operationId: getNegotiationV3
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ContractNegotiation"
-          description: The contract negotiation
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: "Request was malformed, e.g. id was null"
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: An contract negotiation with the given ID does not exist
-      tags:
-      - Contract Negotiation V3
-  /v4beta/catalog/dataset/request:
-    post:
-      operationId: getDatasetV4
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/catalog-request-schema"
-      responses:
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/dataset-schema"
-          description: Gets single dataset from a connector
-      tags:
-      - Catalog v4beta
+      - Transfer Process V3
   /v3/contractnegotiations/{id}/state:
-    get:
-      description: Gets the state of a contract negotiation with the given ID
-      operationId: getNegotiationStateV3
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NegotiationState"
-          description: The contract negotiation's state
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: "Request was malformed, e.g. id was null"
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: An contract negotiation with the given ID does not exist
-      tags:
-      - Contract Negotiation V3
+    $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}~1state"
 components:
   schemas:
-    ContractAgreement:
+    TransferState:
       example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': https://w3id.org/edc/v0.0.1/ns/ContractAgreement
-        '@id': negotiation-id
-        providerId: provider-id
-        consumerId: consumer-id
-        assetId: asset-id
-        contractSigningDate: 1688465655
-        policy:
-          '@context': http://www.w3.org/ns/odrl.jsonld
-          '@type': Set
-          '@id': offer-id
-          permission:
-          - target: asset-id
-            action: display
-      properties:
-        '@id':
-          type: string
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/ContractAgreement
-          type: string
-        assetId:
-          type: string
-        consumerId:
-          type: string
-        contractSigningDate:
-          format: int64
-          type: integer
-        policy:
-          description: ODRL policy
-          example:
-            '@context': http://www.w3.org/ns/odrl.jsonld
-            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
-            '@type': odrl:Set
-            permission:
-              target: http://example.com/asset:9898.movie
-              action:
-                type: http://www.w3.org/ns/odrl/2/use
-              constraint:
-                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
-                operator: eq
-                rightOperand: value
-            prohibition: []
-            obligation: []
-          type: object
-        providerId:
-          type: string
-      type: object
-    Policy:
-      description: ODRL policy
-      example:
-        '@context': http://www.w3.org/ns/odrl.jsonld
-        '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
-        '@type': odrl:Set
-        permission:
-          target: http://example.com/asset:9898.movie
-          action:
-            type: http://www.w3.org/ns/odrl/2/use
-          constraint:
-            leftOperand: https://w3id.org/edc/v0.0.1/ns/left
-            operator: eq
-            rightOperand: value
-        prohibition: []
-        obligation: []
-      type: object
-    ApiErrorDetail:
-      example:
-        message: error message
-        type: ErrorType
-        path: object.error.path
-        invalidValue: this value is not valid
-      properties:
-        invalidValue:
-          type: string
-        message:
-          type: string
-        path:
-          type: string
-        type:
-          type: string
-      type: object
-    IdResponse:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': id-value
-        createdAt: 1688465655
-      properties:
-        '@id':
-          type: string
-        createdAt:
-          format: int64
-          type: integer
-      type: object
-    ContractRequestV3:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': https://w3id.org/edc/v0.0.1/ns/ContractRequest
-        counterPartyAddress: http://provider-address
-        protocol: dataspace-protocol-http
-        policy:
-          '@context': http://www.w3.org/ns/odrl.jsonld
-          '@type': odrl:Offer
-          '@id': offer-id
-          assigner: providerId
-          permission: []
-          prohibition: []
-          obligation: []
-          target: assetId
-        callbackAddresses:
-        - transactional: false
-          uri: http://callback/url
-          events:
-          - contract.negotiation
-          - transfer.process
-          authKey: auth-key
-          authCodeId: auth-code-id
-      properties:
-        '@context':
-          type: object
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/ContractRequest
-          type: string
-        callbackAddresses:
-          items:
-            $ref: "#/components/schemas/CallbackAddress"
-          type: array
-        counterPartyAddress:
-          type: string
-        policy:
-          $ref: "#/components/schemas/OfferV3"
-        protocol:
-          type: string
-      required:
-      - '@context'
-      - counterPartyAddress
-      - policy
-      - protocol
-      type: object
-    CallbackAddress:
-      properties:
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/CallbackAddress
-          type: string
-        authCodeId:
-          type: string
-        authKey:
-          type: string
-        events:
-          items:
-            type: string
-          type: array
-          uniqueItems: true
-        transactional:
-          type: boolean
-        uri:
-          type: string
-      type: object
-    OfferV3:
-      description: ODRL offer
-      example:
-        '@context': http://www.w3.org/ns/odrl.jsonld
-        '@type': odrl:Offer
-        '@id': offer-id
-        assigner: providerId
-        target: assetId
-        permission: []
-        prohibition: []
-        obligation: []
-      properties:
-        '@id':
-          type: string
-        '@type':
-          example: http://www.w3.org/ns/odrl/2/Offer
-          type: string
-        assigner:
-          type: string
-        target:
-          type: string
-      required:
-      - '@id'
-      - assigner
-      - target
-      type: object
-    ContractNegotiation:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': https://w3id.org/edc/v0.0.1/ns/ContractNegotiation
-        '@id': negotiation-id
-        type: PROVIDER
-        protocol: dataspace-protocol-http
-        counterPartyId: counter-party-id
-        counterPartyAddress: http://counter/party/address
-        state: VERIFIED
-        contractAgreementId: contract:agreement:id
-        errorDetail: eventual-error-detail
-        createdAt: 1688465655
-        callbackAddresses:
-        - transactional: false
-          uri: http://callback/url
-          events:
-          - contract.negotiation
-          - transfer.process
-          authKey: auth-key
-          authCodeId: auth-code-id
-      properties:
-        '@id':
-          type: string
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/ContractNegotiation
-          type: string
-        callbackAddresses:
-          items:
-            $ref: "#/components/schemas/CallbackAddress"
-          type: array
-        contractAgreementId:
-          type: string
-        counterPartyAddress:
-          type: string
-        counterPartyId:
-          type: string
-        errorDetail:
-          type: string
-        protocol:
-          type: string
-        state:
-          type: string
-        type:
-          enum:
-          - CONSUMER
-          - PROVIDER
-          type: string
-      type: object
-    QuerySpec:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': QuerySpec
-        offset: 5
-        limit: 10
-        sortOrder: DESC
-        sortField: fieldName
-        filterExpression: []
-      properties:
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/QuerySpec
-          type: string
-        filterExpression:
-          items:
-            $ref: "#/components/schemas/Criterion"
-          type: array
-        limit:
-          format: int32
-          type: integer
-        offset:
-          format: int32
-          type: integer
-        sortField:
-          type: string
-        sortOrder:
-          enum:
-          - ASC
-          - DESC
-          type: string
-      type: object
-    Criterion:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': Criterion
-        operandLeft: fieldName
-        operator: =
-        operandRight: some value
-      properties:
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/Criterion
-          type: string
-        operandLeft:
-          type: object
-        operandRight:
-          type: object
-        operator:
-          type: string
-      required:
-      - operandLeft
-      - operandRight
-      - operator
-      type: object
-    contract-agreement-schema:
-      allOf:
-      - $ref: "#/components/schemas/ContractAgreement_1"
-      example:
-        contractSigningDate: 0
-        '@type': '@type'
-        assetId: assetId
-        providerId: providerId
-        consumerId: consumerId
-        '@id': '@id'
+        state: state
         '@context':
         - '@context'
         - '@context'
-        policy:
-          obligation:
-          - action: null
-            constraint:
-            - null
-            - null
-          - action: null
-            constraint:
-            - null
-            - null
-          '@type': '@type'
-          profile:
-          - PolicyClass_profile
-          - PolicyClass_profile
-          assigner: assigner
-          prohibition:
-          - action: action
-            constraint:
-            - null
-            - null
-          - action: action
-            constraint:
-            - null
-            - null
-          permission:
-          - action: action
-            constraint:
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-          - action: action
-            constraint:
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-          '@id': '@id'
-          assignee: assignee
-          target: target
-          timestamp: timestamp
-      title: ContractAgreementSchema
-      type: object
-    ContractAgreement_1:
       properties:
         '@context':
           allOf:
@@ -1611,29 +770,12 @@ components:
             type: string
           title: ContextSchema
           type: array
-        '@type':
+        state:
           type: string
-        '@id':
-          type: string
-        assetId:
-          type: string
-        providerId:
-          type: string
-        consumerId:
-          type: string
-        contractSigningDate:
-          type: integer
-        policy:
-          $ref: "#/components/schemas/Agreement"
       required:
       - '@context'
-      - '@id'
       - '@type'
-      - assetId
-      - consumerId
-      - contractSigningDate
-      - policy
-      - providerId
+      - state
       type: object
     context-schema:
       allOf:
@@ -1648,283 +790,6 @@ components:
           type: string
         type: array
       type: array
-    Agreement:
-      allOf:
-      - $ref: "#/components/schemas/PolicyClass"
-      - properties:
-          '@type':
-            type: string
-          target:
-            type: string
-          assigner:
-            type: string
-          assignee:
-            type: string
-          timestamp:
-            pattern: "-?([1-9][0-9]{3,}|0[0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T(([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\\
-              .[0-9]+)?|(24:00:00(\\.0+)?))(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?"
-            type: string
-      - anyOf: []
-        nullable: true
-      example:
-        obligation:
-        - action: null
-          constraint:
-          - null
-          - null
-        - action: null
-          constraint:
-          - null
-          - null
-        '@type': '@type'
-        profile:
-        - PolicyClass_profile
-        - PolicyClass_profile
-        assigner: assigner
-        prohibition:
-        - action: action
-          constraint:
-          - null
-          - null
-        - action: action
-          constraint:
-          - null
-          - null
-        permission:
-        - action: action
-          constraint:
-          - or:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            and:
-            - null
-            - null
-            xone:
-            - null
-            - null
-          - or:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            and:
-            - null
-            - null
-            xone:
-            - null
-            - null
-        - action: action
-          constraint:
-          - or:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            and:
-            - null
-            - null
-            xone:
-            - null
-            - null
-          - or:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            and:
-            - null
-            - null
-            xone:
-            - null
-            - null
-        '@id': '@id'
-        assignee: assignee
-        target: target
-        timestamp: timestamp
-      required:
-      - '@type'
-      - assignee
-      - assigner
-      - target
-      type: object
-    PolicyClass:
-      properties:
-        '@id':
-          type: string
-        profile:
-          $ref: "#/components/schemas/PolicyClass_profile"
-        permission:
-          items:
-            $ref: "#/components/schemas/Permission"
-          minItems: 1
-          type: array
-        prohibition:
-          items:
-            $ref: "#/components/schemas/Prohibition"
-          minItems: 1
-          type: array
-        obligation:
-          items:
-            $ref: "#/components/schemas/Duty"
-          minItems: 1
-          type: array
-      required:
-      - '@id'
-      type: object
-    Permission:
-      allOf:
-      - $ref: "#/components/schemas/Rule"
-      example:
-        action: action
-        constraint:
-        - or:
-          - null
-          - null
-          andSequence:
-          - null
-          - null
-          and:
-          - null
-          - null
-          xone:
-          - null
-          - null
-        - or:
-          - null
-          - null
-          andSequence:
-          - null
-          - null
-          and:
-          - null
-          - null
-          xone:
-          - null
-          - null
-      type: object
-    Rule:
-      properties:
-        action:
-          type: string
-        constraint:
-          items:
-            $ref: "#/components/schemas/Constraint"
-          type: array
-      required:
-      - action
-      type: object
-    Action:
-      type: string
-    Constraint:
-      oneOf:
-      - $ref: "#/components/schemas/LogicalConstraint"
-      - $ref: "#/components/schemas/AtomicConstraint"
-      type: object
-    LogicalConstraint:
-      example:
-        or:
-        - null
-        - null
-        andSequence:
-        - null
-        - null
-        and:
-        - null
-        - null
-        xone:
-        - null
-        - null
-      nullable: true
-      oneOf: []
-      properties:
-        and:
-          items:
-            $ref: "#/components/schemas/Constraint"
-          type: array
-        andSequence:
-          items:
-            $ref: "#/components/schemas/Constraint"
-          type: array
-        or:
-          items:
-            $ref: "#/components/schemas/Constraint"
-          type: array
-        xone:
-          items:
-            $ref: "#/components/schemas/Constraint"
-          type: array
-      type: object
-    AtomicConstraint:
-      properties:
-        rightOperand:
-          $ref: "#/components/schemas/RightOperand"
-        leftOperand:
-          type: string
-        operator:
-          $ref: "#/components/schemas/Operator"
-      required:
-      - leftOperand
-      - operator
-      - rightOperand
-      type: object
-    RightOperand:
-      oneOf:
-      - type: string
-      - type: object
-      - items:
-          description: TODO default missing array inner type to string
-          type: string
-        type: array
-    LeftOperand:
-      type: string
-    Operator:
-      enum:
-      - eq
-      - gt
-      - gteq
-      - lteq
-      - hasPart
-      - isA
-      - isAllOf
-      - isAnyOf
-      - isNoneOf
-      - isPartOf
-      - lt
-      - term-lteq
-      - neq
-      type: string
-    Prohibition:
-      allOf:
-      - $ref: "#/components/schemas/Rule"
-      example:
-        action: action
-        constraint:
-        - null
-        - null
-      type: object
-    Duty:
-      allOf:
-      - properties:
-          action:
-            $ref: "#/components/schemas/Action"
-          constraint:
-            items:
-              $ref: "#/components/schemas/Constraint"
-            type: array
-        required:
-        - action
-      example:
-        action: null
-        constraint:
-        - null
-        - null
-      type: object
     api-error-schema:
       allOf:
       - $ref: "#/components/schemas/ApiError"
@@ -1949,465 +814,55 @@ components:
       - message
       - type
       type: object
-    PolicyDefinitionOutputV3:
+    ApiErrorDetail:
       example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': definition-id
-        policy:
-          '@context': http://www.w3.org/ns/odrl.jsonld
-          '@type': Set
-          uid: http://example.com/policy:1010
-          permission:
-          - target: http://example.com/asset:9898.movie
-            action: display
-            constraint:
-            - leftOperand: spatial
-              operator: eq
-              rightOperand: https://www.wikidata.org/wiki/Q183
-              comment: i.e Germany
-        createdAt: 1688465655
+        message: error message
+        type: ErrorType
+        path: object.error.path
+        invalidValue: this value is not valid
       properties:
-        '@id':
+        invalidValue:
           type: string
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/PolicyDefinition
+        message:
           type: string
-        policy:
-          description: ODRL policy
-          example:
-            '@context': http://www.w3.org/ns/odrl.jsonld
-            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
-            '@type': odrl:Set
-            permission:
-              target: http://example.com/asset:9898.movie
-              action:
-                type: http://www.w3.org/ns/odrl/2/use
-              constraint:
-                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
-                operator: eq
-                rightOperand: value
-            prohibition: []
-            obligation: []
-          type: object
+        path:
+          type: string
+        type:
+          type: string
       type: object
-    DataPlaneInstanceSchemaV4:
+    SuspendTransferV3:
       example:
         '@context':
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': your-dataplane-id
-        url: http://somewhere.com:1234/api/v1
-        allowedSourceTypes:
-        - source-type1
-        - source-type2
-        allowedTransferTypes:
-        - transfer-type
-        state: AVAILABLE
-        stateTimestamp: 1688465655
+        '@type': https://w3id.org/edc/v0.0.1/ns/SuspendTransfer
+        reason: a reason to suspend
       properties:
-        '@context':
-          type: object
-        '@id':
-          type: string
         '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/DataPlaneInstance
+          example: https://w3id.org/edc/v0.0.1/ns/SuspendTransfer
           type: string
-        allowedSourceTypes:
-          items:
-            type: string
-          type: array
-          uniqueItems: true
-        lastActive:
-          format: int64
-          type: integer
         state:
           type: string
-        stateTimestamp:
-          format: int64
-          type: integer
-        url:
-          format: url
-          type: string
-      required:
-      - '@context'
-      - allowedSourceTypes
-      - url
       type: object
-    catalog-schema:
+    id-response-schema:
       allOf:
-      - $ref: "#/components/schemas/RootCatalog"
+      - $ref: "#/components/schemas/IdResponse"
       example:
-        participantId: participantId
-        '@context': {}
-      title: CatalogSchema
-      type: object
-    RootCatalog:
-      allOf:
-      - $ref: "#/components/schemas/Catalog"
-      - properties:
-          '@context':
-            $ref: "#/components/schemas/context-schema_1"
-          participantId:
-            type: string
-        required:
-        - '@context'
-        - participantId
-        type: object
-        example: null
-      type: object
-      example: null
-    Catalog:
-      allOf:
-      - $ref: "#/components/schemas/AbstractDataset"
-      - properties:
-          '@type':
-            type: string
-          dataset:
-            items:
-              $ref: "#/components/schemas/Dataset"
-            minItems: 1
-            type: array
-          catalog:
-            items:
-              $ref: "#/components/schemas/Catalog"
-            minItems: 1
-            type: array
-          service:
-            items:
-              $ref: "#/components/schemas/DataService"
-            minItems: 1
-            type: array
-      anyOf:
-      - not:
-          required:
-          - hasPolicy
-      required:
-      - '@id'
-      - '@type'
-      type: object
-    AbstractDataset:
-      allOf:
-      - $ref: "#/components/schemas/Resource"
-      - properties:
-          distribution:
-            items:
-              $ref: "#/components/schemas/Distribution"
-            minItems: 1
-            type: array
-      type: object
-    Resource:
-      properties:
-        '@id':
-          type: string
-      required:
-      - '@id'
-      type: object
-    Distribution:
-      example:
-        hasPolicy:
-        - obligation:
-          - action: null
-            constraint:
-            - null
-            - null
-          - action: null
-            constraint:
-            - null
-            - null
-          '@type': '@type'
-          profile:
-          - PolicyClass_profile
-          - PolicyClass_profile
-          prohibition:
-          - action: action
-            constraint:
-            - null
-            - null
-          - action: action
-            constraint:
-            - null
-            - null
-          permission:
-          - action: action
-            constraint:
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-          - action: action
-            constraint:
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-          '@id': '@id'
-        - obligation:
-          - action: null
-            constraint:
-            - null
-            - null
-          - action: null
-            constraint:
-            - null
-            - null
-          '@type': '@type'
-          profile:
-          - PolicyClass_profile
-          - PolicyClass_profile
-          prohibition:
-          - action: action
-            constraint:
-            - null
-            - null
-          - action: action
-            constraint:
-            - null
-            - null
-          permission:
-          - action: action
-            constraint:
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-          - action: action
-            constraint:
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-          '@id': '@id'
-        accessService: Distribution_accessService
-        format: format
-      properties:
-        hasPolicy:
-          items:
-            $ref: "#/components/schemas/Offer"
-          minItems: 1
-          type: array
-        accessService:
-          $ref: "#/components/schemas/Distribution_accessService"
-        format:
-          type: string
-      required:
-      - accessService
-      - format
-      type: object
-    Offer:
-      allOf:
-      - $ref: "#/components/schemas/PolicyClass"
-      - properties:
-          '@type':
-            type: string
-      - anyOf: []
-        nullable: true
-      example:
-        obligation:
-        - action: null
-          constraint:
-          - null
-          - null
-        - action: null
-          constraint:
-          - null
-          - null
+        createdAt: 0.8008281904610115
         '@type': '@type'
-        profile:
-        - PolicyClass_profile
-        - PolicyClass_profile
-        prohibition:
-        - action: action
-          constraint:
-          - null
-          - null
-        - action: action
-          constraint:
-          - null
-          - null
-        permission:
-        - action: action
-          constraint:
-          - or:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            and:
-            - null
-            - null
-            xone:
-            - null
-            - null
-          - or:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            and:
-            - null
-            - null
-            xone:
-            - null
-            - null
-        - action: action
-          constraint:
-          - or:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            and:
-            - null
-            - null
-            xone:
-            - null
-            - null
-          - or:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            and:
-            - null
-            - null
-            xone:
-            - null
-            - null
         '@id': '@id'
-      not:
-        required:
-        - target
+        '@context':
+        - '@context'
+        - '@context'
+      title: IdResponseSchema
       type: object
-    DataService:
-      allOf:
-      - $ref: "#/components/schemas/Resource"
-      - properties:
-          '@type':
-            type: string
-          endpointURL:
-            type: string
-          servesDataset:
-            items:
-              $ref: "#/components/schemas/Dataset"
-            minItems: 1
-            type: array
-        required:
-        - '@type'
-        - endpointURL
-      type: object
-    Dataset:
-      allOf:
-      - $ref: "#/components/schemas/AbstractDataset"
-      - properties:
-          hasPolicy:
-            items:
-              $ref: "#/components/schemas/Offer"
-            minItems: 1
-            type: array
-        required:
-        - hasPolicy
-        type: object
-        example: null
-      type: object
-      example: null
-    context-schema_1:
-      allOf:
-      - $ref: "#/components/schemas/ContextSchema"
-      example: {}
-      items:
-        type: string
-      title: ContextSchema
-      type: array
-    catalog-request-schema:
-      allOf:
-      - $ref: "#/components/schemas/CatalogRequest"
-      title: CatalogRequestSchema
-      type: object
-    CatalogRequest:
+    IdResponse:
+      example:
+        createdAt: 0.8008281904610115
+        '@type': '@type'
+        '@id': '@id'
+        '@context':
+        - '@context'
+        - '@context'
       properties:
         '@context':
           allOf:
@@ -2420,196 +875,59 @@ components:
           type: string
         '@id':
           type: string
-        protocol:
+        createdAt:
+          type: number
+      required:
+      - '@context'
+      - '@id'
+      - '@type'
+      - createdAt
+      type: object
+    transfer-request-schema:
+      allOf:
+      - $ref: "#/components/schemas/TransferRequest"
+      title: TransferRequestSchema
+      type: object
+    TransferRequest:
+      properties:
+        '@context':
+          allOf:
+          - $ref: "#/components/schemas/ContextSchema"
+          items:
+            type: string
+          title: ContextSchema
+          type: array
+        '@type':
+          type: string
+        '@id':
           type: string
         counterPartyAddress:
           type: string
-        counterPartyId:
-          type: string
-        additionalScopes:
-          items:
-            type: string
-          type: array
-        querySpec:
-          $ref: "#/components/schemas/QuerySpec_1"
-      required:
-      - '@context'
-      - '@type'
-      - counterPartyAddress
-      - counterPartyId
-      - protocol
-      type: object
-    QuerySpec_1:
-      properties:
-        '@type':
-          type: string
-        offset:
-          minimum: 0
-          type: integer
-        limit:
-          minimum: 1
-          type: integer
-        sortField:
-          type: string
-        sortOrder:
-          enum:
-          - ASC
-          - DESC
-          type: string
-        filterExpression:
-          items:
-            $ref: "#/components/schemas/Criterion_1"
-          type: array
-      required:
-      - '@type'
-      type: object
-    Criterion_1:
-      properties:
-        '@type':
-          type: string
-        operandLeft:
-          type: string
-        operandRight: {}
-        operator:
-          type: string
-      required:
-      - '@type'
-      - operandLeft
-      - operandRight
-      - operator
-      type: object
-    policy-validation-result-schema:
-      allOf:
-      - $ref: "#/components/schemas/PolicyValidationResult"
-      example:
-        '@type': '@type'
-        isValid: true
-        '@context':
-        - '@context'
-        - '@context'
-        errors:
-        - errors
-        - errors
-      title: PolicyValidationResultSchema
-      type: object
-    PolicyValidationResult:
-      properties:
-        '@context':
-          allOf:
-          - $ref: "#/components/schemas/ContextSchema"
-          items:
-            type: string
-          title: ContextSchema
-          type: array
-        '@type':
-          type: string
-        isValid:
-          type: boolean
-        errors:
-          items:
-            type: string
-          type: array
-      required:
-      - '@context'
-      - '@type'
-      - errors
-      - isValid
-      type: object
-    contract-negotiation-schema:
-      allOf:
-      - $ref: "#/components/schemas/ContractNegotiation_1"
-      example:
-        stateTimestamp: 0
-        '@type': '@type'
-        counterPartyId: counterPartyId
-        type: CONSUMER
-        '@context':
-        - '@context'
-        - '@context'
-        counterPartyAddress: counterPartyAddress
-        createdAt: 6
-        protocol: protocol
-        assetId: assetId
-        callbackAddresses:
-        - authKey: authKey
-          '@type': '@type'
-          authCodeId: authCodeId
-          uri: uri
-          transactional: true
-          events:
-          - events
-          - events
-        - authKey: authKey
-          '@type': '@type'
-          authCodeId: authCodeId
-          uri: uri
-          transactional: true
-          events:
-          - events
-          - events
-        errorDetail: errorDetail
-        contractAgreementId: contractAgreementId
-        correlationId: correlationId
-        '@id': '@id'
-        state: state
-      title: ContractNegotiationSchema
-      type: object
-    ContractNegotiation_1:
-      properties:
-        '@context':
-          allOf:
-          - $ref: "#/components/schemas/ContextSchema"
-          items:
-            type: string
-          title: ContextSchema
-          type: array
-        '@type':
-          type: string
-        '@id':
-          type: string
-        type:
-          enum:
-          - CONSUMER
-          - PROVIDER
-          type: string
-        state:
-          type: string
-        stateTimestamp:
-          type: integer
         protocol:
           type: string
-        createdAt:
-          type: integer
+        contractId:
+          type: string
+        transferType:
+          type: string
+        privateProperties:
+          type: object
         callbackAddresses:
           items:
             $ref: "#/components/schemas/callback-address-schema"
           type: array
-        counterPartyAddress:
-          type: string
-        counterPartyId:
-          type: string
-        errorDetail:
-          type: string
-        correlationId:
-          type: string
-        assetId:
-          type: string
-        contractAgreementId:
-          type: string
+        dataplaneMetadata:
+          $ref: "#/components/schemas/dataplane-metadata-schema"
       required:
       - '@context'
-      - '@id'
       - '@type'
+      - contractId
       - counterPartyAddress
-      - counterPartyId
-      - createdAt
       - protocol
-      - state
-      - type
+      - transferType
       type: object
     callback-address-schema:
       allOf:
-      - $ref: "#/components/schemas/CallbackAddress_1"
+      - $ref: "#/components/schemas/CallbackAddress"
       example:
         authKey: authKey
         '@type': '@type'
@@ -2621,7 +939,7 @@ components:
         - events
       title: CallbackAddressSchema
       type: object
-    CallbackAddress_1:
+    CallbackAddress:
       properties:
         '@type':
           type: string
@@ -2643,6 +961,120 @@ components:
       - transactional
       - uri
       type: object
+    dataplane-metadata-schema:
+      allOf:
+      - $ref: "#/components/schemas/DataplaneMetadata"
+      example:
+        '@type': '@type'
+        properties:
+          key: value
+        labels:
+        - labels
+        - labels
+      title: DataplaneMetadataSchema
+      type: object
+    DataplaneMetadata:
+      properties:
+        '@type':
+          type: string
+        labels:
+          items:
+            type: string
+          type: array
+        properties:
+          example:
+            key: value
+          type: object
+      type: object
+    transfer-process-schema:
+      allOf:
+      - $ref: "#/components/schemas/TransferProcess"
+      example:
+        stateTimestamp: 0
+        '@type': '@type'
+        type: CONSUMER
+        '@context':
+        - '@context'
+        - '@context'
+        assetId: assetId
+        dataplaneMetadata:
+          '@type': '@type'
+          properties:
+            key: value
+          labels:
+          - labels
+          - labels
+        callbackAddresses:
+        - authKey: authKey
+          '@type': '@type'
+          authCodeId: authCodeId
+          uri: uri
+          transactional: true
+          events:
+          - events
+          - events
+        - authKey: authKey
+          '@type': '@type'
+          authCodeId: authCodeId
+          uri: uri
+          transactional: true
+          events:
+          - events
+          - events
+        contractId: contractId
+        transferType: transferType
+        errorDetail: errorDetail
+        correlationId: correlationId
+        '@id': '@id'
+        state: state
+      title: TransferProcessSchema
+      type: object
+    TransferProcess:
+      properties:
+        '@context':
+          allOf:
+          - $ref: "#/components/schemas/ContextSchema"
+          items:
+            type: string
+          title: ContextSchema
+          type: array
+        '@type':
+          type: string
+        '@id':
+          type: string
+        type:
+          enum:
+          - CONSUMER
+          - PROVIDER
+          type: string
+        state:
+          type: string
+        stateTimestamp:
+          type: integer
+        callbackAddresses:
+          items:
+            $ref: "#/components/schemas/callback-address-schema"
+          type: array
+        correlationId:
+          type: string
+        assetId:
+          type: string
+        contractId:
+          type: string
+        transferType:
+          type: string
+        errorDetail:
+          type: string
+        dataplaneMetadata:
+          $ref: "#/components/schemas/dataplane-metadata-schema"
+      required:
+      - '@context'
+      - '@id'
+      - '@type'
+      - state
+      - stateTimestamp
+      - type
+      type: object
     query-spec-schema:
       allOf:
       - $ref: "#/components/schemas/QuerySpecRoot"
@@ -2653,38 +1085,76 @@ components:
       - properties:
           '@context':
             $ref: "#/components/schemas/context-schema"
-      - $ref: "#/components/schemas/QuerySpec_1"
+      - $ref: "#/components/schemas/QuerySpec"
       required:
       - '@context'
       - '@type'
       type: object
-    NegotiationState:
+    QuerySpec:
       example:
-        state: state
-        '@context':
-        - '@context'
-        - '@context'
+        offset: 0
+        '@type': '@type'
+        sortOrder: ASC
+        limit: 1
+        sortField: sortField
+        filterExpression:
+        - operandRight: ""
+          '@type': '@type'
+          operandLeft: operandLeft
+          operator: operator
+        - operandRight: ""
+          '@type': '@type'
+          operandLeft: operandLeft
+          operator: operator
       properties:
-        '@context':
-          allOf:
-          - $ref: "#/components/schemas/ContextSchema"
+        '@type':
+          type: string
+        offset:
+          minimum: 0
+          type: integer
+        limit:
+          minimum: 1
+          type: integer
+        sortField:
+          type: string
+        sortOrder:
+          enum:
+          - ASC
+          - DESC
+          type: string
+        filterExpression:
           items:
-            type: string
-          title: ContextSchema
+            $ref: "#/components/schemas/Criterion"
           type: array
-        state:
+      required:
+      - '@type'
+      type: object
+    Criterion:
+      example:
+        operandRight: ""
+        '@type': '@type'
+        operandLeft: operandLeft
+        operator: operator
+      properties:
+        '@type':
+          type: string
+        operandLeft:
+          type: string
+        operandRight: {}
+        operator:
           type: string
       required:
-      - '@context'
       - '@type'
-      - state
+      - operandLeft
+      - operandRight
+      - operator
       type: object
-    contract-terminate-schema:
+    transfer-suspend-schema:
       allOf:
-      - $ref: "#/components/schemas/TerminateNegotiation"
-      title: ContractTerminateSchema
+      - $ref: "#/components/schemas/SuspendTransfer"
+      title: TransferSuspendSchema
       type: object
-    TerminateNegotiation:
+    SuspendTransfer:
       properties:
         '@context':
           allOf:
@@ -2701,1516 +1171,259 @@ components:
       - '@context'
       - '@type'
       type: object
-    PolicyDefinitionInputV3:
+    TransferStateV3:
       example:
         '@context':
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': definition-id
-        policy:
-          '@context': http://www.w3.org/ns/odrl.jsonld
-          '@type': Set
-          uid: http://example.com/policy:1010
-          profile: http://example.com/odrl:profile:02
-          permission:
-          - target: http://example.com/asset:9898.movie
-            action: display
-            constraint:
-            - leftOperand: spatial
-              operator: eq
-              rightOperand: https://www.wikidata.org/wiki/Q183
-              comment: i.e Germany
+        '@type': https://w3id.org/edc/v0.0.1/ns/TransferState
+        state: STARTED
+      properties:
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/TransferState
+          type: string
+        state:
+          type: string
+      type: object
+    TerminateTransferV3:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TerminateTransfer
+        reason: a reason to terminate
+      properties:
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/TerminateTransfer
+          type: string
+        state:
+          type: string
+      type: object
+    transfer-terminate-schema:
+      allOf:
+      - $ref: "#/components/schemas/TerminateTransfer"
+      title: TransferTerminateSchema
+      type: object
+    TerminateTransfer:
       properties:
         '@context':
-          type: object
+          allOf:
+          - $ref: "#/components/schemas/ContextSchema"
+          items:
+            type: string
+          title: ContextSchema
+          type: array
+        '@type':
+          type: string
+        reason:
+          type: string
+      required:
+      - '@context'
+      - '@type'
+      type: object
+    TransferProcessV3:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TransferProcess
+        '@id': process-id
+        correlationId: correlation-id
+        type: PROVIDER
+        state: STARTED
+        stateTimestamp: 1688465655
+        assetId: asset-id
+        contractId: contractId
+        dataDestination:
+          type: data-destination-type
+        privateProperties:
+          private-key: private-value
+        errorDetail: eventual-error-detail
+        createdAt: 1688465655
+        callbackAddresses:
+        - transactional: false
+          uri: http://callback/url
+          events:
+          - contract.negotiation
+          - transfer.process
+          authKey: auth-key
+          authCodeId: auth-code-id
+      properties:
         '@id':
           type: string
         '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/PolicyDefinition
+          example: https://w3id.org/edc/v0.0.1/ns/TransferProcess
           type: string
-        policy:
-          description: ODRL policy
-          example:
-            '@context': http://www.w3.org/ns/odrl.jsonld
-            '@id': 0949ba30-680c-44e6-bc7d-1688cbe1847e
-            '@type': odrl:Set
-            permission:
-              target: http://example.com/asset:9898.movie
-              action:
-                type: http://www.w3.org/ns/odrl/2/use
-              constraint:
-                leftOperand: https://w3id.org/edc/v0.0.1/ns/left
-                operator: eq
-                rightOperand: value
-            prohibition: []
-            obligation: []
-          type: object
-      required:
-      - '@context'
-      - policy
-      type: object
-    CatalogV3:
-      description: DCAT catalog
-      example:
-        '@id': 7df65569-8c59-4013-b1c0-fa14f6641bf2
-        '@type': dcat:Catalog
-        dcat:dataset:
-          '@id': bcca61be-e82e-4da6-bfec-9716a56cef35
-          '@type': dcat:Dataset
-          odrl:hasPolicy:
-            '@id': OGU0ZTMzMGMtODQ2ZS00ZWMxLThmOGQtNWQxNWM0NmI2NmY4:YmNjYTYxYmUtZTgyZS00ZGE2LWJmZWMtOTcxNmE1NmNlZjM1:NDY2ZTZhMmEtNjQ1Yy00ZGQ0LWFlZDktMjdjNGJkZTU4MDNj
-            '@type': odrl:Set
-            odrl:permission:
-              odrl:target: bcca61be-e82e-4da6-bfec-9716a56cef35
-              odrl:action:
-                odrl:type: http://www.w3.org/ns/odrl/2/use
-              odrl:constraint:
-                odrl:and:
-                - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
-                  odrl:operator:
-                    '@id': odrl:gteq
-                  odrl:rightOperand: 2023-07-07T07:19:58.585601395Z
-                - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
-                  odrl:operator:
-                    '@id': odrl:lteq
-                  odrl:rightOperand: 2023-07-12T07:19:58.585601395Z
-            odrl:prohibition: []
-            odrl:obligation: []
-          dcat:distribution:
-          - '@type': dcat:Distribution
-            dct:format:
-              '@id': HttpData
-            dcat:accessService: 5e839777-d93e-4785-8972-1005f51cf367
-          description: description
-          id: bcca61be-e82e-4da6-bfec-9716a56cef35
-        dcat:service:
-          '@id': 5e839777-d93e-4785-8972-1005f51cf367
-          '@type': dcat:DataService
-          dct:terms: connector
-          dcat:endpointURL: http://localhost:16806/protocol
-        dspace:participantId: urn:connector:provider
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-          dct: http://purl.org/dc/terms/
-          edc: https://w3id.org/edc/v0.0.1/ns/
-          dcat: http://www.w3.org/ns/dcat#
-          odrl: http://www.w3.org/ns/odrl/2/
-          dspace: https://w3id.org/dspace/v0.8/
-      type: object
-    CatalogRequestV3:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': CatalogRequest
-        counterPartyAddress: http://provider-address
-        counterPartyId: providerId
-        protocol: dataspace-protocol-http
-        additionalScopes:
-        - org.eclipse.edc.vc.type:SomeCredential:read
-        - org.eclipse.edc.vc.type:AnotherCredential:write
-        querySpec:
-          offset: 0
-          limit: 50
-          sortOrder: DESC
-          sortField: fieldName
-          filterExpression: []
-      properties:
-        '@context':
-          type: object
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/CatalogRequest
-          type: string
-        additionalScopes:
+        callbackAddresses:
           items:
-            type: string
+            $ref: "#/components/schemas/CallbackAddress_1"
           type: array
+        contractAgreementId:
+          type: string
         counterPartyAddress:
           type: string
         counterPartyId:
           type: string
+        dataDestination:
+          $ref: "#/components/schemas/DataAddress"
+        errorDetail:
+          type: string
+        privateProperties:
+          type: object
         protocol:
           type: string
-        querySpec:
-          $ref: "#/components/schemas/QuerySpec"
-      required:
-      - '@context'
-      - counterPartyAddress
-      - protocol
-      type: object
-    PolicyEvaluationPlanSchemaV3:
-      example:
-        '@type': PolicyEvaluationPlan
-        preValidators: DcpScopeExtractorFunction
-        permissionSteps:
-          '@type': PermissionStep
-          isFiltered: false
-          filteringReasons: []
-          ruleFunctions: []
-          constraintSteps:
-            '@type': AtomicConstraintStep
-            isFiltered: true
-            filteringReasons:
-            - leftOperand 'MembershipCredential' is not bound to scope 'request.catalog'
-            - leftOperand 'MembershipCredential' is not bound to any function within
-              scope 'request.catalog'
-            functionParams:
-            - '''MembershipCredential'''
-            - EQ
-            - '''active'''
-          dutySteps: []
-        prohibitionSteps: []
-        obligationSteps: []
-        postValidators: DefaultScopeMappingFunction
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-          edc: https://w3id.org/edc/v0.0.1/ns/
-          odrl: http://www.w3.org/ns/odrl/2/
-      type: object
-    PolicyEvaluationPlanRequestSchemaV3:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': PolicyEvaluationPlanRequest
-        policyScope: catalog
-      properties:
-        policyScope:
-          type: string
-      type: object
-    TerminateNegotiationV3:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': https://w3id.org/edc/v0.0.1/ns/TerminateNegotiation
-        '@id': negotiation-id
-        reason: a reason to terminate
-      properties:
-        '@id':
-          type: string
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/TerminateNegotiation
-          type: string
-        reason:
-          type: string
-      type: object
-    policy-definition-schema:
-      allOf:
-      - $ref: "#/components/schemas/PolicyDefinition"
-      example:
-        '@type': '@type'
-        '@id': '@id'
-        privateProperties:
-          privateKey: privateValue
-        '@context':
-        - '@context'
-        - '@context'
-        policy:
-          '@type': '@type'
-          obligation:
-          - action: null
-            constraint:
-            - null
-            - null
-          - action: null
-            constraint:
-            - null
-            - null
-          profile:
-          - PolicyClass_profile
-          - PolicyClass_profile
-          prohibition:
-          - action: action
-            constraint:
-            - null
-            - null
-          - action: action
-            constraint:
-            - null
-            - null
-          permission:
-          - action: action
-            constraint:
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-          - action: action
-            constraint:
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-      title: PolicyDefinitionSchema
-      type: object
-    PolicyDefinition:
-      properties:
-        '@context':
-          allOf:
-          - $ref: "#/components/schemas/ContextSchema"
-          items:
-            type: string
-          title: ContextSchema
-          type: array
-        '@type':
-          type: string
-        '@id':
-          type: string
-        policy:
-          $ref: "#/components/schemas/PolicyClass_1"
-        privateProperties:
-          example:
-            privateKey: privateValue
-          type: object
-      required:
-      - '@context'
-      - '@type'
-      - policy
-      type: object
-    PolicyClass_1:
-      example:
-        '@type': '@type'
-        obligation:
-        - action: null
-          constraint:
-          - null
-          - null
-        - action: null
-          constraint:
-          - null
-          - null
-        profile:
-        - PolicyClass_profile
-        - PolicyClass_profile
-        prohibition:
-        - action: action
-          constraint:
-          - null
-          - null
-        - action: action
-          constraint:
-          - null
-          - null
-        permission:
-        - action: action
-          constraint:
-          - or:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            and:
-            - null
-            - null
-            xone:
-            - null
-            - null
-          - or:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            and:
-            - null
-            - null
-            xone:
-            - null
-            - null
-        - action: action
-          constraint:
-          - or:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            and:
-            - null
-            - null
-            xone:
-            - null
-            - null
-          - or:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            and:
-            - null
-            - null
-            xone:
-            - null
-            - null
-      properties:
-        '@type':
-          type: string
-        profile:
-          $ref: "#/components/schemas/PolicyClass_profile"
-        permission:
-          items:
-            $ref: "#/components/schemas/Permission"
-          minItems: 1
-          type: array
-        prohibition:
-          items:
-            $ref: "#/components/schemas/Prohibition"
-          minItems: 1
-          type: array
-        obligation:
-          items:
-            $ref: "#/components/schemas/Duty"
-          minItems: 1
-          type: array
-      required:
-      - '@type'
-      type: object
-    DataPlaneInstanceSchemaV3:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': your-dataplane-id
-        url: http://somewhere.com:1234/api/v1
-        allowedSourceTypes:
-        - source-type1
-        - source-type2
-        allowedDestTypes:
-        - your-dest-type
-        allowedTransferTypes:
-        - transfer-type
-        state: AVAILABLE
-        stateTimestamp: 1688465655
-      properties:
-        '@context':
-          type: object
-        '@id':
-          type: string
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/DataPlaneInstance
-          type: string
-        allowedDestTypes:
-          deprecated: true
-          items:
-            deprecated: true
-            type: string
-          type: array
-          uniqueItems: true
-        allowedSourceTypes:
-          items:
-            type: string
-          type: array
-          uniqueItems: true
-        lastActive:
-          format: int64
-          type: integer
         state:
           type: string
-        stateTimestamp:
-          format: int64
-          type: integer
-        turnCount:
-          deprecated: true
-          format: int32
-          type: integer
-        url:
-          format: url
+        type:
+          enum:
+          - CONSUMER
+          - PROVIDER
           type: string
-      required:
-      - '@context'
-      - allowedDestTypes
-      - allowedSourceTypes
-      - url
       type: object
-    id-response-schema:
-      allOf:
-      - $ref: "#/components/schemas/IdResponse_1"
-      example:
-        createdAt: 0.8008281904610115
-        '@type': '@type'
-        '@id': '@id'
-        '@context':
-        - '@context'
-        - '@context'
-      title: IdResponseSchema
-      type: object
-    IdResponse_1:
+    CallbackAddress_1:
       properties:
-        '@context':
-          allOf:
-          - $ref: "#/components/schemas/ContextSchema"
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/CallbackAddress
+          type: string
+        authCodeId:
+          type: string
+        authKey:
+          type: string
+        events:
           items:
             type: string
-          title: ContextSchema
           type: array
-        '@type':
+          uniqueItems: true
+        transactional:
+          type: boolean
+        uri:
           type: string
+      type: object
+    DataAddress:
+      properties:
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/DataAddress
+          type: string
+        type:
+          type: string
+      type: object
+    Properties:
+      type: object
+    QuerySpec_1:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': QuerySpec
+        offset: 5
+        limit: 10
+        sortOrder: DESC
+        sortField: fieldName
+        filterExpression: []
+      properties:
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/QuerySpec
+          type: string
+        filterExpression:
+          items:
+            $ref: "#/components/schemas/Criterion_1"
+          type: array
+        limit:
+          format: int32
+          type: integer
+        offset:
+          format: int32
+          type: integer
+        sortField:
+          type: string
+        sortOrder:
+          enum:
+          - ASC
+          - DESC
+          type: string
+      type: object
+    Criterion_1:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': Criterion
+        operandLeft: fieldName
+        operator: =
+        operandRight: some value
+      properties:
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/Criterion
+          type: string
+        operandLeft:
+          type: object
+        operandRight:
+          type: object
+        operator:
+          type: string
+      required:
+      - operandLeft
+      - operandRight
+      - operator
+      type: object
+    IdResponse_1:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': id-value
+        createdAt: 1688465655
+      properties:
         '@id':
           type: string
         createdAt:
-          type: number
-      required:
-      - '@context'
-      - '@id'
-      - '@type'
-      - createdAt
+          format: int64
+          type: integer
       type: object
-    contract-request-schema:
-      allOf:
-      - $ref: "#/components/schemas/ContractRequest"
-      title: ContractRequestSchema
-      type: object
-    ContractRequest:
+    TransferRequestV3:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TransferRequest
+        protocol: dataspace-protocol-http
+        counterPartyAddress: http://provider-address
+        contractId: contract-id
+        transferType: transferType
+        dataDestination:
+          type: data-destination-type
+        privateProperties:
+          private-key: private-value
+        callbackAddresses:
+        - transactional: false
+          uri: http://callback/url
+          events:
+          - contract.negotiation
+          - transfer.process
+          authKey: auth-key
+          authCodeId: auth-code-id
       properties:
         '@context':
-          allOf:
-          - $ref: "#/components/schemas/ContextSchema"
-          items:
-            type: string
-          title: ContextSchema
-          type: array
+          type: object
         '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/TransferRequest
           type: string
-        '@id':
+        assetId:
+          deprecated: true
           type: string
-        counterPartyAddress:
-          type: string
-        protocol:
-          type: string
-        policy:
-          $ref: "#/components/schemas/contract-offer-schema"
         callbackAddresses:
           items:
-            $ref: "#/components/schemas/callback-address-schema"
+            $ref: "#/components/schemas/CallbackAddress_1"
           type: array
-      required:
-      - '@context'
-      - '@type'
-      - counterPartyAddress
-      - policy
-      - protocol
-      type: object
-    contract-offer-schema:
-      allOf:
-      - $ref: "#/components/schemas/ContractOffer"
-      title: ContractOfferSchema
-      type: object
-    ContractOffer:
-      allOf:
-      - $ref: "#/components/schemas/MessageOffer"
-      - properties:
-          assigner:
-            type: string
-      required:
-      - assigner
-      - target
-      type: object
-    MessageOffer:
-      allOf:
-      - $ref: "#/components/schemas/PolicyClass"
-      - properties:
-          '@type':
-            type: string
-          target:
-            type: string
-      - anyOf: []
-        nullable: true
-      required:
-      - '@type'
-      type: object
-    DatasetV3:
-      description: DCAT dataset
-      example:
-        '@id': bcca61be-e82e-4da6-bfec-9716a56cef35
-        '@type': dcat:Dataset
-        odrl:hasPolicy:
-          '@id': OGU0ZTMzMGMtODQ2ZS00ZWMxLThmOGQtNWQxNWM0NmI2NmY4:YmNjYTYxYmUtZTgyZS00ZGE2LWJmZWMtOTcxNmE1NmNlZjM1:NDY2ZTZhMmEtNjQ1Yy00ZGQ0LWFlZDktMjdjNGJkZTU4MDNj
-          '@type': odrl:Set
-          odrl:permission:
-            odrl:target: bcca61be-e82e-4da6-bfec-9716a56cef35
-            odrl:action:
-              odrl:type: http://www.w3.org/ns/odrl/2/use
-            odrl:constraint:
-              odrl:and:
-              - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
-                odrl:operator:
-                  '@id': odrl:gteq
-                odrl:rightOperand: 2023-07-07T07:19:58.585601395Z
-              - odrl:leftOperand: https://w3id.org/edc/v0.0.1/ns/inForceDate
-                odrl:operator:
-                  '@id': odrl:lteq
-                odrl:rightOperand: 2023-07-12T07:19:58.585601395Z
-          odrl:prohibition: []
-          odrl:obligation: []
-          odrl:target: bcca61be-e82e-4da6-bfec-9716a56cef35
-        dcat:distribution:
-        - '@type': dcat:Distribution
-          dct:format:
-            '@id': HttpData
-          dcat:accessService: 5e839777-d93e-4785-8972-1005f51cf367
-        description: description
-        id: bcca61be-e82e-4da6-bfec-9716a56cef35
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-          dct: http://purl.org/dc/terms/
-          edc: https://w3id.org/edc/v0.0.1/ns/
-          dcat: http://www.w3.org/ns/dcat#
-          odrl: http://www.w3.org/ns/odrl/2/
-          dspace: https://w3id.org/dspace/v0.8/
-      type: object
-    DatasetRequestV3:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': DatasetRequest
-        '@id': dataset-id
-        counterPartyAddress: http://counter-party-address
-        counterPartyId: counter-party-id
-        protocol: dataspace-protocol-http
-      properties:
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/CatalogRequest
+        contractId:
           type: string
         counterPartyAddress:
           type: string
-        counterPartyId:
-          type: string
+        dataDestination:
+          $ref: "#/components/schemas/DataAddress"
+        privateProperties:
+          type: object
         protocol:
           type: string
-        querySpec:
-          $ref: "#/components/schemas/QuerySpec"
-      type: object
-    policy-evaluation-plan-schema:
-      allOf:
-      - $ref: "#/components/schemas/PolicyEvaluationPlan"
-      example:
-        '@type': '@type'
-        preValidators:
-        - preValidators
-        - preValidators
-        permissionSteps:
-        - ruleFunctions:
-          - ruleFunctions
-          - ruleFunctions
-          filteringReasons:
-          - filteringReasons
-          - filteringReasons
-          '@type': '@type'
-          dutySteps:
-          - ruleFunctions:
-            - ruleFunctions
-            - ruleFunctions
-            filteringReasons:
-            - filteringReasons
-            - filteringReasons
-            '@type': '@type'
-            isFiltered: true
-            constraintSteps:
-            - null
-            - null
-          - ruleFunctions:
-            - ruleFunctions
-            - ruleFunctions
-            filteringReasons:
-            - filteringReasons
-            - filteringReasons
-            '@type': '@type'
-            isFiltered: true
-            constraintSteps:
-            - null
-            - null
-          isFiltered: true
-          constraintSteps:
-          - '@type': '@type'
-            constraintSteps:
-            - null
-            - null
-          - '@type': '@type'
-            constraintSteps:
-            - null
-            - null
-        - ruleFunctions:
-          - ruleFunctions
-          - ruleFunctions
-          filteringReasons:
-          - filteringReasons
-          - filteringReasons
-          '@type': '@type'
-          dutySteps:
-          - ruleFunctions:
-            - ruleFunctions
-            - ruleFunctions
-            filteringReasons:
-            - filteringReasons
-            - filteringReasons
-            '@type': '@type'
-            isFiltered: true
-            constraintSteps:
-            - null
-            - null
-          - ruleFunctions:
-            - ruleFunctions
-            - ruleFunctions
-            filteringReasons:
-            - filteringReasons
-            - filteringReasons
-            '@type': '@type'
-            isFiltered: true
-            constraintSteps:
-            - null
-            - null
-          isFiltered: true
-          constraintSteps:
-          - '@type': '@type'
-            constraintSteps:
-            - null
-            - null
-          - '@type': '@type'
-            constraintSteps:
-            - null
-            - null
-        dutySteps:
-        - ruleFunctions:
-          - ruleFunctions
-          - ruleFunctions
-          filteringReasons:
-          - filteringReasons
-          - filteringReasons
-          '@type': '@type'
-          isFiltered: true
-          constraintSteps:
-          - null
-          - null
-        - ruleFunctions:
-          - ruleFunctions
-          - ruleFunctions
-          filteringReasons:
-          - filteringReasons
-          - filteringReasons
-          '@type': '@type'
-          isFiltered: true
-          constraintSteps:
-          - null
-          - null
-        prohibitionSteps:
-        - ruleFunctions:
-          - ruleFunctions
-          - ruleFunctions
-          filteringReasons:
-          - filteringReasons
-          - filteringReasons
-          '@type': '@type'
-          isFiltered: true
-          constraintSteps:
-          - null
-          - null
-        - ruleFunctions:
-          - ruleFunctions
-          - ruleFunctions
-          filteringReasons:
-          - filteringReasons
-          - filteringReasons
-          '@type': '@type'
-          isFiltered: true
-          constraintSteps:
-          - null
-          - null
-        '@context':
-        - '@context'
-        - '@context'
-        postValidators:
-        - postValidators
-        - postValidators
-      title: PolicyEvaluationPlanSchema
-      type: object
-    PolicyEvaluationPlan:
-      properties:
-        '@context':
-          allOf:
-          - $ref: "#/components/schemas/ContextSchema"
-          items:
-            type: string
-          title: ContextSchema
-          type: array
-        '@type':
-          type: string
-        preValidators:
-          items:
-            type: string
-          type: array
-        postValidators:
-          items:
-            type: string
-          type: array
-        permissionSteps:
-          items:
-            $ref: "#/components/schemas/PermissionStep"
-          type: array
-        prohibitionSteps:
-          items:
-            $ref: "#/components/schemas/ProhibitionStep"
-          type: array
-        dutySteps:
-          items:
-            $ref: "#/components/schemas/DutyStep"
-          type: array
-      required:
-      - '@context'
-      - '@type'
-      type: object
-    PermissionStep:
-      allOf:
-      - $ref: "#/components/schemas/RuleStep"
-      - properties:
-          '@type':
-            type: string
-          dutySteps:
-            items:
-              $ref: "#/components/schemas/DutyStep"
-            type: array
-      example:
-        ruleFunctions:
-        - ruleFunctions
-        - ruleFunctions
-        filteringReasons:
-        - filteringReasons
-        - filteringReasons
-        '@type': '@type'
-        dutySteps:
-        - ruleFunctions:
-          - ruleFunctions
-          - ruleFunctions
-          filteringReasons:
-          - filteringReasons
-          - filteringReasons
-          '@type': '@type'
-          isFiltered: true
-          constraintSteps:
-          - null
-          - null
-        - ruleFunctions:
-          - ruleFunctions
-          - ruleFunctions
-          filteringReasons:
-          - filteringReasons
-          - filteringReasons
-          '@type': '@type'
-          isFiltered: true
-          constraintSteps:
-          - null
-          - null
-        isFiltered: true
-        constraintSteps:
-        - '@type': '@type'
-          constraintSteps:
-          - null
-          - null
-        - '@type': '@type'
-          constraintSteps:
-          - null
-          - null
-      required:
-      - '@type'
-      type: object
-    RuleStep:
-      properties:
-        isFiltered:
-          type: boolean
-        filteringReasons:
-          items:
-            type: string
-          type: array
-        constraintSteps:
-          items:
-            $ref: "#/components/schemas/ConstraintStep"
-          type: array
-        ruleFunctions:
-          items:
-            type: string
-          type: array
-      type: object
-    ConstraintStep:
-      oneOf:
-      - $ref: "#/components/schemas/AndConstraintStep"
-      - $ref: "#/components/schemas/OrConstraintStep"
-      - $ref: "#/components/schemas/XoneConstraintStep"
-      - $ref: "#/components/schemas/AtomicConstraintStep"
-    AndConstraintStep:
-      allOf:
-      - $ref: "#/components/schemas/MultiplicityConstraintStep"
-      - properties:
-          '@type':
-            type: string
-      example:
-        '@type': '@type'
-        constraintSteps:
-        - null
-        - null
-      required:
-      - '@type'
-      type: object
-    MultiplicityConstraintStep:
-      properties:
-        constraintSteps:
-          items:
-            $ref: "#/components/schemas/ConstraintStep"
-          type: array
-      required:
-      - constraintSteps
-      type: object
-    OrConstraintStep:
-      allOf:
-      - $ref: "#/components/schemas/MultiplicityConstraintStep"
-      - properties:
-          '@type':
-            type: string
-      required:
-      - '@type'
-      type: object
-    XoneConstraintStep:
-      allOf:
-      - $ref: "#/components/schemas/MultiplicityConstraintStep"
-      - properties:
-          '@type':
-            type: string
-      required:
-      - '@type'
-      type: object
-    AtomicConstraintStep:
-      properties:
-        '@type':
-          type: string
-        isFiltered:
-          type: boolean
-        filteringReasons:
-          items:
-            type: string
-          type: array
-        functionName:
-          type: string
-        functionParams:
-          items:
-            type: string
-          type: array
-      required:
-      - '@type'
-      type: object
-    DutyStep:
-      allOf:
-      - $ref: "#/components/schemas/RuleStep"
-      - properties:
-          '@type':
-            type: string
-      example:
-        ruleFunctions:
-        - ruleFunctions
-        - ruleFunctions
-        filteringReasons:
-        - filteringReasons
-        - filteringReasons
-        '@type': '@type'
-        isFiltered: true
-        constraintSteps:
-        - null
-        - null
-      required:
-      - '@type'
-      type: object
-    ProhibitionStep:
-      allOf:
-      - $ref: "#/components/schemas/RuleStep"
-      - properties:
-          '@type':
-            type: string
-      example:
-        ruleFunctions:
-        - ruleFunctions
-        - ruleFunctions
-        filteringReasons:
-        - filteringReasons
-        - filteringReasons
-        '@type': '@type'
-        isFiltered: true
-        constraintSteps:
-        - null
-        - null
-      required:
-      - '@type'
-      type: object
-    policy-evaluation-plan-request-schema:
-      allOf:
-      - $ref: "#/components/schemas/PolicyEvaluationPlanRequest"
-      title: PolicyEvaluationPlanRequestSchema
-      type: object
-    PolicyEvaluationPlanRequest:
-      properties:
-        '@context':
-          allOf:
-          - $ref: "#/components/schemas/ContextSchema"
-          items:
-            type: string
-          title: ContextSchema
-          type: array
-        '@type':
-          type: string
-        policyScope:
+        transferType:
           type: string
       required:
       - '@context'
-      - '@type'
-      - policyScope
+      - contractId
+      - counterPartyAddress
+      - protocol
+      - transferType
       type: object
-    PolicyValidationResultSchemaV3:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': PolicyValidationResult
-        isValid: false
-        errors:
-        - error1
-        - error2
-      properties:
-        errors:
-          items:
-            type: string
-          type: array
-        isValid:
-          type: boolean
-      type: object
-    dataset-schema:
-      allOf:
-      - $ref: "#/components/schemas/RootDataset"
-      example:
-        hasPolicy:
-        - obligation:
-          - action: null
-            constraint:
-            - null
-            - null
-          - action: null
-            constraint:
-            - null
-            - null
-          '@type': '@type'
-          profile:
-          - PolicyClass_profile
-          - PolicyClass_profile
-          prohibition:
-          - action: action
-            constraint:
-            - null
-            - null
-          - action: action
-            constraint:
-            - null
-            - null
-          permission:
-          - action: action
-            constraint:
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-          - action: action
-            constraint:
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-          '@id': '@id'
-        - obligation:
-          - action: null
-            constraint:
-            - null
-            - null
-          - action: null
-            constraint:
-            - null
-            - null
-          '@type': '@type'
-          profile:
-          - PolicyClass_profile
-          - PolicyClass_profile
-          prohibition:
-          - action: action
-            constraint:
-            - null
-            - null
-          - action: action
-            constraint:
-            - null
-            - null
-          permission:
-          - action: action
-            constraint:
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-          - action: action
-            constraint:
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-            - or:
-              - null
-              - null
-              andSequence:
-              - null
-              - null
-              and:
-              - null
-              - null
-              xone:
-              - null
-              - null
-          '@id': '@id'
-        '@id': '@id'
-        distribution:
-        - hasPolicy:
-          - obligation:
-            - action: null
-              constraint:
-              - null
-              - null
-            - action: null
-              constraint:
-              - null
-              - null
-            '@type': '@type'
-            profile:
-            - PolicyClass_profile
-            - PolicyClass_profile
-            prohibition:
-            - action: action
-              constraint:
-              - null
-              - null
-            - action: action
-              constraint:
-              - null
-              - null
-            permission:
-            - action: action
-              constraint:
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-            - action: action
-              constraint:
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-            '@id': '@id'
-          - obligation:
-            - action: null
-              constraint:
-              - null
-              - null
-            - action: null
-              constraint:
-              - null
-              - null
-            '@type': '@type'
-            profile:
-            - PolicyClass_profile
-            - PolicyClass_profile
-            prohibition:
-            - action: action
-              constraint:
-              - null
-              - null
-            - action: action
-              constraint:
-              - null
-              - null
-            permission:
-            - action: action
-              constraint:
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-            - action: action
-              constraint:
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-            '@id': '@id'
-          accessService: Distribution_accessService
-          format: format
-        - hasPolicy:
-          - obligation:
-            - action: null
-              constraint:
-              - null
-              - null
-            - action: null
-              constraint:
-              - null
-              - null
-            '@type': '@type'
-            profile:
-            - PolicyClass_profile
-            - PolicyClass_profile
-            prohibition:
-            - action: action
-              constraint:
-              - null
-              - null
-            - action: action
-              constraint:
-              - null
-              - null
-            permission:
-            - action: action
-              constraint:
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-            - action: action
-              constraint:
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-            '@id': '@id'
-          - obligation:
-            - action: null
-              constraint:
-              - null
-              - null
-            - action: null
-              constraint:
-              - null
-              - null
-            '@type': '@type'
-            profile:
-            - PolicyClass_profile
-            - PolicyClass_profile
-            prohibition:
-            - action: action
-              constraint:
-              - null
-              - null
-            - action: action
-              constraint:
-              - null
-              - null
-            permission:
-            - action: action
-              constraint:
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-            - action: action
-              constraint:
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-              - or:
-                - null
-                - null
-                andSequence:
-                - null
-                - null
-                and:
-                - null
-                - null
-                xone:
-                - null
-                - null
-            '@id': '@id'
-          accessService: Distribution_accessService
-          format: format
-        '@context': {}
-      title: DatasetSchema
-      type: object
-    RootDataset:
-      allOf:
-      - $ref: "#/components/schemas/Dataset"
-      - properties:
-          '@context':
-            $ref: "#/components/schemas/context-schema_1"
-        required:
-        - '@context'
-        type: object
-        example: null
-      type: object
-      example: null
-    NegotiationState_1:
-      properties:
-        state:
-          type: string
-      type: object
-    PolicyClass_profile:
-      oneOf:
-      - items:
-          type: string
-        type: array
-      - type: string
-    Distribution_accessService:
-      oneOf:
-      - type: string
-      - $ref: "#/components/schemas/DataService"
