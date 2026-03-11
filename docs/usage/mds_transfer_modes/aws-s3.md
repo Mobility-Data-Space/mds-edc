@@ -228,9 +228,7 @@ Credentials can be stored in EDC's vault system and referenced by key:
 All secrets stored in HashiCorp Vault for EDC must follow this format:
 
 ```json
-{
-  "content": "{\"accessKeyId\":\"AKIA...\",\"secretAccessKey\":\"secret...\"}"
-}
+{ "content": "{\n  \"edctype\": \"dataspaceconnector:secrettoken\",\n  \"accessKeyId\": \"xxxxxxxxxx\",\n  \"secretAccessKey\": \"xxxxxxxxxxx\"\n}" }
 ```
 
 #### Credential Types
@@ -240,33 +238,31 @@ The vault can store two types of AWS credentials inside the `content` field:
 **Standard credentials (AwsSecretToken):**
 
 ```json
-{
-  "content": "{\"accessKeyId\":\"AKIA...\",\"secretAccessKey\":\"secret...\"}"
-}
+{ "content": "{\n  \"edctype\": \"dataspaceconnector:secrettoken\",\n  \"accessKeyId\": \"xxxxxxxxxx\",\n  \"secretAccessKey\": \"xxxxxxxxxxx\"\n}" }
 ```
 
 The serialized JSON string contains:
 ```json
 {
-  "accessKeyId": "AKIA...",
-  "secretAccessKey": "secret..."
+  "edctype": "dataspaceconnector:secrettoken",
+  "accessKeyId": "xxxxxxxxxx",
+  "secretAccessKey": "xxxxxxxxxx"
 }
 ```
 
 **Temporary credentials (AwsTemporarySecretToken):**
 
 ```json
-{
-  "content": "{\"accessKeyId\":\"ASIA...\",\"secretAccessKey\":\"secret...\",\"sessionToken\":\"IQoJb3JpZ2lu...\",\"expiration\":1234567890}"
-}
+{ "content": "{\n  \"edctype\": \"dataspaceconnector:secrettoken\",\n  \"accessKeyId\": \"xxxxxxxxxx\",\n  \"secretAccessKey\": \"xxxxxxxxxxx\",\n  \"sessionToken\":\"xxxxxxxxxx\",\n  \"expiration\":1234567890\n}" }
 ```
 
 The serialized JSON string contains:
 ```json
 {
-  "accessKeyId": "ASIA...",
-  "secretAccessKey": "secret...",
-  "sessionToken": "IQoJb3JpZ2lu...",
+  "edctype": "dataspaceconnector:secrettoken",
+  "accessKeyId": "xxxxxxxxxx",
+  "secretAccessKey": "xxxxxxxxxx",
+  "sessionToken": "xxxxxxxxxx",
   "expiration": 1234567890
 }
 ```
