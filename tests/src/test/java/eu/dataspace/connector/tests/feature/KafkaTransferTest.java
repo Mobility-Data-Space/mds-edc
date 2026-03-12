@@ -109,6 +109,8 @@ class KafkaTransferTest {
         var edr = objectMapper.readTree(edrRequests.get(0).getRequest().getBodyAsString()).get("payload").get("dataAddress").get("properties");
         var edrData = objectMapper.convertValue(edr, KafkaEdr.class);
 
+        assertThat(KAFKA_EXTENSION.clientExistsInKeycloak(edrData.clientId())).isTrue();
+
         var props = deserialize(edrData.kafkaConsumerProperties());
         var kafkaConsumer = new KafkaConsumer<>(props);
         kafkaConsumer.subscribe(List.of(edrData.topic()));
@@ -128,6 +130,9 @@ class KafkaTransferTest {
             assertThatThrownBy(() -> kafkaConsumer.poll(Duration.ZERO)).isInstanceOf(TopicAuthorizationException.class);
         });
 
+        await().untilAsserted(() -> {
+            assertThat(KAFKA_EXTENSION.clientExistsInKeycloak(edrData.clientId())).isFalse();
+        });
     }
 
     private String serializeToString(Properties properties) {

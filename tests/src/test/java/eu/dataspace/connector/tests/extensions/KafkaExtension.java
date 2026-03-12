@@ -197,6 +197,10 @@ public class KafkaExtension implements BeforeAllCallback, AfterAllCallback {
         });
     }
 
+    public boolean clientExistsInKeycloak(String clientId) {
+        return !createAdminClient().realm(OAUTH_REALM).clients().findByClientId(clientId).isEmpty();
+    }
+
     public String createInitialAccessToken() {
         return createAdminClient().realm(OAUTH_REALM)
                 .clientInitialAccess()

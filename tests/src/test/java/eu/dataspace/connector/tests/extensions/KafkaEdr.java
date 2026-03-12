@@ -6,6 +6,7 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public record KafkaEdr(
         @JsonProperty(EDC_NAMESPACE + "topic") String topic,
-        @JsonProperty(EDC_NAMESPACE + "kafkaConsumerProperties") String kafkaConsumerProperties
+        @JsonProperty(EDC_NAMESPACE + "kafkaConsumerProperties") String kafkaConsumerProperties,
+        @JsonProperty(EDC_NAMESPACE + "clientId") String clientId
 ) {
 }

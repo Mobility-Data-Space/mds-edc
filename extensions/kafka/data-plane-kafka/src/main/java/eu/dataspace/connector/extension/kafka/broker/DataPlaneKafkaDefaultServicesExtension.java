@@ -23,7 +23,7 @@ public class DataPlaneKafkaDefaultServicesExtension implements ServiceExtension 
     @Provider(isDefault = true)
     public IdentityProvider identityProvider() {
         var openIdConnectService = new OpenIdConnectService(httpClient, typeManager.getMapper());
-        return new OpenIdConnectIdentityProvider(openIdConnectService, vault);
+        return new OpenIdConnectIdentityProvider(openIdConnectService, vault, typeManager.getMapper());
     }
 
     @Provider(isDefault = true)
