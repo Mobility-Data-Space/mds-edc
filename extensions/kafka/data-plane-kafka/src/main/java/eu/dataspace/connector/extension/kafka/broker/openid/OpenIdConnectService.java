@@ -75,15 +75,37 @@ public class OpenIdConnectService {
                 .flatMap(ServiceResult::from);
     }
 
+    public ServiceResult<Void> deleteClient(String registrationClientUri, String registrationAccessToken) {
+        var request = new Request.Builder()
+                .url(registrationClientUri)
+                .delete()
+                .addHeader("Authorization", "Bearer " + registrationAccessToken)
+                .build();
+
+        return httpClient.execute(request, response -> handleResponse("deleteClient", response))
+                .flatMap(ServiceResult::from);
+    }
+
+    private @NotNull Result<Void> handleResponse(String callName, Response response) {
+        return checkStatus(callName, response).mapEmpty();
+    }
+
     private @NotNull <T> Result<T> handleResponse(String callName, Response response, Class<T> type) {
+        return checkStatus(callName, response).compose(r -> {
+            try (var responseBody = r.body()) {
+                return Result.success(objectMapper.readValue(responseBody.byteStream(), type));
+            } catch (IOException e) {
+                return Result.failure("Cannot deserialize response: " + e.getMessage());
+            }
+        });
+    }
+
+    private Result<Response> checkStatus(String callName, Response response) {
         if (!response.isSuccessful()) {
             return Result.failure(callName + " responded with " + response.code());
         }
-
-        try (var responseBody = response.body()) {
-            return Result.success(objectMapper.readValue(responseBody.byteStream(), type));
-        } catch (IOException e) {
-            return Result.failure("Cannot deserialize response: " + e.getMessage());
+        else {
+            return Result.success(response);
         }
     }
 

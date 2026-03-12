@@ -6,6 +6,10 @@ public record ClientRegistrationResponse(
         @JsonAlias("client_id")
         String clientId,
         @JsonAlias("client_secret")
-        String clientSecret
+        String clientSecret,
+        @JsonAlias("registration_client_uri")
+        String registrationClientUri,
+        @JsonAlias("registration_access_token")
+        String registrationAccessToken
 ) {
 }
