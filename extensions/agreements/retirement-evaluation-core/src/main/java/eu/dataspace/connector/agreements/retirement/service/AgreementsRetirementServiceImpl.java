@@ -1,5 +1,11 @@
 package eu.dataspace.connector.agreements.retirement.service;
 
+import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementEvent;
+import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementReactivated;
+import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementRetired;
+import eu.dataspace.connector.agreements.retirement.spi.service.AgreementsRetirementService;
+import eu.dataspace.connector.agreements.retirement.spi.store.AgreementsRetirementStore;
+import eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry;
 import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.edc.spi.event.EventRouter;
@@ -7,12 +13,6 @@ import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.transaction.spi.TransactionContext;
-import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementEvent;
-import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementReactivated;
-import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementRetired;
-import eu.dataspace.connector.agreements.retirement.spi.service.AgreementsRetirementService;
-import eu.dataspace.connector.agreements.retirement.spi.store.AgreementsRetirementStore;
-import eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
 import java.time.Clock;
 import java.util.List;

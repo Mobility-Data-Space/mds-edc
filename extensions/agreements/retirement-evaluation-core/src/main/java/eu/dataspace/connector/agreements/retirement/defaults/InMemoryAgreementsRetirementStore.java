@@ -1,5 +1,7 @@
 package eu.dataspace.connector.agreements.retirement.defaults;
 
+import eu.dataspace.connector.agreements.retirement.spi.types.EnhancedContractAgreement;
+import org.eclipse.edc.connector.controlplane.contract.spi.negotiation.store.ContractNegotiationStore;
 import org.eclipse.edc.spi.query.CriterionOperatorRegistry;
 import org.eclipse.edc.spi.query.QueryResolver;
 import org.eclipse.edc.spi.query.QuerySpec;
@@ -18,10 +20,12 @@ import java.util.stream.Stream;
 public class InMemoryAgreementsRetirementStore implements AgreementsRetirementStore {
 
     private final QueryResolver<AgreementsRetirementEntry> queryResolver;
+    private final ContractNegotiationStore contractNegotiationStore;
     private final Map<String, AgreementsRetirementEntry> cache = new ConcurrentHashMap<>();
 
-    public InMemoryAgreementsRetirementStore(CriterionOperatorRegistry criterionOperatorRegistry) {
+    public InMemoryAgreementsRetirementStore(CriterionOperatorRegistry criterionOperatorRegistry, ContractNegotiationStore contractNegotiationStore) {
         queryResolver = new ReflectionBasedQueryResolver<>(AgreementsRetirementEntry.class, criterionOperatorRegistry);
+        this.contractNegotiationStore = contractNegotiationStore;
     }
 
     @Override
@@ -43,5 +47,11 @@ public class InMemoryAgreementsRetirementStore implements AgreementsRetirementSt
     @Override
     public Stream<AgreementsRetirementEntry> findRetiredAgreements(QuerySpec querySpec) {
         return queryResolver.query(cache.values().stream(), querySpec);
+    }
+
+    @Override
+    public Stream<EnhancedContractAgreement> findEnhancedAgreements(QuerySpec querySpec) {
+        return contractNegotiationStore.queryAgreements(querySpec)
+                .map(agreement -> new EnhancedContractAgreement(agreement, cache.get(agreement.getId())));
     }
 }

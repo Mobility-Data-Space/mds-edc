@@ -1,6 +1,9 @@
 package eu.dataspace.connector.tests.feature;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
@@ -14,9 +17,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
 import java.io.IOException;
 import java.util.Collections;
