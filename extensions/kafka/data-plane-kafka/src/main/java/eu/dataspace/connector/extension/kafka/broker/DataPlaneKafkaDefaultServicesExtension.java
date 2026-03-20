@@ -4,6 +4,7 @@ import eu.dataspace.connector.dataplane.kafka.spi.AccessControlLists;
 import eu.dataspace.connector.dataplane.kafka.spi.IdentityProvider;
 import eu.dataspace.connector.extension.kafka.broker.acls.KafkaAccessControlLists;
 import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConnectService;
+import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -19,6 +20,8 @@ public class DataPlaneKafkaDefaultServicesExtension implements ServiceExtension 
     private TypeManager typeManager;
     @Inject
     private Vault vault;
+    @Inject
+    private DataPlaneStore dataPlaneStore;
 
     @Provider(isDefault = true)
     public IdentityProvider identityProvider() {
@@ -28,6 +31,6 @@ public class DataPlaneKafkaDefaultServicesExtension implements ServiceExtension 
 
     @Provider(isDefault = true)
     public AccessControlLists accessControlLists() {
-        return new KafkaAccessControlLists(vault);
+        return new KafkaAccessControlLists(vault, dataPlaneStore);
     }
 }
