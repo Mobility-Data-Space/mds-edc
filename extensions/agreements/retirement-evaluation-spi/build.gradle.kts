@@ -4,8 +4,9 @@ plugins {
 }
 
 dependencies {
-    api(libs.edc.policy.engine.spi)
+    api(libs.edc.contract.spi)
     api(libs.edc.core.spi)
+    api(libs.edc.policy.engine.spi)
 
     testImplementation(libs.edc.junit)
 }

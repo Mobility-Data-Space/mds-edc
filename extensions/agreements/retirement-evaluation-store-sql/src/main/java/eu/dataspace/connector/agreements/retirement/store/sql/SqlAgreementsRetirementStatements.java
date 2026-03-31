@@ -2,6 +2,7 @@ package eu.dataspace.connector.agreements.retirement.store.sql;
 
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.sql.statement.SqlStatements;
+import org.eclipse.edc.sql.translation.SqlOperatorTranslator;
 import org.eclipse.edc.sql.translation.SqlQueryStatement;
 
 /**
@@ -34,4 +35,6 @@ public interface SqlAgreementsRetirementStatements extends SqlStatements {
     String getCountVariableName();
 
     SqlQueryStatement createQuery(QuerySpec querySpec);
+
+    SqlOperatorTranslator getOperatorTranslator();
 }

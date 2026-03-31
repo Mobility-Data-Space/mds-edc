@@ -1,17 +1,23 @@
 package eu.dataspace.connector.agreements.retirement.store;
 
-import org.eclipse.edc.spi.query.Criterion;
-import org.eclipse.edc.spi.query.QuerySpec;
 import eu.dataspace.connector.agreements.retirement.spi.store.AgreementsRetirementStore;
 import eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry;
+import org.eclipse.edc.connector.controlplane.contract.spi.negotiation.store.ContractNegotiationStore;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiation;
+import org.eclipse.edc.policy.model.Policy;
+import org.eclipse.edc.spi.query.Criterion;
+import org.eclipse.edc.spi.query.QuerySpec;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static eu.dataspace.connector.agreements.retirement.spi.store.AgreementsRetirementStore.ALREADY_EXISTS_TEMPLATE;
 import static eu.dataspace.connector.agreements.retirement.spi.store.AgreementsRetirementStore.NOT_FOUND_IN_RETIREMENT_TEMPLATE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 
 public abstract class AgreementsRetirementStoreTestBase {
 
@@ -57,7 +63,6 @@ public abstract class AgreementsRetirementStoreTestBase {
         var delete = getStore().delete(agreementId);
 
         assertThat(delete).isSucceeded();
-
     }
 
     @Test
@@ -67,6 +72,60 @@ public abstract class AgreementsRetirementStoreTestBase {
 
         assertThat(delete).isFailed()
                 .detail().isEqualTo(NOT_FOUND_IN_RETIREMENT_TEMPLATE.formatted(agreementId));
+    }
+
+    @Nested
+    class FindAgreements {
+        @Test
+        void shouldReturnEmptyList_whenThereAreNoAgreements() {
+            var agreements = getStore().findEnhancedAgreements(QuerySpec.max());
+
+            assertThat(agreements).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAgreementWithoutRevocation() {
+            var contractNegotiation = createNegotiationWithAgreement();
+
+            getContractNegotiationStore().save(contractNegotiation);
+
+            var agreements = getStore().findEnhancedAgreements(QuerySpec.max());
+
+            assertThat(agreements).hasSize(1).first().satisfies(enriched -> {
+                assertThat(enriched.agreement()).usingRecursiveComparison().isEqualTo(contractNegotiation.getContractAgreement());
+            });
+        }
+
+        @Test
+        void shouldReturnAgreementWithRevocation() {
+            var contractNegotiation = createNegotiationWithAgreement();
+            getContractNegotiationStore().save(contractNegotiation);
+            var retirementEntry = createRetiredAgreementEntry(contractNegotiation.getContractAgreement().getId(), "mock-reason");
+            getStore().save(retirementEntry);
+
+            var agreements = getStore().findEnhancedAgreements(QuerySpec.max());
+
+            assertThat(agreements).hasSize(1).first().satisfies(enriched -> {
+                assertThat(enriched.agreement()).usingRecursiveComparison().isEqualTo(contractNegotiation.getContractAgreement());
+                assertThat(enriched.retirement()).usingRecursiveComparison().ignoringFields("createdAt").isEqualTo(retirementEntry);
+            });
+        }
+
+        private ContractNegotiation createNegotiationWithAgreement() {
+            var contractAgreement = ContractAgreement.Builder.newInstance()
+                    .agreementId(UUID.randomUUID().toString())
+                    .providerId(UUID.randomUUID().toString())
+                    .consumerId(UUID.randomUUID().toString())
+                    .assetId(UUID.randomUUID().toString())
+                    .policy(Policy.Builder.newInstance().build())
+                    .build();
+
+            return ContractNegotiation.Builder.newInstance()
+                    .counterPartyId(UUID.randomUUID().toString())
+                    .counterPartyAddress(UUID.randomUUID().toString())
+                    .protocol(UUID.randomUUID().toString())
+                    .contractAgreement(contractAgreement).build();
+        }
     }
 
     private AgreementsRetirementEntry createRetiredAgreementEntry(String agreementId, String reason) {
@@ -88,5 +147,7 @@ public abstract class AgreementsRetirementStoreTestBase {
     }
 
     protected abstract AgreementsRetirementStore getStore();
+
+    protected abstract ContractNegotiationStore getContractNegotiationStore();
 
 }

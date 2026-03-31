@@ -1,5 +1,6 @@
 package eu.dataspace.connector.agreements.retirement.defaults;
 
+import org.eclipse.edc.connector.controlplane.contract.spi.negotiation.store.ContractNegotiationStore;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
@@ -21,11 +22,13 @@ public class DefaultAgreementRetirementStoreProviderExtension implements Service
     }
 
     @Inject
-    CriterionOperatorRegistry criterionOperatorRegistry;
+    private CriterionOperatorRegistry criterionOperatorRegistry;
+    @Inject
+    private ContractNegotiationStore contractNegotiationStore;
 
     @Provider(isDefault = true)
     public AgreementsRetirementStore createInMemStore() {
-        return new InMemoryAgreementsRetirementStore(criterionOperatorRegistry);
+        return new InMemoryAgreementsRetirementStore(criterionOperatorRegistry, contractNegotiationStore);
     }
 
 }

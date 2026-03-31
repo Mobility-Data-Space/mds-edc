@@ -7,7 +7,7 @@ public class AgreementRetirementMapping extends TranslationMapping {
     private static final String FIELD_REASON = "reason";
     private static final String FIELD_AGREEMENT_RETIREMENT_DATE = "agreementRetirementDate";
 
-    AgreementRetirementMapping(PostgresAgreementRetirementStatements statements) {
+    AgreementRetirementMapping(SqlAgreementsRetirementStatements statements) {
         add(FIELD_ID, statements.getIdColumn());
         add(FIELD_REASON, statements.getReasonColumn());
         add(FIELD_AGREEMENT_RETIREMENT_DATE, statements.getRetirementDateColumn());
