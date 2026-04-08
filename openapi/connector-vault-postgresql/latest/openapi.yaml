@@ -398,6 +398,41 @@ paths:
           description: Request body was malformed
       tags:
       - Contract Negotiation V3
+  /v3/contractagreements/{id}:
+    get:
+      description: Gets an contract agreement with the given ID
+      operationId: getAgreementByIdV3
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractAgreement"
+          description: The contract agreement
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: An contract agreement with the given ID does not exist
+      tags:
+      - Contract Agreement V3
   /v3/edrs/{transferProcessId}/dataaddress:
     get:
       description: Gets the EDR data address with the given transfer process ID
@@ -434,41 +469,6 @@ paths:
             not exist
       tags:
       - EDR Cache V3
-  /v3/contractagreements/{id}:
-    get:
-      description: Gets an contract agreement with the given ID
-      operationId: getAgreementByIdV3
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ContractAgreement"
-          description: The contract agreement
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: "Request was malformed, e.g. id was null"
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: An contract agreement with the given ID does not exist
-      tags:
-      - Contract Agreement V3
   /v3/contractdefinitions/request:
     post:
       description: Returns all contract definitions according to a query
@@ -1379,6 +1379,41 @@ paths:
           description: The runtime is working properly.
       tags:
       - Application Observability
+  /v3/transferprocesses/{id}/state:
+    get:
+      description: Gets the state of a transfer process with the given ID
+      operationId: getTransferProcessStateV3
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferStateV3"
+          description: The  transfer process's state
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: "Request was malformed, e.g. id was null"
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: An  transfer process with the given ID does not exist
+      tags:
+      - Transfer Process V3
   /v4beta/contractdefinitions/{id}:
     delete:
       description: "Removes a contract definition with the given ID if possible. DANGER\
@@ -1486,58 +1521,33 @@ paths:
           description: A contract negotiation with the given ID does not exist
       tags:
       - Contract Negotiation v4beta
-  /v3/transferprocesses/{id}/state:
-    get:
-      description: Gets the state of a transfer process with the given ID
-      operationId: getTransferProcessStateV3
+  /v3/contractagreements/retirements/{agreementId}:
+    delete:
+      description: "Removes a contract agreement from the retired list, reactivating\
+        \ it."
+      operationId: reactivateRetiredV3
       parameters:
-      - in: path
-        name: id
+      - description: The contract agreement id
+        in: path
+        name: agreementId
         required: true
         schema:
           type: string
       responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TransferStateV3"
-          description: The  transfer process's state
+        "204":
+          description: The contract agreement is reactivated
+        "404":
+          description: No entry for the given agreementId was found
         "400":
           content:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
                 type: array
-          description: "Request was malformed, e.g. id was null"
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: An  transfer process with the given ID does not exist
+          description: Request body was malformed
       tags:
-      - Transfer Process V3
-  /v3/contractnegotiations/{id}/reject:
-    post:
-      description: Reject a pending negotiation
-      operationId: rejectNegotiation
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          content:
-            '*/*': {}
-          description: default response
-      tags:
-      - Manual Negotiation Approval
+      - Agreements Retirement
   /v4beta/edrs/{transferProcessId}:
     delete:
       description: Removes an EDR entry given the transfer process ID
@@ -1569,33 +1579,23 @@ paths:
           description: An EDR entry with the given ID does not exist
       tags:
       - EDR Cache v4beta
-  /v3/contractagreements/retirements/{agreementId}:
-    delete:
-      description: "Removes a contract agreement from the retired list, reactivating\
-        \ it."
-      operationId: reactivateRetiredV3
+  /v3/contractnegotiations/{id}/reject:
+    post:
+      description: Reject a pending negotiation
+      operationId: rejectNegotiation
       parameters:
-      - description: The contract agreement id
-        in: path
-        name: agreementId
+      - in: path
+        name: id
         required: true
         schema:
           type: string
       responses:
-        "204":
-          description: The contract agreement is reactivated
-        "404":
-          description: No entry for the given agreementId was found
-        "400":
+        default:
           content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail_1"
-                type: array
-          description: Request body was malformed
+            '*/*': {}
+          description: default response
       tags:
-      - Agreements Retirement
+      - Manual Negotiation Approval
   /check/liveness:
     get:
       description: Performs a liveness probe to determine whether the runtime is working
@@ -1624,6 +1624,34 @@ paths:
           description: The runtime is able to accept requests.
       tags:
       - Application Observability
+  /v3/contractagreements/request:
+    post:
+      description: Gets all contract agreements according to a particular query
+      operationId: queryAgreementsV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuerySpec"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ContractAgreement_1"
+                type: array
+          description: The contract agreements matching the query
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Contract Agreement V3
   /v3/policydefinitions/{id}:
     delete:
       description: "Removes a policy definition with the given ID if possible. Deleting\
@@ -1737,34 +1765,23 @@ paths:
             \ exists"
       tags:
       - Policy Definition v3
-  /v3/contractagreements/request:
+  /v3/catalog/request:
     post:
-      description: Gets all contract agreements according to a particular query
-      operationId: queryAgreementsV3
+      operationId: requestCatalogV3
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/QuerySpec"
+              $ref: "#/components/schemas/CatalogRequestV3"
       responses:
-        "200":
+        default:
           content:
             application/json:
               schema:
-                items:
-                  $ref: "#/components/schemas/ContractAgreement_1"
-                type: array
-          description: The contract agreements matching the query
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: Request body was malformed
+                $ref: "#/components/schemas/CatalogV3"
+          description: Gets contract offers (=catalog) of a single connector
       tags:
-      - Contract Agreement V3
+      - Catalog V3
   /v3/edrs/request:
     post:
       description: Request all Edr entries according to a particular query
@@ -1793,23 +1810,6 @@ paths:
           description: Request body was malformed
       tags:
       - EDR Cache V3
-  /v3/catalog/request:
-    post:
-      operationId: requestCatalogV3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CatalogRequestV3"
-      responses:
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CatalogV3"
-          description: Gets contract offers (=catalog) of a single connector
-      tags:
-      - Catalog V3
   /v3/transferprocesses/{id}/terminate:
     post:
       description: "Requests the termination of a transfer process. Due to the asynchronous\
@@ -1914,6 +1914,34 @@ paths:
             \ completed or terminated."
       tags:
       - Transfer Process v4beta
+  /v4beta/contractagreements/request:
+    post:
+      description: Gets all contract agreements according to a particular query
+      operationId: queryAgreementsV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query-spec-schema"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/contract-agreement-schema"
+                type: array
+          description: The contract agreements matching the query
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Contract Agreement v4beta
   /v3/policydefinitions/{id}/evaluationplan:
     post:
       description: "Creates an execution plane for an existing Policy, If the Policy\
@@ -1946,73 +1974,6 @@ paths:
             \ definition does not exists"
       tags:
       - Policy Definition v3
-  /v4beta/contractagreements/request:
-    post:
-      description: Gets all contract agreements according to a particular query
-      operationId: queryAgreementsV4
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/query-spec-schema"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/contract-agreement-schema"
-                type: array
-          description: The contract agreements matching the query
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: Request body was malformed
-      tags:
-      - Contract Agreement v4beta
-  /v3/contractnegotiations/{id}/terminate:
-    post:
-      description: Terminates the contract negotiation.
-      operationId: terminateNegotiationV3
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TerminateNegotiationV3"
-      responses:
-        "200":
-          description: ContractNegotiation is terminating
-          links:
-            poll-state:
-              operationId: getNegotiationStateV3
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: Request was malformed
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: A contract negotiation with the given ID does not exist
-      tags:
-      - Contract Negotiation V3
   /v4beta/transferprocesses/{id}/deprovision:
     post:
       description: "Requests the deprovisioning of resources associated with a transfer\
@@ -2052,6 +2013,45 @@ paths:
           description: A transfer process with the given ID does not exist
       tags:
       - Transfer Process v4beta
+  /v3/contractnegotiations/{id}/terminate:
+    post:
+      description: Terminates the contract negotiation.
+      operationId: terminateNegotiationV3
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TerminateNegotiationV3"
+      responses:
+        "200":
+          description: ContractNegotiation is terminating
+          links:
+            poll-state:
+              operationId: getNegotiationStateV3
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request was malformed
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: A contract negotiation with the given ID does not exist
+      tags:
+      - Contract Negotiation V3
   /v4beta/policydefinitions/request:
     post:
       description: Returns all policy definitions according to a query
@@ -2250,30 +2250,6 @@ paths:
           description: Request was malformed
       tags:
       - Transfer Process V3
-  /v3/contractagreements/retirements:
-    post:
-      description: Retires an active contract agreement.
-      operationId: retireAgreementV3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RetirementExample"
-      responses:
-        "204":
-          description: The contract agreement was successfully retired
-        "409":
-          description: The contract agreement is already retired
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail_1"
-                type: array
-          description: Request body was malformed
-      tags:
-      - Agreements Retirement
   /v3/transferprocesses/{id}:
     get:
       description: Gets an transfer process with the given ID
@@ -2309,6 +2285,30 @@ paths:
           description: A transfer process with the given ID does not exist
       tags:
       - Transfer Process V3
+  /v3/contractagreements/retirements:
+    post:
+      description: Retires an active contract agreement.
+      operationId: retireAgreementV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RetirementExample"
+      responses:
+        "204":
+          description: The contract agreement was successfully retired
+        "409":
+          description: The contract agreement is already retired
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Agreements Retirement
   /v4beta/policydefinitions:
     post:
       description: Creates a new policy definition
@@ -2549,33 +2549,6 @@ paths:
           description: A transfer process with the given ID does not exist
       tags:
       - Transfer Process V3
-  /v3/policydefinitions/{id}/validate:
-    post:
-      description: "Validates an existing Policy, If the Policy is not found, an error\
-        \ is reported"
-      operationId: validatePolicyDefinitionV3
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PolicyValidationResultSchemaV3"
-          description: Returns the validation result
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorDetail"
-          description: "policy definition could not be validated, because it does\
-            \ not exists"
-      tags:
-      - Policy Definition v3
   /v3/contractagreements/{id}/negotiation:
     get:
       description: Gets a contract negotiation with the given contract agreement ID
@@ -2611,6 +2584,33 @@ paths:
           description: An contract agreement with the given ID does not exist
       tags:
       - Contract Agreement V3
+  /v3/policydefinitions/{id}/validate:
+    post:
+      description: "Validates an existing Policy, If the Policy is not found, an error\
+        \ is reported"
+      operationId: validatePolicyDefinitionV3
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PolicyValidationResultSchemaV3"
+          description: Returns the validation result
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorDetail"
+          description: "policy definition could not be validated, because it does\
+            \ not exists"
+      tags:
+      - Policy Definition v3
   /v4beta/edrs/request:
     post:
       description: Request all Edr entries according to a particular query
@@ -2818,6 +2818,41 @@ paths:
             \ exists"
       tags:
       - Policy Definition v4beta
+  /v3/transferprocesses:
+    post:
+      description: "Initiates a data transfer with the given parameters. Due to the\
+        \ asynchronous nature of transfers, a successful response only indicates that\
+        \ the request was successfully received. This may take a long time, so clients\
+        \ must poll the /{id}/state endpoint to track the state."
+      operationId: initiateTransferProcessV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferRequestV3"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdResponse"
+          description: The transfer was successfully initiated. Returns the transfer
+            process ID and created timestamp
+          links:
+            poll-state:
+              operationId: getTransferProcessStateV3
+              parameters:
+                id: $response.body#/id
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Transfer Process V3
   /v4beta/catalog/dataset/request:
     post:
       operationId: getDatasetV4
@@ -2913,41 +2948,6 @@ paths:
           description: An contract negotiation with the given ID does not exist
       tags:
       - Contract Negotiation V3
-  /v3/transferprocesses:
-    post:
-      description: "Initiates a data transfer with the given parameters. Due to the\
-        \ asynchronous nature of transfers, a successful response only indicates that\
-        \ the request was successfully received. This may take a long time, so clients\
-        \ must poll the /{id}/state endpoint to track the state."
-      operationId: initiateTransferProcessV3
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TransferRequestV3"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IdResponse"
-          description: The transfer was successfully initiated. Returns the transfer
-            process ID and created timestamp
-          links:
-            poll-state:
-              operationId: getTransferProcessStateV3
-              parameters:
-                id: $response.body#/id
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/ApiErrorDetail"
-                type: array
-          description: Request body was malformed
-      tags:
-      - Transfer Process V3
   /v3/contractnegotiations/{id}/state:
     get:
       description: Gets the state of a contract negotiation with the given ID
@@ -5077,6 +5077,19 @@ components:
       - dataAddress
       - properties
       type: object
+    TransferStateV3:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TransferState
+        state: STARTED
+      properties:
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/TransferState
+          type: string
+        state:
+          type: string
+      type: object
     contract-terminate-schema:
       allOf:
       - $ref: "#/components/schemas/TerminateNegotiation"
@@ -5099,19 +5112,6 @@ components:
       required:
       - '@context'
       - '@type'
-      type: object
-    TransferStateV3:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': https://w3id.org/edc/v0.0.1/ns/TransferState
-        state: STARTED
-      properties:
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/TransferState
-          type: string
-        state:
-          type: string
       type: object
     PolicyDefinitionInputV3:
       example:
@@ -5159,24 +5159,6 @@ components:
       required:
       - '@context'
       - policy
-      type: object
-    EndpointDataReferenceEntryV3:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': transfer-process-id
-        transferProcessId: transfer-process-id
-        agreementId: agreement-id
-        contractNegotiationId: contract-negotiation-id
-        assetId: asset-id
-        providerId: provider-id
-        createdAt: 1688465655
-      properties:
-        '@id':
-          type: string
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/EndpointDataReferenceEntry
-          type: string
       type: object
     CatalogV3:
       description: DCAT catalog
@@ -5265,6 +5247,24 @@ components:
       - '@context'
       - counterPartyAddress
       - protocol
+      type: object
+    EndpointDataReferenceEntryV3:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@id': transfer-process-id
+        transferProcessId: transfer-process-id
+        agreementId: agreement-id
+        contractNegotiationId: contract-negotiation-id
+        assetId: asset-id
+        providerId: provider-id
+        createdAt: 1688465655
+      properties:
+        '@id':
+          type: string
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/EndpointDataReferenceEntry
+          type: string
       type: object
     TerminateTransferV3:
       example:
@@ -6267,6 +6267,59 @@ components:
       - providerId
       - transferProcessId
       type: object
+    TransferRequestV3:
+      example:
+        '@context':
+          '@vocab': https://w3id.org/edc/v0.0.1/ns/
+        '@type': https://w3id.org/edc/v0.0.1/ns/TransferRequest
+        protocol: dataspace-protocol-http
+        counterPartyAddress: http://provider-address
+        contractId: contract-id
+        transferType: transferType
+        dataDestination:
+          type: data-destination-type
+        privateProperties:
+          private-key: private-value
+        callbackAddresses:
+        - transactional: false
+          uri: http://callback/url
+          events:
+          - contract.negotiation
+          - transfer.process
+          authKey: auth-key
+          authCodeId: auth-code-id
+      properties:
+        '@context':
+          type: object
+        '@type':
+          example: https://w3id.org/edc/v0.0.1/ns/TransferRequest
+          type: string
+        assetId:
+          deprecated: true
+          type: string
+        callbackAddresses:
+          items:
+            $ref: "#/components/schemas/CallbackAddress"
+          type: array
+        contractId:
+          type: string
+        counterPartyAddress:
+          type: string
+        dataDestination:
+          $ref: "#/components/schemas/DataAddress"
+        privateProperties:
+          type: object
+        protocol:
+          type: string
+        transferType:
+          type: string
+      required:
+      - '@context'
+      - contractId
+      - counterPartyAddress
+      - protocol
+      - transferType
+      type: object
     dataset-schema:
       allOf:
       - $ref: "#/components/schemas/RootDataset"
@@ -6751,59 +6804,6 @@ components:
         example: null
       type: object
       example: null
-    TransferRequestV3:
-      example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@type': https://w3id.org/edc/v0.0.1/ns/TransferRequest
-        protocol: dataspace-protocol-http
-        counterPartyAddress: http://provider-address
-        contractId: contract-id
-        transferType: transferType
-        dataDestination:
-          type: data-destination-type
-        privateProperties:
-          private-key: private-value
-        callbackAddresses:
-        - transactional: false
-          uri: http://callback/url
-          events:
-          - contract.negotiation
-          - transfer.process
-          authKey: auth-key
-          authCodeId: auth-code-id
-      properties:
-        '@context':
-          type: object
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/TransferRequest
-          type: string
-        assetId:
-          deprecated: true
-          type: string
-        callbackAddresses:
-          items:
-            $ref: "#/components/schemas/CallbackAddress"
-          type: array
-        contractId:
-          type: string
-        counterPartyAddress:
-          type: string
-        dataDestination:
-          $ref: "#/components/schemas/DataAddress"
-        privateProperties:
-          type: object
-        protocol:
-          type: string
-        transferType:
-          type: string
-      required:
-      - '@context'
-      - contractId
-      - counterPartyAddress
-      - protocol
-      - transferType
-      type: object
     NegotiationState_1:
       properties:
         state:
