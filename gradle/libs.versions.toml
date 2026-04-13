@@ -18,7 +18,7 @@ postgres = "42.7.10"
 rest-assured = "6.0.0"
 swagger = "2.2.47"
 testcontainers = "2.0.4"
-testcontainers-keycloak = "4.1.1"
+testcontainers-keycloak = "4.2.0"
 tractusx-edc = "0.12.0"
 yasson = "3.0.4"
 
