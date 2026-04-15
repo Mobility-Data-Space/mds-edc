@@ -89,6 +89,78 @@ The consumer receives an **Endpoint Data Reference (EDR)** containing:
 
 The consumer uses these credentials to directly connect to the provider's Kafka broker and consume messages.
 
+### Complete Kafka-PULL Transfer Flow
+
+The following diagram illustrates the end-to-end Kafka-PULL transfer flow, from offer creation through data consumption to access revocation:
+
+```mermaid
+sequenceDiagram
+    participant Provider as Provider EDC
+    participant OIDC as OIDC Provider<br/>(Keycloak)
+    participant Kafka as Kafka Broker
+    participant Vault as HashiCorp Vault
+    participant Consumer as Consumer EDC
+    participant App as Consumer App
+
+    Note over Provider: Phase 1: Offer Creation
+    Provider->>Provider: Create Asset (type=Kafka, topic, bootstrap, OIDC config)
+    Provider->>Provider: Create Policy Definition
+    Provider->>Provider: Create Contract Definition
+
+    Note over Consumer,Provider: Phase 2: Discovery & Negotiation
+    Consumer->>Provider: Request Catalog (DSP)
+    Provider-->>Consumer: DCAT Catalog with Kafka offers
+    Consumer->>Provider: Contract Request
+    Provider-->>Consumer: Contract Agreement
+
+    Note over Consumer,Provider: Phase 3: Transfer Initiation
+    Consumer->>Provider: Transfer Request (type=Kafka-PULL, callback URL)
+    Provider->>Provider: Trigger DataPlaneKafkaExtension
+
+    Note over Provider,OIDC: Phase 4: OIDC Client Registration
+    Provider->>Vault: Resolve OIDC initial access token
+    Vault-->>Provider: Initial Access Token (IAT)
+    Provider->>OIDC: GET /.well-known/openid-configuration
+    OIDC-->>Provider: {tokenEndpoint, registrationEndpoint, userInfoEndpoint, jwksUri}
+    Provider->>OIDC: POST /clients-registrations/openid-connect<br/>Authorization: Bearer IAT<br/>Body: {grant_types: [client_credentials]}
+    OIDC-->>Provider: {clientId, clientSecret, registrationClientUri, registrationAccessToken}
+    Provider->>Vault: Store client info<br/>key: data-flow-{id}-openid-connect-client-info
+    Provider->>OIDC: POST /token (client_credentials, scope: openid roles)
+    OIDC-->>Provider: Access token
+    Provider->>OIDC: GET /userinfo (Bearer token)
+    OIDC-->>Provider: {sub: "unique-subject-id"}
+
+    Note over Provider,Kafka: Phase 5: ACL Creation
+    Provider->>Vault: Resolve Kafka admin properties
+    Vault-->>Provider: Serialized Properties (bootstrap, SASL, OAUTHBEARER)
+    Provider->>Kafka: CreateAcls([<br/>  TOPIC:topic READ ALLOW User:unique-subject-id,<br/>  GROUP:uuid-group READ ALLOW User:unique-subject-id<br/>])
+    Kafka-->>Provider: ACLs created
+    Provider->>Vault: Store principal name<br/>key: kafka-principal-name-{dataFlowId}
+
+    Note over Provider,Consumer: Phase 6: EDR Delivery
+    Provider->>Provider: Build EDR:<br/>kafkaConsumerProperties (serialized),<br/>clientId, clientSecret,<br/>tokenEndpoint, topic
+    Provider->>Consumer: EDR Callback (HTTP POST to callback URL)
+
+    Note over Consumer,App: Phase 7: Data Consumption
+    Consumer->>App: Forward EDR
+    App->>App: Deserialize kafkaConsumerProperties
+    App->>OIDC: Acquire token (OAUTHBEARER login callback)
+    App->>Kafka: Subscribe(topic), Poll()
+    Kafka->>Kafka: Validate token via JWKS<br/>Check ACLs for User:{sub}
+    Kafka-->>App: Records
+
+    Note over Provider: Phase 8: Access Revocation
+    Provider->>Provider: Terminate transfer
+    Provider->>Vault: Resolve principal name
+    Provider->>Kafka: DeleteAcls(User:{sub} READ ALLOW)
+    Provider->>Vault: Resolve client info
+    Provider->>OIDC: DELETE /clients/{clientId}<br/>Authorization: Bearer registrationAccessToken
+    Provider->>Vault: Cleanup secrets
+
+    App->>Kafka: Poll()
+    Kafka--xApp: TopicAuthorizationException
+```
+
 ### Transfer Process
 
 #### 1. Transfer Initiation

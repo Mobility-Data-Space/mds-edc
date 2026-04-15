@@ -19,3 +19,6 @@ certbot
 
 # Environment variables
 .env
+
+# Claude Code
+.claude/
