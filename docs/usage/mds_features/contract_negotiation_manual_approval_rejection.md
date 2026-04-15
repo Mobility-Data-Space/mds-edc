@@ -42,6 +42,8 @@ https://w3id.org/edc/v0.0.1/ns/manualApproval = true
 
 > **Important**: This is a **private property**, meaning it is not shared in the catalog and is only visible to the provider.
 
+> **Note**: Participants can additionally, if desired, make this information visible in the MDS Central Catalog by setting `additionalProperties.manualApproval` to `true` in the asset properties. See [On-Request Data Offers](on-request-data-offers.md) for an example of how `additionalProperties` is used.
+
 ### Contract Definition Example
 
 #### Via Management API
