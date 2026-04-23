@@ -1,9 +1,9 @@
 package eu.dataspace.connector.agreements.retirement.spi.service;
 
 import eu.dataspace.connector.agreements.retirement.spi.store.AgreementsRetirementStore;
+import eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.ServiceResult;
-import eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry;
 
 import java.util.List;
 
@@ -43,4 +43,5 @@ public interface AgreementsRetirementService {
      * @return StoreResult success, not found failure if entry not found.
      */
     ServiceResult<Void> reactivate(String contractAgreementId);
+
 }
