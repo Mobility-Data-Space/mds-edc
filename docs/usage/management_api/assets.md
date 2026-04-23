@@ -46,8 +46,8 @@ Content-Type: application/json
     "dcat:landingPage": "https://data-source.my-org/docs",
     "owl:versionInfo": "1.1",
     "mobilitydcatap:mobilityTheme": {
-      "mobilitydcatap-theme:data-content-category": "INFRASTRUCTURE_AND_LOGISTICS",
-      "mobilitydcatap-theme:data-content-sub-category": "GENERAL_INFORMATION_ABOUT_PLANNING_OF_ROUTES"
+      "mobilitydcatap-theme:data-content-category": "STATIC_ROAD_NETWORK_DATA",
+      "mobilitydcatap-theme:data-content-sub-category": "ROAD_CLASSIFICATION"
     },
     "mobilitydcatap:mobilityDataStandard": {
       "@id": "my-data-model-001",
@@ -59,7 +59,7 @@ Content-Type: application/json
         "rdf:Literal": "These reference files are important"
       }
     },
-    "mobilitydcatap:transportMode": "ROAD",
+    "mobilitydcatap:transportMode": "CAR",
     "mobilitydcatap:georeferencingMethod": "my-geo-reference-method",
     "adms:sample": ["https://teamabc.departmentxyz.sample/a", "https://teamabc.departmentxyz.sample/b"],
     "additionalProperties": {}
@@ -95,7 +95,7 @@ Content-Type: application/json
   "properties": {
     "dct:title": "My Asset",
     "mobilitydcatap:mobilityTheme": {
-      "mobilitydcatap-theme:data-content-category": "INFRASTRUCTURE_AND_LOGISTICS"
+      "mobilitydcatap-theme:data-content-category": "STATIC_ROAD_NETWORK_DATA"
     }
   },
   "dataAddress": {
@@ -129,7 +129,7 @@ Content-Type: application/json
   "properties": {
     "dct:title": "On Request Asset",
     "mobilitydcatap:mobilityTheme": {
-      "mobilitydcatap-theme:data-content-category": "INFRASTRUCTURE_AND_LOGISTICS"
+      "mobilitydcatap-theme:data-content-category": "STATIC_ROAD_NETWORK_DATA"
     },
     "additionalProperties": {
       "onrequest": "true",
