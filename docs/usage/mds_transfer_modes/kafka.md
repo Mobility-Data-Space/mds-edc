@@ -1,5 +1,149 @@
 # Kafka
 
+## Kafka-PULL Transfer Overview
+
+The MDS connector supports streaming data exchange via Apache Kafka using a **Consumer Pull** model. The provider exposes data on a Kafka topic, and the consumer receives credentials to connect directly to the broker.
+
+### Component Overview
+
+<div align="center">
+
+```mermaid
+%%{init: {'flowchart': {'defaultRenderer': 'elk'}} }%%
+graph LR
+    subgraph PS["Provider Space"]
+        direction TB
+        PC["MDS EDC Connector\n(Kafka Extension)"]
+        V[("Vault")]
+        PA["Provider App"]:::participant
+        OIDC["Keycloak"]
+        KB[("Kafka Broker")]
+    end
+
+    subgraph CS["Consumer Space"]
+        direction TB
+        CC["MDS EDC Connector"]
+        CA["Consumer App"]:::participant
+    end
+
+    CC -- "1. Negotiate\n2. Transfer" --> PC
+    CC -- "7. Forward EDR" --> CA
+    CA -- "8. OAuth2 token" --> OIDC
+    CA -. "9. Poll" .-> KB
+
+    PC -- "3. Resolve secrets" --> V
+    PC -- "4. Register client" --> OIDC
+    PC -- "5. Create ACLs" --> KB
+    PC -- "6. Deliver EDR" --> CC
+    PA -- "Publish" --> KB
+    KB -. "JWKS" .-> OIDC
+
+    classDef participant fill:#f97316,stroke:#c2410c,color:#fff,stroke-width:2px
+    linkStyle 0,1,2,3 stroke:#16a34a,stroke-width:2.5px
+    linkStyle 4,5,6,7,8,9 stroke:#2563eb,stroke-width:2.5px
+```
+
+</div>
+
+> **Legend:** <span style="color:#2563eb">Blue arrows</span> = Provider-side flows | <span style="color:#16a34a">Green arrows</span> = Consumer-side flows | <span style="color:#f97316">Orange nodes</span> = Participant custom applications
+
+| Step | Action | Description |
+|------|--------|-------------|
+| 1 | Contract Negotiation | Consumer discovers the Kafka asset and negotiates a contract agreement via DSP |
+| 2 | Transfer Request | Consumer requests a `Kafka-PULL` transfer with a callback URL |
+| 3 | Secrets Resolution | Provider connector retrieves OIDC initial access token and Kafka admin properties from Vault |
+| 4 | Client Registration | Provider connector registers a new OIDC client for the consumer (dynamic client registration) |
+| 5 | ACL Creation | Provider connector creates Kafka ACLs granting the new client READ access to the topic and consumer group |
+| 6 | EDR Delivery | Provider connector sends Endpoint Data Reference to consumer (contains Kafka consumer properties, OAuth2 credentials, topic) |
+| 7 | EDR Forwarding | Consumer connector forwards the EDR to the consumer application |
+| 8 | Authentication | Consumer application acquires an OAuth2 token via the OAUTHBEARER mechanism |
+| 9 | Data Consumption | Consumer subscribes to the topic and polls messages; broker validates tokens via JWKS and enforces ACLs |
+
+When the provider terminates the transfer, Kafka ACLs are deleted, the OIDC client is de-registered, and the consumer receives a `TopicAuthorizationException` on the next poll.
+
+### Authentication Flow
+
+The Kafka extension uses OpenID Connect (OIDC) for dynamic client registration and token-based authentication:
+
+1. Provider registers a client for the consumer with the OIDC provider
+2. Consumer receives OAuth2 credentials in the EDR
+3. Consumer uses OAUTHBEARER mechanism to authenticate with Kafka
+4. Kafka broker validates tokens with the OIDC provider
+5. Access Control Lists (ACLs) restrict consumer to specific topics
+
+### Detailed Sequence Diagram
+
+The following sequence diagram details the end-to-end Kafka-PULL transfer flow, from offer creation through data consumption to access revocation:
+
+```mermaid
+%%{init: {'sequence': {'actorMargin': 200}} }%%
+sequenceDiagram
+    participant Provider as Provider EDC
+    participant OIDC as OIDC Provider<br/>(Keycloak)
+    participant Kafka as Kafka Broker
+    participant Vault as HashiCorp Vault
+    participant Consumer as Consumer EDC
+    participant App as Consumer App
+
+    Note over Provider: Phase 1: Offer Creation
+    Provider->>Provider: Create Asset (type=Kafka, topic, bootstrap, OIDC config)
+    Provider->>Provider: Create Policy Definition
+    Provider->>Provider: Create Contract Definition
+
+    Note over Consumer,Provider: Phase 2: Discovery & Negotiation
+    Consumer->>Provider: Request Catalog (DSP)
+    Provider-->>Consumer: DCAT Catalog with Kafka offers
+    Consumer->>Provider: Contract Request
+    Provider-->>Consumer: Contract Agreement
+
+    Note over Consumer,Provider: Phase 3: Transfer Initiation
+    Consumer->>Provider: Transfer Request (type=Kafka-PULL, callback URL)
+    Provider->>Provider: Trigger DataPlaneKafkaExtension
+
+    Note over Provider,OIDC: Phase 4: OIDC Client Registration
+    Provider->>Vault: Resolve OIDC initial access token
+    Vault-->>Provider: Initial Access Token (IAT)
+    Provider->>OIDC: GET /.well-known/openid-configuration
+    OIDC-->>Provider: {tokenEndpoint, registrationEndpoint, userInfoEndpoint, jwksUri}
+    Provider->>OIDC: POST /clients-registrations/openid-connect<br/>Authorization: Bearer IAT<br/>Body: {grant_types: [client_credentials]}
+    OIDC-->>Provider: {clientId, clientSecret, registrationClientUri, registrationAccessToken}
+    Provider->>Vault: Store client info<br/>key: data-flow-{id}-openid-connect-client-info
+    Provider->>OIDC: POST /token (client_credentials, scope: openid roles)
+    OIDC-->>Provider: Access token
+    Provider->>OIDC: GET /userinfo (Bearer token)
+    OIDC-->>Provider: {sub: "unique-subject-id"}
+
+    Note over Provider,Kafka: Phase 5: ACL Creation
+    Provider->>Vault: Resolve Kafka admin properties
+    Vault-->>Provider: Serialized Properties (bootstrap, SASL, OAUTHBEARER)
+    Provider->>Kafka: CreateAcls([<br/>  TOPIC:topic READ ALLOW User:unique-subject-id,<br/>  GROUP:uuid-group READ ALLOW User:unique-subject-id<br/>])
+    Kafka-->>Provider: ACLs created
+    Provider->>Vault: Store principal name<br/>key: kafka-principal-name-{dataFlowId}
+
+    Note over Provider,Consumer: Phase 6: EDR Delivery
+    Provider->>Provider: Build EDR:<br/>kafkaConsumerProperties (serialized),<br/>clientId, clientSecret,<br/>tokenEndpoint, topic
+    Provider->>Consumer: EDR Callback (HTTP POST to callback URL)
+
+    Note over Consumer,App: Phase 7: Data Consumption
+    Consumer->>App: Forward EDR
+    App->>App: Deserialize kafkaConsumerProperties
+    App->>OIDC: Acquire token (OAUTHBEARER login callback)
+    App->>Kafka: Subscribe(topic), Poll()
+    Kafka->>Kafka: Validate token via JWKS<br/>Check ACLs for User:{sub}
+    Kafka-->>App: Records
+
+    Note over Provider: Phase 8: Access Revocation
+    Provider->>Provider: Terminate transfer
+    Provider->>Vault: Resolve principal name
+    Provider->>Kafka: DeleteAcls(User:{sub} READ ALLOW)
+    Provider->>Vault: Resolve client info
+    Provider->>OIDC: DELETE /clients/{clientId}<br/>Authorization: Bearer registrationAccessToken
+    Provider->>Vault: Cleanup secrets
+
+    App->>Kafka: Poll()
+    Kafka--xApp: TopicAuthorizationException
+```
+
 ## Provider: Data Source Configuration
 
 The provider's data must be available in a **Kafka topic**. The MDS connector supports:
@@ -89,139 +233,6 @@ The consumer receives an **Endpoint Data Reference (EDR)** containing:
 
 The consumer uses these credentials to directly connect to the provider's Kafka broker and consume messages.
 
-### Component Overview
-
-<div align="center">
-
-```mermaid
-%%{init: {'theme': 'default', 'flowchart': {'useMaxWidth': false, 'nodeSpacing': 30, 'rankSpacing': 40}} }%%
-graph LR
-    subgraph PS["Provider Space"]
-        direction TB
-        PCP["Control Plane"]
-        PDP["Data Plane\n(Kafka Extension)"]
-        V[("Vault")]
-        PA["Provider App"]:::participant
-        OIDC["Keycloak"]
-        KB[("Kafka Broker")]
-
-        PCP -->|"3. Trigger"| PDP
-        PDP -->|"4. Resolve secrets"| V
-        PDP -->|"5. Register client"| OIDC
-        PDP -->|"6. Create ACLs"| KB
-        PA -->|"Publish"| KB
-        KB -.->|"JWKS"| OIDC
-    end
-
-    subgraph CS["Consumer Space"]
-        direction TB
-        CCP["Control Plane"]
-        CA["Consumer App"]:::participant
-
-        CCP -->|"8. Forward EDR"| CA
-    end
-
-    CCP -->|"1. Negotiate\n2. Transfer"| PCP
-    PDP -->|"7. Deliver EDR"| CCP
-    CA -->|"9. OAuth2 token"| OIDC
-    CA -.->|"10. Poll"| KB
-
-    classDef participant fill:#f97316,stroke:#c2410c,color:#fff,stroke-width:2px
-    linkStyle 0,1,2,3,4,5,8 stroke:#2563eb,stroke-width:2px
-    linkStyle 6,7,9,10 stroke:#16a34a,stroke-width:2px
-```
-
-</div>
-
-> **Legend:** <span style="color:#2563eb">Blue arrows</span> = Provider-side flows | <span style="color:#16a34a">Green arrows</span> = Consumer-side flows | <span style="color:#f97316">Orange nodes</span> = Participant custom applications
-
-| Step | Action | Description |
-|------|--------|-------------|
-| 1 | Contract Negotiation | Consumer discovers the Kafka asset and negotiates a contract agreement via DSP |
-| 2 | Transfer Request | Consumer requests a `Kafka-PULL` transfer with a callback URL |
-| 3 | Extension Trigger | Provider Control Plane delegates to the Data Plane Kafka Extension |
-| 4 | Secrets Resolution | Extension retrieves OIDC initial access token and Kafka admin properties from Vault |
-| 5 | Client Registration | Extension registers a new OIDC client for the consumer (dynamic client registration) |
-| 6 | ACL Creation | Extension creates Kafka ACLs granting the new client READ access to the topic and consumer group |
-| 7 | EDR Delivery | Extension sends Endpoint Data Reference to consumer (contains Kafka consumer properties, OAuth2 credentials, topic) |
-| 8 | EDR Forwarding | Consumer connector forwards the EDR to the consumer application |
-| 9 | Authentication | Consumer application acquires an OAuth2 token via the OAUTHBEARER mechanism |
-| 10 | Data Consumption | Consumer subscribes to the topic and polls messages; broker validates tokens via JWKS and enforces ACLs |
-
-When the provider terminates the transfer, Kafka ACLs are deleted, the OIDC client is de-registered, and the consumer receives a `TopicAuthorizationException` on the next poll.
-
-### Complete Kafka-PULL Transfer Flow
-
-The following sequence diagram details the end-to-end Kafka-PULL transfer flow, from offer creation through data consumption to access revocation:
-
-```mermaid
-sequenceDiagram
-    participant Provider as Provider EDC
-    participant OIDC as OIDC Provider<br/>(Keycloak)
-    participant Kafka as Kafka Broker
-    participant Vault as HashiCorp Vault
-    participant Consumer as Consumer EDC
-    participant App as Consumer App
-
-    Note over Provider: Phase 1: Offer Creation
-    Provider->>Provider: Create Asset (type=Kafka, topic, bootstrap, OIDC config)
-    Provider->>Provider: Create Policy Definition
-    Provider->>Provider: Create Contract Definition
-
-    Note over Consumer,Provider: Phase 2: Discovery & Negotiation
-    Consumer->>Provider: Request Catalog (DSP)
-    Provider-->>Consumer: DCAT Catalog with Kafka offers
-    Consumer->>Provider: Contract Request
-    Provider-->>Consumer: Contract Agreement
-
-    Note over Consumer,Provider: Phase 3: Transfer Initiation
-    Consumer->>Provider: Transfer Request (type=Kafka-PULL, callback URL)
-    Provider->>Provider: Trigger DataPlaneKafkaExtension
-
-    Note over Provider,OIDC: Phase 4: OIDC Client Registration
-    Provider->>Vault: Resolve OIDC initial access token
-    Vault-->>Provider: Initial Access Token (IAT)
-    Provider->>OIDC: GET /.well-known/openid-configuration
-    OIDC-->>Provider: {tokenEndpoint, registrationEndpoint, userInfoEndpoint, jwksUri}
-    Provider->>OIDC: POST /clients-registrations/openid-connect<br/>Authorization: Bearer IAT<br/>Body: {grant_types: [client_credentials]}
-    OIDC-->>Provider: {clientId, clientSecret, registrationClientUri, registrationAccessToken}
-    Provider->>Vault: Store client info<br/>key: data-flow-{id}-openid-connect-client-info
-    Provider->>OIDC: POST /token (client_credentials, scope: openid roles)
-    OIDC-->>Provider: Access token
-    Provider->>OIDC: GET /userinfo (Bearer token)
-    OIDC-->>Provider: {sub: "unique-subject-id"}
-
-    Note over Provider,Kafka: Phase 5: ACL Creation
-    Provider->>Vault: Resolve Kafka admin properties
-    Vault-->>Provider: Serialized Properties (bootstrap, SASL, OAUTHBEARER)
-    Provider->>Kafka: CreateAcls([<br/>  TOPIC:topic READ ALLOW User:unique-subject-id,<br/>  GROUP:uuid-group READ ALLOW User:unique-subject-id<br/>])
-    Kafka-->>Provider: ACLs created
-    Provider->>Vault: Store principal name<br/>key: kafka-principal-name-{dataFlowId}
-
-    Note over Provider,Consumer: Phase 6: EDR Delivery
-    Provider->>Provider: Build EDR:<br/>kafkaConsumerProperties (serialized),<br/>clientId, clientSecret,<br/>tokenEndpoint, topic
-    Provider->>Consumer: EDR Callback (HTTP POST to callback URL)
-
-    Note over Consumer,App: Phase 7: Data Consumption
-    Consumer->>App: Forward EDR
-    App->>App: Deserialize kafkaConsumerProperties
-    App->>OIDC: Acquire token (OAUTHBEARER login callback)
-    App->>Kafka: Subscribe(topic), Poll()
-    Kafka->>Kafka: Validate token via JWKS<br/>Check ACLs for User:{sub}
-    Kafka-->>App: Records
-
-    Note over Provider: Phase 8: Access Revocation
-    Provider->>Provider: Terminate transfer
-    Provider->>Vault: Resolve principal name
-    Provider->>Kafka: DeleteAcls(User:{sub} READ ALLOW)
-    Provider->>Vault: Resolve client info
-    Provider->>OIDC: DELETE /clients/{clientId}<br/>Authorization: Bearer registrationAccessToken
-    Provider->>Vault: Cleanup secrets
-
-    App->>Kafka: Poll()
-    Kafka--xApp: TopicAuthorizationException
-```
-
 ### Transfer Process
 
 #### 1. Transfer Initiation
@@ -263,16 +274,6 @@ The consumer pulls messages directly from the Kafka topic. The Kafka broker vali
 #### 5. Access Revocation
 
 When the transfer terminates, the provider revokes the consumer's topic access.
-
-### Authentication Flow
-
-The Kafka extension uses OpenID Connect (OIDC) for dynamic client registration and token-based authentication:
-
-1. Provider registers a client for the consumer with the OIDC provider
-2. Consumer receives OAuth2 credentials in the EDR
-3. Consumer uses OAUTHBEARER mechanism to authenticate with Kafka
-4. Kafka broker validates tokens with the OIDC provider
-5. Access Control Lists (ACLs) restrict consumer to specific topics
 
 ### Consumer Kafka Configuration
 
