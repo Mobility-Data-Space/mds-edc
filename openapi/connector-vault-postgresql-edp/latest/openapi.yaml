@@ -3226,6 +3226,8 @@ components:
           example:
             key: value
           type: object
+      required:
+      - '@type'
       type: object
     transfer-process-schema:
       allOf:

@@ -3081,6 +3081,8 @@ components:
           example:
             key: value
           type: object
+      required:
+      - '@type'
       type: object
     contract-definition-schema:
       allOf:
