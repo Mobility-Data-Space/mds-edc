@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      
+
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
@@ -27,7 +27,7 @@ jobs:
         if: github.ref_type == 'tag'
         run: |
           version=${{ github.ref_name }}
-          clean_version=`echo ${version} | cut -c 2-` 
+          clean_version=`echo ${version} | cut -c 2-`
           sed -i 's#^version=.*#version='${clean_version}'#g' gradle.properties
 
       - name: Build
@@ -57,9 +57,21 @@ jobs:
 
       - uses: ./.github/actions/publish-docker-image
         with:
+          runtime: connector-inmemory-dcp
+          image-title: MDS EDC In Memory DCP
+          image-description: MDS EDC In Memory DCP for development purposes.
+
+      - uses: ./.github/actions/publish-docker-image
+        with:
           runtime: connector-vault-postgresql
           image-title: MDS EDC
           image-description: MDS EDC Vault Postgresql connector for production use.
+
+      - uses: ./.github/actions/publish-docker-image
+        with:
+          runtime: connector-vault-postgresql-dcp
+          image-title: MDS EDC Vault Postgresql DCP
+          image-description: MDS EDC Vault Postgresql DCP for production use.
 
       - uses: ./.github/actions/publish-docker-image
         with:

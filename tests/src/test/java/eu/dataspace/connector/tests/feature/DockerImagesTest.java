@@ -18,8 +18,10 @@ public class DockerImagesTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "connector-inmemory",
+            "connector-inmemory-dcp",
             "connector-vault-postgresql",
-            "connector-vault-postgresql-edp"
+            "connector-vault-postgresql-dcp",
+            "connector-vault-postgresql-edp",
     })
     void shouldStartAndStopTheRuntime(String runtimeName) {
         var tarCreated = gradlewDistTar(runtimeName);
