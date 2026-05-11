@@ -9,6 +9,7 @@ import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -56,6 +57,7 @@ public class ContractRetirementTest {
     }
 
     @Nested
+    @Disabled("FIXME: enable once the logging house client supports DCP authentication")
     class Dcp extends Tests {
 
         @RegisterExtension
