@@ -25,6 +25,7 @@ import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressS
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_CLIENT_SECRET;
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_TOKEN_ENDPOINT;
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.SASL_MECHANISM;
+import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.SASL_OAUTHBEARER_EXTENSIONS;
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.SECURITY_PROTOCOL;
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.TOPIC;
 import static org.eclipse.edc.spi.types.domain.edr.EndpointDataReference.EDR_SIMPLE_TYPE;
@@ -93,6 +94,12 @@ class KafkaEndpointDataReferenceService implements EndpointDataReferenceService 
                 .formatted(credentials.clientId(), credentials.clientSecret()));
         props.put(SaslConfigs.SASL_OAUTHBEARER_TOKEN_ENDPOINT_URL, credentials.tokenEndpoint());
         props.put(SaslConfigs.SASL_LOGIN_CALLBACK_HANDLER_CLASS, OAuthBearerLoginCallbackHandler.class.getName());
+
+        var oauthbearerExtensions = dataAddress.getStringProperty(SASL_OAUTHBEARER_EXTENSIONS);
+        if (oauthbearerExtensions != null) {
+            props.put("sasl.oauthbearer.extensions", oauthbearerExtensions);
+        }
+
         return props;
     }
 

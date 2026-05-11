@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -201,6 +202,57 @@ class KafkaTransferTest {
             await().untilAsserted(() -> {
                 assertThat(kafka.clientExistsInKeycloak(edrData.clientId())).isFalse();
             });
+        }
+
+        @Test
+        void shouldIncludeOauthbearerExtensionsInEdr() throws IOException {
+            var topic = "topic-" + UUID.randomUUID();
+            var oidcRegisterClientTokenKey = UUID.randomUUID().toString();
+            var oauthbearerExtensions = "logicalCluster=abc123,identityPoolId=pool-xyz";
+
+            var producer = kafka.initializeKafkaProducer();
+            Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory())
+                    .scheduleAtFixedRate(() -> KafkaExtension.sendMessage(producer, topic, "key", "payload"), 0, 1, SECONDS);
+
+            var providerVault = provider.getService(Vault.class);
+            var kafkaAdminPropertiesKey = "kafkaAdminProperties-" + UUID.randomUUID();
+            providerVault.storeSecret(oidcRegisterClientTokenKey, kafka.createInitialAccessToken());
+            providerVault.storeSecret(kafkaAdminPropertiesKey, serializeToString(kafka.getAdminProperties()));
+
+            var dataAddressProperties = new HashMap<String, Object>(createKafkaDataAddress(topic, oidcRegisterClientTokenKey, kafkaAdminPropertiesKey));
+            dataAddressProperties.put(EDC_NAMESPACE + "kafka.sasl.oauthbearer.extensions", oauthbearerExtensions);
+
+            var assetId = provider.createOffer(dataAddressProperties);
+
+            var consumerEdrReceiver = new WireMockServer(WireMockConfiguration.options().port(getFreePort()));
+            consumerEdrReceiver.start();
+            consumerEdrReceiver.stubFor(post(urlPathEqualTo("/edr")).willReturn(ok()));
+
+            var consumerTransferProcessId = consumer.requestAssetFrom(assetId, provider)
+                    .withTransferType("Kafka-PULL")
+                    .withCallbacks(Json.createArrayBuilder()
+                            .add(createCallback("http://localhost:%s/edr".formatted(consumerEdrReceiver.port()), true, Set.of("transfer.process.started")))
+                            .build())
+                    .execute();
+
+            consumer.awaitTransferToBeInState(consumerTransferProcessId, STARTED);
+
+            var edrRequests = await().until(() -> consumerEdrReceiver.getAllServeEvents().stream()
+                    .filter(e -> e.getRequest().getUrl().equals("/edr"))
+                    .toList(), it -> !it.isEmpty());
+            var objectMapper = new JacksonTypeManager().getMapper();
+            var edr = objectMapper.readTree(edrRequests.get(0).getRequest().getBodyAsString()).get("payload").get("dataAddress").get("properties");
+            var edrData = objectMapper.convertValue(edr, KafkaEdr.class);
+
+            var props = deserialize(edrData.kafkaConsumerProperties());
+            assertThat(props.getProperty("sasl.oauthbearer.extensions")).isEqualTo(oauthbearerExtensions);
+
+            var providerTransferProcessId = provider.getTransferProcesses().stream()
+                    .filter(filter -> filter.asJsonObject().getString("correlationId").equals(consumerTransferProcessId))
+                    .map(id -> id.asJsonObject().getString("@id")).findFirst().orElseThrow();
+
+            provider.terminateTransfer(providerTransferProcessId);
+            provider.awaitTransferToBeInState(providerTransferProcessId, DEPROVISIONED);
         }
 
         private String serializeToString(Properties properties) {
