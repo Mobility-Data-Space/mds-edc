@@ -39,6 +39,7 @@ dependencies {
     testCompileOnly(project(":launchers:connector-inmemory-dcp"))
     testCompileOnly(project(":launchers:connector-tck"))
     testCompileOnly(project(":launchers:connector-vault-postgresql"))
+    testCompileOnly(project(":launchers:connector-vault-postgresql-dcp"))
     testCompileOnly(project(":launchers:connector-vault-postgresql-edp"))
     testCompileOnly(project(":launchers:wallet"))
 
