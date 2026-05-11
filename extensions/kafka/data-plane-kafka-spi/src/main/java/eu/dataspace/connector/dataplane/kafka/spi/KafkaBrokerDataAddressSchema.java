@@ -22,5 +22,6 @@ public interface KafkaBrokerDataAddressSchema {
     String BOOTSTRAP_SERVERS = EDC_NAMESPACE + "kafka.bootstrap.servers";
     String SECURITY_PROTOCOL = EDC_NAMESPACE + "kafka.security.protocol";
     String SASL_MECHANISM = EDC_NAMESPACE + "kafka.sasl.mechanism";
+    String SASL_OAUTHBEARER_EXTENSIONS = EDC_NAMESPACE + "kafka.sasl.oauthbearer.extensions";
 
 }
