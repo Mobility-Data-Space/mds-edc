@@ -1,8 +1,8 @@
 package eu.dataspace.connector.iam.oauth2;
 
+import eu.dataspace.connector.iam.oauth2.certificate.VaultCertificateResolver;
 import org.eclipse.edc.boot.system.injection.ObjectFactory;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
-import org.eclipse.edc.keys.spi.CertificateResolver;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
@@ -29,12 +29,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(DependencyInjectionExtension.class)
 class Oauth2ServiceExtensionTest {
 
-    private final CertificateResolver certificateResolver = mock();
+    private final VaultCertificateResolver certificateResolver = mock();
     private final PrivateKeyResolver privateKeyResolver = mock();
 
     @BeforeEach
     void setup(ServiceExtensionContext context) {
-        context.registerService(CertificateResolver.class, certificateResolver);
+        context.registerService(VaultCertificateResolver.class, certificateResolver);
         context.registerService(PrivateKeyResolver.class, privateKeyResolver);
     }
 

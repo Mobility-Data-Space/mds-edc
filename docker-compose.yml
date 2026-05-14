@@ -55,8 +55,6 @@ services:
 
       WEB_HTTP_PROTOCOL_PATH: "/api/dsp"
       WEB_HTTP_PROTOCOL_PORT: "8183"
-      WEB_HTTP_VERSION_PATH: "/api/version"
-      WEB_HTTP_VERSION_PORT: "8184"
       WEB_HTTP_PUBLIC_PATH: "/public"
       WEB_HTTP_PUBLIC_PORT: "8185"
 

@@ -53,15 +53,6 @@ public interface MdsParticipantFactory {
                 .build();
     }
 
-    static MdsParticipant tck(String name) {
-        return MdsParticipant.Builder.newInstance()
-                .id(name)
-                .name(name)
-                .eventReceiver(false)
-                .runtime(participant -> baseRuntime(name, ":launchers:connector-tck", participant))
-                .build();
-    }
-
     static MdsParticipant hashicorpVault(String name, VaultExtension vault, SovityDapsExtension daps, PostgresqlExtension postgres) {
         return MdsParticipant.Builder.newInstance()
                 .id(name)
@@ -139,7 +130,8 @@ public interface MdsParticipantFactory {
                 .configurationProvider(() -> postgres.getConfig(name))
                 .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
                         "eu.dataspace.wallet.postgresql.migration.schema", postgres.getSchema(),
-                        "edc.sql.schema.autocreate", "true"
+                        "edc.sql.schema.autocreate", "true",
+                        "edc.encryption.strict", "false"
                 )));
         return new Wallet(runtime, participants);
     }

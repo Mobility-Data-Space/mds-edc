@@ -14,7 +14,6 @@
 package eu.dataspace.connector.tests.extensions;
 
 import io.restassured.http.ContentType;
-import io.restassured.response.ValidatableResponse;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -42,13 +41,14 @@ public class IssuerExtension implements BeforeAllCallback, AfterAllCallback {
     private static final String SUPER_USER_API_KEY = Base64.getEncoder().encodeToString(SUPER_USER.getBytes()) + "." + UUID.randomUUID();
 
     // TODO: use a proper release version once available
-    private final GenericContainer<?> container = new GenericContainer<>("ghcr.io/mobility-data-space/mds-identity-issuer/issuer:sha-2b6a334");
+    private final GenericContainer<?> container = new GenericContainer<>("ghcr.io/mobility-data-space/mds-identity-issuer/issuer:sha-e8cb6bf");
 
     private final LazySupplier<URI> didEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/"));
     private final LazySupplier<URI> issuanceEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/issuance"));
     private final LazySupplier<URI> issueradminEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/issueradmin"));
     private final LazySupplier<URI> identityEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/identity"));
     private final LazySupplier<String> did = new LazySupplier<>(() -> "did:web:localhost%%3A%d:issuer".formatted(didEndpoint.get().getPort()));
+    private final String participantContextId = UUID.randomUUID().toString();
     private final PostgresqlExtension postgresExtension;
     private final VaultExtension vaultExtension;
     private String issuerParticipantApiKey;
@@ -117,7 +117,7 @@ public class IssuerExtension implements BeforeAllCallback, AfterAllCallback {
                                 "membershipStartDate", Instant.now().getEpochSecond()
                         )
                 ))
-                .post("/v1alpha/participants/{participantContextId}/holders", Base64.getEncoder().encodeToString(did.get().getBytes()))
+                .post("/v1alpha/participants/{participantContextId}/holders", participantContextId)
                 .then()
                 .log().ifValidationFails()
                 .statusCode(201);
@@ -133,7 +133,7 @@ public class IssuerExtension implements BeforeAllCallback, AfterAllCallback {
                         "attestationType", "holder",
                         "configuration", emptyMap()
                 ))
-                .post("/v1alpha/participants/{participantContextId}/attestations", encodeToString(did.get()))
+                .post("/v1alpha/participants/{participantContextId}/attestations", participantContextId)
                 .then()
                 .log().ifValidationFails()
                 .statusCode(201);
@@ -158,7 +158,7 @@ public class IssuerExtension implements BeforeAllCallback, AfterAllCallback {
                         )),
                         entry("format", "VC1_0_JWT")
                 ))
-                .post("/v1alpha/participants/{participantContextId}/credentialdefinitions", encodeToString(did.get()))
+                .post("/v1alpha/participants/{participantContextId}/credentialdefinitions", participantContextId)
                 .then()
                 .log().ifValidationFails()
                 .statusCode(201);
@@ -175,7 +175,7 @@ public class IssuerExtension implements BeforeAllCallback, AfterAllCallback {
                 .header("x-api-key", SUPER_USER_API_KEY)
                 .contentType(ContentType.JSON)
                 .body(Map.of(
-                        "participantContextId", did.get(),
+                        "participantContextId", participantContextId,
                         "did", did.get(),
                         "active", "true",
                         "serviceEndpoint", Map.of(
@@ -183,7 +183,7 @@ public class IssuerExtension implements BeforeAllCallback, AfterAllCallback {
                                 "type", "IssuerService",
                                 "serviceEndpoint", "%s/v1alpha/participants/%s".formatted(
                                         issuanceEndpoint.get().toString(),
-                                        encodeToString(did.get())
+                                        participantContextId
                                 )
                         ),
                         "key", Map.of(
@@ -200,40 +200,4 @@ public class IssuerExtension implements BeforeAllCallback, AfterAllCallback {
                 .body().jsonPath().getString("apiKey");
     }
 
-    public ValidatableResponse revokeCredentials(String participantContextId) {
-        var body = given()
-                .baseUri(issueradminEndpoint.get().toString())
-                .header("x-api-key", issuerParticipantApiKey)
-                .contentType(ContentType.JSON)
-                .body(Map.of(
-                        "filterExpression", List.of(
-                                Map.of(
-                                        "operandLeft", "holderId",
-                                        "operator", "=",
-                                        "operandRight", participantContextId
-                                )
-                        )
-                ))
-                .post("/v1alpha/participants/{participantContextId}/credentials/query", encodeToString(did.get()))
-                .then()
-                .log().ifValidationFails()
-                .statusCode(200)
-                .extract()
-                .body();
-        var soasdsa = body.asString();
-        System.out.println(soasdsa);
-        var credentialId = body.jsonPath().getString("[0].id");
-
-        return given()
-                .baseUri(issueradminEndpoint.get().toString())
-                .header("x-api-key", issuerParticipantApiKey)
-                .contentType(ContentType.JSON)
-                .post("/v1alpha/participants/{participantContextId}/credentials/{credentialId}/revoke", encodeToString(did.get()), credentialId)
-                .then()
-                .log().ifValidationFails();
-    }
-
-    private String encodeToString(String value) {
-        return Base64.getEncoder().encodeToString(value.getBytes());
-    }
 }

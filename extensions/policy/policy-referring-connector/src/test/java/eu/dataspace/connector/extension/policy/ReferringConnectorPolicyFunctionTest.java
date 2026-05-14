@@ -24,7 +24,7 @@ class ReferringConnectorPolicyFunctionTest {
     class Eq {
         @Test
         void shouldReturnTrue_whenReferringIsEqualToRightValue() {
-            var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
+            var participantAgent = new ParticipantAgent("any", Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
             var context = new TestPolicyContext(participantAgent);
 
             var result = function.evaluate(Operator.EQ, "referring", null, context);
@@ -34,7 +34,7 @@ class ReferringConnectorPolicyFunctionTest {
 
         @Test
         void shouldReturnFalse_whenReferringIsContainedInRightValueWithOtherValues() {
-            var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
+            var participantAgent = new ParticipantAgent("any", Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
             var context = new TestPolicyContext(participantAgent);
 
             var result = function.evaluate(Operator.EQ, "other,referring,another", null, context);
@@ -44,7 +44,7 @@ class ReferringConnectorPolicyFunctionTest {
 
         @Test
         void shouldReturnFalse_whenReferringIsNotEqualToRightValue() {
-            var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
+            var participantAgent = new ParticipantAgent("any", Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
             var context = new TestPolicyContext(participantAgent);
 
             var result = function.evaluate(Operator.EQ, "another", null, context);
@@ -55,7 +55,7 @@ class ReferringConnectorPolicyFunctionTest {
 
         @Test
         void shouldFailWhenRightValueNotString() {
-            var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
+            var participantAgent = new ParticipantAgent("any", Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
             var context = new TestPolicyContext(participantAgent);
 
             var result = function.evaluate(Operator.EQ, 3, null, context);
@@ -71,7 +71,7 @@ class ReferringConnectorPolicyFunctionTest {
 
         @Test
         void shouldReturnTrue_whenReferringIsContainedInRightValue() {
-            var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
+            var participantAgent = new ParticipantAgent("any", Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
             var context = new TestPolicyContext(participantAgent);
 
             var result = function.evaluate(Operator.IN, "another,referring,other", null, context);
@@ -81,7 +81,7 @@ class ReferringConnectorPolicyFunctionTest {
 
         @Test
         void shouldReturnFalse_whenReferringIsNotContainedInRightValue() {
-            var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
+            var participantAgent = new ParticipantAgent("any", Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
             var context = new TestPolicyContext(participantAgent);
 
             var result = function.evaluate(Operator.IN, "another,other", null, context);
@@ -92,7 +92,7 @@ class ReferringConnectorPolicyFunctionTest {
 
         @Test
         void shouldReturnFalse_whenRightValueNotString() {
-            var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
+            var participantAgent = new ParticipantAgent("any", Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
             var context = new TestPolicyContext(participantAgent);
 
             var result = function.evaluate(Operator.IN, 4, null, context);
@@ -106,7 +106,7 @@ class ReferringConnectorPolicyFunctionTest {
 
     @Test
     void shouldFailWhenClaimIsMissing() {
-        var participantAgent = new ParticipantAgent(Collections.emptyMap(), Collections.emptyMap());
+        var participantAgent = new ParticipantAgent("any", Collections.emptyMap(), Collections.emptyMap());
         var context = new TestPolicyContext(participantAgent);
 
         var result = function.evaluate(Operator.EQ, "any", null, context);
@@ -118,7 +118,7 @@ class ReferringConnectorPolicyFunctionTest {
 
     @Test
     void shouldFailWhenClaimIsNotString() {
-        var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, 3), Collections.emptyMap());
+        var participantAgent = new ParticipantAgent("any", Map.of(REFERRING_CONNECTOR_CLAIM, 3), Collections.emptyMap());
         var context = new TestPolicyContext(participantAgent);
 
         var result = function.evaluate(Operator.EQ, "any", null, context);
@@ -130,7 +130,7 @@ class ReferringConnectorPolicyFunctionTest {
 
     @Test
     void shouldFailWhenClaimIsAnEmptyString() {
-        var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, ""), Collections.emptyMap());
+        var participantAgent = new ParticipantAgent("any", Map.of(REFERRING_CONNECTOR_CLAIM, ""), Collections.emptyMap());
         var context = new TestPolicyContext(participantAgent);
 
         var result = function.evaluate(Operator.EQ, "any", null, context);
@@ -142,7 +142,7 @@ class ReferringConnectorPolicyFunctionTest {
 
     @Test
     void shouldFailWhenOperatorNotSupported() {
-        var participantAgent = new ParticipantAgent(Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
+        var participantAgent = new ParticipantAgent("any", Map.of(REFERRING_CONNECTOR_CLAIM, "referring"), Collections.emptyMap());
         var context = new TestPolicyContext(participantAgent);
 
         var result = function.evaluate(Operator.GEQ, "any", null, context);
