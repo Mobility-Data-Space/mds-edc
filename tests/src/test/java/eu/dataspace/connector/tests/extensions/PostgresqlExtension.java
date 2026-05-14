@@ -62,7 +62,7 @@ public class PostgresqlExtension implements BeforeAllCallback, AfterAllCallback 
                 entry("edc.datasource.default.url", jdbcUrl),
                 entry("edc.datasource.default.user", USER),
                 entry("edc.datasource.default.password", PASSWORD),
-                entry("edc.postgresql.migration.schema", DB_SCHEMA_NAME) // TODO: this should be extracted and set in the factory
+                entry("edc.postgresql.migration.schema", DB_SCHEMA_NAME)
         );
         return ConfigFactory.fromMap(settings);
     }

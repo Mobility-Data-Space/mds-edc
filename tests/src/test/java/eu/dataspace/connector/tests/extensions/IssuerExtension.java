@@ -155,16 +155,6 @@ public class IssuerExtension implements BeforeAllCallback, AfterAllCallback {
                                         entry("required", "true")
                                 )
                         )),
-                        // TODO: enable rules?
-//                        entry("rules", List.of(
-//                                Map.ofEntries(
-//                                    entry("type", "expression"),
-//                                    entry("expression", Map.ofEntries(
-//                                            entry("claim", "onboarding.signedDocuments"),
-//                                            entry("operator", "eq"),
-//                                            entry("value", true)
-//                                    )))
-//                        )),
                         entry("format", "VC1_0_JWT")
                 ))
                 .post("/v1alpha/participants/{participantContextId}/credentialdefinitions", encodeToString(did.get()))
