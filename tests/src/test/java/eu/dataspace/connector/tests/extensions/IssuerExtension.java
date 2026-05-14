@@ -40,8 +40,6 @@ public class IssuerExtension implements BeforeAllCallback, AfterAllCallback {
 
     private static final String SUPER_USER = "super-user";
     private static final String SUPER_USER_API_KEY = Base64.getEncoder().encodeToString(SUPER_USER.getBytes()) + "." + UUID.randomUUID();
-    private static final String AES_KEY_ALIAS = "aes-encryption-key";
-    private static final String AES_KEY_BASE64 = Base64.getEncoder().encodeToString(new byte[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15});
 
     private final GenericContainer<?> container = new GenericContainer<>("ghcr.io/mobility-data-space/mds-identity-issuer/issuer:latest");
 
@@ -78,12 +76,11 @@ public class IssuerExtension implements BeforeAllCallback, AfterAllCallback {
                 entry("edc.identityhub.superuser.api.key", SUPER_USER_API_KEY),
                 entry("edc.iam.did.web.use.https", "false"),
                 entry("edc.issuer.statuslist.signing.key.alias", "%s-privatekey-alias".formatted(did.get())),
-                entry("edc.encryption.aes.key.alias", AES_KEY_ALIAS),
-                entry("eu.dataspace.issuer.postgresql.migration.schema", "test_schema") // TODO: make it pass from postgresql
+                entry("edc.encryption.strict", "false"),
+                entry("eu.dataspace.issuer.postgresql.migration.schema", "test_schema")
         ));
         container.withEnv(postgresExtension.getConfig("issuer").getEntries());
         container.withEnv(vaultExtension.getConfig("issuer").getEntries());
-        vaultExtension.storeSecret("issuer", AES_KEY_ALIAS, AES_KEY_BASE64);
         container.withNetworkMode("host");
         container.withLogConsumer(o -> System.out.println("[issuer] " + o.getUtf8StringWithoutLineEnding()));
         container.waitingFor(Wait.forLogMessage(".*Runtime.*ready.*", 1));
