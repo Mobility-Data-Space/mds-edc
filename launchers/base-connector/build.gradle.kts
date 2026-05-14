@@ -2,8 +2,6 @@ plugins {
     `maven-publish`
 }
 
-// TODO: this should be renamed to base-connector, for clarity
-
 val edcGroupId = "org.eclipse.edc"
 
 dependencies {

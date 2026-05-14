@@ -8,7 +8,7 @@ plugins {
 val edcGroupId = "org.eclipse.edc"
 
 dependencies {
-    runtimeOnly(project(":launchers:launcher-base"))
+    runtimeOnly(project(":launchers:base-connector"))
 
     implementation(project(":extensions:dcp"))
     runtimeOnly(libs.edc.controlplane.dcp.bom)

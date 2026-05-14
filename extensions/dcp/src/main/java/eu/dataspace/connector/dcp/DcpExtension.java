@@ -40,7 +40,6 @@ public class DcpExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        // TODO: should the first part something related to MDS instead of generic org.eclipse.edc.vc.type?
         var defaultScopes = Set.of("org.eclipse.edc.vc.type:MembershipCredential:read");
         var defaultScopesProtocols = Map.of(
                 "dataspace-protocol-http", defaultScopes, // use DSP_SCOPE_V_08 constant in dsp-spi
