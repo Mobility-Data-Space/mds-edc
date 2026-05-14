@@ -8,7 +8,7 @@ plugins {
 val edcGroupId = "org.eclipse.edc"
 
 dependencies {
-    implementation(project(":launchers:launcher-base"))
+    implementation(project(":launchers:base-connector"))
     runtimeOnly(libs.edc.iam.mock)
 }
 

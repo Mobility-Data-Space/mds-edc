@@ -34,7 +34,7 @@ jobs:
             version=latest  
           fi
           
-          launchers=($(cd launchers && ls */ -d | grep -v "launcher-base"))
+          launchers=($(cd launchers && ls */ -d | grep -v "base-connector"))
           
           for launcher in "${launchers[@]}"
           do
