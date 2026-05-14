@@ -131,7 +131,7 @@ public class ContractNegotiationManualApprovalTest {
             assertThat(pending.asJsonObject().getString("state")).isEqualTo(REQUESTED.name());
 
             provider.baseManagementRequest()
-                    .post("/v3/contractnegotiations/{id}/approve", pending.asJsonObject().getString(ID))
+                    .post("/contractnegotiations/{id}/approve", pending.asJsonObject().getString(ID))
                     .then()
                     .statusCode(204);
 
@@ -160,7 +160,7 @@ public class ContractNegotiationManualApprovalTest {
             assertThat(pending.asJsonObject().getString("state")).isEqualTo(REQUESTED.name());
 
             provider.baseManagementRequest()
-                    .post("/v3/contractnegotiations/{id}/reject", pending.asJsonObject().getString(ID))
+                    .post("/contractnegotiations/{id}/reject", pending.asJsonObject().getString(ID))
                     .then()
                     .statusCode(204);
 
@@ -186,7 +186,7 @@ public class ContractNegotiationManualApprovalTest {
             consumer.waitForEvent("ContractNegotiationRequested");
             await().untilAsserted(() -> {
                 provider.baseManagementRequest()
-                        .post("/v3/contractnegotiations/{id}/approve", providerNegotiationId)
+                        .post("/contractnegotiations/{id}/approve", providerNegotiationId)
                         .then()
                         .statusCode(204);
             });
@@ -214,7 +214,7 @@ public class ContractNegotiationManualApprovalTest {
             consumer.waitForEvent("ContractNegotiationRequested");
             await().untilAsserted(() -> {
                 provider.baseManagementRequest()
-                        .post("/v3/contractnegotiations/{id}/reject", providerNegotiationId)
+                        .post("/contractnegotiations/{id}/reject", providerNegotiationId)
                         .then()
                         .statusCode(204);
             });
@@ -241,7 +241,7 @@ public class ContractNegotiationManualApprovalTest {
             });
 
             consumer.baseManagementRequest()
-                    .post("/v3/contractnegotiations/{id}/approve", consumerContractNegotiationId)
+                    .post("/contractnegotiations/{id}/approve", consumerContractNegotiationId)
                     .then()
                     .statusCode(409);
         }
@@ -261,7 +261,7 @@ public class ContractNegotiationManualApprovalTest {
             });
 
             consumer.baseManagementRequest()
-                    .post("/v3/contractnegotiations/{id}/reject", consumerContractNegotiationId)
+                    .post("/contractnegotiations/{id}/reject", consumerContractNegotiationId)
                     .then()
                     .statusCode(409);
         }
@@ -291,7 +291,7 @@ public class ContractNegotiationManualApprovalTest {
                     .contentType(JSON)
                     .body(requestBody)
                     .when()
-                    .post("/v3/contractdefinitions")
+                    .post("/contractdefinitions")
                     .then()
                     .statusCode(200)
                     .extract().jsonPath().getString(ID);

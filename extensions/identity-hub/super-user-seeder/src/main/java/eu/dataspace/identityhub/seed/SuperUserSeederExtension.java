@@ -13,7 +13,7 @@
 
 package eu.dataspace.identityhub.seed;
 
-import org.eclipse.edc.identityhub.spi.participantcontext.ParticipantContextService;
+import org.eclipse.edc.identityhub.spi.participantcontext.IdentityHubParticipantContextService;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.KeyDescriptor;
 import org.eclipse.edc.identityhub.spi.participantcontext.model.ParticipantManifest;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -45,7 +45,7 @@ public class SuperUserSeederExtension implements ServiceExtension {
     public String superUserApiKey;
 
     @Inject
-    private ParticipantContextService participantContextService;
+    private IdentityHubParticipantContextService participantContextService;
     @Inject
     private Vault vault;
     @Inject

@@ -1,12 +1,15 @@
 package eu.dataspace.connector.tests.feature;
 
-import eu.dataspace.connector.tests.MdsParticipant;
-import eu.dataspace.connector.tests.MdsParticipantFactory;
+import eu.dataspace.connector.tests.Crypto;
+import eu.dataspace.connector.tests.SeedVault;
 import org.eclipse.dataspacetck.core.system.ConsoleMonitor;
 import org.eclipse.dataspacetck.dsp.system.DspSystemLauncher;
 import org.eclipse.dataspacetck.runtime.TckRuntime;
+import org.eclipse.edc.junit.extensions.ComponentRuntimeExtension;
+import org.eclipse.edc.junit.extensions.RuntimeExtension;
 import org.eclipse.edc.junit.testfixtures.TestUtils;
-import org.eclipse.edc.junit.utils.LazySupplier;
+import org.eclipse.edc.junit.utils.Endpoints;
+import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Tag;
@@ -23,7 +26,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import static java.lang.String.format;
-import static java.util.Map.entry;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.dataspacetck.core.api.system.SystemsConstants.TCK_LAUNCHER;
@@ -32,22 +34,36 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
 @Tag("Tck")
 public class DspTckTest {
 
-    private static final LazySupplier<URI> WEBHOOK = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/tck"));
+    private static final URI PROTOCOL_URL = URI.create("http://localhost:" + getFreePort() + "/api/dsp");
+    private static final URI WEBHOOK_URL = URI.create("http://localhost:" + getFreePort() + "/tck");
 
     @RegisterExtension
-    protected static MdsParticipant runtime = MdsParticipantFactory.tck("CUT")
-            .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
-                    entry("web.http.tck.port", String.valueOf(WEBHOOK.get().getPort())),
-                    entry("web.http.tck.path", WEBHOOK.get().getPath()),
-                    entry("edc.participant.id", "participantContextId"), // see https://github.com/eclipse-edc/Connector/issues/5393
-                    entry("edc.participant.context.id", "participantContextId"),
-                    entry("web.http.port", "8080"),
-                    entry("web.http.path", "/api"),
-                    entry("web.http.control.port", String.valueOf(getFreePort())),
-                    entry("web.http.control.path", "/api/control"),
-                    entry("edc.management.context.enabled", "true"),
-                    entry("edc.component.id", "DSP-compatibility-test")
-            )));
+    static RuntimeExtension runtime = ComponentRuntimeExtension.Builder.newInstance()
+            .name("runtime")
+            .modules(":launchers:connector-tck")
+            .endpoints(Endpoints.Builder.newInstance()
+                    .endpoint("protocol", () -> PROTOCOL_URL)
+                    .endpoint("tck", () -> WEBHOOK_URL)
+                    .endpoint("management", () -> URI.create("http://localhost:%d/api/management".formatted(getFreePort())))
+                    .build())
+            .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
+                    "edc.participant.id", "participantContextId",
+                    "web.api.auth.key", "password",
+                    "edc.component.id", "DSP-compatibility-test",
+                    "edc.transfer.proxy.token.verifier.publickey.alias", "public-key-alias",
+                    "edc.transfer.proxy.token.signer.privatekey.alias", "private-key-alias"
+            )))
+            .build()
+            .registerSystemExtension(ServiceExtension.class, DspTckTest.seedVaultKeys());
+
+    private static ServiceExtension seedVaultKeys() {
+        var keyPair = Crypto.generateKeyPair();
+        var map = Map.of(
+                "private-key-alias", Crypto.encode(keyPair.getPrivate()),
+                "public-key-alias", Crypto.encode(keyPair.getPublic())
+        );
+        return SeedVault.fromMap(c -> map);
+    }
 
     @Timeout(300)
     @Test
@@ -65,7 +81,7 @@ public class DspTckTest {
 
         assertThat(result.getTestsStartedCount()).isGreaterThan(0);
 
-        var failures = result.getFailures().stream().map(this::mapFailure);
+        var failures = result.getFailures().stream().map(this::mapFailure).toList();
 
         assertThat(failures).isEmpty();
     }
@@ -76,10 +92,10 @@ public class DspTckTest {
             properties.load(reader);
         }
 
-        properties.put("dataspacetck.dsp.connector.http.url", runtime.getProtocolUrl() + "/2025-1");
-        properties.put("dataspacetck.dsp.connector.http.base.url", runtime.getProtocolUrl());
-        properties.put("dataspacetck.dsp.connector.negotiation.initiate.url", WEBHOOK.get() + "/negotiations/requests");
-        properties.put("dataspacetck.dsp.connector.transfer.initiate.url", WEBHOOK.get() + "/transfers/requests");
+        properties.put("dataspacetck.dsp.connector.http.url", PROTOCOL_URL + "/2025-1");
+        properties.put("dataspacetck.dsp.connector.http.base.url", PROTOCOL_URL);
+        properties.put("dataspacetck.dsp.connector.negotiation.initiate.url", WEBHOOK_URL + "/negotiations/requests");
+        properties.put("dataspacetck.dsp.connector.transfer.initiate.url", WEBHOOK_URL + "/transfers/requests");
         properties.put("dataspacetck.dsp.connector.agent.id", "participantContextId");
         properties.put("dataspacetck.dsp.connector.http.headers.authorization", "{\"region\": \"any\", \"audience\": \"any\", \"clientId\":\"any\"}");
         properties.put("dataspacetck.dsp.jsonld.context.edc.uri", "https://w3id.org/edc/dspace/v0.0.1");

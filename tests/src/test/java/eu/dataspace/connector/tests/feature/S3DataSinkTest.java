@@ -133,11 +133,11 @@ public class S3DataSinkTest {
 
             var userAccessKey = consumerS3.createBucket(bucketName);
 
-            consumer.getService(Vault.class).storeSecret("s3credentials", Json.createObjectBuilder()
-                    .add("edctype", "dataspaceconnector:secrettoken")
-                    .add("accessKeyId", userAccessKey.accessKeyId())
-                    .add("secretAccessKey", userAccessKey.secretAccessKey())
-                    .build().toString());
+        consumer.getService(Vault.class).storeSecret("s3credentials", Json.createObjectBuilder()
+                .add("edctype", "dataspaceconnector:secrettoken")
+                .add("accessKeyId", userAccessKey.accessKeyId())
+                .add("secretAccessKey", userAccessKey.secretAccessKey())
+                .build().toString());
 
             Map<String, Object> dataAddressProperties = Map.of(
                     EDC_NAMESPACE + "type", "HttpData",

@@ -119,11 +119,8 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 entry("web.http.management.auth.key", managementAuthKey),
                 entry("web.http.protocol.path", controlPlaneProtocol.get().getPath()),
                 entry("web.http.protocol.port", controlPlaneProtocol.get().getPort() + ""),
-                entry("web.http.version.path", "/version"),
-                entry("web.http.version.port", getFreePort() + ""),
                 entry("web.http.public.path", "/public"),
                 entry("web.http.public.port", getFreePort() + ""),
-                entry("edc.dsp.callback.address", getProtocolUrl()),
                 entry("edc.core.retry.retries.max", "0"),
                 entry("edc.transfer.proxy.token.verifier.publickey.alias", "public-key-alias"),
                 entry("edc.transfer.proxy.token.signer.privatekey.alias", "private-key-alias"),
@@ -197,7 +194,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         return this.baseManagementRequest()
                 .contentType(JSON)
                 .body(requestBody)
-                .when().post("/v3/assets")
+                .when().post("/assets")
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200)
@@ -219,7 +216,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .contentType(JSON)
                 .body(body)
                 .when()
-                .post("/v3/contractagreements/retirements")
+                .post("/contractagreements/retirements")
                 .then()
                 .log().ifValidationFails();
     }
@@ -228,7 +225,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         return baseManagementRequest()
                 .contentType(JSON)
                 .when()
-                .get("/v3/transferprocesses/{id}", transferProcessId)
+                .get("/transferprocesses/{id}", transferProcessId)
                 .then().statusCode(200).extract().body().as(JsonObject.class);
     }
 
@@ -236,7 +233,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         return baseManagementRequest()
                 .contentType(JSON)
                 .when()
-                .get("/v3/contractnegotiations/{id}", id)
+                .get("/contractnegotiations/{id}", id)
                 .then().statusCode(200).extract().body().as(JsonObject.class);
     }
 
@@ -245,7 +242,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .contentType(JSON)
                 .body(query)
                 .when()
-                .post("/v3/contractnegotiations/request")
+                .post("/contractnegotiations/request")
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200)
@@ -273,28 +270,31 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
     public JsonObject createEdpsJob(String assetId, String edpsContractAgreementId) {
         return baseManagementRequest()
+                .basePath("/edp")
                 .contentType(JSON)
                 .body(createObjectBuilder().add("contractId", edpsContractAgreementId).build())
                 .when()
-                .post("/edp/edps/{assetId}/jobs", assetId)
+                .post("/edps/{assetId}/jobs", assetId)
                 .then().statusCode(200).extract().body().as(JsonObject.class);
     }
 
     public JsonObject getEdpsResult(String assetId, String jobId, String edpsContractAgreementId) {
         return baseManagementRequest()
+                .basePath("/edp")
                 .contentType(JSON)
                 .body(createObjectBuilder().add("contractId", edpsContractAgreementId).build())
                 .when()
-                .post("/edp/edps/{assetId}/jobs/{jobId}/result", assetId, jobId)
+                .post("/edps/{assetId}/jobs/{jobId}/result", assetId, jobId)
                 .then().statusCode(200).extract().body().as(JsonObject.class);
     }
 
     public ValidatableResponse publishDassen(String resultAssetId, String daseenContractAgreementId) {
         return baseManagementRequest()
+                .basePath("/edp")
                 .contentType(JSON)
                 .body(createObjectBuilder().add("contractId", daseenContractAgreementId).build())
                 .when()
-                .post("/edp/daseen/{resultAssetId}", resultAssetId)
+                .post("/daseen/{resultAssetId}", resultAssetId)
                 .then();
     }
 
@@ -305,12 +305,12 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .add("@type", "CatalogRequest")
                 .add("counterPartyId", provider.getId())
                 .add("counterPartyAddress", provider.getProtocolUrl())
-                .add("protocol", this.protocol);
+                .add("protocol", this.protocol.name());
 
         var response = this.baseManagementRequest()
                 .contentType(ContentType.JSON)
                 .when().body(requestBodyBuilder.build())
-                .post("/v3/catalog/request")
+                .post("/catalog/request")
                 .then().log().ifValidationFails()
                 .statusCode(200).extract().body().asString();
 
@@ -328,7 +328,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         return baseManagementRequest()
                 .contentType(JSON)
                 .body(body)
-                .when().post("/v3/assets")
+                .when().post("/assets")
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200)
@@ -369,7 +369,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .add("@type", "CatalogRequest")
                 .add("counterPartyId", provider.id)
                 .add("counterPartyAddress", provider.getProtocolUrl())
-                .add("protocol", protocol);
+                .add("protocol", protocol.name());
 
         return baseManagementRequest()
                 .contentType(ContentType.JSON)
