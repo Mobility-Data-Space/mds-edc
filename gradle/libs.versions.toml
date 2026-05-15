@@ -4,7 +4,7 @@ awaitility = "4.3.0"
 aws = "2.44.4"
 azure-storage-blob = "12.33.4"
 bouncycastle = "1.84"
-dsp-tck = "1.0.0-SNAPSHOT"
+dsp-tck = "1.0.0-RC6"
 edc = "0.15.1"
 flyway = "12.6.0"
 jose4j = "0.9.6"
@@ -42,16 +42,11 @@ edc-dataplane-feature-sql-bom = { module = "org.eclipse.edc:dataplane-feature-sq
 edc-edr-store-spi = { module = "org.eclipse.edc:edr-store-spi", version.ref = "edc" }
 edc-http-lib = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
 edc-http-spi = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
-edc-identity-hub-spi = { module = "org.eclipse.edc:identity-hub-spi", version.ref = "edc" }
 edc-identityhub-bom = { module = "org.eclipse.edc:identityhub-bom", version.ref = "edc" }
 edc-identityhub-feature-sql-bom = { module = "org.eclipse.edc:identityhub-feature-sql-bom", version.ref = "edc" }
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-jersey-core = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
 edc-jersey-providers-lib = { module = "org.eclipse.edc:jersey-providers-lib", version.ref = "edc" }
-edc-issuerservice-bom = { module = "org.eclipse.edc:issuerservice-bom", version.ref = "edc" }
-edc-issuerservice-feature-sql-bom = { module = "org.eclipse.edc:issuerservice-feature-sql-bom", version.ref = "edc" }
-edc-issuerservice-database-attestations = { module = "org.eclipse.edc:issuerservice-database-attestations", version.ref = "edc" }
-edc-issuerservice-issuance-spi = { module = "org.eclipse.edc:issuerservice-issuance-spi", version.ref = "edc" }
 edc-json-ld-spi = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-json-ld-lib = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
@@ -123,7 +118,7 @@ parsson = { module = "org.eclipse.parsson:parsson", version = "1.1.7" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
 swagger-annotations = { module = "io.swagger.core.v3:swagger-annotations", version.ref = "swagger" }
-swagger-jaxrs2-jakarta = { module = "io.swagger.core.v3:swagger-jaxrs2-jakarta", version.ref = "swagger" } # TODO: is this necessary?
+swagger-jaxrs2-jakarta = { module = "io.swagger.core.v3:swagger-jaxrs2-jakarta", version.ref = "swagger" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }
 testcontainers-kafka = { module = "org.testcontainers:testcontainers-kafka", version.ref = "testcontainers" }
 testcontainers-keycloak = { module = "com.github.dasniko:testcontainers-keycloak", version.ref = "testcontainers-keycloak" }
