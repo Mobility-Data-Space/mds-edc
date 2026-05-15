@@ -41,7 +41,8 @@ public class IssuerExtension implements BeforeAllCallback, AfterAllCallback {
     private static final String SUPER_USER = "super-user";
     private static final String SUPER_USER_API_KEY = Base64.getEncoder().encodeToString(SUPER_USER.getBytes()) + "." + UUID.randomUUID();
 
-    private final GenericContainer<?> container = new GenericContainer<>("ghcr.io/mobility-data-space/mds-identity-issuer/issuer:latest");
+    // TODO: use a proper release version once available
+    private final GenericContainer<?> container = new GenericContainer<>("ghcr.io/mobility-data-space/mds-identity-issuer/issuer:sha-2b6a334");
 
     private final LazySupplier<URI> didEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/"));
     private final LazySupplier<URI> issuanceEndpoint = new LazySupplier<>(() -> URI.create("http://localhost:" + getFreePort() + "/issuance"));
