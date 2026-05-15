@@ -1,0 +1,123 @@
+openapi: 3.0.1
+info:
+  description: merged spec
+  title: merged spec
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /check/health:
+    get:
+      description: Performs a liveness probe to determine whether the runtime is working
+        properly.
+      operationId: checkHealth
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+          description: The runtime is working properly.
+      tags:
+      - Application Observability
+  /check/liveness:
+    get:
+      description: Performs a liveness probe to determine whether the runtime is working
+        properly.
+      operationId: getLiveness
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+          description: The runtime is working properly.
+      tags:
+      - Application Observability
+  /check/readiness:
+    get:
+      description: Performs a readiness probe to determine whether the runtime is
+        able to accept requests.
+      operationId: getReadiness
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+          description: The runtime is able to accept requests.
+      tags:
+      - Application Observability
+  /check/startup:
+    get:
+      description: Performs a startup probe to determine whether the runtime has completed
+        startup.
+      operationId: getStartup
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+          description: The runtime has completed startup.
+      tags:
+      - Application Observability
+components:
+  schemas:
+    HealthStatus:
+      example:
+        isSystemHealthy: true
+        componentResults:
+        - component: component
+          failure:
+            failureDetail: failureDetail
+            messages:
+            - messages
+            - messages
+          isHealthy: true
+        - component: component
+          failure:
+            failureDetail: failureDetail
+            messages:
+            - messages
+            - messages
+          isHealthy: true
+      properties:
+        componentResults:
+          items:
+            $ref: "#/components/schemas/HealthCheckResult"
+          type: array
+        isSystemHealthy:
+          type: boolean
+      type: object
+    HealthCheckResult:
+      example:
+        component: component
+        failure:
+          failureDetail: failureDetail
+          messages:
+          - messages
+          - messages
+        isHealthy: true
+      properties:
+        component:
+          type: string
+        failure:
+          $ref: "#/components/schemas/Failure"
+        isHealthy:
+          type: boolean
+      type: object
+    Failure:
+      example:
+        failureDetail: failureDetail
+        messages:
+        - messages
+        - messages
+      properties:
+        failureDetail:
+          type: string
+        messages:
+          items:
+            type: string
+          type: array
+      type: object
