@@ -48,3 +48,38 @@ jobs:
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ github.token }}
+
+  Security:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Generate Gradle lockfiles
+        run: ./gradlew resolveAndLockAll --write-locks
+        env:
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ github.token }}
+
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          output: trivy-fs.txt
+          severity: CRITICAL,HIGH,MEDIUM
+          scanners: vuln,secret
+
+      - name: Upload scan report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-fs
+          path: trivy-fs.txt

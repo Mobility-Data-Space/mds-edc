@@ -15,6 +15,21 @@ plugins {
 allprojects {
     apply(plugin = "java")
 
+    dependencyLocking {
+        lockAllConfigurations()
+        lockMode = LockMode.LENIENT
+    }
+
+    tasks.register("resolveAndLockAll") {
+        notCompatibleWithConfigurationCache("Resolves configurations")
+        doFirst {
+            require(gradle.startParameter.isWriteDependencyLocks) { "Run with --write-locks flag" }
+        }
+        doLast {
+            configurations.filter { it.isCanBeResolved }.forEach { it.resolve() }
+        }
+    }
+
     tasks.test {
         useJUnitPlatform {
             excludeTags("Tck")
