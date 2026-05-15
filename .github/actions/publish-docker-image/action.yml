@@ -29,13 +29,48 @@ runs:
           type=sha
           type=raw,value=latest,enable={{is_default_branch}}
 
-    - name: Build and push ${{ inputs.runtime }}
+    - name: Build ${{ inputs.runtime }}
+      uses: docker/build-push-action@v6
+      with:
+        context: ./launchers
+        file: launchers/Dockerfile
+        push: false
+        load: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          RUNTIME=${{ inputs.runtime }}
+
+    - name: Trivy scan ${{ inputs.runtime }}
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: ghcr.io/${{ github.repository }}/${{ inputs.runtime }}:${{ steps.meta.outputs.version }}
+        format: table
+        output: trivy-${{ inputs.runtime }}.txt
+        severity: CRITICAL,HIGH,MEDIUM
+
+    - name: Upload scan report for ${{ inputs.runtime }}
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: trivy-${{ inputs.runtime }}
+        path: trivy-${{ inputs.runtime }}.txt
+
+    - name: Fail on CRITICAL vulnerabilities in ${{ inputs.runtime }}
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: ghcr.io/${{ github.repository }}/${{ inputs.runtime }}:${{ steps.meta.outputs.version }}
+        format: table
+        severity: CRITICAL
+        exit-code: '1'
+
+    - name: Push ${{ inputs.runtime }}
       uses: docker/build-push-action@v6
       with:
         context: ./launchers
         file: launchers/Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         build-args: |
           RUNTIME=${{ inputs.runtime }}
