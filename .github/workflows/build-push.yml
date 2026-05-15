@@ -30,6 +30,13 @@ jobs:
           clean_version=`echo ${version} | cut -c 2-`
           sed -i 's#^version=.*#version='${clean_version}'#g' gradle.properties
 
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
       - name: Build
         run: ./gradlew build
         env:
@@ -41,13 +48,6 @@ jobs:
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ github.token }}
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
 
       - uses: ./.github/actions/publish-docker-image
         with:
