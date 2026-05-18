@@ -15,11 +15,6 @@ plugins {
 allprojects {
     apply(plugin = "java")
 
-    // TODO: remove once lh client and edc align on jersey again (or better bring the extension into this repo)
-    configurations.all {
-        resolutionStrategy.force("org.glassfish.jersey.media:jersey-media-multipart:3.1.11")
-    }
-
     tasks.test {
         useJUnitPlatform {
             excludeTags("Tck")
