@@ -1,13 +1,7 @@
 # Trivy CVE suppressions.
 #
 # Every entry below is a vulnerability in a transitive dependency pulled by
-# Eclipse EDC 0.15.1 (see `edc` in gradle/libs.versions.toml). They cannot be
-# fixed in this repository directly. Each block names the EDC release that
-# bumps the affected library past the fix version, or notes that no upstream
-# fix is available yet.
-#
-# Source for the "fixed by EDC ..." mappings: release notes of
-# https://github.com/eclipse-edc/Connector (v0.16.0, v0.17.0).
+# Eclipse EDC 0.15.1 (see `edc` in gradle/libs.versions.toml).
 #
 # Maintenance: review this file on every EDC bump in libs.versions.toml and
 # remove any entry that no longer appears in the scan output.

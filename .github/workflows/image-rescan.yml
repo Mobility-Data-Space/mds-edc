@@ -1,0 +1,79 @@
+name: Periodic Image Rescan
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
+
+jobs:
+  fetch-tags:
+    name: Fetch last 3 released tags
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    outputs:
+      tags: ${{ steps.tags.outputs.tags }}
+    steps:
+      - name: Get last 3 released image tags
+        id: tags
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tags=$(gh api \
+            /orgs/Mobility-Data-Space/packages/container/mds-edc%2Fconnector-inmemory/versions \
+            --jq '[.[] | select(.metadata.container.tags | length > 0) | .metadata.container.tags[] | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))] | unique | sort_by(split(".") | map(tonumber)) | reverse | .[0:3]')
+          echo "tags=${tags}" >> "$GITHUB_OUTPUT"
+
+  rescan:
+    name: Scan ${{ matrix.image }}:${{ matrix.tag }}
+    needs: fetch-tags
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - connector-inmemory
+          - connector-inmemory-dcp
+          - connector-vault-postgresql
+          - connector-vault-postgresql-dcp
+          - connector-vault-postgresql-edp
+        tag: ${{ fromJson(needs.fetch-tags.outputs.tags) }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trivy image scan (report)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ matrix.tag }}
+          format: table
+          output: trivy-rescan-${{ matrix.image }}-${{ matrix.tag }}.txt
+          severity: MEDIUM,HIGH,CRITICAL
+          scanners: vuln
+
+      - name: Upload rescan report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: trivy-rescan-${{ matrix.image }}-${{ matrix.tag }}
+          path: trivy-rescan-${{ matrix.image }}-${{ matrix.tag }}.txt
+
+      - name: Fail on HIGH/CRITICAL vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ghcr.io/${{ github.repository }}/${{ matrix.image }}:${{ matrix.tag }}
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+          trivyignores: .trivyignore
+          scanners: vuln
