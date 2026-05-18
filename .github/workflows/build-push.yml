@@ -43,12 +43,6 @@ jobs:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ github.token }}
 
-      - name: Publish Maven Artifacts
-        run: ./gradlew publish
-        env:
-          USERNAME: ${{ github.actor }}
-          TOKEN: ${{ github.token }}
-
       - uses: ./.github/actions/publish-docker-image
         with:
           runtime: connector-inmemory
@@ -78,3 +72,9 @@ jobs:
           runtime: connector-vault-postgresql-edp
           image-title: MDS EDC EDP Experimental
           image-description: MDS EDC connector with EDP extension for production use.
+
+      - name: Publish Maven Artifacts
+        run: ./gradlew publish
+        env:
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ github.token }}
