@@ -16,7 +16,9 @@ jobs:
       matrix:
         image:
           - connector-inmemory
+          - connector-inmemory-dcp
           - connector-vault-postgresql
+          - connector-vault-postgresql-dcp
           - connector-vault-postgresql-edp
     steps:
       - uses: actions/checkout@v6
