@@ -16,7 +16,7 @@ runs:
   steps:
     - name: Generate Docker metadata for ${{ inputs.runtime }}
       id: meta
-      uses: docker/metadata-action@v5
+      uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
       with:
         images: ghcr.io/${{ github.repository }}/${{ inputs.runtime }}
         labels: |
@@ -30,7 +30,7 @@ runs:
           type=raw,value=latest,enable={{is_default_branch}}
 
     - name: Build ${{ inputs.runtime }}
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
       with:
         context: ./launchers
         file: launchers/Dockerfile
@@ -42,7 +42,7 @@ runs:
           RUNTIME=${{ inputs.runtime }}
 
     - name: Trivy scan ${{ inputs.runtime }}
-      uses: aquasecurity/trivy-action@0.28.0
+      uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
       with:
         image-ref: ghcr.io/${{ github.repository }}/${{ inputs.runtime }}:${{ steps.meta.outputs.version }}
         format: table
@@ -50,14 +50,14 @@ runs:
         severity: CRITICAL,HIGH,MEDIUM
 
     - name: Upload scan report for ${{ inputs.runtime }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       if: always()
       with:
         name: trivy-${{ inputs.runtime }}
         path: trivy-${{ inputs.runtime }}.txt
 
     - name: Fail on CRITICAL vulnerabilities in ${{ inputs.runtime }}
-      uses: aquasecurity/trivy-action@0.28.0
+      uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
       with:
         image-ref: ghcr.io/${{ github.repository }}/${{ inputs.runtime }}:${{ steps.meta.outputs.version }}
         format: table
@@ -65,7 +65,7 @@ runs:
         exit-code: '1'
 
     - name: Push ${{ inputs.runtime }}
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
       with:
         context: ./launchers
         file: launchers/Dockerfile

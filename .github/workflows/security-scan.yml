@@ -21,10 +21,10 @@ jobs:
           - connector-vault-postgresql-dcp
           - connector-vault-postgresql-edp
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v4
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -34,7 +34,7 @@ jobs:
         run: docker pull ghcr.io/${{ github.repository }}/${{ matrix.image }}:latest
 
       - name: Trivy scan ${{ matrix.image }}
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ghcr.io/${{ github.repository }}/${{ matrix.image }}:latest
           format: table
@@ -42,7 +42,7 @@ jobs:
           severity: CRITICAL,HIGH,MEDIUM
 
       - name: Upload scan report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: trivy-${{ matrix.image }}
