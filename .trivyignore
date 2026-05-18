@@ -1,5 +1,58 @@
-# Trivy ignore file
-# Add CVE IDs here to suppress known false positives or accepted risks.
-# Format: one CVE per line, optionally followed by a comment.
-# Example:
-# CVE-2024-12345  # accepted risk: not exploitable in our context
+# Trivy CVE suppressions.
+#
+# Every entry below is a vulnerability in a transitive dependency pulled by
+# Eclipse EDC 0.15.1 (see `edc` in gradle/libs.versions.toml). They cannot be
+# fixed in this repository directly. Each block names the EDC release that
+# bumps the affected library past the fix version, or notes that no upstream
+# fix is available yet.
+#
+# Source for the "fixed by EDC ..." mappings: release notes of
+# https://github.com/eclipse-edc/Connector (v0.16.0, v0.17.0).
+#
+# Maintenance: review this file on every EDC bump in libs.versions.toml and
+# remove any entry that no longer appears in the scan output.
+
+# Fixed by EDC 0.17.0 (bumps jackson to 2.21.2).
+GHSA-72hv-8253-57qq
+
+# Fixed by EDC 0.17.0 (bumps bouncyCastle-jdk18on to 1.84).
+# Note: our libs.versions.toml already pins bouncycastle = "1.84" but EDC
+# 0.15.1 still drags 1.82 in transitively; the EDC bump removes that path.
+CVE-2026-5588
+CVE-2026-5598
+CVE-2026-0636
+
+# Fixed by EDC 0.17.0 (bumps jetty to 12.1.7).
+CVE-2026-2332
+CVE-2026-1605
+
+# Already pinned to 42.7.11 in libs.versions.toml. EDC ships 42.7.10 as of
+# 0.17.0, so this suppression can be removed once lockfiles are regenerated.
+CVE-2026-42198
+
+# Not yet patched upstream: EDC 0.17.0 still ships opentelemetry-api 1.32.0.
+# Re-check on next EDC release.
+CVE-2026-45292
+
+# Not yet patched upstream: no netty bump in EDC 0.16.0 / 0.17.0.
+# Re-check on next EDC release.
+CVE-2026-42583
+CVE-2026-42579
+CVE-2026-33870
+CVE-2026-42584
+CVE-2026-42587
+CVE-2025-67735
+CVE-2026-41417
+CVE-2026-42580
+CVE-2026-42581
+CVE-2026-42585
+CVE-2026-33871
+
+# Not yet patched upstream: no reactor-netty bump in EDC 0.16.0 / 0.17.0.
+# Re-check on next EDC release.
+CVE-2025-22227
+
+# commons-lang3 3.17.0 -> 3.18.0
+# Only affects launchers/connector-tck via org.eclipse.dataspacetck.dsp
+# (dsp-tck = "1.0.0-RC6" in libs.versions.toml). Awaiting a dsp-tck bump.
+CVE-2025-48924
