@@ -72,10 +72,13 @@ jobs:
         with:
           scan-type: fs
           scan-ref: .
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: '1'
+          trivyignores: .trivyignore
+          scanners: vuln,secret
           format: table
           output: trivy-fs.txt
-          severity: CRITICAL,HIGH,MEDIUM
-          scanners: vuln,secret
 
       - name: Upload scan report
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
