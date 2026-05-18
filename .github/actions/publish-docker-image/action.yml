@@ -41,13 +41,14 @@ runs:
         build-args: |
           RUNTIME=${{ inputs.runtime }}
 
-    - name: Trivy scan ${{ inputs.runtime }}
+    - name: Trivy scan ${{ inputs.runtime }} (report)
       uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
       with:
         image-ref: ghcr.io/${{ github.repository }}/${{ inputs.runtime }}:${{ steps.meta.outputs.version }}
         format: table
         output: trivy-${{ inputs.runtime }}.txt
-        severity: CRITICAL,HIGH,MEDIUM
+        severity: MEDIUM,HIGH,CRITICAL
+        scanners: vuln
 
     - name: Upload scan report for ${{ inputs.runtime }}
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -56,13 +57,23 @@ runs:
         name: trivy-${{ inputs.runtime }}
         path: trivy-${{ inputs.runtime }}.txt
 
-    - name: Fail on CRITICAL vulnerabilities in ${{ inputs.runtime }}
+    - name: Fail on HIGH/CRITICAL vulnerabilities in ${{ inputs.runtime }}
       uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
       with:
         image-ref: ghcr.io/${{ github.repository }}/${{ inputs.runtime }}:${{ steps.meta.outputs.version }}
         format: table
-        severity: CRITICAL
+        severity: HIGH,CRITICAL
+        ignore-unfixed: true
         exit-code: '1'
+        trivyignores: .trivyignore
+        scanners: vuln
+
+    - name: Generate SBOM for ${{ inputs.runtime }}
+      uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0
+      with:
+        image: ghcr.io/${{ github.repository }}/${{ inputs.runtime }}:${{ steps.meta.outputs.version }}
+        artifact-name: sbom-${{ inputs.runtime }}
+        output-file: sbom-${{ inputs.runtime }}.spdx.json
 
     - name: Push ${{ inputs.runtime }}
       uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
