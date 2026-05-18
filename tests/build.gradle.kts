@@ -28,7 +28,6 @@ dependencies {
     testImplementation(libs.testcontainers.kafka)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.vault)
-    testFixturesApi(libs.testcontainers.junit.jupiter)
 
     testRuntimeOnly(libs.dsp.tck.metadata)
     testRuntimeOnly(libs.dsp.tck.catalog)
