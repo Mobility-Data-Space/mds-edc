@@ -113,7 +113,7 @@ class TimeIntervalPolicyFunctionTest {
 
     private static class TestPolicyContext extends PolicyContextImpl implements ParticipantAgentPolicyContext {
 
-        private final ParticipantAgent participantAgent = new ParticipantAgent(emptyMap(), emptyMap());
+        private final ParticipantAgent participantAgent = new ParticipantAgent("any", emptyMap(), emptyMap());
 
         @Override
         public ParticipantAgent participantAgent() {

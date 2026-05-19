@@ -1,5 +1,6 @@
 package eu.dataspace.connector.iam.oauth2;
 
+import eu.dataspace.connector.iam.oauth2.certificate.VaultCertificateResolver;
 import eu.dataspace.connector.iam.oauth2.identity.IdentityProviderKeyResolver;
 import eu.dataspace.connector.iam.oauth2.identity.Oauth2ServiceImpl;
 import eu.dataspace.connector.iam.oauth2.jwt.X509CertificateDecorator;
@@ -7,7 +8,6 @@ import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.iam.oauth2.spi.Oauth2AssertionDecorator;
 import org.eclipse.edc.iam.oauth2.spi.client.Oauth2Client;
 import org.eclipse.edc.jwt.signer.spi.JwsSignerProvider;
-import org.eclipse.edc.keys.spi.CertificateResolver;
 import org.eclipse.edc.protocol.spi.DefaultParticipantIdExtractionFunction;
 import org.eclipse.edc.runtime.metamodel.annotation.Configuration;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
@@ -57,8 +57,6 @@ public class Oauth2ServiceExtension implements ServiceExtension {
     @Inject
     private EdcHttpClient httpClient;
     @Inject
-    private CertificateResolver certificateResolver;
-    @Inject
     private Clock clock;
     @Inject
     private Oauth2Client oauth2Client;
@@ -72,6 +70,8 @@ public class Oauth2ServiceExtension implements ServiceExtension {
     private TokenDecoratorRegistry jwtDecoratorRegistry;
     @Inject
     private JwsSignerProvider jwsSignerProvider;
+    @Inject
+    private VaultCertificateResolver certificateResolver;
 
     private IdentityProviderKeyResolver providerKeyResolver;
 
@@ -82,7 +82,6 @@ public class Oauth2ServiceExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-
         config = withDefaults(config, context);
         warnIfNoLeeway(config, context.getMonitor());
 

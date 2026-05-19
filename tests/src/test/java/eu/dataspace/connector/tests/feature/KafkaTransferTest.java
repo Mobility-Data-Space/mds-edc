@@ -44,8 +44,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.DEPROVISIONED;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.STARTED;
+import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.TERMINATED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
@@ -192,8 +192,8 @@ class KafkaTransferTest {
                     .filter(filter -> filter.asJsonObject().getString("correlationId").equals(consumerTransferProcessId))
                     .map(id -> id.asJsonObject().getString("@id")).findFirst().orElseThrow();
 
-            provider.terminateTransfer(providerTransferProcessId);
-            provider.awaitTransferToBeInState(providerTransferProcessId, DEPROVISIONED);
+        provider.terminateTransfer(providerTransferProcessId);
+        provider.awaitTransferToBeInState(providerTransferProcessId, TERMINATED);
 
             await().untilAsserted(() -> {
                 assertThatThrownBy(() -> kafkaConsumer.poll(Duration.ZERO)).isInstanceOf(TopicAuthorizationException.class);
@@ -252,7 +252,7 @@ class KafkaTransferTest {
                     .map(id -> id.asJsonObject().getString("@id")).findFirst().orElseThrow();
 
             provider.terminateTransfer(providerTransferProcessId);
-            provider.awaitTransferToBeInState(providerTransferProcessId, DEPROVISIONED);
+            provider.awaitTransferToBeInState(providerTransferProcessId, TERMINATED);
         }
 
         private String serializeToString(Properties properties) {

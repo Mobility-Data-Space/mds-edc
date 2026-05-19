@@ -71,7 +71,7 @@ public class PoliciesTest {
                 )
                 .build();
 
-        var evaluated = policyEngine.evaluate(policy, new CatalogPolicyContext(new ParticipantAgent(emptyMap(), emptyMap())));
+        var evaluated = policyEngine.evaluate(policy, new CatalogPolicyContext(new ParticipantAgent("any", emptyMap(), emptyMap())));
 
         assertThat(evaluated).isSucceeded();
     }
@@ -93,7 +93,7 @@ public class PoliciesTest {
                 .build();
         var claims = Map.<String, Object>of("referringConnector", "http://another");
 
-        var evaluated = policyEngine.evaluate(policy, contextProvider.apply(new ParticipantAgent(claims, emptyMap())));
+        var evaluated = policyEngine.evaluate(policy, contextProvider.apply(new ParticipantAgent("any", claims, emptyMap())));
 
         assertThat(evaluated).isFailed();
     }
@@ -133,7 +133,7 @@ public class PoliciesTest {
 
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-            var participantAgent = new ParticipantAgent(emptyMap(), emptyMap());
+            var participantAgent = new ParticipantAgent("any", emptyMap(), emptyMap());
             return Stream.of(
                     arguments(new CatalogPolicyContext(participantAgent)),
                     arguments(new ContractNegotiationPolicyContext(participantAgent)),
