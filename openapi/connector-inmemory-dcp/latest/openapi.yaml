@@ -1974,45 +1974,6 @@ paths:
           description: Request body was malformed
       tags:
       - Contract Agreement v4beta
-  /v4beta/transferprocesses/{id}/deprovision:
-    post:
-      description: "Requests the deprovisioning of resources associated with a transfer\
-        \ process. Due to the asynchronous nature of transfers, a successful response\
-        \ only indicates that the request was successfully received. This may take\
-        \ a long time, so clients must poll the /{id}/state endpoint to track the\
-        \ state."
-      operationId: deprovisionTransferProcessV4
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        "204":
-          description: Request to deprovision the transfer process was successfully
-            received
-          links:
-            poll-state:
-              operationId: deprovisionTransferProcessV3
-        "400":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: "Request was malformed, e.g. id was null"
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: A transfer process with the given ID does not exist
-      tags:
-      - Transfer Process v4beta
   /v3/contractnegotiations/{id}/terminate:
     post:
       description: Terminates the contract negotiation.
@@ -3456,7 +3417,7 @@ components:
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/ContractRequest
         counterPartyAddress: http://provider-address
-        protocol: dataspace-protocol-http
+        protocol: dataspace-protocol-http:2025-1
         policy:
           '@context': http://www.w3.org/ns/odrl.jsonld
           '@type': odrl:Offer
@@ -3575,7 +3536,7 @@ components:
         '@type': https://w3id.org/edc/v0.0.1/ns/ContractNegotiation
         '@id': negotiation-id
         type: PROVIDER
-        protocol: dataspace-protocol-http
+        protocol: dataspace-protocol-http:2025-1
         counterPartyId: counter-party-id
         counterPartyAddress: http://counter/party/address
         state: VERIFIED
@@ -5219,7 +5180,7 @@ components:
           edc: https://w3id.org/edc/v0.0.1/ns/
           dcat: http://www.w3.org/ns/dcat#
           odrl: http://www.w3.org/ns/odrl/2/
-          dspace: https://w3id.org/dspace/v0.8/
+          dspace: https://w3id.org/dspace/2025/1/
       type: object
     CatalogRequestV3:
       example:
@@ -5228,7 +5189,7 @@ components:
         '@type': CatalogRequest
         counterPartyAddress: http://provider-address
         counterPartyId: providerId
-        protocol: dataspace-protocol-http
+        protocol: dataspace-protocol-http:2025-1
         additionalScopes:
         - org.eclipse.edc.vc.type:SomeCredential:read
         - org.eclipse.edc.vc.type:AnotherCredential:write
@@ -5743,7 +5704,7 @@ components:
           edc: https://w3id.org/edc/v0.0.1/ns/
           dcat: http://www.w3.org/ns/dcat#
           odrl: http://www.w3.org/ns/odrl/2/
-          dspace: https://w3id.org/dspace/v0.8/
+          dspace: https://w3id.org/dspace/2025/1/
       type: object
     DatasetRequestV3:
       example:
@@ -5753,7 +5714,7 @@ components:
         '@id': dataset-id
         counterPartyAddress: http://counter-party-address
         counterPartyId: counter-party-id
-        protocol: dataspace-protocol-http
+        protocol: dataspace-protocol-http:2025-1
       properties:
         '@type':
           example: https://w3id.org/edc/v0.0.1/ns/CatalogRequest
@@ -6772,7 +6733,7 @@ components:
         '@context':
           '@vocab': https://w3id.org/edc/v0.0.1/ns/
         '@type': https://w3id.org/edc/v0.0.1/ns/TransferRequest
-        protocol: dataspace-protocol-http
+        protocol: dataspace-protocol-http:2025-1
         counterPartyAddress: http://provider-address
         contractId: contract-id
         transferType: transferType

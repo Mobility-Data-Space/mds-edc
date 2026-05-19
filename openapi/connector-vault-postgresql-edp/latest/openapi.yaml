@@ -696,8 +696,6 @@ paths:
           description: Request body was malformed
       tags:
       - Contract Agreement v4beta
-  /v4beta/transferprocesses/{id}/deprovision:
-    $ref: "./transfer-process-api.yaml#/paths/~1v4beta~1transferprocesses~1{id}~1deprovision"
   /v3/contractnegotiations/{id}/terminate:
     $ref: "./contract-negotiation-api.yaml#/paths/~1v3~1contractnegotiations~1{id}~1terminate"
   /v4beta/policydefinitions/request:
@@ -1676,7 +1674,7 @@ components:
         '@type': https://w3id.org/edc/v0.0.1/ns/ContractNegotiation
         '@id': negotiation-id
         type: PROVIDER
-        protocol: dataspace-protocol-http
+        protocol: dataspace-protocol-http:2025-1
         counterPartyId: counter-party-id
         counterPartyAddress: http://counter/party/address
         state: VERIFIED
