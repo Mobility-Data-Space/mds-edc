@@ -1,9 +1,7 @@
 package eu.dataspace.connector.tests;
 
-import io.restassured.http.ContentType;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.utils.LazySupplier;
-import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -16,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static eu.dataspace.connector.tests.Crypto.generateEcKey;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static java.util.Map.entry;
@@ -83,23 +80,25 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
                 ))
         );
 
+        var participantContext = participantContexts.get(participantDid);
+
         given()
                 .baseUri(identityEndpoint.get().toString())
                 .contentType(JSON)
-                .header("x-api-key", participantContexts.get(participantDid).apiKey())
+                .header("x-api-key", participantContext.credentials().apiKey())
                 .body(requestCredentialIssuance)
-                .post("/v1alpha/participants/%s/credentials/request".formatted(Base64.getEncoder().encodeToString(participantDid.getBytes())))
+                .post("/v1alpha/participants/%s/credentials/request".formatted(participantContext.participantContextId()))
                 .then()
                 .log().ifValidationFails()
                 .statusCode(201);
 
         await().untilAsserted(() -> {
             var path = "/v1alpha/participants/%s/credentials/request/%s"
-                    .formatted(Base64.getEncoder().encodeToString(participantDid.getBytes()), holderPid);
+                    .formatted(participantContext.participantContextId(), holderPid);
 
             given()
                     .baseUri(identityEndpoint.get().toString())
-                    .header("x-api-key", participantContexts.get(participantDid).apiKey())
+                    .header("x-api-key", participantContext.credentials().apiKey())
                     .get(path)
                     .then()
                     .statusCode(200)
@@ -115,17 +114,19 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
         return stsEndpoint.get() + "/token";
     }
 
-    public WalletParticipantContext participantContext(String did) {
-        return participantContexts.get(did);
+    public WalletParticipantContextCredentials clientCredentials(String did) {
+        return participantContexts.get(did).credentials();
     }
 
     private WalletParticipantContext registerParticipantContext(LazySupplier<String> did) {
-        return given()
+        var participantContextId = UUID.randomUUID().toString();
+
+        var credentials = given()
                 .baseUri(identityEndpoint.get().toString())
                 .header("x-api-key", SUPER_USER_API_KEY)
-                .contentType(ContentType.JSON)
+                .contentType(JSON)
                 .body(Map.of(
-                        "participantContextId", did.get(),
+                        "participantContextId", participantContextId,
                         "did", did.get(),
                         "active", "true",
                         "serviceEndpoint", Map.of(
@@ -133,7 +134,7 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
                                 "type", "CredentialService",
                                 "serviceEndpoint", "%s/v1/participants/%s".formatted(
                                         credentialsEndpoint.get().toString(),
-                                        Base64.getEncoder().encodeToString(did.get().getBytes())
+                                        participantContextId
                                 )
                         ),
                         "key", Map.of(
@@ -149,7 +150,9 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
                 .log().ifValidationFails()
                 .statusCode(200)
                 .extract()
-                .body().as(WalletParticipantContext.class);
+                .body().as(WalletParticipantContextCredentials.class);
+
+        return new WalletParticipantContext(participantContextId, credentials);
     }
 
 }

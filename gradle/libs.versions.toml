@@ -5,7 +5,7 @@ aws = "2.44.7"
 azure-storage-blob = "12.34.0"
 bouncycastle = "1.84"
 dsp-tck = "1.0.0-RC6"
-edc = "0.16.0"
+edc = "0.17.0"
 flyway = "12.6.1"
 jose4j = "0.9.6"
 junit-jupiter = "6.0.3"
@@ -52,7 +52,6 @@ edc-json-ld-spi = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" 
 edc-json-ld-lib = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
 edc-jwt-spi = { module = "org.eclipse.edc:jwt-spi", version.ref = "edc" }
-edc-jwt-signer-spi = { module = "org.eclipse.edc:jwt-signer-spi", version.ref = "edc" }
 edc-management-api-lib = { module = "org.eclipse.edc:management-api-lib", version.ref = "edc" }
 edc-management-api-test-fixtures = { module = "org.eclipse.edc:management-api-test-fixtures", version.ref = "edc" }
 edc-oauth2-spi = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }

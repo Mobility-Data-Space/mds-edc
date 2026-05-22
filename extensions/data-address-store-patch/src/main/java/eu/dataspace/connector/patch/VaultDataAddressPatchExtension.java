@@ -8,6 +8,7 @@ import org.eclipse.edc.runtime.metamodel.annotation.Provides;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 
 @Provides(DataAddressStore.class)
@@ -21,10 +22,13 @@ public class VaultDataAddressPatchExtension implements ServiceExtension {
     private JsonLd jsonLd;
     @Inject
     private DataPlaneProtocolInUse dataPlaneProtocolInUse;
+    @Inject
+    private TypeManager typeManager;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        context.registerService(DataAddressStore.class, new VaultDataAddressStorePatch(vault, typeTransformerRegistry, jsonLd, dataPlaneProtocolInUse));
+        context.registerService(DataAddressStore.class, new VaultDataAddressStorePatch(vault, typeTransformerRegistry,
+                jsonLd, dataPlaneProtocolInUse, typeManager));
     }
 
 }

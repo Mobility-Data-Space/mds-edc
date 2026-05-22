@@ -8,6 +8,8 @@ import eu.dataspace.connector.tests.extensions.LoggingHouseExtension;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
+import org.eclipse.edc.spi.system.configuration.Config;
+import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
@@ -23,6 +25,10 @@ import static org.eclipse.edc.connector.controlplane.transfer.spi.types.Transfer
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.TERMINATED;
 
 public class ContractRetirementTest {
+
+    public static final java.util.function.Supplier<Config> POLICY_MONITOR_PERIOD = () -> ConfigFactory.fromMap(Map.of(
+            "edc.policy.monitor.period", "PT2S"
+    ));
 
     @Nested
     class Daps extends Tests {
@@ -45,7 +51,8 @@ public class ContractRetirementTest {
 
         @RegisterExtension
         private static final MdsParticipant PROVIDER = MdsParticipantFactory.hashicorpVault("provider", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION)
-                .configurationProvider(LOGGING_HOUSE::getConfiguration);
+                .configurationProvider(LOGGING_HOUSE::getConfiguration)
+                .configurationProvider(POLICY_MONITOR_PERIOD);
 
         @RegisterExtension
         private static final MdsParticipant CONSUMER = MdsParticipantFactory.hashicorpVault("consumer", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION)
@@ -83,7 +90,8 @@ public class ContractRetirementTest {
         @RegisterExtension
         @Order(4)
         private static final MdsParticipant PROVIDER = MdsParticipantFactory.hashicorpVaultDcp("provider", VAULT_EXTENSION, POSTGRES_EXTENSION, IDENTITY_HUB, ISSUER.did())
-                .configurationProvider(LOGGING_HOUSE::getConfiguration);
+                .configurationProvider(LOGGING_HOUSE::getConfiguration)
+                .configurationProvider(POLICY_MONITOR_PERIOD);
 
         @RegisterExtension
         @Order(4)

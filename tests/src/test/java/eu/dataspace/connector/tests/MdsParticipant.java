@@ -186,6 +186,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                         .add("mobilitydcatap", "https://w3id.org/mobilitydcat-ap/")
                         .add("mobilitydcatap-theme", "https://w3id.org/mobilitydcat-ap/mobility-theme/")
                 )
+                .add("@type", "Asset")
                 .add("@id", assetId)
                 .add("properties", baseProperties.addAll(createObjectBuilder(properties)))
                 .add("dataAddress", Json.createObjectBuilder(dataAddressProperties))
@@ -392,6 +393,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
         @Override
         public MdsParticipant build() {
+            managementVersionBasePath("/v3");
             participant.enrichManagementRequest = request -> request.header("x-api-key", participant.managementAuthKey);
             return super.build();
         }

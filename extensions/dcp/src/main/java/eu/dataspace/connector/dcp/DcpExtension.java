@@ -40,7 +40,7 @@ public class DcpExtension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var defaultScopes = Set.of("org.eclipse.edc.vc.type:MembershipCredential:read");
+        var defaultScopes = Set.of("org.eclipse.dspace.dcp.vc.type:MembershipCredential:read");
         var defaultScopesProtocols = Map.of(
                 "dataspace-protocol-http", defaultScopes, // use DSP_SCOPE_V_08 constant in dsp-spi
                 "dataspace-protocol-http:2025-1", defaultScopes // use DSP_SCOPE_V_2025_1 constant in dsp-spi
