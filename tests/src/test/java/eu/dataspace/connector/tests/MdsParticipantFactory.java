@@ -25,34 +25,6 @@ public interface MdsParticipantFactory {
                 .build();
     }
 
-    static MdsParticipant inMemoryDcp(String name, Wallet wallet, LazySupplier<String> issuerDid) {
-        var did = wallet.didFor(name).get();
-        var stsClientSecretAlias = did + "-sts-client-secret";
-        return MdsParticipant.Builder.newInstance()
-                .id(did)
-                .name(name)
-                .runtime(participant -> baseRuntime(name, ":launchers:connector-inmemory-dcp", participant)
-                        .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
-                                Map.entry("edc.iam.sts.oauth.client.id", did),
-                                Map.entry("edc.iam.sts.oauth.client.secret.alias", stsClientSecretAlias),
-                                Map.entry("edc.iam.sts.oauth.token.url", wallet.tokenEndpoint()),
-                                Map.entry("edc.iam.trusted-issuer.issuer.id", issuerDid.get()),
-                                Map.entry("edc.iam.trusted-issuer.issuer.supportedtypes", "[\"MembershipCredential\"]")
-                        )))
-                        .registerSystemExtension(ServiceExtension.class, new ServiceExtension() {
-                            @Inject
-                            private Vault vault;
-
-                            @Override
-                            public void initialize(ServiceExtensionContext context) {
-                                var participantContext = wallet.participantContext(did);
-                                vault.storeSecret(stsClientSecretAlias, participantContext.clientSecret());
-                            }
-                        })
-                )
-                .build();
-    }
-
     static MdsParticipant hashicorpVault(String name, VaultExtension vault, SovityDapsExtension daps, PostgresqlExtension postgres) {
         return MdsParticipant.Builder.newInstance()
                 .id(name)
@@ -91,8 +63,8 @@ public interface MdsParticipantFactory {
 
                             @Override
                             public void initialize(ServiceExtensionContext context) {
-                                var participantContext = wallet.participantContext(did);
-                                vault.storeSecret(stsClientSecretAlias, participantContext.clientSecret());
+                                var credentials = wallet.clientCredentials(did);
+                                vault.storeSecret(stsClientSecretAlias, credentials.clientSecret());
                             }
                         })
                         .configurationProvider(() -> postgres.getConfig(name))

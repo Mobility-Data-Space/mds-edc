@@ -6,12 +6,15 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.security.Vault;
+import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Optional;
+
+import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 /**
  * NOTE: this class provides a patch that attaches the secret to the data address in any case, and not only when the address
@@ -25,8 +28,8 @@ class VaultDataAddressStorePatch extends VaultDataAddressStore {
     private final Vault vault;
 
     public VaultDataAddressStorePatch(Vault vault, TypeTransformerRegistry typeTransformerRegistry, JsonLd jsonLd,
-                                      DataPlaneProtocolInUse dataPlaneProtocolInUse) {
-        super(vault, typeTransformerRegistry, jsonLd, dataPlaneProtocolInUse);
+                                      DataPlaneProtocolInUse dataPlaneProtocolInUse, TypeManager typeManager) {
+        super(vault, typeTransformerRegistry, jsonLd, dataPlaneProtocolInUse, () -> typeManager.getMapper(JSON_LD));
         this.vault = vault;
     }
 

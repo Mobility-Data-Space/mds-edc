@@ -3,10 +3,10 @@ package eu.dataspace.connector.iam.oauth2;
 import eu.dataspace.connector.iam.oauth2.certificate.VaultCertificateResolver;
 import org.eclipse.edc.boot.system.injection.ObjectFactory;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.junit.extensions.TestExtensionContext;
 import org.eclipse.edc.keys.spi.PrivateKeyResolver;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,11 +17,9 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,14 +31,14 @@ class Oauth2ServiceExtensionTest {
     private final PrivateKeyResolver privateKeyResolver = mock();
 
     @BeforeEach
-    void setup(ServiceExtensionContext context) {
+    void setup(TestExtensionContext context) {
         context.registerService(VaultCertificateResolver.class, certificateResolver);
         context.registerService(PrivateKeyResolver.class, privateKeyResolver);
     }
 
     @Test
-    void verifyExtensionWithCertificateAlias(ServiceExtensionContext context, ObjectFactory objectFactory) {
-        var config = spy(ConfigFactory.fromMap(Map.of(
+    void verifyExtensionWithCertificateAlias(TestExtensionContext context, ObjectFactory objectFactory) {
+        context.setConfig(ConfigFactory.fromMap(Map.of(
                 "edc.oauth.client.id", "id",
                 "edc.oauth.token.url", "url",
                 "edc.oauth.certificate.alias", "alias",
@@ -48,16 +46,14 @@ class Oauth2ServiceExtensionTest {
         mockCertificate("alias");
         mockRsaPrivateKey("p_alias");
 
-        when(context.getConfig(any())).thenReturn(config);
         objectFactory.constructInstance(Oauth2ServiceExtension.class).initialize(context);
 
-        verify(config, times(1)).getString("edc.oauth.certificate.alias");
-        verify(config, never()).getString("edc.oauth.public.key.alias");
+        verify(certificateResolver).resolveCertificate("alias");
     }
 
     @Test
-    void leewayWarningLoggedWhenLeewayUnconfigured(ServiceExtensionContext context, ObjectFactory objectFactory) {
-        var config = spy(ConfigFactory.fromMap(Map.of(
+    void leewayWarningLoggedWhenLeewayUnconfigured(TestExtensionContext context, ObjectFactory objectFactory) {
+        context.setConfig(ConfigFactory.fromMap(Map.of(
                 "edc.oauth.client.id", "id",
                 "edc.oauth.token.url", "url",
                 "edc.oauth.certificate.alias", "alias",
@@ -67,7 +63,6 @@ class Oauth2ServiceExtensionTest {
 
         var monitor = mock(Monitor.class);
         when(context.getMonitor()).thenReturn(monitor);
-        when(context.getConfig()).thenReturn(config);
         objectFactory.constructInstance(Oauth2ServiceExtension.class).initialize(context);
 
         var message = "No value was configured for 'edc.oauth.validation.issued.at.leeway'.";
@@ -75,8 +70,8 @@ class Oauth2ServiceExtensionTest {
     }
 
     @Test
-    void leewayNoWarningWhenLeewayConfigured(ServiceExtensionContext context, ObjectFactory objectFactory) {
-        var config = spy(ConfigFactory.fromMap(Map.of(
+    void leewayNoWarningWhenLeewayConfigured(TestExtensionContext context, ObjectFactory objectFactory) {
+        context.setConfig(ConfigFactory.fromMap(Map.of(
                 "edc.oauth.client.id", "id",
                 "edc.oauth.token.url", "url",
                 "edc.oauth.certificate.alias", "alias",
@@ -87,7 +82,6 @@ class Oauth2ServiceExtensionTest {
 
         var monitor = mock(Monitor.class);
         when(context.getMonitor()).thenReturn(monitor);
-        when(context.getConfig(any())).thenReturn(config);
         objectFactory.constructInstance(Oauth2ServiceExtension.class).initialize(context);
 
         var message = "No value was configured for 'edc.oauth.validation.issued.at.leeway'.";
