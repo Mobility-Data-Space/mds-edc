@@ -920,6 +920,9 @@ components:
         '@type': '@type'
         dataplaneMetadata:
           '@type': '@type'
+          profiles:
+          - profiles
+          - profiles
           properties:
             key: value
           labels:
@@ -949,9 +952,7 @@ components:
         '@id':
           type: string
         properties:
-          example:
-            key: value
-          type: object
+          $ref: "#/components/schemas/Asset_properties"
         privateProperties:
           example:
             privateKey: privateValue
@@ -981,6 +982,9 @@ components:
       - $ref: "#/components/schemas/DataplaneMetadata"
       example:
         '@type': '@type'
+        profiles:
+        - profiles
+        - profiles
         properties:
           key: value
         labels:
@@ -1000,6 +1004,10 @@ components:
           example:
             key: value
           type: object
+        profiles:
+          items:
+            type: string
+          type: array
       required:
       - '@type'
       type: object
@@ -1734,6 +1742,13 @@ components:
         transactional:
           type: boolean
         uri:
+          type: string
+      type: object
+    Asset_properties:
+      example:
+        key: value
+      properties:
+        conformsTo:
           type: string
       type: object
     PolicyClass_profile:
