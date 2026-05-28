@@ -27,10 +27,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
-        with:
-          java-version: '21'
-          distribution: 'temurin'
+      - uses: ./.github/actions/setup-jdk
 
       - name: Generate Gradle lockfiles
         run: ./gradlew resolveAndLockAll --write-locks
