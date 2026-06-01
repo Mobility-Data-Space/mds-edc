@@ -115,7 +115,7 @@ kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafk
 keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 nimbus-jwt = { module = "com.nimbusds:nimbus-jose-jwt", version.ref = "nimbus" }
-parsson = { module = "org.eclipse.parsson:parsson", version = "1.1.7" }
+parsson = { module = "org.eclipse.parsson:parsson", version = "1.1.9" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "rest-assured" }
 swagger-annotations = { module = "io.swagger.core.v3:swagger-annotations", version.ref = "swagger" }
