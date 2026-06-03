@@ -56,7 +56,11 @@ public class IdentityProviderKeyResolver implements PublicKeyResolver {
 
     @Override
     public Result<PublicKey> resolveKey(String id) {
-        return Result.success(cache.get().get(id));
+        var key = cache.get().get(id);
+        if (key == null) {
+            return Result.failure("No key found with id " + id);
+        }
+        return Result.success(key);
     }
 
     /**
