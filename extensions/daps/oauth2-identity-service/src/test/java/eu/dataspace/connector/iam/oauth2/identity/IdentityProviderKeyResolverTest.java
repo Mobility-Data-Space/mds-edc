@@ -1,6 +1,7 @@
 package eu.dataspace.connector.iam.oauth2.identity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.dataspace.connector.iam.oauth2.jwt.JwkKeys;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.Protocol;
@@ -8,7 +9,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.eclipse.edc.http.spi.EdcHttpClient;
-import eu.dataspace.connector.iam.oauth2.jwt.JwkKeys;
 import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -25,6 +25,7 @@ import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.http.client.testfixtures.HttpTestUtils.testHttpClient;
+import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -92,6 +93,13 @@ class IdentityProviderKeyResolverTest {
         when(interceptor.intercept(any())).thenReturn(response(500, emptyMap()));
 
         assertThatThrownBy(() -> resolver.start()).isInstanceOf(EdcException.class);
+    }
+
+    @Test
+    void resolve_shouldReturnFailure_whenNoKeysInCache() {
+        var result = resolver.resolveKey("any");
+
+        assertThat(result).isFailed();
     }
 
     @NotNull
