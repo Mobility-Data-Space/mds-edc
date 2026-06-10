@@ -6,6 +6,11 @@
 # Maintenance: review this file on every EDC bump in libs.versions.toml and
 # remove any entry that no longer appears in the scan output.
 
+# Not yet patched upstream: EDC 0.17.0 still ships postgresql 42.7.8/42.7.10
+# transitively via SQL BOMs. Our libs.versions.toml pins 42.7.11 but that only
+# affects direct usages, not transitive resolution.
+CVE-2026-42198
+
 # Not yet patched upstream: EDC 0.17.0 still ships opentelemetry-api 1.32.0.
 # Re-check on next EDC release.
 CVE-2026-45292
