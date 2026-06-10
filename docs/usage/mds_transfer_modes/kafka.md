@@ -211,7 +211,7 @@ These values are found in the Confluent Cloud console under **Cluster Settings**
 
 When this property is set on the DataAddress, the provider connector includes `sasl.oauthbearer.extensions` in the serialized `kafkaConsumerProperties` delivered to the consumer via the EDR, so the consumer's Kafka client authenticates against the correct Confluent Cloud cluster.
 
-### Provider Configuration Example
+### Asset Creation Example
 
 ```json
 {
@@ -240,7 +240,7 @@ When this property is set on the DataAddress, the provider connector includes `s
 }
 ```
 
-### Confluent Cloud Configuration Example
+### Asset Creation Example (Confluent Cloud)
 
 ```json
 {
@@ -327,13 +327,13 @@ The consumer pulls messages directly from the Kafka topic. The Kafka broker vali
 
 When the transfer terminates, the provider revokes the consumer's topic access.
 
-### Consumer Kafka Configuration
+### Consumer Prerequisites
 
 - Kafka client library (Apache Kafka clients)
 - Ability to receive EDR callbacks
 - Network connectivity to provider's Kafka broker
 
-### Consumer Configuration Example
+### Transfer Initiation Request Example
 
 ```json
 {
