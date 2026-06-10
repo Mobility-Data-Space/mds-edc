@@ -106,6 +106,85 @@ Content-Type: application/json
 }
 ```
 
+## Create Kafka Asset
+
+```http
+POST /v3/assets
+Content-Type: application/json
+
+{
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "mobilitydcatap": "https://w3id.org/mobilitydcat-ap/",
+    "mobilitydcatap-theme": "https://w3id.org/mobilitydcat-ap/mobility-theme/",
+    "adms": "http://www.w3.org/ns/adms#",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "rdf": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@id": "kafka-asset-id",
+  "properties": {
+    "dct:title": "Real-time Traffic Events Stream",
+    "mobilitydcatap:mobilityTheme": {
+      "mobilitydcatap-theme:data-content-category": "DYNAMIC_TRAFFIC_DATA"
+    }
+  },
+  "dataAddress": {
+    "type": "Kafka",
+    "topic": "traffic-events",
+    "kafka.bootstrap.servers": "kafka.example.com:9092",
+    "kafka.security.protocol": "SASL_PLAINTEXT",
+    "kafka.sasl.mechanism": "OAUTHBEARER",
+    "oidcDiscoveryUrl": "https://auth.example.com/.well-known/openid-configuration",
+    "oidcRegisterClientTokenKey": "oidc-initial-access-token",
+    "kafkaAdminPropertiesKey": "kafka-admin-properties"
+  }
+}
+```
+
+For Confluent Cloud, add `kafka.sasl.oauthbearer.extensions` and use `SASL_SSL`:
+
+```http
+POST /v3/assets
+Content-Type: application/json
+
+{
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "mobilitydcatap": "https://w3id.org/mobilitydcat-ap/",
+    "mobilitydcatap-theme": "https://w3id.org/mobilitydcat-ap/mobility-theme/",
+    "adms": "http://www.w3.org/ns/adms#",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "rdf": "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@id": "kafka-confluent-asset-id",
+  "properties": {
+    "dct:title": "Real-time Traffic Events Stream (Confluent Cloud)",
+    "mobilitydcatap:mobilityTheme": {
+      "mobilitydcatap-theme:data-content-category": "DYNAMIC_TRAFFIC_DATA"
+    }
+  },
+  "dataAddress": {
+    "type": "Kafka",
+    "topic": "traffic-events",
+    "kafka.bootstrap.servers": "pkc-abc123.eu-central-1.aws.confluent.cloud:9092",
+    "kafka.security.protocol": "SASL_SSL",
+    "kafka.sasl.mechanism": "OAUTHBEARER",
+    "kafka.sasl.oauthbearer.extensions": "logicalCluster=lkc-abc123,identityPoolId=pool-xyz",
+    "oidcDiscoveryUrl": "https://auth.example.com/.well-known/openid-configuration",
+    "oidcRegisterClientTokenKey": "oidc-initial-access-token",
+    "kafkaAdminPropertiesKey": "kafka-admin-properties"
+  }
+}
+```
+
 ## Create On Request Asset
 
 ```http

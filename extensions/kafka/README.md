@@ -27,6 +27,7 @@ When creating a Kafka asset, use the following properties in the DataAddress:
 | `oidcDiscoveryUrl`           | Discovery OpenID-connect endpoint                                |
 | `oidcRegisterClientTokenKey` | Token that will be used to register the oidc client              |
 | `kafkaAdminPropertiesKey`    | The properties to configure the KafkaAdminClient to manage ACLs  |
+| `kafka.sasl.oauthbearer.extensions` | *(optional)* SASL OAUTHBEARER extensions (e.g., `logicalCluster=...,identityPoolId=...` for Confluent Cloud) |
 
 ### Secret Resolution
 
