@@ -229,13 +229,13 @@ When this property is set on the DataAddress, the provider connector includes `s
   "dataAddress": {
     "@type": "DataAddress",
     "type": "Kafka",
-    "https://w3id.org/edc/v0.0.1/ns/topic": "traffic-events",
-    "https://w3id.org/edc/v0.0.1/ns/kafka.bootstrap.servers": "kafka.example.com:9092",
-    "https://w3id.org/edc/v0.0.1/ns/kafka.security.protocol": "SASL_PLAINTEXT",
-    "https://w3id.org/edc/v0.0.1/ns/kafka.sasl.mechanism": "OAUTHBEARER",
-    "https://w3id.org/edc/v0.0.1/ns/oidcDiscoveryUrl": "https://auth.example.com/.well-known/openid-configuration",
-    "https://w3id.org/edc/v0.0.1/ns/oidcRegisterClientTokenKey": "oidc-initial-access-token",
-    "https://w3id.org/edc/v0.0.1/ns/kafkaAdminPropertiesKey": "kafka-admin-properties"
+    "topic": "traffic-events",
+    "kafka.bootstrap.servers": "kafka.example.com:9092",
+    "kafka.security.protocol": "SASL_PLAINTEXT",
+    "kafka.sasl.mechanism": "OAUTHBEARER",
+    "oidcDiscoveryUrl": "https://auth.example.com/.well-known/openid-configuration",
+    "oidcRegisterClientTokenKey": "oidc-initial-access-token",
+    "kafkaAdminPropertiesKey": "kafka-admin-properties"
   }
 }
 ```
@@ -258,14 +258,14 @@ When this property is set on the DataAddress, the provider connector includes `s
   "dataAddress": {
     "@type": "DataAddress",
     "type": "Kafka",
-    "https://w3id.org/edc/v0.0.1/ns/topic": "traffic-events",
-    "https://w3id.org/edc/v0.0.1/ns/kafka.bootstrap.servers": "pkc-abc123.eu-central-1.aws.confluent.cloud:9092",
-    "https://w3id.org/edc/v0.0.1/ns/kafka.security.protocol": "SASL_SSL",
-    "https://w3id.org/edc/v0.0.1/ns/kafka.sasl.mechanism": "OAUTHBEARER",
-    "https://w3id.org/edc/v0.0.1/ns/kafka.sasl.oauthbearer.extensions": "logicalCluster=lkc-abc123,identityPoolId=pool-xyz",
-    "https://w3id.org/edc/v0.0.1/ns/oidcDiscoveryUrl": "https://auth.example.com/.well-known/openid-configuration",
-    "https://w3id.org/edc/v0.0.1/ns/oidcRegisterClientTokenKey": "oidc-initial-access-token",
-    "https://w3id.org/edc/v0.0.1/ns/kafkaAdminPropertiesKey": "kafka-admin-properties"
+    "topic": "traffic-events",
+    "kafka.bootstrap.servers": "pkc-abc123.eu-central-1.aws.confluent.cloud:9092",
+    "kafka.security.protocol": "SASL_SSL",
+    "kafka.sasl.mechanism": "OAUTHBEARER",
+    "kafka.sasl.oauthbearer.extensions": "logicalCluster=lkc-abc123,identityPoolId=pool-xyz",
+    "oidcDiscoveryUrl": "https://auth.example.com/.well-known/openid-configuration",
+    "oidcRegisterClientTokenKey": "oidc-initial-access-token",
+    "kafkaAdminPropertiesKey": "kafka-admin-properties"
   }
 }
 ```
@@ -367,14 +367,25 @@ The consumer receives an EDR with the following structure:
 
 ```json
 {
-  "@type": "DataAddress",
-  "type": "Kafka",
-  "https://w3id.org/edc/v0.0.1/ns/topic": "traffic-events",
-  "https://w3id.org/edc/v0.0.1/ns/kafkaConsumerProperties": "bootstrap.servers=kafka.example.com:9092\nsecurity.protocol=SASL_PLAINTEXT\nsasl.mechanism=OAUTHBEARER\nsasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required clientId='client-id' clientSecret='client-secret';\nsasl.login.callback.handler.class=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginCallbackHandler\nsasl.oauthbearer.token.endpoint.url=https://auth.example.com/token",
-  "https://w3id.org/edc/v0.0.1/ns/clientId": "client-id",
-  "https://w3id.org/edc/v0.0.1/ns/clientSecret": "client-secret",
-  "https://w3id.org/edc/v0.0.1/ns/tokenEndpoint": "https://auth.example.com/token"
+  "@type": "edc:DataAddress",
+  "edc:type": "EDR",
+  "edc:clientId": "client-id",
+  "edc:clientSecret": "client-secret",
+  "edc:kafkaConsumerProperties": "...",
+  "edc:tokenEndpoint": "https://auth.example.com/token",
+  "edc:topic": "traffic-events"
 }
+```
+
+The `edc:kafkaConsumerProperties` value is a serialized Java `Properties` string containing the full Kafka consumer configuration:
+
+```properties
+bootstrap.servers=kafka.example.com:9092
+security.protocol=SASL_PLAINTEXT
+sasl.mechanism=OAUTHBEARER
+sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required clientId="client-id" clientSecret="client-secret";
+sasl.oauthbearer.token.endpoint.url=https://auth.example.com/token
+sasl.login.callback.handler.class=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginCallbackHandler
 ```
 
 When the asset DataAddress includes `kafka.sasl.oauthbearer.extensions`, the serialized `kafkaConsumerProperties` will also contain:
