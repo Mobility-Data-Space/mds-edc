@@ -164,6 +164,7 @@ The provider configures the asset's `dataAddress` with:
 - `oidcDiscoveryUrl`: OIDC provider discovery URL
 - `oidcRegisterClientTokenKey`: Vault reference for OIDC initial access token
 - `kafkaAdminPropertiesKey`: Vault reference for Kafka admin properties
+- `kafka.sasl.oauthbearer.extensions` *(optional)*: SASL OAUTHBEARER extensions as comma-separated key=value pairs (e.g., for Confluent Cloud: `logicalCluster=<id>,identityPoolId=<pool-id>`)
 
 ### Provider Kafka Configuration
 
@@ -190,6 +191,25 @@ JAVA_TOOL_OPTIONS="-Dorg.apache.kafka.sasl.oauthbearer.allowed.urls=<token-endpo
 The URLs must exactly match the values configured in `sasl.oauthbearer.token.endpoint.url` and `sasl.oauthbearer.jwks.endpoint.url`. Always use HTTPS in production.
 
 The **consumer connector** does not need this configuration — it only receives the EDR.
+
+### Confluent Cloud Integration
+
+The MDS Kafka extension supports [Confluent Cloud](https://docs.confluent.io/cloud/current/security/authenticate/workload-identities/identity-providers/oauth/clients/overview.html) as a Kafka broker via the `kafka.sasl.oauthbearer.extensions` DataAddress property.
+
+Confluent Cloud requires SASL OAUTHBEARER extensions to route authentication to the correct cluster and identity pool. The extension value is a comma-separated list of key=value pairs:
+
+```
+logicalCluster=<cluster-id>,identityPoolId=<pool-id>
+```
+
+| Parameter | Description |
+|-----------|-------------|
+| `logicalCluster` | The Confluent Cloud cluster ID (e.g., `lkc-abc123`) |
+| `identityPoolId` | The identity pool ID configured in your Confluent Cloud organization (e.g., `pool-xyz`) |
+
+These values are found in the Confluent Cloud console under **Cluster Settings** and **Identity Providers > Identity Pools**.
+
+When this property is set on the DataAddress, the provider connector includes `sasl.oauthbearer.extensions` in the serialized `kafkaConsumerProperties` delivered to the consumer via the EDR, so the consumer's Kafka client authenticates against the correct Confluent Cloud cluster.
 
 ### Provider Configuration Example
 
@@ -219,6 +239,38 @@ The **consumer connector** does not need this configuration — it only receives
   }
 }
 ```
+
+### Confluent Cloud Configuration Example
+
+```json
+{
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/"
+  },
+  "@type": "Asset",
+  "@id": "kafka-confluent-traffic-events",
+  "properties": {
+    "name": "Real-time Traffic Events Stream (Confluent Cloud)",
+    "description": "Live stream of traffic events via Confluent Cloud",
+    "contenttype": "application/json"
+  },
+  "dataAddress": {
+    "@type": "DataAddress",
+    "type": "Kafka",
+    "https://w3id.org/edc/v0.0.1/ns/topic": "traffic-events",
+    "https://w3id.org/edc/v0.0.1/ns/kafka.bootstrap.servers": "pkc-abc123.eu-central-1.aws.confluent.cloud:9092",
+    "https://w3id.org/edc/v0.0.1/ns/kafka.security.protocol": "SASL_SSL",
+    "https://w3id.org/edc/v0.0.1/ns/kafka.sasl.mechanism": "OAUTHBEARER",
+    "https://w3id.org/edc/v0.0.1/ns/kafka.sasl.oauthbearer.extensions": "logicalCluster=lkc-abc123,identityPoolId=pool-xyz",
+    "https://w3id.org/edc/v0.0.1/ns/oidcDiscoveryUrl": "https://auth.example.com/.well-known/openid-configuration",
+    "https://w3id.org/edc/v0.0.1/ns/oidcRegisterClientTokenKey": "oidc-initial-access-token",
+    "https://w3id.org/edc/v0.0.1/ns/kafkaAdminPropertiesKey": "kafka-admin-properties"
+  }
+}
+```
+
+> **Note:** Confluent Cloud uses `SASL_SSL` as the security protocol. The `kafka.sasl.oauthbearer.extensions` property is the only addition compared to a standard self-managed Kafka deployment.
 
 ## Consumer: Pull Mode (Kafka-PULL)
 
@@ -318,9 +370,17 @@ The consumer receives an EDR with the following structure:
   "@type": "DataAddress",
   "type": "Kafka",
   "https://w3id.org/edc/v0.0.1/ns/topic": "traffic-events",
-  "https://w3id.org/edc/v0.0.1/ns/kafka.bootstrap.servers": "kafka.example.com:9092",
-  "https://w3id.org/edc/v0.0.1/ns/kafkaConsumerProperties": "bootstrap.servers=kafka.example.com:9092\nsecurity.protocol=SASL_PLAINTEXT\nsasl.mechanism=OAUTHBEARER\nsasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required clientId='client-id' clientSecret='client-secret';\nsasl.login.callback.handler.class=org.apache.kafka.common.security.oauthbearer.secured.OAuthBearerLoginCallbackHandler\nsasl.oauthbearer.token.endpoint.url=https://auth.example.com/token"
+  "https://w3id.org/edc/v0.0.1/ns/kafkaConsumerProperties": "bootstrap.servers=kafka.example.com:9092\nsecurity.protocol=SASL_PLAINTEXT\nsasl.mechanism=OAUTHBEARER\nsasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required clientId='client-id' clientSecret='client-secret';\nsasl.login.callback.handler.class=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginCallbackHandler\nsasl.oauthbearer.token.endpoint.url=https://auth.example.com/token",
+  "https://w3id.org/edc/v0.0.1/ns/clientId": "client-id",
+  "https://w3id.org/edc/v0.0.1/ns/clientSecret": "client-secret",
+  "https://w3id.org/edc/v0.0.1/ns/tokenEndpoint": "https://auth.example.com/token"
 }
+```
+
+When the asset DataAddress includes `kafka.sasl.oauthbearer.extensions`, the serialized `kafkaConsumerProperties` will also contain:
+
+```
+sasl.oauthbearer.extensions=logicalCluster=lkc-abc123,identityPoolId=pool-xyz
 ```
 
 ## Comparison with HTTP Pull
