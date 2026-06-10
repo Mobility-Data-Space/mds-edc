@@ -388,9 +388,15 @@ sasl.oauthbearer.token.endpoint.url=https://auth.example.com/token
 sasl.login.callback.handler.class=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginCallbackHandler
 ```
 
-When the asset DataAddress includes `kafka.sasl.oauthbearer.extensions`, the serialized `kafkaConsumerProperties` will also contain:
+When the asset DataAddress includes `kafka.sasl.oauthbearer.extensions` (Confluent Cloud), the `edc:kafkaConsumerProperties` contains the additional extension:
 
-```
+```properties
+bootstrap.servers=pkc-abc123.eu-central-1.aws.confluent.cloud:9092
+security.protocol=SASL_SSL
+sasl.mechanism=OAUTHBEARER
+sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required clientId="client-id" clientSecret="client-secret";
+sasl.oauthbearer.token.endpoint.url=https://auth.example.com/token
+sasl.login.callback.handler.class=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginCallbackHandler
 sasl.oauthbearer.extensions=logicalCluster=lkc-abc123,identityPoolId=pool-xyz
 ```
 
