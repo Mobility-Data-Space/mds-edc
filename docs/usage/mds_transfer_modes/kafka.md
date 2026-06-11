@@ -217,14 +217,18 @@ When this property is set on the DataAddress, the provider connector includes `s
 {
   "@context": {
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-    "edc": "https://w3id.org/edc/v0.0.1/ns/"
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "mobilitydcatap": "https://w3id.org/mobilitydcat-ap/",
+    "mobilitydcatap-theme": "https://w3id.org/mobilitydcat-ap/mobility-theme/"
   },
   "@type": "Asset",
   "@id": "kafka-traffic-events",
   "properties": {
-    "name": "Real-time Traffic Events Stream",
-    "description": "Live stream of traffic events and incidents",
-    "contenttype": "application/json"
+    "dct:title": "Real-time Traffic Events Stream",
+    "mobilitydcatap:mobilityTheme": {
+      "mobilitydcatap-theme:data-content-category": "DYNAMIC_TRAFFIC_DATA"
+    }
   },
   "dataAddress": {
     "@type": "DataAddress",
@@ -246,14 +250,18 @@ When this property is set on the DataAddress, the provider connector includes `s
 {
   "@context": {
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-    "edc": "https://w3id.org/edc/v0.0.1/ns/"
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "mobilitydcatap": "https://w3id.org/mobilitydcat-ap/",
+    "mobilitydcatap-theme": "https://w3id.org/mobilitydcat-ap/mobility-theme/"
   },
   "@type": "Asset",
   "@id": "kafka-confluent-traffic-events",
   "properties": {
-    "name": "Real-time Traffic Events Stream (Confluent Cloud)",
-    "description": "Live stream of traffic events via Confluent Cloud",
-    "contenttype": "application/json"
+    "dct:title": "Real-time Traffic Events Stream (Confluent Cloud)",
+    "mobilitydcatap:mobilityTheme": {
+      "mobilitydcatap-theme:data-content-category": "DYNAMIC_TRAFFIC_DATA"
+    }
   },
   "dataAddress": {
     "@type": "DataAddress",
@@ -271,6 +279,8 @@ When this property is set on the DataAddress, the provider connector includes `s
 ```
 
 > **Note:** Confluent Cloud uses `SASL_SSL` as the security protocol. The `kafka.sasl.oauthbearer.extensions` property is the only addition compared to a standard self-managed Kafka deployment.
+>
+> For the full list of supported asset properties, see [Asset Creation](../management_api/assets.md).
 
 ## Consumer: Pull Mode (Kafka-PULL)
 
