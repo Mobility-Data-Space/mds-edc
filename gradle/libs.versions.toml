@@ -130,5 +130,5 @@ wiremock = { module = "org.wiremock:wiremock-jetty12", version.ref = "wiremock" 
 yasson = { module = "org.eclipse:yasson", version.ref = "yasson" }
 
 [plugins]
-openapi-generator = { id = "org.openapi.generator", version = "7.22.0" }
+openapi-generator = { id = "org.openapi.generator", version = "7.23.0" }
 swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version.ref = "swagger" }
