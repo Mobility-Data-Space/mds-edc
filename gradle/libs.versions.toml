@@ -2,7 +2,7 @@
 assertj = "3.27.7"
 awaitility = "4.3.0"
 aws = "2.46.5"
-azure-storage-blob = "12.34.0"
+azure-storage-blob = "12.35.0"
 bouncycastle = "1.84"
 dsp-tck = "1.0.0-RC6"
 edc = "0.17.0"
