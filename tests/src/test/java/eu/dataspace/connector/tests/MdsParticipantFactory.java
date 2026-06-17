@@ -102,7 +102,7 @@ public interface MdsParticipantFactory {
                 .configurationProvider(() -> postgres.getConfig(name))
                 .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
                         "eu.dataspace.wallet.postgresql.migration.schema", postgres.getSchema(),
-                        "edc.sql.schema.autocreate", "true",
+                        "edc.sql.schema.autocreate", "false",
                         "edc.encryption.strict", "false"
                 )));
         return new Wallet(runtime, participants);
