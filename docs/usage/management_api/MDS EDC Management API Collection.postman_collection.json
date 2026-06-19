@@ -22,7 +22,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"DatasetRequest\",\n  \"@id\": \"{{datasetId}}\",\n  \"counterPartyAddress\": \"{{counterPartyAddress}}\",\n  \"counterPartyId\": \"{{counterPartyId}}\",\n  \"protocol\": \"dataspace-protocol-http:2025-1\"\n}"
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"DatasetRequest\",\n  \"@id\": \"{{datasetId}}\",\n  \"counterPartyAddress\": \"{{counterPartyAddress}}\",\n  \"counterPartyId\": \"PROVIDER_MDS_ID\",\n  \"protocol\": \"dataspace-protocol-http:2025-1\"\n}"
             },
             "url": {
               "raw": "{{management_url}}/v3/catalog/dataset/request",
@@ -51,7 +51,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"CatalogRequest\",\n  \"counterPartyAddress\": \"{{counterPartyAddress}}\",\n  \"counterPartyId\": \"{{counterPartyId}}\",\n  \"protocol\": \"dataspace-protocol-http:2025-1\",\n  \"querySpec\": {\n    \"offset\": 0,\n    \"limit\": 50,\n    \"filterExpression\": [\n      {\n        \"operandLeft\": \"https://w3id.org/edc/v0.0.1/ns/id\",\n        \"operator\": \"=\",\n        \"operandRight\": \"{{assetId}}\"\n      }\n    ]\n  }\n}"
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"CatalogRequest\",\n  \"counterPartyAddress\": \"{{counterPartyAddress}}\",\n  \"counterPartyId\": \"PROVIDER_MDS_ID\",\n  \"protocol\": \"dataspace-protocol-http:2025-1\",\n  \"querySpec\": {\n    \"offset\": 0,\n    \"limit\": 50,\n    \"filterExpression\": [\n      {\n        \"operandLeft\": \"https://w3id.org/edc/v0.0.1/ns/id\",\n        \"operator\": \"=\",\n        \"operandRight\": \"{{assetId}}\"\n      }\n    ]\n  }\n}"
             },
             "url": {
               "raw": "{{management_url}}/v3/catalog/request",
@@ -79,7 +79,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"CatalogRequest\",\n  \"counterPartyAddress\": \"{{counterPartyAddress}}\",\n  \"counterPartyId\": \"{{counterPartyId}}\",\n  \"protocol\": \"dataspace-protocol-http:2025-1\",\n  \"additionalScopes\": [\n  ]\n}"
+              "raw": "{\n  \"@context\": {\n    \"@vocab\": \"https://w3id.org/edc/v0.0.1/ns/\"\n  },\n  \"@type\": \"CatalogRequest\",\n  \"counterPartyAddress\": \"{{counterPartyAddress}}\",\n  \"counterPartyId\": \"PROVIDER_MDS_ID\",\n  \"protocol\": \"dataspace-protocol-http:2025-1\",\n  \"additionalScopes\": [\n  ]\n}"
             },
             "url": {
               "raw": "{{management_url}}/v3/catalog/request",
