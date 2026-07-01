@@ -4,7 +4,7 @@ awaitility = "4.3.0"
 aws = "2.46.15"
 azure-storage-blob = "12.35.0"
 bouncycastle = "1.84"
-dsp-tck = "1.0.0-RC6"
+dsp-tck = "1.0.1"
 edc = "0.17.0"
 flyway = "12.9.0"
 jose4j = "0.9.6"
@@ -97,14 +97,7 @@ aws-iam = { module = "software.amazon.awssdk:iam", version.ref = "aws" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 azure-storage-blob = { group = "com.azure", name = "azure-storage-blob", version.ref = "azure-storage-blob" }
 bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
-dsp-tck-boot = { module = "org.eclipse.dataspacetck.dsp:boot", version.ref = "dsp-tck" }
-dsp-tck-catalog = { module = "org.eclipse.dataspacetck.dsp:dsp-catalog", version.ref = "dsp-tck" }
-dsp-tck-contract-negotiation = { module = "org.eclipse.dataspacetck.dsp:dsp-contract-negotiation", version.ref = "dsp-tck" }
-dsp-tck-core = { module = "org.eclipse.dataspacetck.dsp:core", version.ref = "dsp-tck" }
-dsp-tck-metadata = { module = "org.eclipse.dataspacetck.dsp:dsp-metadata", version.ref = "dsp-tck" }
-dsp-tck-runtime = { module = "org.eclipse.dataspacetck.dsp:tck-runtime", version.ref = "dsp-tck" }
-dsp-tck-system = { module = "org.eclipse.dataspacetck.dsp:dsp-system", version.ref = "dsp-tck" }
-dsp-tck-transfer-process = { module = "org.eclipse.dataspacetck.dsp:dsp-transfer-process", version.ref = "dsp-tck" }
+dsp-tck = { module = "org.eclipse.dataspacetck.dsp:dsp-tck", version.ref = "dsp-tck" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-database-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 jakarta-ws-rs-api = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version = "4.0.0" }
