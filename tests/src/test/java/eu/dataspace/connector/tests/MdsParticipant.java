@@ -179,13 +179,19 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .add("mobilitydcatap:mobilityTheme", createObjectBuilder()
                         .add("mobilitydcatap-theme:data-content-category", "OTHER")
                 );
-        var requestBody = Json.createObjectBuilder()
-                .add("@context", Json.createObjectBuilder()
+
+        var context = createArrayBuilder()
+                // idsa jsonld context added because of https://github.com/Mobility-Data-Space/mds-edc/issues/493
+                .add("https://w3id.org/idsa/contexts/context.jsonld")
+                .add(createObjectBuilder()
                         .add("@vocab", "https://w3id.org/edc/v0.0.1/ns/")
                         .add("dct", "http://purl.org/dc/terms/")
                         .add("mobilitydcatap", "https://w3id.org/mobilitydcat-ap/")
                         .add("mobilitydcatap-theme", "https://w3id.org/mobilitydcat-ap/mobility-theme/")
-                )
+                );
+
+        var requestBody = Json.createObjectBuilder()
+                .add("@context", context)
                 .add("@type", "Asset")
                 .add("@id", assetId)
                 .add("properties", baseProperties.addAll(createObjectBuilder(properties)))

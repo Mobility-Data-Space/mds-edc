@@ -1,5 +1,12 @@
 # Trivy CVE suppressions.
 #
+# jackson-databind 2.21.1/2.21.2 -> 2.21.4: pulled in transitively by EDC 0.17.0.
+# Re-check on next EDC release.
+CVE-2026-54512
+CVE-2026-54513
+
+
+#
 # Every entry below is a vulnerability in a transitive dependency pulled by
 # Eclipse EDC 0.17.0 (see `edc` in gradle/libs.versions.toml).
 #
