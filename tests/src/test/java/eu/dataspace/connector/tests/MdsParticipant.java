@@ -2,9 +2,6 @@ package eu.dataspace.connector.tests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.extension.Parameters;
-import com.github.tomakehurst.wiremock.extension.ServeEventListener;
-import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import jakarta.json.Json;
@@ -370,23 +367,6 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         return this;
     }
 
-    public ValidatableResponse getCatalog(MdsParticipant provider) {
-        var requestBodyBuilder = Json.createObjectBuilder()
-                .add("@context", Json.createObjectBuilder().add("@vocab", "https://w3id.org/edc/v0.0.1/ns/"))
-                .add("@type", "CatalogRequest")
-                .add("counterPartyId", provider.id)
-                .add("counterPartyAddress", provider.getProtocolUrl())
-                .add("protocol", protocol.name());
-
-        return baseManagementRequest()
-                .contentType(ContentType.JSON)
-                .when()
-                .body(requestBodyBuilder.build())
-                .post("/v3/catalog/request")
-                .then()
-                .log().ifValidationFails();
-    }
-
     public static class Builder extends Participant.Builder<MdsParticipant, Builder> {
 
         public static Builder newInstance() {
@@ -400,6 +380,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
         @Override
         public MdsParticipant build() {
             managementVersionBasePath("/v3");
+            managementContext(Json.createObjectBuilder().add(VOCAB, EDC_NAMESPACE).build());
             participant.enrichManagementRequest = request -> request.header("x-api-key", participant.managementAuthKey);
             return super.build();
         }
@@ -409,23 +390,6 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
             return this;
         }
 
-        public Builder eventReceiver(boolean enabled) {
-            participant.eventReceiverEnabled = enabled;
-            return this;
-        }
     }
 
-    private class EdcEventSubscriber implements ServeEventListener {
-        @Override
-        public String getName() {
-            return "events";
-        }
-
-        @Override
-        public void onEvent(RequestPhase requestPhase, ServeEvent serveEvent, Parameters parameters) {
-            var bodyAsRawBytes = serveEvent.getRequest().getBody();
-            var event = Json.createReader(new ByteArrayInputStream(bodyAsRawBytes)).readObject();
-            events.add(event);
-        }
-    }
 }

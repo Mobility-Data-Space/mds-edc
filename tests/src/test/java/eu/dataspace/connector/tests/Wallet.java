@@ -87,13 +87,13 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
                 .contentType(JSON)
                 .header("x-api-key", participantContext.credentials().apiKey())
                 .body(requestCredentialIssuance)
-                .post("/v1alpha/participants/%s/credentials/request".formatted(participantContext.participantContextId()))
+                .post("/v1beta/participants/%s/credentials/request".formatted(participantContext.participantContextId()))
                 .then()
                 .log().ifValidationFails()
                 .statusCode(201);
 
         await().untilAsserted(() -> {
-            var path = "/v1alpha/participants/%s/credentials/request/%s"
+            var path = "/v1beta/participants/%s/credentials/request/%s"
                     .formatted(participantContext.participantContextId(), holderPid);
 
             given()
@@ -145,7 +145,7 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
                                 )
                         )
                 ))
-                .post("/v1alpha/participants")
+                .post("/v1beta/participants")
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200)

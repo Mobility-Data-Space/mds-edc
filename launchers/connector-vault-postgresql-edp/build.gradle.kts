@@ -8,9 +8,9 @@ plugins {
 val edcGroupId = "org.eclipse.edc"
 
 dependencies {
-    runtimeOnly(project(":launchers:connector-vault-postgresql"))
+    implementation(project(":launchers:connector-vault-postgresql"))
 
-    runtimeOnly(project(":extensions:edp"))
+    implementation(project(":extensions:edp"))
 }
 
 application {

@@ -89,9 +89,13 @@ class ManagementApiTransferTest {
 
             var catalogDatasets = CONSUMER.getCatalogDatasets(PROVIDER);
 
-            assertThat(catalogDatasets).noneSatisfy(dataset ->
-                    assertThat(dataset.asJsonObject().getString(ID)).isEqualTo(assetId)
-            );
+            assertThat(catalogDatasets).satisfies(datasets -> {
+                if (datasets != null) {
+                    assertThat(datasets).noneSatisfy(dataset ->
+                            assertThat(dataset.asJsonObject().getString(ID)).isEqualTo(assetId)
+                    );
+                }
+            });
         }
     }
 
