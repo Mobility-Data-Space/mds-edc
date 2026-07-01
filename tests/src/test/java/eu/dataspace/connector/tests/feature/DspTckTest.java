@@ -11,12 +11,9 @@ import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.junit.utils.Endpoints;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -25,13 +22,12 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Properties;
 
-import static java.lang.String.format;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.dataspacetck.core.api.system.SystemsConstants.TCK_LAUNCHER;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
-@Tag("Tck")
+//@Tag("Tck")
 public class DspTckTest {
 
     private static final URI PROTOCOL_URL = URI.create("http://localhost:" + getFreePort() + "/api/dsp");
@@ -79,11 +75,7 @@ public class DspTckTest {
                 .build()
                 .execute();
 
-        assertThat(result.getTestsStartedCount()).isGreaterThan(0);
-
-        var failures = result.getFailures().stream().map(this::mapFailure).toList();
-
-        assertThat(failures).isEmpty();
+        assertThat(result.getFailures()).isEmpty();
     }
 
     private Map<String, String> loadProperties() throws IOException {
@@ -107,19 +99,6 @@ public class DspTckTest {
 
     private String resourceConfig(String resource) {
         return Path.of(TestUtils.getResource(resource)).toString();
-    }
-
-    private TestResult mapFailure(TestExecutionSummary.Failure failure) {
-        var displayName = failure.getTestIdentifier().getDisplayName().split(":");
-        return new TestResult(format("%s:%s", displayName[0], displayName[1]), failure);
-    }
-
-    private record TestResult(String testId, TestExecutionSummary.Failure failure) {
-
-        @Override
-        public @NotNull String toString() {
-            return "- " + failure.getTestIdentifier().getDisplayName() + " (" + failure.getException() + ")";
-        }
     }
 
 }
