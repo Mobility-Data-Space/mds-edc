@@ -92,6 +92,9 @@ Starting a Gradle Daemon (subsequent builds will be faster)
 > Task :launchers:connector-vault-postgresql-dcp:processResources NO-SOURCE
 > Task :launchers:connector-vault-postgresql-dcp:classes UP-TO-DATE
 > Task :launchers:connector-vault-postgresql-dcp:jar
+
+> Task :extensions:edp:compileJava
+
 > Task :launchers:connector-vault-postgresql-edp:compileJava NO-SOURCE
 > Task :launchers:connector-vault-postgresql-edp:processResources NO-SOURCE
 > Task :launchers:connector-vault-postgresql-edp:classes UP-TO-DATE
@@ -154,9 +157,6 @@ Starting a Gradle Daemon (subsequent builds will be faster)
 > Task :extensions:dcp:processTestResources NO-SOURCE
 > Task :extensions:dcp:testClasses UP-TO-DATE
 > Task :extensions:dcp:tck NO-SOURCE
-
-> Task :extensions:edp:compileJava
-
 > Task :extensions:edp:processResources
 > Task :extensions:edp:classes
 > Task :extensions:edp:jar
@@ -344,6 +344,6 @@ Starting a Gradle Daemon (subsequent builds will be faster)
 
 [Incubating] Problems report is available at: file:///home/runner/work/mds-edc/mds-edc/build/reports/problems/problems-report.html
 
-BUILD SUCCESSFUL in 1m 52s
+BUILD SUCCESSFUL in 2m 4s
 105 actionable tasks: 105 executed
 Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.6.1/userguide/configuration_cache_enabling.html
