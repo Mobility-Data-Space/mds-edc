@@ -18,6 +18,25 @@ allprojects {
     configurations.all {
         exclude(group = "org.eclipse.edc", module = "data-plane-signaling-core")
         exclude(group = "org.eclipse.edc", module = "data-plane-signaling-oauth2")
+
+        resolutionStrategy.eachDependency {
+            if (requested.group == "io.netty" && !requested.name.startsWith("netty-tcnative")) {
+                useVersion("4.1.135.Final")
+                because("CVE-2026-42578, CVE-2026-42579, CVE-2026-45536, CVE-2026-45673, CVE-2026-45674, CVE-2026-47691")
+            }
+            if (requested.group == "io.opentelemetry") {
+                useVersion("1.63.0")
+                because("CVE-2026-45292")
+            }
+            if (requested.group == "tools.jackson.core" && requested.name == "jackson-databind") {
+                useVersion("3.1.4")
+                because("CVE-2026-54512, CVE-2026-54513, CVE-2026-54514, CVE-2026-54515, CVE-2026-54516, CVE-2026-54517, CVE-2026-54518")
+            }
+            if (requested.group == "org.postgresql" && requested.name == "postgresql") {
+                useVersion("42.7.11")
+                because("CVE-2026-42198")
+            }
+        }
     }
 
     dependencyLocking {
