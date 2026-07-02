@@ -1,0 +1,1 @@
+ALTER TABLE edc_transfer_process ADD column data_address_owner BOOLEAN DEFAULT false;

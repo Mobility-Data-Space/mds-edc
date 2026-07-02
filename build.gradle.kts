@@ -15,6 +15,11 @@ plugins {
 allprojects {
     apply(plugin = "java")
 
+    configurations.all {
+        exclude(group = "org.eclipse.edc", module = "data-plane-signaling-core")
+        exclude(group = "org.eclipse.edc", module = "data-plane-signaling-oauth2")
+    }
+
     dependencyLocking {
         lockAllConfigurations()
         lockMode = LockMode.LENIENT
@@ -105,7 +110,7 @@ subprojects {
             openApiFile = rootDir.resolve("resources").resolve("openapi-config.yml")
             classpath = sourceSets.main.get().runtimeClasspath
             buildClasspath = classpath
-            resourcePackages = setOf<String>("eu.dataspace.connector")
+            resourcePackages = setOf("eu.dataspace.connector")
         }
     }
 

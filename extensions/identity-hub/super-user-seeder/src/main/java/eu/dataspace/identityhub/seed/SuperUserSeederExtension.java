@@ -67,7 +67,7 @@ public class SuperUserSeederExtension implements ServiceExtension {
                         .keyId("%s-key".formatted(superUserId))
                         .privateKeyAlias("%s-alias".formatted(superUserId))
                         .build())
-                .roles(List.of("admin"))
+                .scopes(List.of("identity-api:admin"))
                 .build();
 
         participantContextService.createParticipantContext(manifest)
