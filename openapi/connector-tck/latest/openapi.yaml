@@ -3048,6 +3048,8 @@ components:
         sortField: fieldName
         filterExpression: []
       properties:
+        '@context':
+          type: object
         '@type':
           example: https://w3id.org/edc/v0.0.1/ns/QuerySpec
           type: string
@@ -3078,6 +3080,8 @@ components:
         operator: =
         operandRight: some value
       properties:
+        '@context':
+          type: object
         '@type':
           example: https://w3id.org/edc/v0.0.1/ns/Criterion
           type: string
@@ -4150,6 +4154,8 @@ components:
         '@id': id-value
         createdAt: 1688465655
       properties:
+        '@context':
+          type: object
         '@id':
           type: string
         createdAt:
