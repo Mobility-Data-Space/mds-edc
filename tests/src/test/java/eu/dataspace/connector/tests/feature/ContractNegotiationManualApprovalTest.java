@@ -7,6 +7,8 @@ import eu.dataspace.connector.tests.extensions.IssuerExtension;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
+import eu.dataspace.connector.tests.tags.DapsTest;
+import eu.dataspace.connector.tests.tags.DcpTest;
 import jakarta.json.Json;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
@@ -33,6 +35,7 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public class ContractNegotiationManualApprovalTest {
 
+    @DapsTest
     @Nested
     class Daps extends Tests {
 
@@ -61,6 +64,7 @@ public class ContractNegotiationManualApprovalTest {
         }
     }
 
+    @DcpTest
     @Nested
     class Dcp extends Tests {
 

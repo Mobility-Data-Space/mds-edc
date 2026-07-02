@@ -9,6 +9,8 @@ import eu.dataspace.connector.tests.extensions.IssuerExtension;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
+import eu.dataspace.connector.tests.tags.DapsTest;
+import eu.dataspace.connector.tests.tags.DcpTest;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -49,6 +51,7 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 class ManagementApiTransferTest {
 
+    @DapsTest
     @Nested
     class Daps extends Tests {
 
@@ -99,6 +102,7 @@ class ManagementApiTransferTest {
         }
     }
 
+    @DcpTest
     @Nested
     class Dcp extends Tests {
 

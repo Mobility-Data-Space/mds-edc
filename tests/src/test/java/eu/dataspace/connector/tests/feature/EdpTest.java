@@ -5,6 +5,7 @@ import eu.dataspace.connector.tests.MdsParticipantFactory;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
+import eu.dataspace.connector.tests.tags.DapsTest;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -19,6 +20,7 @@ import static org.eclipse.edc.connector.controlplane.transfer.spi.types.Transfer
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
+@DapsTest
 public class EdpTest {
 
     @RegisterExtension

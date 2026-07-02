@@ -10,6 +10,8 @@ import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.S3Extension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
+import eu.dataspace.connector.tests.tags.DapsTest;
+import eu.dataspace.connector.tests.tags.DcpTest;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.spi.security.Vault;
@@ -36,6 +38,7 @@ import static org.eclipse.edc.util.io.Ports.getFreePort;
 
 public class S3DataSourceTest {
 
+    @DapsTest
     @Nested
     class Daps extends Tests {
 
@@ -68,6 +71,7 @@ public class S3DataSourceTest {
         }
     }
 
+    @DcpTest
     @Nested
     class Dcp extends Tests {
 

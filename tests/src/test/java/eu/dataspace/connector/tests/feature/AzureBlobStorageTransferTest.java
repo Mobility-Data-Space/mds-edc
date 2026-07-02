@@ -12,6 +12,8 @@ import eu.dataspace.connector.tests.extensions.IssuerExtension;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
+import eu.dataspace.connector.tests.tags.DapsTest;
+import eu.dataspace.connector.tests.tags.DcpTest;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.spi.security.Vault;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,6 +36,7 @@ public class AzureBlobStorageTransferTest {
     private static final AzuriteExtension.Account CONSUMER_AZURITE_ACCOUNT = new AzuriteExtension.Account("consumer", "key1");
     private static final AzuriteExtension.Account PROVIDER_AZURITE_ACCOUNT = new AzuriteExtension.Account("provider", "key2");
 
+    @DapsTest
     @Nested
     class Daps extends Tests {
 
@@ -68,6 +71,7 @@ public class AzureBlobStorageTransferTest {
         }
     }
 
+    @DcpTest
     @Nested
     class Dcp extends Tests {
 

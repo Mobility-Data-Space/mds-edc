@@ -8,6 +8,8 @@ import eu.dataspace.connector.tests.extensions.LoggingHouseExtension;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
+import eu.dataspace.connector.tests.tags.DapsTest;
+import eu.dataspace.connector.tests.tags.DcpTest;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,6 +32,7 @@ public class ContractRetirementTest {
             "edc.policy.monitor.period", "PT2S"
     ));
 
+    @DapsTest
     @Nested
     class Daps extends Tests {
 
@@ -63,6 +66,7 @@ public class ContractRetirementTest {
         }
     }
 
+    @DcpTest
     @Nested
     @Disabled("FIXME: enable once the logging house client supports DCP authentication")
     class Dcp extends Tests {
