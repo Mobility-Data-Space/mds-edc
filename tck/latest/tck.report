@@ -344,6 +344,6 @@ Starting a Gradle Daemon (subsequent builds will be faster)
 
 [Incubating] Problems report is available at: file:///home/runner/work/mds-edc/mds-edc/build/reports/problems/problems-report.html
 
-BUILD SUCCESSFUL in 1m 53s
+BUILD SUCCESSFUL in 2m
 105 actionable tasks: 105 executed
 Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.6.0/userguide/configuration_cache_enabling.html
