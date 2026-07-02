@@ -2,6 +2,7 @@ package eu.dataspace.connector.tests.feature;
 
 import eu.dataspace.connector.tests.Crypto;
 import eu.dataspace.connector.tests.SeedVault;
+import eu.dataspace.connector.tests.tags.TckTest;
 import org.eclipse.dataspacetck.core.system.ConsoleMonitor;
 import org.eclipse.dataspacetck.dsp.system.DspSystemLauncher;
 import org.eclipse.dataspacetck.runtime.TckRuntime;
@@ -11,6 +12,7 @@ import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.junit.utils.Endpoints;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -27,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.dataspacetck.core.api.system.SystemsConstants.TCK_LAUNCHER;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
-//@Tag("Tck")
+@TckTest
 public class DspTckTest {
 
     private static final URI PROTOCOL_URL = URI.create("http://localhost:" + getFreePort() + "/api/dsp");

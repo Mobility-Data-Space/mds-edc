@@ -37,7 +37,7 @@ allprojects {
 
     tasks.test {
         useJUnitPlatform {
-            excludeTags("Tck")
+            excludeTags("slow")
         }
 
         testLogging {
@@ -47,12 +47,16 @@ allprojects {
         }
     }
 
-    tasks.register<Test>("tck") {
+    tasks.register<Test>("slowTests") {
+        description = "slow tests"
         testClassesDirs = sourceSets.test.get().output.classesDirs
         classpath = sourceSets.test.get().runtimeClasspath
 
         useJUnitPlatform {
-            includeTags("Tck")
+            val extra = project.findProperty("tags") as? String
+            val extraTags = extra?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
+
+            includeTags(*extraTags.toTypedArray())
         }
 
         testLogging {

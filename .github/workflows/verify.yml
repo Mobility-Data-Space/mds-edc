@@ -10,11 +10,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  Build:
+  validate:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: read
+    strategy:
+      matrix:
+        target: [build, daps, dcp, tck]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
@@ -26,23 +29,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - name: test and build
-        run: ./gradlew build
-        env:
-          USERNAME: ${{ github.actor }}
-          TOKEN: ${{ github.token }}
 
-  Tck:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: read
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-
-      - uses: ./.github/actions/setup-jdk
-
-      - run: ./gradlew tck
+      - name: gradle ${{ matrix.target }}
+        run: |
+          if [ "${{ matrix.target }}" == "build" ]; then
+            ./gradlew build
+          else
+            ./gradlew slowTests -Ptags=${{ matrix.target }}
+          fi
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ github.token }}
