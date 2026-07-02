@@ -15,7 +15,7 @@ jobs:
 
       - uses: ./.github/actions/setup-jdk
 
-      - run: ./gradlew tck > tck.report
+      - run: ./gradlew slowTests -Ptags=tck > tck.report
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ github.token }}
