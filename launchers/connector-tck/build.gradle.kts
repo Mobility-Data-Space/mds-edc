@@ -11,6 +11,8 @@ dependencies {
     runtimeOnly(libs.edc.controlplane.base.bom)
     runtimeOnly(libs.edc.dataplane.base.bom)
 
+    implementation(project(":extensions:embedded-data-plane"))
+
     runtimeOnly(libs.edc.iam.mock)
     runtimeOnly(libs.edc.tck.extension)
     runtimeOnly(libs.bouncycastle.bcpkix)
