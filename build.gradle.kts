@@ -16,6 +16,7 @@ allprojects {
     apply(plugin = "java")
 
     configurations.all {
+        exclude(group = "org.eclipse.edc", module = "control-plane-api-client")
         exclude(group = "org.eclipse.edc", module = "data-plane-signaling-core")
         exclude(group = "org.eclipse.edc", module = "data-plane-signaling-oauth2")
 

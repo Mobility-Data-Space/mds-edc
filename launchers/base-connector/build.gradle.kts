@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":extensions:agreements:retirement-evaluation-core"))
     implementation(project(":extensions:data-address-store-patch"))
     implementation(project(":extensions:data-plane-public-api-v2"))
+    implementation(project(":extensions:embedded-data-plane"))
     implementation(project(":extensions:kafka:data-plane-kafka"))
     implementation(project(":extensions:logging-house-publisher"))
     implementation(project(":extensions:manual-negotiation-approval"))
