@@ -33,9 +33,13 @@ allprojects {
                 useVersion("3.1.4")
                 because("CVE-2026-54512, CVE-2026-54513, CVE-2026-54514, CVE-2026-54515, CVE-2026-54516, CVE-2026-54517, CVE-2026-54518")
             }
+            if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-core") {
+                useVersion("2.22.1")
+                because("GHSA-r7wm-3cxj-wff9")
+            }
             if (requested.group == "org.postgresql" && requested.name == "postgresql") {
-                useVersion("42.7.11")
-                because("CVE-2026-42198")
+                useVersion("42.7.12")
+                because("CVE-2026-42198, CVE-2026-54291")
             }
         }
     }

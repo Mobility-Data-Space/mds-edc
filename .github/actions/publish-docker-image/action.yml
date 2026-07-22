@@ -10,6 +10,10 @@ inputs:
   image-description:
     description: the image description
     required: true
+  dry-run:
+    description: skip pushing the image and generating SBOM
+    required: false
+    default: 'false'
 
 runs:
   using: "composite"
@@ -75,6 +79,7 @@ runs:
         scanners: vuln
 
     - name: Generate SBOM for ${{ inputs.runtime }}
+      if: ${{ inputs.dry-run != 'true' }}
       uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0
       with:
         image: ghcr.io/${{ steps.repo.outputs.lowercase }}/${{ inputs.runtime }}:${{ steps.meta.outputs.version }}
@@ -82,6 +87,7 @@ runs:
         output-file: sbom-${{ inputs.runtime }}.spdx.json
 
     - name: Push ${{ inputs.runtime }}
+      if: ${{ inputs.dry-run != 'true' }}
       uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
       with:
         context: ./launchers
