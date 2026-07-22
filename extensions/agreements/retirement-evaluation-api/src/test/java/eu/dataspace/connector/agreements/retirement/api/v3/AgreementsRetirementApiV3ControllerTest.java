@@ -1,5 +1,7 @@
 package eu.dataspace.connector.agreements.retirement.api.v3;
 
+import eu.dataspace.connector.agreements.retirement.spi.service.AgreementsRetirementService;
+import eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import jakarta.json.Json;
@@ -13,13 +15,17 @@ import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
-import eu.dataspace.connector.agreements.retirement.spi.service.AgreementsRetirementService;
-import eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.List;
 
+import static eu.dataspace.connector.agreements.retirement.spi.store.AgreementsRetirementStore.ALREADY_EXISTS_TEMPLATE;
+import static eu.dataspace.connector.agreements.retirement.spi.store.AgreementsRetirementStore.NOT_FOUND_IN_RETIREMENT_TEMPLATE;
+import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
+import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
+import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE;
+import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
 import static io.restassured.RestAssured.given;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.query.Criterion.CRITERION_OPERAND_LEFT;
@@ -27,12 +33,6 @@ import static org.eclipse.edc.spi.query.Criterion.CRITERION_OPERAND_RIGHT;
 import static org.eclipse.edc.spi.query.Criterion.CRITERION_OPERATOR;
 import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_FILTER_EXPRESSION;
 import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_TYPE;
-import static eu.dataspace.connector.agreements.retirement.spi.store.AgreementsRetirementStore.ALREADY_EXISTS_TEMPLATE;
-import static eu.dataspace.connector.agreements.retirement.spi.store.AgreementsRetirementStore.NOT_FOUND_IN_RETIREMENT_TEMPLATE;
-import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
-import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.DEPRECATED_AR_ENTRY_REASON;
-import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.DEPRECATED_AR_ENTRY_RETIREMENT_DATE;
-import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_TYPE;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
@@ -197,8 +197,8 @@ class AgreementsRetirementApiV3ControllerTest extends RestControllerTestBase {
         return Json.createObjectBuilder()
                 .add(TYPE, AR_ENTRY_TYPE)
                 .add(AR_ENTRY_AGREEMENT_ID, agreementId)
-                .add(DEPRECATED_AR_ENTRY_REASON, "long-reason")
-                .add(DEPRECATED_AR_ENTRY_RETIREMENT_DATE, Instant.now().toString())
+                .add(AR_ENTRY_REASON, "long-reason")
+                .add(AR_ENTRY_RETIREMENT_DATE, Instant.now().toString())
                 .build();
     }
 

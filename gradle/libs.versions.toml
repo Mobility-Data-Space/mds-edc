@@ -19,7 +19,6 @@ rest-assured = "6.0.1"
 swagger = "2.2.52"
 testcontainers = "2.0.5"
 testcontainers-keycloak = "4.3.1"
-tractusx-edc = "0.12.1"
 wiremock = "3.13.2"
 yasson = "3.0.4"
 
@@ -85,10 +84,6 @@ edc-aws-data-plane-aws-s3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", 
 edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-data-address-s3", version.ref = "edc" }
 
 edc-azure-data-plane-azure-storage = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
-
-tractusx-edc-control-plane-migration = { module = "org.eclipse.tractusx.edc:control-plane-migration", version.ref = "tractusx-edc" }
-tractusx-edc-data-plane-migration = { module = "org.eclipse.tractusx.edc:data-plane-migration", version.ref = "tractusx-edc" }
-tractusx-edc-postgresql-migration = { module = "org.eclipse.tractusx.edc:postgresql-migration-lib", version.ref = "tractusx-edc" }
 
 logging-house-client = { module = "mds-logging-house:client", version.ref = "logging-house-client" }
 
