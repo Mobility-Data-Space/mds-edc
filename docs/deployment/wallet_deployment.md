@@ -19,23 +19,12 @@ You need one wallet **per connector participant** as soon as you are running the
 
 - **PostgreSQL** — dedicated database (or dedicated schema on a shared instance). The wallet owns its own tables via Flyway (`extensions/identity-hub/database-schema-migration-wallet`); do **not** share the schema with the connector.
 - **HashiCorp Vault** — for private key storage. The wallet stores generated participant private keys under `<did>-privatekey-alias`, per-participant super-user api-keys, and the STS client secrets.
-- **A resolvable `did:web` hostname** — the wallet publishes the DID document at `https://<wallet-host>/.well-known/did.json`; whichever DIDs your participants use (`did:web:<connector-host>`) must point at *this* wallet's `/` for resolution to work.
+- **A resolvable `did:web` hostname for the wallet** — the wallet publishes the DID document at `https://<wallet-host>/.well-known/did.json`, and the participant's DID is `did:web:<wallet-host>`. The wallet host and the connector host are two separate systems: the DID resolves on the *wallet's* hostname, not the connector's.
 - **The issuer's DID resolvable** (needed later for credential requests) — either at a public URL or reachable from the wallet pod.
 
-## Building the wallet image
+## Wallet image
 
-The wallet launcher is not currently published to `ghcr.io`. Build it locally from source:
-
-```bash
-# from the repo root
-./gradlew :launchers:wallet:build
-docker build \
-  --build-arg RUNTIME=wallet \
-  -t mds-wallet:local \
-  -f launchers/Dockerfile launchers/
-```
-
-The `Dockerfile` at `launchers/Dockerfile` is shared across all runtimes and picks the launcher via the `RUNTIME` build-arg (same pattern as `connector-vault-postgresql`). The resulting image runs `bin/wallet` as its entrypoint.
+The wallet image is built and published through GitHub alongside the connector images. Use the published image; the runtime entrypoint is `bin/wallet`.
 
 ## Runtime configuration
 
@@ -94,11 +83,14 @@ Once the wallet is up you register **one participant context per connector** thr
 The example below assumes:
 
 - `WALLET_HOST=https://wallet.example.com` — the wallet's public hostname.
-- `PARTICIPANT_DID=did:web:my-connector.example.com` — the DID your connector will advertise on DSP.
+- `PARTICIPANT_DID=did:web:wallet.example.com` — the DID your connector will advertise on DSP. It resolves on the **wallet's** hostname (the wallet serves the DID document), even though the connector is a different system on a different host.
 - `SUPER_API_KEY` — the value of `EDC_IDENTITYHUB_SUPERUSER_API_KEY`.
 
+The DID doubles as the `participantContextId` — same convention as the [mds-identity-issuer seed scripts](https://github.com/Mobility-Data-Space/mds-identity-issuer/tree/main/scripts). Wherever the contextId appears in a URL path it must be URL-encoded (`did%3Aweb%3Awallet.example.com`):
+
 ```bash
-PARTICIPANT_CONTEXT_ID="$(uuidgen)"
+PARTICIPANT_CONTEXT_ID="${PARTICIPANT_DID}"
+PARTICIPANT_CONTEXT_ID_PATH="$(printf '%s' "${PARTICIPANT_CONTEXT_ID}" | jq -sRr @uri)"
 
 curl -fsS -X POST "${WALLET_HOST}/api/identity/v1beta/participants" \
   -H "x-api-key: ${SUPER_API_KEY}" \
@@ -111,7 +103,7 @@ curl -fsS -X POST "${WALLET_HOST}/api/identity/v1beta/participants" \
   "serviceEndpoint": {
     "id": "$(uuidgen)",
     "type": "CredentialService",
-    "serviceEndpoint": "${WALLET_HOST}/api/credentials/v1/participants/${PARTICIPANT_CONTEXT_ID}"
+    "serviceEndpoint": "${WALLET_HOST}/api/credentials/v1/participants/${PARTICIPANT_CONTEXT_ID_PATH}"
   },
   "key": {
     "keyId": "${PARTICIPANT_DID}#key-1",
@@ -124,9 +116,9 @@ JSON
 
 Notes on the request body:
 
-- `participantContextId` — a fresh UUID; it becomes the wallet-internal identifier and the path segment on `/v1/participants/{id}`. It is **not** the DID.
+- `participantContextId` — the wallet-internal identifier and the path segment on `/v1/participants/{id}`. Any unique string works; use the DID so the wallet, issuer, and seed scripts all key participants the same way.
 - `serviceEndpoint.type` must be `CredentialService`; this is the endpoint the issuer will POST issued VCs to, so the URL must be reachable from the issuer.
-- `serviceEndpoint.serviceEndpoint` must include `/v1/participants/${PARTICIPANT_CONTEXT_ID}` — the wallet consumes this value verbatim in the DID document, and the issuer follows it as-is when delivering credentials. A bare host produces a DID document that no issuer can honour.
+- `serviceEndpoint.serviceEndpoint` must include `/v1/participants/<url-encoded contextId>` — the wallet consumes this value verbatim in the DID document, and the issuer follows it as-is when delivering credentials. A bare host produces a DID document that no issuer can honour. Note the `/v1/` here: this is the DCP Credential Service protocol API, which is versioned independently of the `/v1beta` Identity admin API.
 - `key.privateKeyAlias` — the Vault alias the wallet will use to store the generated private key. Any string is accepted; align it with your Vault path conventions.
 - `key.keyGeneratorParams.algorithm` — `EC` (P-256) for interoperability with the current issuer profile. `EdDSA` / `Ed25519` also works but is not yet used across the MDS stack.
 
@@ -134,7 +126,7 @@ The response body includes the participant's **client id** and **client secret**
 
 ```json
 {
-  "clientId": "did:web:my-connector.example.com",
+  "clientId": "did:web:wallet.example.com",
   "clientSecret": "..."
 }
 ```
@@ -144,12 +136,12 @@ The wallet will not return the client secret again. Store it in the **connector'
 ### Verify the DID document
 
 ```bash
-curl -fsS "https://<connector-host>/.well-known/did.json" | jq
+curl -fsS "https://<wallet-host>/.well-known/did.json" | jq
 ```
 
 You should see a document with `id = ${PARTICIPANT_DID}`, one `verificationMethod` entry (public key), and one `service` entry of type `CredentialService`.
 
-If the connector's hostname is different from the wallet's hostname (typical), the connector's ingress must forward `/.well-known/did.json` to the wallet's `did` context. Any reverse proxy path rewrite that hides `/.well-known/` from the wallet breaks DID resolution.
+The wallet's ingress must expose `/.well-known/did.json` on the wallet host. Any reverse proxy path rewrite that hides `/.well-known/` from the wallet's `did` context breaks DID resolution.
 
 ### Request credential issuance
 
@@ -159,7 +151,7 @@ Once the connector's participant is registered on the wallet and on the issuer, 
 HOLDER_PID="$(uuidgen)"
 
 curl -fsS -X POST \
-  "${WALLET_HOST}/api/identity/v1beta/participants/${PARTICIPANT_CONTEXT_ID}/credentials/request" \
+  "${WALLET_HOST}/api/identity/v1beta/participants/${PARTICIPANT_CONTEXT_ID_PATH}/credentials/request" \
   -H "x-api-key: ${PARTICIPANT_API_KEY}" \
   -H 'content-type: application/json' \
   -d @- <<JSON
@@ -177,7 +169,7 @@ curl -fsS -X POST \
 JSON
 ```
 
-`PARTICIPANT_API_KEY` is the api-key returned in the participant-registration response (or the super-user key, which also works). Poll `GET /api/identity/v1beta/participants/${PARTICIPANT_CONTEXT_ID}/credentials/request/${HOLDER_PID}` until `status == "ISSUED"`.
+`PARTICIPANT_API_KEY` is the api-key returned in the participant-registration response (or the super-user key, which also works). Poll `GET /api/identity/v1beta/participants/${PARTICIPANT_CONTEXT_ID_PATH}/credentials/request/${HOLDER_PID}` until `status == "ISSUED"`.
 
 ## Wiring the connector to the wallet
 
@@ -198,7 +190,7 @@ The connector reads `EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS` from **its own** Vau
 
 - **`EDC_SQL_SCHEMA_AUTOCREATE`** must be `false` in production. The Flyway bundle owns the schema; with `true`, EDC's SQL stores silently create missing tables at runtime, which masks missing migration files (this is exactly the failure mode fixed in [PR #474](https://github.com/Mobility-Data-Space/mds-edc/pull/474)).
 - **`EDC_ENCRYPTION_STRICT=false`** is recommended unless you also configure `edc.encryption.aes.key.alias`. When strict encryption is enabled without an AES key, creating a participant context with non-empty `properties` throws `EncryptionAlgorithmRegistry.encrypt("aes", ...)` at runtime.
-- **API version.** The wallet ships EDC IdentityHub `0.18.0`, so all admin routes are under `/v1beta`. Runtimes bumped from an older version will find `/v1alpha` returning 404.
+- **API version.** The wallet ships EDC IdentityHub `0.18.0`, so all Identity **admin** routes are under `/v1beta`; runtimes bumped from an older version will find `/v1alpha` returning 404. The DCP protocol APIs (Credential Service under `/api/credentials`, the endpoint the issuer delivers to) are versioned independently and stay at `/v1` — see `StorageApiController` in upstream IdentityHub (`@Path("/v1/participants/{participantContextId}/credentials")`).
 - **The DID document is only refreshed on participant-context activation.** If you patch the DID or the service endpoint after activation, republish by cycling the participant context (deactivate, update, reactivate) — the DID doc is otherwise cached from the last activation.
 
 ## Related documentation
