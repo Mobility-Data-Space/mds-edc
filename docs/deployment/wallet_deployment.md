@@ -74,7 +74,7 @@ EDC_IAM_DID_WEB_USE_HTTPS=true
 
 The super-user api-key must be formatted `base64(<EDC_IDENTITYHUB_SUPERUSER_ID>).<random-string>` — a random-only value boots but every subsequent admin call returns 401 with the log line `this key appears to have an invalid format`.
 
-The seeder writes the api-key into Vault under `secret/<super-user-id>-apikey` on first boot **only**; if the participant-context row already exists in Postgres, the vault write is skipped. If you rotate the k8s secret without wiping the DB row you will get 401s until you either delete the row + Vault entry and restart, or write the new value into Vault by hand.
+The seeder writes the api-key into Vault under `secret/<super-user-id>-apikey` on first boot **only**; if the participant-context row already exists in Postgres, the vault write is skipped. If you rotate the k8s secret without wiping the DB row you will get 401s until you either delete the row + Vault entry and restart, or write the new value into Vault by hand. If the Vault entry is missing entirely (e.g. Vault was re-initialized while the DB row survived), every admin call returns **500** with `NullPointerException: ... ServicePrincipal.getCredential() is null` in the logs — restore the entry by writing the api-key to `secret/<super-user-id>-apikey` (kv v2, under the `content` key).
 
 ## Registering a participant (self-provide a wallet)
 
