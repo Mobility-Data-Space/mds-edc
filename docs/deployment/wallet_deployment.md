@@ -86,7 +86,7 @@ The example below assumes:
 - `PARTICIPANT_DID=did:web:wallet.example.com` — the DID your connector will advertise on DSP. It resolves on the **wallet's** hostname (the wallet serves the DID document), even though the connector is a different system on a different host.
 - `SUPER_API_KEY` — the value of `EDC_IDENTITYHUB_SUPERUSER_API_KEY`.
 
-The DID doubles as the `participantContextId` — same convention as the [mds-identity-issuer seed scripts](https://github.com/Mobility-Data-Space/mds-identity-issuer/tree/main/scripts). Wherever the contextId appears in a URL path it must be URL-encoded (`did%3Aweb%3Awallet.example.com`):
+The DID doubles as the `participantContextId`. Wherever the contextId appears in a URL path it must be URL-encoded (`did%3Aweb%3Awallet.example.com`):
 
 ```bash
 PARTICIPANT_CONTEXT_ID="${PARTICIPANT_DID}"
