@@ -19,8 +19,4 @@ dependencies {
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.testcontainers.postgresql)
 
-    // TODO: deprecated, could be removed in the next versions
-    testImplementation(libs.tractusx.edc.postgresql.migration)
-    testImplementation(libs.tractusx.edc.data.plane.migration)
-    testImplementation(libs.tractusx.edc.control.plane.migration)
 }

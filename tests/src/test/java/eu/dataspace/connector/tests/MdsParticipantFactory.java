@@ -34,9 +34,6 @@ public interface MdsParticipantFactory {
                         .configurationProvider(() -> daps.dapsConfig(name))
                         .registerSystemExtension(ServiceExtension.class, daps.seedDapsKeyPair())
                         .configurationProvider(() -> postgres.getConfig(name))
-                        .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
-                                "org.eclipse.tractusx.edc.postgresql.migration.schema", postgres.getSchema()
-                        )))
                 )
                 .build();
     }
@@ -68,9 +65,6 @@ public interface MdsParticipantFactory {
                             }
                         })
                         .configurationProvider(() -> postgres.getConfig(name))
-                        .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
-                                "org.eclipse.tractusx.edc.postgresql.migration.schema", postgres.getSchema()
-                        )))
                 )
                 .build();
     }
@@ -84,9 +78,6 @@ public interface MdsParticipantFactory {
                         .configurationProvider(() -> daps.dapsConfig(name))
                         .registerSystemExtension(ServiceExtension.class, daps.seedDapsKeyPair())
                         .configurationProvider(() -> postgres.getConfig(name))
-                        .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
-                                "org.eclipse.tractusx.edc.postgresql.migration.schema", postgres.getSchema()
-                        )))
                         .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
                                 entry("edp.dataplane.callback.url", "http://localhost:8080"),
                                 entry("edp.daseen.api.key", "api-key")))

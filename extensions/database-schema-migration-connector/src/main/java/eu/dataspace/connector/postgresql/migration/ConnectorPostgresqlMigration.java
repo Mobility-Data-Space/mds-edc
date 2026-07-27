@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static eu.dataspace.connector.postgresql.migration.ConnectorPostgresqlMigration.NAME;
-import static eu.dataspace.connector.postgresql.migration.DatabaseMigrationConfiguration.DEPRECATED_MIGRATION_SCHEMA_KEY;
-import static eu.dataspace.connector.postgresql.migration.DatabaseMigrationConfiguration.MIGRATION_SCHEMA_KEY;
 
 @Extension(NAME)
 public class ConnectorPostgresqlMigration implements ServiceExtension {
@@ -65,24 +63,14 @@ public class ConnectorPostgresqlMigration implements ServiceExtension {
             return;
         }
 
-        var schema = configuration.deprecatedSchema();
-        if (schema != null) {
-            monitor.warning("The setting '%s' has been deprecated, please replace it with '%s' as soon as possible"
-                    .formatted(DEPRECATED_MIGRATION_SCHEMA_KEY, MIGRATION_SCHEMA_KEY));
-        } else {
-            schema = configuration.schema();
-        }
-
-        var dataSource = configuration.getDataSource();
-
         var flyway = Flyway.configure()
                 .baselineVersion("1.0.0")
                 .baselineOnMigrate(true)
                 .failOnMissingLocations(true)
-                .dataSource(dataSource)
+                .dataSource(configuration.getDataSource())
                 .table("flyway_schema_history")
                 .locations("classpath:migrations/connector")
-                .defaultSchema(schema)
+                .defaultSchema(configuration.schema())
                 .ignoreMigrationPatterns(configuration.ignoreMigrationPatterns())
                 .target(configuration.target())
                 .placeholders(Map.of("ParticipantContextId", configuration.participantContextId()))

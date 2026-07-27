@@ -11,8 +11,6 @@ import java.util.Map;
 import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
 import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
 import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE;
-import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.DEPRECATED_AR_ENTRY_REASON;
-import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.DEPRECATED_AR_ENTRY_RETIREMENT_DATE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -40,8 +38,6 @@ class JsonObjectFromAgreementRetirementTransformerTest {
         assertThat(result.getString(AR_ENTRY_AGREEMENT_ID)).isEqualTo("agreementId");
         assertThat(result.getString(AR_ENTRY_REASON)).isEqualTo("long-reason");
         assertThat(result.getJsonNumber(AR_ENTRY_RETIREMENT_DATE)).isNotNull();
-        assertThat(result.getString(DEPRECATED_AR_ENTRY_REASON)).isEqualTo("long-reason");
-        assertThat(result.getJsonNumber(DEPRECATED_AR_ENTRY_RETIREMENT_DATE)).isNotNull();
         verify(context, never()).reportProblem(anyString());
     }
 

@@ -57,14 +57,6 @@ public record DatabaseMigrationConfiguration(
         )
         String ignoreMigrationPatterns,
 
-        @Deprecated(since = "1.0.0")
-        @Setting(
-                key = DEPRECATED_MIGRATION_SCHEMA_KEY,
-                description = "Deprecated key: Schema used for the migration",
-                required = false
-        )
-        String deprecatedSchema,
-
         @Setting(
                 description = "Configures the participant context id for the single participant runtime",
                 key = "edc.participant.context.id",
@@ -94,8 +86,6 @@ public record DatabaseMigrationConfiguration(
     private static final String DEFAULT_MIGRATION_SCHEMA = "public";
     private static final String DEFAULT_TARGET_VERSION = "latest";
     private static final String DEFAULT_IGNORE_PATTERNS = "*:ignored";
-    @Deprecated(since = "1.0.0")
-    public static final String DEPRECATED_MIGRATION_SCHEMA_KEY = "org.eclipse.tractusx.edc.postgresql.migration.schema";
     public static final String MIGRATION_SCHEMA_KEY = "edc.postgresql.migration.schema";
     public static final String MIGRATION_TARGET_VERSION = "edc.postgresql.migration.target";
     public static final String MIGRATION_IGNORE_PATTERNS = "edc.postgresql.migration.ignore.patterns";

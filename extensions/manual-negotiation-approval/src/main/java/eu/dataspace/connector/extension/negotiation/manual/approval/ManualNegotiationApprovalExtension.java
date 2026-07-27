@@ -5,7 +5,6 @@ import eu.dataspace.connector.extension.negotiation.manual.approval.command.Appr
 import eu.dataspace.connector.extension.negotiation.manual.approval.command.RejectNegotiationCommandHandler;
 import eu.dataspace.connector.extension.negotiation.manual.approval.logic.ManualNegotiationApprovalPendingGuard;
 import eu.dataspace.connector.extension.negotiation.manual.approval.logic.ManualNegotiationApprovalService;
-import eu.dataspace.connector.extension.negotiation.manual.approval.transformer.JsonValueToGenericTypeTransformer;
 import org.eclipse.edc.connector.controlplane.contract.spi.negotiation.ContractNegotiationPendingGuard;
 import org.eclipse.edc.connector.controlplane.contract.spi.negotiation.store.ContractNegotiationStore;
 import org.eclipse.edc.connector.controlplane.contract.spi.offer.store.ContractDefinitionStore;
@@ -15,14 +14,11 @@ import org.eclipse.edc.spi.command.CommandHandlerRegistry;
 import org.eclipse.edc.spi.event.EventRouter;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transaction.spi.TransactionContext;
-import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.web.spi.WebService;
 
 import java.time.Clock;
 
-import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 import static org.eclipse.edc.web.spi.configuration.ApiContext.MANAGEMENT;
 
 public class ManualNegotiationApprovalExtension implements ServiceExtension {
@@ -38,10 +34,6 @@ public class ManualNegotiationApprovalExtension implements ServiceExtension {
     @Inject
     private ContractDefinitionStore contractDefinitionStore;
     @Inject
-    private TypeTransformerRegistry transformerRegistry;
-    @Inject
-    private TypeManager typeManager;
-    @Inject
     private EventRouter eventRouter;
     @Inject
     private Clock clock;
@@ -53,10 +45,6 @@ public class ManualNegotiationApprovalExtension implements ServiceExtension {
 
         var service = new ManualNegotiationApprovalService(transactionContext, commandHandlerRegistry);
         webService.registerResource(MANAGEMENT, new ManualNegotiationApprovalApiController(service));
-
-        // this is a workaround for this bug: https://github.com/eclipse-edc/Connector/issues/4955 it can be removed when it will be fixed (likely in version 0.13.0)
-        var managementApiTransformerRegistry = transformerRegistry.forContext("management-api");
-        managementApiTransformerRegistry.register(new JsonValueToGenericTypeTransformer(typeManager, JSON_LD));
     }
 
     @Provider
