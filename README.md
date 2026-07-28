@@ -55,6 +55,7 @@ Guides on deploying and configuring the MDS Connector:
 - [Default Configuration](docs/deployment/mds_connector_default_configuration.md) - Configuration reference
 - [Production Vault Setup](docs/deployment/production_vault_setup.md) - Configuring Vault for production use
 - [Backup and Recovery](docs/deployment/backup_and_recovery.md) - Backup strategies and disaster recovery procedures
+- [Identity Wallet Deployment](docs/deployment/wallet_deployment.md) - Running the MDS Identity Wallet (Identity Hub + STS + Credential Service) and self-provisioning a participant
 
 ## Directory Structure
 
