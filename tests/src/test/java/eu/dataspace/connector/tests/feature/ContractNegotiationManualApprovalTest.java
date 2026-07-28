@@ -9,7 +9,6 @@ import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
 import eu.dataspace.connector.tests.tags.DapsTest;
 import eu.dataspace.connector.tests.tags.DcpTest;
-import jakarta.json.Json;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
@@ -20,8 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-import static io.restassured.http.ContentType.JSON;
-import static jakarta.json.Json.createObjectBuilder;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -30,7 +27,6 @@ import static org.eclipse.edc.connector.controlplane.contract.spi.types.negotiat
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.REQUESTED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public class ContractNegotiationManualApprovalTest {
@@ -275,30 +271,7 @@ public class ContractNegotiationManualApprovalTest {
             provider.createAsset(assetId, emptyMap(), dataAddressProperties);
             var noConstraintPolicyId = provider.createPolicyDefinition(noConstraintPolicy());
 
-            var requestBody = createObjectBuilder()
-                    .add(TYPE, EDC_NAMESPACE + "ContractDefinition")
-                    .add(EDC_NAMESPACE + "accessPolicyId", noConstraintPolicyId)
-                    .add(EDC_NAMESPACE + "contractPolicyId", noConstraintPolicyId)
-                    .add(EDC_NAMESPACE + "assetsSelector", Json.createArrayBuilder()
-                            .add(createObjectBuilder()
-                                    .add(TYPE, "Criterion")
-                                    .add(EDC_NAMESPACE + "operandLeft", EDC_NAMESPACE + "id")
-                                    .add(EDC_NAMESPACE + "operator", "=")
-                                    .add(EDC_NAMESPACE + "operandRight", assetId)
-                                    .build())
-                            .build())
-                    .add(EDC_NAMESPACE + "privateProperties", Json.createObjectBuilder()
-                            .add(EDC_NAMESPACE + "manualApproval", "true"))
-                    .build();
-
-            provider.baseManagementRequest()
-                    .contentType(JSON)
-                    .body(requestBody)
-                    .when()
-                    .post("/contractdefinitions")
-                    .then()
-                    .statusCode(200)
-                    .extract().jsonPath().getString(ID);
+            provider.createContractDefinitionWithManualApproval(assetId, noConstraintPolicyId);
 
             return assetId;
         }

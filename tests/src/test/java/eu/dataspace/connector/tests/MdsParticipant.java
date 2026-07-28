@@ -177,19 +177,21 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                         .add("mobilitydcatap-theme:data-content-category", "OTHER")
                 );
 
-        var context = createArrayBuilder()
+
+
+        var context = Json.createArrayBuilder(managementContext.asJsonArray())
                 // idsa jsonld context added because of https://github.com/Mobility-Data-Space/mds-edc/issues/493
                 .add("https://w3id.org/idsa/contexts/context.jsonld")
                 .add(createObjectBuilder()
-                        .add("@vocab", "https://w3id.org/edc/v0.0.1/ns/")
                         .add("dct", "http://purl.org/dc/terms/")
                         .add("mobilitydcatap", "https://w3id.org/mobilitydcat-ap/")
                         .add("mobilitydcatap-theme", "https://w3id.org/mobilitydcat-ap/mobility-theme/")
                 );
 
+
         var requestBody = Json.createObjectBuilder()
-                .add("@context", context)
-                .add("@type", "Asset")
+                .add(CONTEXT, context)
+                .add(TYPE, "Asset")
                 .add("@id", assetId)
                 .add("properties", baseProperties.addAll(createObjectBuilder(properties)))
                 .add("dataAddress", Json.createObjectBuilder(dataAddressProperties))
@@ -209,8 +211,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
     public ValidatableResponse retireAgreement(String agreementId) {
         var body = createObjectBuilder()
-                .add(CONTEXT, createObjectBuilder()
-                        .add("@vocab", EDC_NAMESPACE))
+                .add(CONTEXT, managementContext)
                 .add(TYPE, "AgreementsRetirementEntry")
                 .add("agreementId", agreementId)
                 .add("reason", "a good reason")
@@ -257,9 +258,11 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
     public JsonObject getPendingNegotiation(String negotiationId) {
         return getContractNegotiations(createObjectBuilder()
-                .add(CONTEXT, createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
+                .add(CONTEXT, managementContext)
+                .add(TYPE, "QuerySpec")
                 .add("filterExpression", createArrayBuilder()
                         .add(createObjectBuilder()
+                                .add(TYPE, "Criterion")
                                 .add("operandLeft", "pending")
                                 .add("operator", "=")
                                 .add("operandRight", true)
@@ -305,8 +308,8 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
     @Override
     public JsonArray getCatalogDatasets(Participant provider) {
         var requestBodyBuilder = Json.createObjectBuilder()
-                .add("@context", Json.createObjectBuilder().add("@vocab", "https://w3id.org/edc/v0.0.1/ns/"))
-                .add("@type", "CatalogRequest")
+                .add(CONTEXT, managementContext)
+                .add(TYPE, "CatalogRequest")
                 .add("counterPartyId", provider.getId())
                 .add("counterPartyAddress", provider.getProtocolUrl())
                 .add("protocol", this.protocol.name());
@@ -339,6 +342,35 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .contentType(JSON)
                 .extract().jsonPath()
                 .getString(ID);
+    }
+
+    public String createContractDefinitionWithManualApproval(String assetId, String policyId) {
+        var requestBody = createObjectBuilder()
+                .add(CONTEXT, managementContext)
+                .add(TYPE, "ContractDefinition")
+                .add("accessPolicyId", policyId)
+                .add("contractPolicyId", policyId)
+                .add("assetsSelector", Json.createArrayBuilder()
+                        .add(createObjectBuilder()
+                                .add(TYPE, "Criterion")
+                                .add("operandLeft", EDC_NAMESPACE + "id")
+                                .add("operator", "=")
+                                .add("operandRight", assetId)
+                                .build())
+                        .build())
+                .add("privateProperties", Json.createObjectBuilder()
+                        .add("manualApproval", "true"))
+                .build();
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(requestBody)
+                .when()
+                .post("/contractdefinitions")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .extract().jsonPath().getString(ID);
     }
 
     public <T> T getService(Class<T> clazz) {
@@ -379,8 +411,10 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
         @Override
         public MdsParticipant build() {
-            managementVersionBasePath("/v3");
-            managementContext(Json.createObjectBuilder().add(VOCAB, EDC_NAMESPACE).build());
+            participant.managementContext = Json.createArrayBuilder()
+                    .add(participant.managementContext)
+                    .add(Json.createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
+                    .build();
             participant.enrichManagementRequest = request -> request.header("x-api-key", participant.managementAuthKey);
             return super.build();
         }

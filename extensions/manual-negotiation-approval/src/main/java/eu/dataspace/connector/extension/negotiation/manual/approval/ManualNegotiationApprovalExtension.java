@@ -1,6 +1,7 @@
 package eu.dataspace.connector.extension.negotiation.manual.approval;
 
 import eu.dataspace.connector.extension.negotiation.manual.approval.api.ManualNegotiationApprovalApiController;
+import eu.dataspace.connector.extension.negotiation.manual.approval.api.v4.ManualNegotiationApprovalApiV4Controller;
 import eu.dataspace.connector.extension.negotiation.manual.approval.command.ApproveNegotiationCommandHandler;
 import eu.dataspace.connector.extension.negotiation.manual.approval.command.RejectNegotiationCommandHandler;
 import eu.dataspace.connector.extension.negotiation.manual.approval.logic.ManualNegotiationApprovalPendingGuard;
@@ -45,6 +46,7 @@ public class ManualNegotiationApprovalExtension implements ServiceExtension {
 
         var service = new ManualNegotiationApprovalService(transactionContext, commandHandlerRegistry);
         webService.registerResource(MANAGEMENT, new ManualNegotiationApprovalApiController(service));
+        webService.registerResource(MANAGEMENT, new ManualNegotiationApprovalApiV4Controller(service));
     }
 
     @Provider
