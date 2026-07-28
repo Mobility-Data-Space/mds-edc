@@ -69,23 +69,6 @@ public interface MdsParticipantFactory {
                 .build();
     }
 
-    static MdsParticipant edp(String name, VaultExtension vault, SovityDapsExtension daps, PostgresqlExtension postgres) {
-        return MdsParticipant.Builder.newInstance()
-                .id(name)
-                .name(name)
-                .runtime(participant -> baseRuntime(name, ":launchers:connector-vault-postgresql-edp", participant)
-                        .configurationProvider(() -> vault.getConfig(name))
-                        .configurationProvider(() -> daps.dapsConfig(name))
-                        .registerSystemExtension(ServiceExtension.class, daps.seedDapsKeyPair())
-                        .configurationProvider(() -> postgres.getConfig(name))
-                        .configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
-                                entry("edp.dataplane.callback.url", "http://localhost:8080"),
-                                entry("edp.daseen.api.key", "api-key")))
-                        )
-                )
-                .build();
-    }
-
     static Wallet wallet(PostgresqlExtension postgres, VaultExtension vault, String... participants) {
         var name = "wallet";
         var runtime = new EmbeddedRuntime(name, ":launchers:wallet")

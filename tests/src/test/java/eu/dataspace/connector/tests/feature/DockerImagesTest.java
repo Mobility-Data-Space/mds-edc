@@ -21,7 +21,6 @@ public class DockerImagesTest {
             "connector-inmemory-dcp",
             "connector-vault-postgresql",
             "connector-vault-postgresql-dcp",
-            "connector-vault-postgresql-edp",
     })
     void shouldStartAndStopTheRuntime(String runtimeName) {
         var tarCreated = gradlewDistTar(runtimeName);

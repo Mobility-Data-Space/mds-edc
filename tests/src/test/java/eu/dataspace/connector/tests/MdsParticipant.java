@@ -275,36 +275,6 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .orElse(null);
     }
 
-    public JsonObject createEdpsJob(String assetId, String edpsContractAgreementId) {
-        return baseManagementRequest()
-                .basePath("/edp")
-                .contentType(JSON)
-                .body(createObjectBuilder().add("contractId", edpsContractAgreementId).build())
-                .when()
-                .post("/edps/{assetId}/jobs", assetId)
-                .then().statusCode(200).extract().body().as(JsonObject.class);
-    }
-
-    public JsonObject getEdpsResult(String assetId, String jobId, String edpsContractAgreementId) {
-        return baseManagementRequest()
-                .basePath("/edp")
-                .contentType(JSON)
-                .body(createObjectBuilder().add("contractId", edpsContractAgreementId).build())
-                .when()
-                .post("/edps/{assetId}/jobs/{jobId}/result", assetId, jobId)
-                .then().statusCode(200).extract().body().as(JsonObject.class);
-    }
-
-    public ValidatableResponse publishDassen(String resultAssetId, String daseenContractAgreementId) {
-        return baseManagementRequest()
-                .basePath("/edp")
-                .contentType(JSON)
-                .body(createObjectBuilder().add("contractId", daseenContractAgreementId).build())
-                .when()
-                .post("/daseen/{resultAssetId}", resultAssetId)
-                .then();
-    }
-
     @Override
     public JsonArray getCatalogDatasets(Participant provider) {
         var requestBodyBuilder = Json.createObjectBuilder()
