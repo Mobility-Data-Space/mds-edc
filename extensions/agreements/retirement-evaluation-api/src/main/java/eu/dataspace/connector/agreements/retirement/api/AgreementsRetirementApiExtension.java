@@ -3,8 +3,10 @@ package eu.dataspace.connector.agreements.retirement.api;
 import eu.dataspace.connector.agreements.retirement.api.transform.JsonObjectFromAgreementRetirementTransformer;
 import eu.dataspace.connector.agreements.retirement.api.transform.JsonObjectToAgreementsRetirementEntryTransformer;
 import eu.dataspace.connector.agreements.retirement.api.v3.AgreementsRetirementApiV3Controller;
+import eu.dataspace.connector.agreements.retirement.api.v4.AgreementsRetirementApiV4Controller;
 import eu.dataspace.connector.agreements.retirement.spi.service.AgreementsRetirementService;
 import jakarta.json.Json;
+import org.eclipse.edc.api.management.schema.ManagementApiJsonSchema;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -21,7 +23,10 @@ import org.eclipse.edc.web.spi.configuration.ApiContext;
 import java.util.Map;
 
 import static eu.dataspace.connector.agreements.retirement.api.AgreementsRetirementApiExtension.NAME;
+import static org.eclipse.edc.api.management.ManagementApi.MANAGEMENT_API_CONTEXT;
+import static org.eclipse.edc.api.management.ManagementApi.MANAGEMENT_API_V_4;
 import static org.eclipse.edc.api.management.ManagementApi.MANAGEMENT_SCOPE;
+import static org.eclipse.edc.api.management.ManagementApi.MANAGEMENT_SCOPE_V4;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 
@@ -53,14 +58,17 @@ public class AgreementsRetirementApiExtension implements ServiceExtension {
     @Override
     public void initialize(ServiceExtensionContext context) {
         var jsonFactory = Json.createBuilderFactory(Map.of());
-        var managementTypeTransformerRegistry = transformerRegistry.forContext("management-api");
+        var managementTypeTransformerRegistry = transformerRegistry.forContext(MANAGEMENT_API_CONTEXT);
+        var managementTypeTransformerRegistryV4 = managementTypeTransformerRegistry.forContext(MANAGEMENT_API_V_4);
 
         managementTypeTransformerRegistry.register(new JsonObjectFromAgreementRetirementTransformer(jsonFactory));
         managementTypeTransformerRegistry.register(new JsonObjectToAgreementsRetirementEntryTransformer());
 
         webService.registerResource(ApiContext.MANAGEMENT, new AgreementsRetirementApiV3Controller(agreementsRetirementService, managementTypeTransformerRegistry, validator, monitor));
-        var jsonLdInterceptor = new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, MANAGEMENT_SCOPE);
-        webService.registerDynamicResource(ApiContext.MANAGEMENT, AgreementsRetirementApiV3Controller.class, jsonLdInterceptor);
+        webService.registerDynamicResource(ApiContext.MANAGEMENT, AgreementsRetirementApiV3Controller.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, MANAGEMENT_SCOPE));
+
+        webService.registerResource(ApiContext.MANAGEMENT, new AgreementsRetirementApiV4Controller(agreementsRetirementService, managementTypeTransformerRegistryV4, validator, monitor));
+        webService.registerDynamicResource(ApiContext.MANAGEMENT, AgreementsRetirementApiV4Controller.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, MANAGEMENT_SCOPE_V4, validator, ManagementApiJsonSchema.V4.version()));
     }
 
 }
