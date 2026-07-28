@@ -9,8 +9,8 @@ ENV RUNTIME=${RUNTIME}
 
 WORKDIR /app
 
-COPY ${RUNTIME}/build/distributions/connector-*.tar /app/
+COPY ${RUNTIME}/build/distributions/${RUNTIME}-*.tar /app/
 
-RUN tar --strip-components=1 -xf connector-*.tar && rm connector-*.tar
+RUN tar --strip-components=1 -xf ${RUNTIME}-*.tar && rm ${RUNTIME}-*.tar
 
 ENTRYPOINT /app/bin/${RUNTIME}

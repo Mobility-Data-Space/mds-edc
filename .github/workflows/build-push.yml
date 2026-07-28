@@ -66,9 +66,9 @@ jobs:
 
       - uses: ./.github/actions/publish-docker-image
         with:
-          runtime: connector-vault-postgresql-edp
-          image-title: MDS EDC EDP Experimental
-          image-description: MDS EDC connector with EDP extension for production use.
+          runtime: wallet
+          image-title: MDS EDC Wallet
+          image-description: MDS EDC Wallet (Identity Hub) launcher for production use.
 
       - name: Publish Maven Artifacts
         run: ./gradlew publish
