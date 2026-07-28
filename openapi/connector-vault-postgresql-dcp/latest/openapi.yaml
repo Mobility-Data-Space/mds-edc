@@ -1775,6 +1775,7 @@ paths:
       - Catalogs v4
   /v3/contractnegotiations/{id}/approve:
     post:
+      deprecated: true
       description: Approve a pending negotiation
       operationId: approveNegotiation
       parameters:
@@ -1792,6 +1793,7 @@ paths:
       - Manual Negotiation Approval
   /v3/contractnegotiations/{id}/reject:
     post:
+      deprecated: true
       description: Reject a pending negotiation
       operationId: rejectNegotiation
       parameters:
@@ -1807,6 +1809,40 @@ paths:
           description: default response
       tags:
       - Manual Negotiation Approval
+  /v4/contractnegotiations/{id}/approve:
+    post:
+      description: Approve a pending negotiation
+      operationId: approveNegotiationV4
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            '*/*': {}
+          description: default response
+      tags:
+      - Manual Negotiation Approval v4
+  /v4/contractnegotiations/{id}/reject:
+    post:
+      description: Reject a pending negotiation
+      operationId: rejectNegotiationV4
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            '*/*': {}
+          description: default response
+      tags:
+      - Manual Negotiation Approval v4
   /v3/policydefinitions:
     post:
       deprecated: true
@@ -2288,6 +2324,7 @@ paths:
       - Policy Definition v4
   /v3/contractagreements/retirements/request:
     post:
+      deprecated: true
       description: Get all retired contract agreements.
       operationId: getAllRetiredV3
       responses:
@@ -2305,6 +2342,7 @@ paths:
       - Agreements Retirement
   /v3/contractagreements/retirements/{agreementId}:
     delete:
+      deprecated: true
       description: "Removes a contract agreement from the retired list, reactivating\
         \ it."
       operationId: reactivateRetiredV3
@@ -2332,6 +2370,7 @@ paths:
       - Agreements Retirement
   /v3/contractagreements/retirements:
     post:
+      deprecated: true
       description: Retires an active contract agreement.
       operationId: retireAgreementV3
       requestBody:
@@ -2354,6 +2393,79 @@ paths:
           description: Request body was malformed
       tags:
       - Agreements Retirement
+  /v4/contractagreements/retirements/request:
+    post:
+      description: Get all retired contract agreements.
+      operationId: getAllRetiredV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query-spec-schema"
+      responses:
+        "200":
+          description: A list of retired contract agreements
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Agreements Retirement v4
+  /v4/contractagreements/retirements/{agreementId}:
+    delete:
+      description: "Removes a contract agreement from the retired list, reactivating\
+        \ it."
+      operationId: reactivateRetiredV4
+      parameters:
+      - description: The contract agreement id
+        in: path
+        name: agreementId
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: The contract agreement is reactivated
+        "404":
+          description: No entry for the given agreementId was found
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Agreements Retirement v4
+  /v4/contractagreements/retirements:
+    post:
+      description: Retires an active contract agreement.
+      operationId: retireAgreementV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RetirementExample"
+      responses:
+        "204":
+          description: The contract agreement was successfully retired
+        "409":
+          description: The contract agreement is already retired
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Agreements Retirement v4
   /v3/transferprocesses:
     post:
       deprecated: true
@@ -6369,12 +6481,18 @@ components:
           type: object
       type: object
     RetirementExample:
-      example:
-        '@context':
-          edc: https://w3id.org/edc/v0.0.1/ns/
-        edc:agreementId: contract-agreement-id
-        edc:reason: This contract agreement was retired since the physical counterpart
-          is no longer valid.
+      example: |
+        {
+            "@context": [
+                "https://w3id.org/edc/connector/management/v2",
+                {
+                    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+                }
+            ],
+            "@type": "AgreementsRetirementEntry"
+            "agreementId": "contract-agreement-id",
+            "reason": "This contract agreement was retired since the physical counterpart is no longer valid."
+        }
       properties:
         '@id':
           type: string
