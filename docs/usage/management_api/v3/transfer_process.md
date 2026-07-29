@@ -4,30 +4,16 @@ The transfer process manages the actual data transfer between provider and consu
 
 ## Initiate Transfer Process
 
-### PULL Flow
-
-```http
-POST /v4/transferprocesses
-Content-Type: application/json
-
-{
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
-  "@type": "TransferRequest",
-  "protocol": "dataspace-protocol-http:2025-1",
-  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
-  "contractId": "contract-id",
-  "transferType": "HttpData-PULL"
-}
-```
-
 ### PUSH Flow
 
 ```http
-POST /v4/transferprocesses
+POST /v3/transferprocesses
 Content-Type: application/json
 
 {
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+  },
   "@type": "TransferRequest",
   "protocol": "dataspace-protocol-http:2025-1",
   "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
@@ -41,14 +27,34 @@ Content-Type: application/json
 }
 ```
 
-### S3 PUSH Flow
+### PULL Flow
 
 ```http
-POST /v4/transferprocesses
+POST /v3/transferprocesses
 Content-Type: application/json
 
 {
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+  },
+  "@type": "TransferRequest",
+  "protocol": "dataspace-protocol-http:2025-1",
+  "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
+  "contractId": "contract-id",
+  "transferType": "HttpData-PULL"
+}
+```
+
+### S3 PUSH Flow
+
+```http
+POST /v3/transferprocesses
+Content-Type: application/json
+
+{
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+  },
   "@type": "TransferRequest",
   "protocol": "dataspace-protocol-http:2025-1",
   "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
@@ -67,11 +73,13 @@ Content-Type: application/json
 ### Azure Blob PUSH Flow
 
 ```http
-POST /v4/transferprocesses
+POST /v3/transferprocesses
 Content-Type: application/json
 
 {
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+  },
   "@type": "TransferRequest",
   "protocol": "dataspace-protocol-http:2025-1",
   "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
@@ -90,47 +98,17 @@ Content-Type: application/json
 ### Kafka PULL Flow
 
 ```http
-POST /v4/transferprocesses
+POST /v3/transferprocesses
 Content-Type: application/json
 
 {
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+  },
   "@type": "TransferRequest",
   "protocol": "dataspace-protocol-http:2025-1",
   "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
   "contractId": "contract-id",
   "transferType": "Kafka-PULL"
-}
-```
-
-## Suspend Transfer Process
-
-```http
-POST /v4/transferprocesses/{id}/suspend
-Content-Type: application/json
-
-{
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
-  "@type": "SuspendTransfer",
-  "reason": "Suspension reason"
-}
-```
-
-## Resume Transfer Process
-
-```http
-POST /v4/transferprocesses/{id}/resume
-```
-
-## Terminate Transfer Process
-
-```http
-POST /v4/transferprocesses/{id}/terminate
-Content-Type: application/json
-
-{
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
-  "@type": "TerminateTransfer",
-  "reason": "Termination reason"
 }
 ```

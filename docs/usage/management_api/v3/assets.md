@@ -5,12 +5,22 @@ An asset represents a resource that can be shared within the Dataspace, such as 
 ## Create Asset
 
 ```http
-POST /v4/assets
+POST /v3/assets
 Content-Type: application/json
 
 {
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
-  "@type": "Asset",
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "mobilitydcatap": "https://w3id.org/mobilitydcat-ap/",
+    "mobilitydcatap-theme": "https://w3id.org/mobilitydcat-ap/mobility-theme/",
+    "adms": "http://www.w3.org/ns/adms#",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "rdf": "http://www.w3.org/2000/01/rdf-schema#"
+  },
   "@id": "asset-id",
   "properties": {
     "dct:title": "My Asset",
@@ -65,12 +75,22 @@ Content-Type: application/json
 ## Create Asset with Minimum Required Properties
 
 ```http
-POST /v4/assets
+POST /v3/assets
 Content-Type: application/json
 
 {
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
-  "@type": "Asset",
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "mobilitydcatap": "https://w3id.org/mobilitydcat-ap/",
+    "mobilitydcatap-theme": "https://w3id.org/mobilitydcat-ap/mobility-theme/",
+    "adms": "http://www.w3.org/ns/adms#",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "rdf": "http://www.w3.org/2000/01/rdf-schema#"
+  },
   "@id": "asset-id",
   "properties": {
     "dct:title": "My Asset",
@@ -89,12 +109,22 @@ Content-Type: application/json
 ## Create Kafka Asset
 
 ```http
-POST /v4/assets
+POST /v3/assets
 Content-Type: application/json
 
 {
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
-  "@type": "Asset",
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "mobilitydcatap": "https://w3id.org/mobilitydcat-ap/",
+    "mobilitydcatap-theme": "https://w3id.org/mobilitydcat-ap/mobility-theme/",
+    "adms": "http://www.w3.org/ns/adms#",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "rdf": "http://www.w3.org/2000/01/rdf-schema#"
+  },
   "@id": "kafka-asset-id",
   "properties": {
     "dct:title": "Real-time Traffic Events Stream",
@@ -118,12 +148,22 @@ Content-Type: application/json
 For Confluent Cloud, add `kafka.sasl.oauthbearer.extensions` and use `SASL_SSL`:
 
 ```http
-POST /v4/assets
+POST /v3/assets
 Content-Type: application/json
 
 {
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
-  "@type": "Asset",
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "mobilitydcatap": "https://w3id.org/mobilitydcat-ap/",
+    "mobilitydcatap-theme": "https://w3id.org/mobilitydcat-ap/mobility-theme/",
+    "adms": "http://www.w3.org/ns/adms#",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "rdf": "http://www.w3.org/2000/01/rdf-schema#"
+  },
   "@id": "kafka-confluent-asset-id",
   "properties": {
     "dct:title": "Real-time Traffic Events Stream (Confluent Cloud)",
@@ -148,12 +188,22 @@ Content-Type: application/json
 ## Create On Request Asset
 
 ```http
-POST /v4/assets
+POST /v3/assets
 Content-Type: application/json
 
 {
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
-  "@type": "Asset",
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "mobilitydcatap": "https://w3id.org/mobilitydcat-ap/",
+    "mobilitydcatap-theme": "https://w3id.org/mobilitydcat-ap/mobility-theme/",
+    "adms": "http://www.w3.org/ns/adms#",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "rdf": "http://www.w3.org/2000/01/rdf-schema#"
+  },
   "@id": "on-request-asset-id",
   "properties": {
     "dct:title": "On Request Asset",

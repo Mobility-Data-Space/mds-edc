@@ -7,12 +7,15 @@ Before initiating a negotiation, you must first request the catalog from the pro
 ## Initiate Contract Negotiation
 
 ```http
-POST /v4/contractnegotiations
+POST /v3/contractnegotiations
 Content-Type: application/json
 
 {
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
-  "@type": "ContractRequest",
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/"
+  },
+  "@type": "https://w3id.org/edc/v0.0.1/ns/ContractRequest",
   "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
   "protocol": "dataspace-protocol-http:2025-1",
   "policy": {
@@ -29,26 +32,5 @@ Content-Type: application/json
     "odrl:obligation": [],
     "target": "asset-id"
   }
-}
-```
-
-## Get Negotiation State
-
-Poll this endpoint to track negotiation progress.
-
-```http
-GET /v4/contractnegotiations/{id}/state
-```
-
-## Terminate Negotiation
-
-```http
-POST /v4/contractnegotiations/{id}/terminate
-Content-Type: application/json
-
-{
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
-  "@type": "TerminateNegotiation",
-  "reason": "Termination reason"
 }
 ```

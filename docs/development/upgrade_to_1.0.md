@@ -37,6 +37,7 @@ removed entirely. The motivation behind this migration is documented in the
 All clients interacting with MDS-EDC must migrate to API V4. In most cases this requires:
 - Replacing `/v3/` with `/v4/` in the request path.
 - Setting the correct JSON-LD `@context` in the request body (`https://w3id.org/edc/connector/management/v2`).
+- Including `@type` in all request bodies — it is now mandatory and requests will be rejected without it.
 - Defining an MDS-specific JSON-LD context for the Management API to be used alongside the EDC one — this is required
   for correct expansion of semantic attributes during validation and storage.
 
