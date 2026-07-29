@@ -20,6 +20,7 @@ dependencies {
     implementation(project(":extensions:embedded-data-plane"))
     implementation(project(":extensions:kafka:data-plane-kafka"))
     implementation(project(":extensions:logging-house-publisher"))
+    implementation(project(":extensions:management-jsonld-context"))
     implementation(project(":extensions:manual-negotiation-approval"))
     implementation(project(":extensions:policy:policy-always-true"))
     implementation(project(":extensions:policy:policy-referring-connector"))

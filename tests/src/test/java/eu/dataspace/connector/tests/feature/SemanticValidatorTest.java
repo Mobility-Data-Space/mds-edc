@@ -16,20 +16,7 @@ public class SemanticValidatorTest {
     void shouldPassSemanticValidation() {
         var requestBody = """
                     {
-                      "@context": [
-                        "https://w3id.org/edc/connector/management/v2",
-                        {
-                            "dcat": "http://www.w3.org/ns/dcat#",
-                            "dct": "http://purl.org/dc/terms/",
-                            "owl": "http://www.w3.org/2002/07/owl#",
-                            "mobilitydcatap": "https://w3id.org/mobilitydcat-ap/",
-                            "mobilitydcatap-theme": "https://w3id.org/mobilitydcat-ap/mobility-theme/",\s
-                            "adms": "http://www.w3.org/ns/adms#",
-                            "edc": "https://w3id.org/edc/v0.0.1/ns/",
-                            "skos": "http://www.w3.org/2004/02/skos/core#",
-                            "rdf": "http://www.w3.org/2000/01/rdf-schema#"
-                        }
-                      ],
+                      "@context": "https://w3id.org/mobility-data-space/connector/management/v1",
                       "@type": "Asset",
                       "properties": {
                         "dct:title": "My Asset",

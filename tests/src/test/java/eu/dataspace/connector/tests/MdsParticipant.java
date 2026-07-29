@@ -47,7 +47,6 @@ import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFix
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.VOCAB;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 import static org.eclipse.edc.util.io.Ports.getFreePort;
 
@@ -177,20 +176,8 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                         .add("mobilitydcatap-theme:data-content-category", "OTHER")
                 );
 
-
-
-        var context = Json.createArrayBuilder(managementContext.asJsonArray())
-                // idsa jsonld context added because of https://github.com/Mobility-Data-Space/mds-edc/issues/493
-                .add("https://w3id.org/idsa/contexts/context.jsonld")
-                .add(createObjectBuilder()
-                        .add("dct", "http://purl.org/dc/terms/")
-                        .add("mobilitydcatap", "https://w3id.org/mobilitydcat-ap/")
-                        .add("mobilitydcatap-theme", "https://w3id.org/mobilitydcat-ap/mobility-theme/")
-                );
-
-
         var requestBody = Json.createObjectBuilder()
-                .add(CONTEXT, context)
+                .add(CONTEXT, managementContext)
                 .add(TYPE, "Asset")
                 .add("@id", assetId)
                 .add("properties", baseProperties.addAll(createObjectBuilder(properties)))
@@ -381,10 +368,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
         @Override
         public MdsParticipant build() {
-            participant.managementContext = Json.createArrayBuilder()
-                    .add(participant.managementContext)
-                    .add(Json.createObjectBuilder().add(VOCAB, EDC_NAMESPACE))
-                    .build();
+            participant.managementContext = Json.createValue("https://w3id.org/mobility-data-space/connector/management/v1");
             participant.enrichManagementRequest = request -> request.header("x-api-key", participant.managementAuthKey);
             return super.build();
         }
