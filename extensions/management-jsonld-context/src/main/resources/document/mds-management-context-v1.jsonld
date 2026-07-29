@@ -18,6 +18,8 @@
         "reason": "edc:reason",
         "agreementRetirementDate": "edc:agreementRetirementDate"
       }
-    }
+    },
+    "REFERRING_CONNECTOR": "edc:REFERRING_CONNECTOR",
+    "POLICY_EVALUATION_TIME": "edc:POLICY_EVALUATION_TIME"
   }
 }

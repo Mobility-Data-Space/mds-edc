@@ -16,7 +16,7 @@ public class SemanticValidatorTest {
     void shouldPassSemanticValidation() {
         var requestBody = """
                     {
-                      "@context": "https://w3id.org/mobility-data-space/connector/management/v1",
+                      "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
                       "@type": "Asset",
                       "properties": {
                         "dct:title": "My Asset",

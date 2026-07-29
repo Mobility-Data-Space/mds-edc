@@ -56,7 +56,7 @@ public interface AgreementsRetirementApiV4 {
     ) {
         public static final String EXAMPLE = """
                 {
-                    "@context": "https://w3id.org/mobility-data-space/connector/management/v1",
+                    "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
                     "@type": "AgreementsRetirementEntry",
                     "agreementId": "contract-agreement-id",
                     "reason": "This contract agreement was retired since the physical counterpart is no longer valid."

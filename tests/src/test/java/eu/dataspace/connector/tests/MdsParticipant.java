@@ -368,7 +368,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
         @Override
         public MdsParticipant build() {
-            participant.managementContext = Json.createValue("https://w3id.org/mobility-data-space/connector/management/v1");
+            participant.managementContext = Json.createValue("https://w3id.org/mobility-dataspace/connector/management/v1");
             participant.enrichManagementRequest = request -> request.header("x-api-key", participant.managementAuthKey);
             return super.build();
         }

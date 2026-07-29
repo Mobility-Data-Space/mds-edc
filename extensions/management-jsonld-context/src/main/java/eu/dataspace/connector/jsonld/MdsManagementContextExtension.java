@@ -17,7 +17,7 @@ import static org.eclipse.edc.api.management.ManagementApi.MANAGEMENT_SCOPE_V4;
 public class MdsManagementContextExtension implements ServiceExtension {
 
     public static final String NAME = "MDS Management Context Extension";
-    public static final String MDS_MANAGEMENT_CONTEXT_URL = "https://w3id.org/mobility-data-space/connector/management/v1";
+    public static final String MDS_MANAGEMENT_CONTEXT_URL = "https://w3id.org/mobility-dataspace/connector/management/v1";
     static final String CONTEXT_FILE = "document/mds-management-context-v1.jsonld";
 
     @Inject
