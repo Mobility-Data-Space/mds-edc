@@ -1,0 +1,25 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@import": "https://w3id.org/edc/connector/management/v2",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "idsa": "https://w3id.org/idsa/core#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "mobilitydcatap": "https://w3id.org/mobilitydcat-ap/",
+    "mobilitydcatap-theme": "https://w3id.org/mobilitydcat-ap/mobility-theme/",
+    "adms": "http://www.w3.org/ns/adms#",
+    "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "rdf": "http://www.w3.org/2000/01/rdf-schema#",
+    "AgreementsRetirementEntry": {
+      "@id": "edc:AgreementsRetirementEntry",
+      "@context": {
+        "agreementId": "edc:agreementId",
+        "reason": "edc:reason",
+        "agreementRetirementDate": "edc:agreementRetirementDate"
+      }
+    },
+    "REFERRING_CONNECTOR": "edc:REFERRING_CONNECTOR",
+    "POLICY_EVALUATION_TIME": "edc:POLICY_EVALUATION_TIME"
+  }
+}

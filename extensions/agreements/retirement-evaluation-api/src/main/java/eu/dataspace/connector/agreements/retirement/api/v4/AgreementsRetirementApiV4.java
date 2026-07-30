@@ -56,13 +56,8 @@ public interface AgreementsRetirementApiV4 {
     ) {
         public static final String EXAMPLE = """
                 {
-                    "@context": [
-                        "https://w3id.org/edc/connector/management/v2",
-                        {
-                            "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
-                        }
-                    ],
-                    "@type": "AgreementsRetirementEntry"
+                    "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
+                    "@type": "AgreementsRetirementEntry",
                     "agreementId": "contract-agreement-id",
                     "reason": "This contract agreement was retired since the physical counterpart is no longer valid."
                 }
