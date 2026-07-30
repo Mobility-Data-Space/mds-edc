@@ -7,12 +7,13 @@ A contract definition links assets with usage policies.
 ### For All Assets
 
 ```http
-POST /v4/contractdefinitions
+POST /v3/contractdefinitions
 Content-Type: application/json
 
 {
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
-  "@type": "ContractDefinition",
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+  },
   "@id": "definition-id",
   "accessPolicyId": "aPolicy",
   "contractPolicyId": "aPolicy",
@@ -23,18 +24,18 @@ Content-Type: application/json
 ### For Specific Asset
 
 ```http
-POST /v4/contractdefinitions
+POST /v3/contractdefinitions
 Content-Type: application/json
 
 {
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
-  "@type": "ContractDefinition",
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+  },
   "@id": "definition-id",
   "accessPolicyId": "aPolicy",
   "contractPolicyId": "aPolicy",
   "assetsSelector": [
     {
-      "@type": "Criterion",
       "operandLeft": "@id",
       "operator": "in",
       "operandRight": "asset-id"
@@ -46,18 +47,18 @@ Content-Type: application/json
 ### With Manual Approval
 
 ```http
-POST /v4/contractdefinitions
+POST /v3/contractdefinitions
 Content-Type: application/json
 
 {
-  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
-  "@type": "ContractDefinition",
+  "@context": {
+    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+  },
   "@id": "definition-id",
   "accessPolicyId": "aPolicy",
   "contractPolicyId": "aPolicy",
   "assetsSelector": [
     {
-      "@type": "Criterion",
       "operandLeft": "@id",
       "operator": "in",
       "operandRight": "asset-id"
