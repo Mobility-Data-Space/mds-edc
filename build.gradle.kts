@@ -53,6 +53,11 @@ allprojects {
         lockMode = LockMode.LENIENT
     }
 
+    dependencies {
+        testImplementation(rootProject.libs.junit.jupiter)
+        testImplementation(rootProject.libs.junit.platform.launcher)
+    }
+
     tasks.register("resolveAndLockAll") {
         notCompatibleWithConfigurationCache("Resolves configurations")
         doFirst {
