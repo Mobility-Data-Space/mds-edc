@@ -39,6 +39,7 @@ edc-data-plane-http-spi = { module = "org.eclipse.edc:data-plane-http-spi", vers
 edc-data-plane-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
 edc-dataplane-base-bom = { module = "org.eclipse.edc:dataplane-base-bom", version.ref = "edc" }
 edc-dataplane-feature-sql-bom = { module = "org.eclipse.edc:dataplane-feature-sql-bom", version.ref = "edc" }
+edc-dsp-catalog-transform-lib = { module = "org.eclipse.edc:dsp-catalog-transform-lib", version.ref = "edc" }
 edc-edr-store-spi = { module = "org.eclipse.edc:edr-store-spi", version.ref = "edc" }
 edc-http-lib = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
 edc-http-spi = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
@@ -56,6 +57,7 @@ edc-management-api-test-fixtures = { module = "org.eclipse.edc:management-api-te
 edc-oauth2-spi = { module = "org.eclipse.edc:oauth2-spi", version.ref = "edc" }
 edc-participant-spi = { module = "org.eclipse.edc:participant-spi", version.ref = "edc" }
 edc-participant-context-spi = { module = "org.eclipse.edc:participant-context-spi", version.ref = "edc" }
+edc-participant-context-single-spi = { module = "org.eclipse.edc:participant-context-single-spi", version.ref = "edc" }
 edc-participantcontext-config-store-sql = { module = "org.eclipse.edc:participantcontext-config-store-sql", version.ref = "edc" }
 edc-policy-spi = { module = "org.eclipse.edc:policy-spi", version.ref = "edc" }
 edc-policy-engine-spi = { module = "org.eclipse.edc:policy-engine-spi", version.ref = "edc" }
