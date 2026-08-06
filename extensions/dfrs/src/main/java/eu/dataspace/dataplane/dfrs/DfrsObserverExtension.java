@@ -33,7 +33,7 @@ public class DfrsObserverExtension implements ServiceExtension {
     @Override
     public void start() {
         if (observerConfig.isConfigured()) {
-            var result = manager.negotiateObserverContract(observerConfig);
+            var result = manager.activate(observerConfig);
             if (result.failed()) {
                 throw new EdcException("Cannot initialize DFRS Observer: " + result.getFailureDetail());
             }

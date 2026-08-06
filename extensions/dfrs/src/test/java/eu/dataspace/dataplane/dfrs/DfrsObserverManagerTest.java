@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
+import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiation;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequest;
 import org.eclipse.edc.connector.controlplane.services.spi.catalog.CatalogService;
@@ -14,6 +15,7 @@ import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.event.EventRouter;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.response.ResponseStatus;
@@ -33,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -47,19 +50,15 @@ class DfrsObserverManagerTest {
     private final CatalogService catalogService = mock();
     private final JsonLd jsonLd = mock();
     private final ObjectMapper objectMapper = JacksonJsonLd.createObjectMapper();
+    private final EventRouter eventRouter = mock();
 
-    private DfrsObserverManager manager;
-    private DfrsObserverConfig config;
-
-    @BeforeEach
-    void setUp() {
-        manager = new DfrsObserverManager(monitor, negotiationService, typeTransformerRegistry,
-                participantContextSupplier, catalogService, jsonLd, () -> objectMapper);
-        config = new DfrsObserverConfig("provider-id", "http://provider-url", "dataset-id", "dataspace-protocol-http:2025-1");
-    }
+    private final DfrsObserverManager manager = new DfrsObserverManager(monitor, negotiationService, typeTransformerRegistry,
+            participantContextSupplier, catalogService, jsonLd, () -> objectMapper, eventRouter, mock());
+    private final DfrsObserverConfig config = new DfrsObserverConfig("provider-id", "http://provider-url",
+            "dataset-id", "dataspace-protocol-http:2025-1", "HttpData-PULL");
 
     @Nested
-    class Act {
+    class Activate {
 
         @Test
         void shouldReturnSuccessWithoutStartingNegotiation_whenFinalizedNegotiationAlreadyExists() {
@@ -69,30 +68,32 @@ class DfrsObserverManagerTest {
                     .counterPartyAddress("http://provider-url")
                     .protocol("dataspace-protocol-http:2025-1")
                     .build();
+            when(participantContextSupplier.get()).thenReturn(ServiceResult.success(participantContext()));
             when(negotiationService.search(any(QuerySpec.class))).thenReturn(ServiceResult.success(List.of(existingNegotiation)));
 
-            var result = manager.negotiateObserverContract(config);
+            var result = manager.activate(config);
 
             assertThat(result.succeeded()).isTrue();
             verify(monitor).info(any(String.class));
-            verifyNoInteractions(participantContextSupplier, catalogService);
+            verify(eventRouter).register(eq(ContractNegotiationFinalized.class), isA(StartObserverTransfer.class));
+            verifyNoInteractions(catalogService);
         }
 
         @Test
         void shouldThrow_whenNegotiationSearchFails() {
+            when(participantContextSupplier.get()).thenReturn(ServiceResult.success(participantContext()));
             when(negotiationService.search(any(QuerySpec.class))).thenReturn(ServiceResult.badRequest("search error"));
 
-            assertThatThrownBy(() -> manager.negotiateObserverContract(config))
+            assertThatThrownBy(() -> manager.activate(config))
                     .isInstanceOf(EdcException.class)
                     .hasMessageContaining("Cannot setup DFRS observer");
         }
 
         @Test
         void shouldReturnFailure_whenParticipantContextSupplierFails() {
-            when(negotiationService.search(any(QuerySpec.class))).thenReturn(ServiceResult.success(List.of()));
             when(participantContextSupplier.get()).thenReturn(ServiceResult.badRequest("context error"));
 
-            var result = manager.negotiateObserverContract(config);
+            var result = manager.activate(config);
 
             assertThat(result.failed()).isTrue();
             assertThat(result.getFailureDetail()).contains("Cannot obtain ParticipantContextSupplier");
@@ -106,17 +107,18 @@ class DfrsObserverManagerTest {
             when(catalogService.requestDataset(any(), any(), any(), any(), any()))
                     .thenReturn(new CompletableFuture<>());
 
-            var result = manager.negotiateObserverContract(config);
+            var result = manager.activate(config);
 
             assertThat(result.succeeded()).isTrue();
         }
 
         @Test
         void shouldFilterSearchByCounterPartyIdAddressStateAndAsset() {
+            when(participantContextSupplier.get()).thenReturn(ServiceResult.success(participantContext()));
             when(negotiationService.search(any(QuerySpec.class))).thenReturn(ServiceResult.success(List.of()));
-            when(participantContextSupplier.get()).thenReturn(ServiceResult.badRequest("stop early"));
+            when(catalogService.requestDataset(any(), any(), any(), any(), any())).thenReturn(new CompletableFuture<>());
 
-            manager.negotiateObserverContract(config);
+            manager.activate(config);
 
             var queryCaptor = ArgumentCaptor.forClass(QuerySpec.class);
             verify(negotiationService).search(queryCaptor.capture());
@@ -143,7 +145,7 @@ class DfrsObserverManagerTest {
             when(catalogService.requestDataset(any(), any(), any(), any(), any()))
                     .thenReturn(new CompletableFuture<>());
 
-            manager.negotiateObserverContract(config);
+            manager.activate(config);
 
             verify(catalogService).requestDataset(
                     eq(participantContext),
@@ -171,7 +173,7 @@ class DfrsObserverManagerTest {
             var future = new CompletableFuture<StatusResult<byte[]>>();
             when(catalogService.requestDataset(any(), any(), any(), any(), any())).thenReturn(future);
 
-            manager.negotiateObserverContract(config);
+            manager.activate(config);
             future.completeExceptionally(new RuntimeException("network error"));
 
             verify(monitor).severe(any(String.class), any(Throwable.class));
@@ -183,7 +185,7 @@ class DfrsObserverManagerTest {
             when(catalogService.requestDataset(any(), any(), any(), any(), any()))
                     .thenReturn(CompletableFuture.completedFuture(failedStatus));
 
-            manager.negotiateObserverContract(config);
+            manager.activate(config);
 
             verify(monitor).severe(any(String.class), any(Throwable.class));
         }
@@ -193,7 +195,7 @@ class DfrsObserverManagerTest {
             when(catalogService.requestDataset(any(), any(), any(), any(), any()))
                     .thenReturn(CompletableFuture.completedFuture(StatusResult.success("not json".getBytes())));
 
-            manager.negotiateObserverContract(config);
+            manager.activate(config);
 
             verify(monitor).severe(any(String.class), any(Throwable.class));
         }
@@ -205,7 +207,7 @@ class DfrsObserverManagerTest {
                     .thenReturn(CompletableFuture.completedFuture(StatusResult.success(rawBytes)));
             when(jsonLd.expand(any(JsonObject.class))).thenReturn(Result.failure("expansion failed"));
 
-            manager.negotiateObserverContract(config);
+            manager.activate(config);
 
             verify(monitor).severe(any(String.class), any(Throwable.class));
         }
@@ -220,7 +222,7 @@ class DfrsObserverManagerTest {
             when(jsonLd.expand(any(JsonObject.class))).thenReturn(Result.success(expandedJson));
             when(typeTransformerRegistry.transform(eq(expandedJson), eq(Dataset.class))).thenReturn(Result.failure("transform failed"));
 
-            manager.negotiateObserverContract(config);
+            manager.activate(config);
 
             verify(monitor).severe(any(String.class), any(Throwable.class));
         }
@@ -236,7 +238,7 @@ class DfrsObserverManagerTest {
             when(jsonLd.expand(any(JsonObject.class))).thenReturn(Result.success(expandedJson));
             when(typeTransformerRegistry.transform(eq(expandedJson), eq(Dataset.class))).thenReturn(Result.success(datasetWithoutOffers));
 
-            manager.negotiateObserverContract(config);
+            manager.activate(config);
 
             verify(monitor).severe(any(String.class), any(Throwable.class));
         }
@@ -254,7 +256,7 @@ class DfrsObserverManagerTest {
             when(negotiationService.initiateNegotiation(eq(participantContext), any()))
                     .thenReturn(ServiceResult.badRequest("negotiation failed"));
 
-            manager.negotiateObserverContract(config);
+            manager.activate(config);
 
             verify(monitor).severe(any(String.class), any(Throwable.class));
         }
@@ -274,7 +276,7 @@ class DfrsObserverManagerTest {
             when(typeTransformerRegistry.transform(eq(expandedJson), eq(Dataset.class))).thenReturn(Result.success(dataset));
             when(negotiationService.initiateNegotiation(eq(participantContext), any())).thenReturn(ServiceResult.success(negotiation));
 
-            manager.negotiateObserverContract(config);
+            manager.activate(config);
 
             var requestCaptor = ArgumentCaptor.forClass(ContractRequest.class);
             verify(negotiationService).initiateNegotiation(eq(participantContext), requestCaptor.capture());
@@ -300,7 +302,7 @@ class DfrsObserverManagerTest {
             when(typeTransformerRegistry.transform(eq(expandedJson), eq(Dataset.class))).thenReturn(Result.success(dataset));
             when(negotiationService.initiateNegotiation(eq(participantContext), any())).thenReturn(ServiceResult.success(negotiation));
 
-            manager.negotiateObserverContract(config);
+            manager.activate(config);
 
             var requestCaptor = ArgumentCaptor.forClass(ContractRequest.class);
             verify(negotiationService).initiateNegotiation(eq(participantContext), requestCaptor.capture());

@@ -279,6 +279,21 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .orElse(null);
     }
 
+    public JsonArray getTransferProcessesOn(String contractAgreementId) {
+        var query = createObjectBuilder()
+                .add(CONTEXT, managementContext)
+                .add(TYPE, "QuerySpec")
+                .add("filterExpression", createObjectBuilder()
+                        .add(TYPE, "Criterion")
+                        .add("operandLeft", "contractId")
+                        .add("operator", "=")
+                        .add("operandRight", contractAgreementId)
+                )
+                .build();
+
+        return getTransferProcesses(query);
+    }
+
     @Override
     public JsonArray getCatalogDatasets(Participant provider) {
         var requestBodyBuilder = Json.createObjectBuilder()
