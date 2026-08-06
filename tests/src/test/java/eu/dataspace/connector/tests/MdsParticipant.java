@@ -243,8 +243,23 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .as(JsonArray.class);
     }
 
+    public JsonArray getContractNegotiationsWith(String counterPartyId) {
+        var query = createObjectBuilder()
+                .add(CONTEXT, managementContext)
+                .add(TYPE, "QuerySpec")
+                .add("filterExpression", createObjectBuilder()
+                        .add(TYPE, "Criterion")
+                        .add("operandLeft", "counterPartyId")
+                        .add("operator", "=")
+                        .add("operandRight", counterPartyId)
+                )
+                .build();
+
+        return getContractNegotiations(query);
+    }
+
     public JsonObject getPendingNegotiation(String negotiationId) {
-        return getContractNegotiations(createObjectBuilder()
+        var query = createObjectBuilder()
                 .add(CONTEXT, managementContext)
                 .add(TYPE, "QuerySpec")
                 .add("filterExpression", createArrayBuilder()
@@ -255,7 +270,9 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                                 .add("operandRight", true)
                         )
                 )
-                .build()).stream()
+                .build();
+
+        return getContractNegotiations(query).stream()
                 .map(JsonValue::asJsonObject)
                 .filter(it -> it.getString(ID).equals(negotiationId))
                 .findAny()

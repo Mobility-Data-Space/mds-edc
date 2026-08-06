@@ -159,7 +159,7 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
     }
 
     enum Client {
-        provider, consumer;
+        provider, consumer, observer;
 
         private final X509Certificate certificate;
         private final PrivateKey privateKey;
