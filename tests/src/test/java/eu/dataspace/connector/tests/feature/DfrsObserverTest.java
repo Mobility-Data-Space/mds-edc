@@ -9,7 +9,10 @@ import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
 import eu.dataspace.connector.tests.tags.DapsTest;
 import eu.dataspace.connector.tests.tags.DcpTest;
+import jakarta.json.JsonValue;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates;
 import org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
@@ -23,7 +26,6 @@ import java.util.UUID;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates.FINALIZED;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public class DfrsObserverTest {
@@ -123,7 +125,8 @@ public class DfrsObserverTest {
                     "edc.mds.dfrs.observer.id", observer.getId(),
                     "edc.mds.dfrs.observer.url", observer.getProtocolUrl(),
                     "edc.mds.dfrs.observer.dataset.id", observerDatasetId,
-                    "edc.mds.dfrs.observer.profile", "dataspace-protocol-http:2025-1"
+                    "edc.mds.dfrs.observer.profile", "dataspace-protocol-http:2025-1",
+                    "edc.mds.dfrs.observer.transfer.profile", "HttpData-PULL"
             )));
 
             provider.beforeAll(null); // start provider
@@ -131,9 +134,17 @@ public class DfrsObserverTest {
             await().untilAsserted(() -> {
                 var contractNegotiations = provider.getContractNegotiationsWith(observer.getId());
 
-                assertThat(contractNegotiations).hasSize(1).allSatisfy(it -> {
-                    assertThat(it.asJsonObject().getString("state")).isEqualTo(FINALIZED.name());
+                assertThat(contractNegotiations).hasSize(1).first().extracting(JsonValue::asJsonObject).satisfies(negotiation -> {
+                    assertThat(negotiation.getString("state")).isEqualTo(ContractNegotiationStates.FINALIZED.name());
+
+                    var transferProcesses = provider.getTransferProcessesOn(negotiation.getString("contractAgreementId"));
+                    assertThat(transferProcesses).hasSize(1).first().extracting(JsonValue::asJsonObject).satisfies(transfer -> {
+                        assertThat(transfer.getString("state")).isEqualTo(TransferProcessStates.STARTED.name());
+                    });
+
                 });
+
+
             });
 
             provider.afterAll(null); // stop provider

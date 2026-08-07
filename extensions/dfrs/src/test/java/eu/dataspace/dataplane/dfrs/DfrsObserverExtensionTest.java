@@ -50,7 +50,8 @@ class DfrsObserverExtensionTest {
                     "edc.mds.dfrs.observer.id", "observer-participant-id",
                     "edc.mds.dfrs.observer.url", "http://any-url",
                     "edc.mds.dfrs.observer.dataset.id", "dataset-id",
-                    "edc.mds.dfrs.observer.profile", "dataspace-protocol-http:2025-1"
+                    "edc.mds.dfrs.observer.profile", "dataspace-protocol-http:2025-1",
+                    "edc.mds.dfrs.observer.transfer.profile", "HttpData-PULL"
             )));
 
             var extension = objectFactory.constructInstance(DfrsObserverExtension.class);
@@ -64,12 +65,13 @@ class DfrsObserverExtensionTest {
     class Start {
         @Test
         void shouldRequestObserverNegotiation_whenNoOneAvailable(ObjectFactory objectFactory, TestExtensionContext context) {
-            when(manager.negotiateObserverContract(any())).thenReturn(Result.success());
+            when(manager.activate(any())).thenReturn(Result.success());
             context.setConfig(ConfigFactory.fromMap(Map.of(
                     "edc.mds.dfrs.observer.id", "observer-participant-id",
                     "edc.mds.dfrs.observer.url", "http://any-url",
                     "edc.mds.dfrs.observer.dataset.id", "dataset-id",
-                    "edc.mds.dfrs.observer.profile", "dataspace-protocol-http:2025-1"
+                    "edc.mds.dfrs.observer.profile", "dataspace-protocol-http:2025-1",
+                    "edc.mds.dfrs.observer.transfer.profile", "HttpData-PULL"
             )));
 
             var extension = objectFactory.constructInstance(DfrsObserverExtension.class);
@@ -77,7 +79,7 @@ class DfrsObserverExtensionTest {
             extension.prepare();
             extension.start();
 
-            verify(manager).negotiateObserverContract(any());
+            verify(manager).activate(any());
         }
     }
 

@@ -17,9 +17,13 @@ public record DfrsObserverConfig(
         @Setting(key = "profile", required = false,
                 description = "The profile used for the communication."
         )
-        String profile
+        String profile,
+        @Setting(key = "transfer.profile", required = false,
+                description = "Tre transfer profile used in DPS communication."
+        )
+        String transferProfile
 ) {
     public boolean isConfigured() {
-        return id != null && url != null && datasetId != null && profile != null;
+        return id != null && url != null && datasetId != null && profile != null && transferProfile != null;
     }
 }

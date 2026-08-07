@@ -3,14 +3,17 @@ package eu.dataspace.dataplane.dfrs;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
+import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequest;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.offer.ContractOffer;
 import org.eclipse.edc.connector.controlplane.services.spi.catalog.CatalogService;
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
+import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.EdcException;
+import org.eclipse.edc.spi.event.EventRouter;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.AbstractResult;
@@ -33,10 +36,13 @@ public class DfrsObserverManager {
     private final CatalogService catalogService;
     private final JsonLd jsonLd;
     private final Supplier<ObjectMapper> mapperSupplier;
+    private final EventRouter eventRouter;
+    private final TransferProcessService transferProcessService;
 
     public DfrsObserverManager(Monitor monitor, ContractNegotiationService negotiationService,
                                TypeTransformerRegistry typeTransformerRegistry, ParticipantContextSupplier participantContextSupplier,
-                               CatalogService catalogService, JsonLd jsonLd, Supplier<ObjectMapper> mapperSupplier) {
+                               CatalogService catalogService, JsonLd jsonLd, Supplier<ObjectMapper> mapperSupplier,
+                               EventRouter eventRouter, TransferProcessService transferProcessService) {
         this.monitor = monitor;
         this.negotiationService = negotiationService;
         this.typeTransformerRegistry = typeTransformerRegistry;
@@ -44,9 +50,20 @@ public class DfrsObserverManager {
         this.catalogService = catalogService;
         this.jsonLd = jsonLd;
         this.mapperSupplier = mapperSupplier;
+        this.eventRouter = eventRouter;
+        this.transferProcessService = transferProcessService;
     }
 
-    public Result<Void> negotiateObserverContract(DfrsObserverConfig configuration) {
+    public Result<Void> activate(DfrsObserverConfig configuration) {
+        var participantContextServiceResult = participantContextSupplier.get();
+        if (participantContextServiceResult.failed()) {
+            return Result.failure("Cannot obtain ParticipantContextSupplier: " + participantContextServiceResult.getFailureDetail());
+        }
+
+        var participantContext = participantContextServiceResult.getContent();
+
+        eventRouter.register(ContractNegotiationFinalized.class, new StartObserverTransfer(configuration, participantContext, transferProcessService, monitor));
+
         var query = QuerySpec.Builder.newInstance()
                 .filter(criterion("counterPartyId", "=", configuration.id()))
                 .filter(criterion("counterPartyAddress", "=", configuration.url()))
@@ -61,20 +78,13 @@ public class DfrsObserverManager {
             return Result.success();
         }
 
-        var participantContextServiceResult = participantContextSupplier.get();
-        if (participantContextServiceResult.failed()) {
-            return Result.failure("Cannot obtain ParticipantContextSupplier: " + participantContextServiceResult.getFailureDetail());
-        }
-
-        var participantContext = participantContextServiceResult.getContent();
-
-        negotiateObserverContract(configuration, participantContext);
+        activate(configuration, participantContext);
 
         return Result.success();
 
     }
 
-    private void negotiateObserverContract(DfrsObserverConfig configuration, ParticipantContext participantContext) {
+    private void activate(DfrsObserverConfig configuration, ParticipantContext participantContext) {
         catalogService
                 .requestDataset(participantContext, configuration.datasetId(), configuration.id(), configuration.url(), configuration.profile())
                 .thenAccept(datasetResult -> {
