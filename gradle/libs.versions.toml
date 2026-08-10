@@ -20,7 +20,7 @@ swagger = "2.2.53"
 testcontainers = "2.0.5"
 testcontainers-keycloak = "4.3.1"
 wiremock = "3.13.2"
-yasson = "3.0.4"
+yasson = "3.0.5"
 
 [libraries]
 edc-asset-spi = { module = "org.eclipse.edc:asset-spi", version.ref = "edc" }
