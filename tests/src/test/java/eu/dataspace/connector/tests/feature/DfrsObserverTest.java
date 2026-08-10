@@ -2,7 +2,9 @@ package eu.dataspace.connector.tests.feature;
 
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;
+import eu.dataspace.connector.tests.SeedVault;
 import eu.dataspace.connector.tests.Wallet;
+import eu.dataspace.connector.tests.extensions.DfrsObserverServerExtension;
 import eu.dataspace.connector.tests.extensions.IssuerExtension;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
@@ -11,7 +13,6 @@ import eu.dataspace.connector.tests.tags.DapsTest;
 import eu.dataspace.connector.tests.tags.DcpTest;
 import jakarta.json.JsonValue;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates;
-import org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures;
 import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,13 +21,11 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.time.Duration;
 import java.util.Map;
-import java.util.UUID;
 
-import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public class DfrsObserverTest {
 
@@ -47,13 +46,19 @@ public class DfrsObserverTest {
         private static final SovityDapsExtension DAPS_EXTENSION = new SovityDapsExtension();
 
         @RegisterExtension
+        @Order(2)
+        private static final DfrsObserverServerExtension OBSERVER_SERVER = new DfrsObserverServerExtension();
+
+        @RegisterExtension
         @Order(3)
-        private static final MdsParticipant OBSERVER = MdsParticipantFactory.hashicorpVault("observer", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
+        private static final MdsParticipant OBSERVER = MdsParticipantFactory.hashicorpVault("observer", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION)
+                .registerServiceExtension(SeedVault.fromMap(i ->
+                        Map.of("observer-api-key", OBSERVER_SERVER.getApiKey())));
 
         private static final MdsParticipant PROVIDER = MdsParticipantFactory.hashicorpVault("provider", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
 
         protected Daps() {
-            super(OBSERVER, PROVIDER);
+            super(OBSERVER, PROVIDER, OBSERVER_SERVER);
         }
 
     }
@@ -81,13 +86,19 @@ public class DfrsObserverTest {
                 "consumer", "provider", "observer");
 
         @RegisterExtension
+        @Order(2)
+        private static final DfrsObserverServerExtension OBSERVER_SERVER = new DfrsObserverServerExtension();
+
+        @RegisterExtension
         @Order(3)
-        private static final MdsParticipant OBSERVER = MdsParticipantFactory.hashicorpVaultDcp("observer", VAULT_EXTENSION, POSTGRES_EXTENSION, IDENTITY_HUB, ISSUER.did());
+        private static final MdsParticipant OBSERVER = MdsParticipantFactory.hashicorpVaultDcp("observer", VAULT_EXTENSION, POSTGRES_EXTENSION, IDENTITY_HUB, ISSUER.did())
+                .registerServiceExtension(SeedVault.fromMap(i ->
+                        Map.of("observer-api-key", OBSERVER_SERVER.getApiKey())));
 
         private static final MdsParticipant PROVIDER = MdsParticipantFactory.hashicorpVaultDcp("provider", VAULT_EXTENSION, POSTGRES_EXTENSION, IDENTITY_HUB, ISSUER.did());
 
         protected Dcp() {
-            super(OBSERVER, PROVIDER);
+            super(OBSERVER, PROVIDER, OBSERVER_SERVER);
         }
 
         @BeforeAll
@@ -104,22 +115,28 @@ public class DfrsObserverTest {
 
         private final MdsParticipant observer;
         private final MdsParticipant provider;
+        private final MdsParticipant consumer;
+        private final DfrsObserverServerExtension observerServer;
+        private final Duration timeout = Duration.ofSeconds(10);
 
-        public Tests(MdsParticipant observer, MdsParticipant provider) {
+        public Tests(MdsParticipant observer, MdsParticipant provider, DfrsObserverServerExtension observerServer) {
             this.observer = observer;
+            // note: to avoid adding another connector, the Observer will also act as a DFRS consumer to trigger a negotiation
+            this.consumer = observer;
             this.provider = provider;
+            this.observerServer = observerServer;
         }
 
         @Test
         void shouldStartObserverNegotiationAtStartup() {
-            var observerDatasetId = "observerDatasetId";
-            Map<String, Object> dataAddressProperties = Map.of(
-                    EDC_NAMESPACE + "type", "HttpData",
-                    EDC_NAMESPACE + "baseUrl", "http://localhost/any"
-            );
-            observer.createAsset(observerDatasetId, emptyMap(), dataAddressProperties);
-            var policyDefinitionId = observer.createPolicyDefinition(PolicyFixtures.noConstraintPolicy());
-            observer.createContractDefinition(observerDatasetId, UUID.randomUUID().toString(), policyDefinitionId, policyDefinitionId);
+            var observerDatasetId = observer.createOffer(Map.of(
+                    "type", "HttpData",
+                    "baseUrl", observerServer.getBaseUrl() + "/api/v1/events",
+                    "method", "POST",
+                    "proxyBody", "true",
+                    "authKey", "X-Api-Key",
+                    "secretName", "observer-api-key"
+            ));
 
             provider.configurationProvider(() -> ConfigFactory.fromMap(Map.of(
                     "edc.mds.dfrs.observer.id", observer.getId(),
@@ -131,7 +148,7 @@ public class DfrsObserverTest {
 
             provider.beforeAll(null); // start provider
 
-            await().untilAsserted(() -> {
+            await().atMost(timeout).untilAsserted(() -> {
                 var contractNegotiations = provider.getContractNegotiationsWith(observer.getId());
 
                 assertThat(contractNegotiations).hasSize(1).first().extracting(JsonValue::asJsonObject).satisfies(negotiation -> {
@@ -141,11 +158,19 @@ public class DfrsObserverTest {
                     assertThat(transferProcesses).hasSize(1).first().extracting(JsonValue::asJsonObject).satisfies(transfer -> {
                         assertThat(transfer.getString("state")).isEqualTo(TransferProcessStates.STARTED.name());
                     });
-
                 });
-
-
             });
+
+            var assetId = provider.createOffer(Map.of(
+                    "type", "HttpData",
+                    "baseUrl", "http://any"
+            ));
+
+            consumer.requestAssetFrom(assetId, provider)
+                    .withTransferType("HttpData-PULL")
+                    .execute();
+
+            observerServer.waitForEvent("org.eclipse.edc.ContractNegotiationFinalized");
 
             provider.afterAll(null); // stop provider
         }
