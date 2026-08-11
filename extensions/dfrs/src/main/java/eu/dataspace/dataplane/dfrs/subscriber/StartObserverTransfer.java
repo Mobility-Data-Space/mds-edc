@@ -37,7 +37,6 @@ public class StartObserverTransfer implements EventSubscriber {
                     .profile(configuration.profile())
                     .counterPartyAddress(configuration.url())
                     .contractId(finalized.getContractAgreement().getId())
-                    .profile(configuration.profile())
                     .transferType(configuration.transferProfile())
                     // this data destination added only to trigger consumer data-plane provisioning. it should change once we adopt DPS (https://github.com/Mobility-Data-Space/mds-edc/issues/558)
                     .dataDestination(DataAddress.Builder.newInstance().type("HttpData").build())
