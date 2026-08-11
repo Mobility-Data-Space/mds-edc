@@ -1,6 +1,7 @@
 package eu.dataspace.dataplane.dfrs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.dataspace.dataplane.dfrs.subscriber.StartObserverTransfer;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
@@ -53,7 +54,7 @@ class DfrsObserverManagerTest {
     private final EventRouter eventRouter = mock();
 
     private final DfrsObserverManager manager = new DfrsObserverManager(monitor, negotiationService, typeTransformerRegistry,
-            participantContextSupplier, catalogService, jsonLd, () -> objectMapper, eventRouter, mock());
+            participantContextSupplier, catalogService, jsonLd, () -> objectMapper, eventRouter, mock(), mock(), mock(), mock());
     private final DfrsObserverConfig config = new DfrsObserverConfig("provider-id", "http://provider-url",
             "dataset-id", "dataspace-protocol-http:2025-1", "HttpData-PULL");
 

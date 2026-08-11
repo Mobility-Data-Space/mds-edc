@@ -13,8 +13,8 @@
 
 package eu.dataspace.connector.dataplane.proxy.api;
 
+import eu.dataspace.connector.dataplane.proxy.api.controller.DataPlanePublicApiV2Controller;
 import org.eclipse.edc.connector.dataplane.spi.Endpoint;
-import org.eclipse.edc.connector.dataplane.spi.edr.EndpointDataReferenceServiceRegistry;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.connector.dataplane.spi.iam.PublicEndpointGeneratorService;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
@@ -30,7 +30,6 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.PortMapping;
 import org.eclipse.edc.web.spi.configuration.PortMappingRegistry;
-import eu.dataspace.connector.dataplane.proxy.api.controller.DataPlanePublicApiV2Controller;
 
 import java.util.concurrent.Executors;
 
@@ -70,8 +69,6 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
     @Inject
     private PublicEndpointGeneratorService generatorService;
     @Inject
-    private EndpointDataReferenceServiceRegistry edrServiceRegistry;
-    @Inject
     private Hostname hostname;
 
     @Override
@@ -94,19 +91,11 @@ public class DataPlanePublicApiV2Extension implements ServiceExtension {
         }
         var endpoint = Endpoint.url(publicBaseUrl);
         generatorService.addGeneratorFunction("HttpData", dataAddress -> endpoint);
-//        edrServiceRegistry.register(PROXY_HTTP_DATA_TYPE, (EndpointDataReferenceService) authorizationService);
 
         if (publicApiResponseUrl != null) {
             generatorService.addResponseGeneratorFunction("HttpData", () -> Endpoint.url(publicApiResponseUrl));
-//            edrServiceRegistry.registerResponseChannel(PROXY_HTTP_DATA_TYPE, (EndpointDataReferenceService) authorizationService);
         }
 
-//        generatorService.addGeneratorFunction(PROXY_HTTP_DATA_TYPE, dataAddress -> endpoint);
-
-        if (publicApiResponseUrl != null) {
-//            generatorService.addResponseGeneratorFunction(PROXY_HTTP_DATA_TYPE, () -> Endpoint.url(publicApiResponseUrl));
-        }
-        
         var publicApiController = new DataPlanePublicApiV2Controller(pipelineService, executorService, authorizationService);
         webService.registerResource(API_CONTEXT, publicApiController);
     }

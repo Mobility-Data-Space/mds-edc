@@ -13,6 +13,7 @@ import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.system.ServiceExtension;
+import org.eclipse.edc.spi.system.SystemExtension;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.util.io.Ports;
@@ -385,6 +386,11 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
 
     public MdsParticipant configurationProvider(Supplier<Config> configurationProvider) {
         runtime.configurationProvider(configurationProvider);
+        return this;
+    }
+
+    public <T extends SystemExtension> MdsParticipant registerServiceExtension(ServiceExtension extension) {
+        runtime.registerSystemExtension(ServiceExtension.class, extension);
         return this;
     }
 

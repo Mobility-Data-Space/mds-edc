@@ -1,5 +1,6 @@
-package eu.dataspace.dataplane.dfrs;
+package eu.dataspace.dataplane.dfrs.subscriber;
 
+import eu.dataspace.dataplane.dfrs.DfrsObserverConfig;
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
