@@ -1,6 +1,7 @@
 package eu.dataspace.dataplane.dfrs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementRetired;
 import eu.dataspace.dataplane.dfrs.subscriber.SendEventToObserver;
 import eu.dataspace.dataplane.dfrs.subscriber.StartObserverTransfer;
 import eu.dataspace.dataplane.dfrs.subscriber.StoreObserverAddress;
@@ -85,11 +86,10 @@ public class DfrsObserverManager {
         eventRouter.register(TransferProcessStarted.class,
                 new StoreObserverAddress(configuration, participantContext, mapperSupplier, vault, monitor));
 
-        eventRouter.register(ContractNegotiationFinalized.class,
-                new SendEventToObserver(participantContext, mapperSupplier, monitor, httpClient, vault, clock));
-
-        eventRouter.register(TransferProcessStarted.class,
-                new SendEventToObserver(participantContext, mapperSupplier, monitor, httpClient, vault, clock));
+        var sendEventToObserver = new SendEventToObserver(participantContext, mapperSupplier, monitor, httpClient, vault, clock);
+        eventRouter.register(ContractNegotiationFinalized.class, sendEventToObserver);
+        eventRouter.register(TransferProcessStarted.class, sendEventToObserver);
+        eventRouter.register(ContractAgreementRetired.class, sendEventToObserver);
 
         var query = QuerySpec.Builder.newInstance()
                 .filter(criterion("counterPartyId", "=", configuration.id()))

@@ -20,7 +20,6 @@ swagger = "2.2.53"
 testcontainers = "2.0.5"
 testcontainers-keycloak = "4.3.1"
 wiremock = "3.13.2"
-yasson = "3.0.5"
 
 [libraries]
 edc-asset-spi = { module = "org.eclipse.edc:asset-spi", version.ref = "edc" }
@@ -35,12 +34,9 @@ edc-controlplane-base-bom = { module = "org.eclipse.edc:controlplane-base-bom", 
 edc-controlplane-dcp-bom = { module = "org.eclipse.edc:controlplane-dcp-bom", version.ref = "edc" }
 edc-controlplane-feature-sql-bom = { module = "org.eclipse.edc:controlplane-feature-sql-bom", version.ref = "edc" }
 edc-data-plane-spi = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
-edc-data-plane-http-spi = { module = "org.eclipse.edc:data-plane-http-spi", version.ref = "edc" }
-edc-data-plane-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
 edc-dataplane-base-bom = { module = "org.eclipse.edc:dataplane-base-bom", version.ref = "edc" }
 edc-dataplane-feature-sql-bom = { module = "org.eclipse.edc:dataplane-feature-sql-bom", version.ref = "edc" }
 edc-dsp-catalog-transform-lib = { module = "org.eclipse.edc:dsp-catalog-transform-lib", version.ref = "edc" }
-edc-edr-store-spi = { module = "org.eclipse.edc:edr-store-spi", version.ref = "edc" }
 edc-http-lib = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
 edc-http-spi = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
 edc-identityhub-bom = { module = "org.eclipse.edc:identityhub-bom", version.ref = "edc" }
@@ -118,7 +114,6 @@ testcontainers-localstack = { module = "org.testcontainers:testcontainers-locals
 testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
 testcontainers-vault = { module = "org.testcontainers:testcontainers-vault", version.ref = "testcontainers" }
 wiremock = { module = "org.wiremock:wiremock-jetty12", version.ref = "wiremock" }
-yasson = { module = "org.eclipse:yasson", version.ref = "yasson" }
 
 [plugins]
 openapi-generator = { id = "org.openapi.generator", version = "7.24.0" }
