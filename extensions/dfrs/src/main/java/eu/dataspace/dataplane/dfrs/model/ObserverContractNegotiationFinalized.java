@@ -6,5 +6,5 @@ public record ObserverContractNegotiationFinalized(
         String counterPartyId,
         String protocol,
         ObserverContractAgreement contractAgreement
-) {
+) implements ObserverEvent {
 }

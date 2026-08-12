@@ -7,6 +7,8 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
+import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessStarted;
+import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.event.Event;
@@ -49,34 +51,45 @@ public class SendEventToObserver implements EventSubscriber {
     @Override
     public <E extends Event> void on(EventEnvelope<E> event) {
         if (event.getPayload() instanceof ContractNegotiationFinalized finalized && isProviderNegotiation(finalized)) {
-
-            var dataAddressRetrieval = readDataAddress();
-            if (dataAddressRetrieval.failed()) {
-                monitor.severe("Failed to retrieve data address for DFRS observer. The event won't be dispatched: " + dataAddressRetrieval.getFailureDetail());
-                return;
-            }
-            var dataAddress = dataAddressRetrieval.getContent();
-
             var eventEnvelope = ObserverEventEnvelope.create(finalized, participantContext, clock);
 
-            serializeToJson(eventEnvelope)
-                    .map(body -> RequestBody.create(body, MediaType.get(eventEnvelope.datacontenttype())))
-                    .map(requestBody -> new Request.Builder()
-                            .url(dataAddress.getStringProperty("endpoint"))
-                            .addHeader("Authorization", dataAddress.getStringProperty("authorization"))
-                            .post(requestBody)
-                            .build())
-                    .compose(request -> httpClient.execute(request, response -> {
-                        if (response.isSuccessful()) {
-                            monitor.debug("Event %s sent to observer".formatted(eventEnvelope.type()));
-                        } else {
-                            monitor.severe("Error in sending event to observer. Status: %s".formatted(response.code()));
-                        }
-                        return null;
-                    }))
-                    .onFailure(failure -> monitor
-                            .severe("Exception in sending event to observer: " + failure.getFailureDetail()));
+            dispatch(eventEnvelope);
+        } else if (event.getPayload() instanceof TransferProcessStarted started && isProviderTransfer(started)) {
+            var eventEnvelope = ObserverEventEnvelope.create(started, participantContext, clock);
+
+            dispatch(eventEnvelope);
         }
+    }
+
+    private void dispatch(ObserverEventEnvelope eventEnvelope) {
+        var dataAddressRetrieval = readDataAddress();
+        if (dataAddressRetrieval.failed()) {
+            monitor.severe("Failed to retrieve data address for DFRS observer. The event won't be dispatched: " + dataAddressRetrieval.getFailureDetail());
+            return;
+        }
+        var dataAddress = dataAddressRetrieval.getContent();
+
+        serializeToJson(eventEnvelope)
+                .map(body -> RequestBody.create(body, MediaType.get(eventEnvelope.datacontenttype())))
+                .map(requestBody -> new Request.Builder()
+                        .url(dataAddress.getStringProperty("endpoint"))
+                        .addHeader("Authorization", dataAddress.getStringProperty("authorization"))
+                        .post(requestBody)
+                        .build())
+                .compose(request -> httpClient.execute(request, response -> {
+                    if (response.isSuccessful()) {
+                        monitor.debug("Event %s sent to observer".formatted(eventEnvelope.type()));
+                    } else {
+                        monitor.severe("Error in sending event to observer. Status: %s".formatted(response.code()));
+                    }
+                    return null;
+                }))
+                .onFailure(failure -> monitor
+                        .severe("Exception in sending event to observer: " + failure.getFailureDetail()));
+    }
+
+    private boolean isProviderTransfer(TransferProcessStarted started) {
+        return started.getType().equals(TransferProcess.Type.PROVIDER.name());
     }
 
     private boolean isProviderNegotiation(ContractNegotiationFinalized finalized) {
