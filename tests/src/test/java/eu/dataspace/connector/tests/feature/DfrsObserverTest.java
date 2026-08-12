@@ -171,6 +171,7 @@ public class DfrsObserverTest {
                     .execute();
 
             observerServer.waitForEvent("org.eclipse.edc.ContractNegotiationFinalized");
+            observerServer.waitForEvent("org.eclipse.edc.TransferProcessStarted");
 
             provider.afterAll(null); // stop provider
         }

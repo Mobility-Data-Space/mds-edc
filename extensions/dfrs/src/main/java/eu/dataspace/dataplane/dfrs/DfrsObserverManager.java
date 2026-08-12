@@ -88,6 +88,9 @@ public class DfrsObserverManager {
         eventRouter.register(ContractNegotiationFinalized.class,
                 new SendEventToObserver(participantContext, mapperSupplier, monitor, httpClient, vault, clock));
 
+        eventRouter.register(TransferProcessStarted.class,
+                new SendEventToObserver(participantContext, mapperSupplier, monitor, httpClient, vault, clock));
+
         var query = QuerySpec.Builder.newInstance()
                 .filter(criterion("counterPartyId", "=", configuration.id()))
                 .filter(criterion("counterPartyAddress", "=", configuration.url()))

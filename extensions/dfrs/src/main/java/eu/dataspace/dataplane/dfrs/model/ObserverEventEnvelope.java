@@ -1,6 +1,7 @@
 package eu.dataspace.dataplane.dfrs.model;
 
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
+import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 
 import java.time.Clock;
@@ -13,7 +14,7 @@ public record ObserverEventEnvelope(
         String type,
         String time,
         String datacontenttype,
-        Object data
+        ObserverEvent data
 ) {
 
     private static final String SPEC_VERSION = "1.0";
@@ -44,6 +45,22 @@ public record ObserverEventEnvelope(
                 UUID.randomUUID().toString(),
                 participantContext.getIdentity(),
                 "org.eclipse.edc.ContractNegotiationFinalized",
+                clock.instant().toString(),
+                APPLICATION_JSON,
+                observerEvent
+        );
+    }
+
+    public static ObserverEventEnvelope create(TransferProcessStarted started, ParticipantContext participantContext, Clock clock) {
+        var observerEvent = new ObserverTransferProcessStarted(
+                started.getTransferProcessId(), started.getAssetId(), started.getType(), started.getContractId(), started.getProtocol()
+        );
+
+        return new ObserverEventEnvelope(
+                SPEC_VERSION,
+                UUID.randomUUID().toString(),
+                participantContext.getIdentity(),
+                "org.eclipse.edc.TransferProcessStarted",
                 clock.instant().toString(),
                 APPLICATION_JSON,
                 observerEvent
