@@ -58,15 +58,15 @@ public class SendEventToObserver implements EventSubscriber {
     public <E extends Event> void on(EventEnvelope<E> event) {
         var observerEvent = switch (event.getPayload()) {
             case ContractNegotiationFinalized finalized when isProviderNegotiation(finalized) ->
-                    Optional.of(ObserverContractNegotiationFinalized.from(finalized));
+                    ObserverContractNegotiationFinalized.from(finalized);
             case TransferProcessStarted started when isProviderTransfer(started) ->
-                    Optional.of(ObserverTransferProcessStarted.from(started));
+                    ObserverTransferProcessStarted.from(started);
             case ContractAgreementRetired retired ->
-                    Optional.of(ObserverContractAgreementRetired.from(retired));
-            default -> Optional.<ObserverEvent>empty();
+                    ObserverContractAgreementRetired.from(retired);
+            default -> null;
         };
 
-        observerEvent
+        Optional.ofNullable(observerEvent)
                 .map(e -> ObserverEventEnvelope.create(e, participantContext, clock))
                 .ifPresent(this::dispatch);
     }
