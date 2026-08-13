@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -148,13 +149,15 @@ public class DfrsObserverTest {
 
             provider.beforeAll(null); // start provider
 
+            var providerContractAgreementId = new AtomicReference<String>();
             await().atMost(timeout).untilAsserted(() -> {
                 var contractNegotiations = provider.getContractNegotiationsWith(observer.getId());
 
                 assertThat(contractNegotiations).hasSize(1).first().extracting(JsonValue::asJsonObject).satisfies(negotiation -> {
                     assertThat(negotiation.getString("state")).isEqualTo(ContractNegotiationStates.FINALIZED.name());
 
-                    var transferProcesses = provider.getTransferProcessesOn(negotiation.getString("contractAgreementId"));
+                    providerContractAgreementId.set(negotiation.getString("contractAgreementId"));
+                    var transferProcesses = provider.getTransferProcessesOn(providerContractAgreementId.get());
                     assertThat(transferProcesses).hasSize(1).first().extracting(JsonValue::asJsonObject).satisfies(transfer -> {
                         assertThat(transfer.getString("state")).isEqualTo(TransferProcessStates.STARTED.name());
                     });
@@ -172,6 +175,10 @@ public class DfrsObserverTest {
 
             observerServer.waitForEvent("org.eclipse.edc.ContractNegotiationFinalized");
             observerServer.waitForEvent("org.eclipse.edc.TransferProcessStarted");
+
+            provider.retireAgreement(providerContractAgreementId.get()).statusCode(204);
+
+            observerServer.waitForEvent("eu.dataspace.mds.ContractAgreementRetired");
 
             provider.afterAll(null); // stop provider
         }

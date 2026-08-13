@@ -9,6 +9,7 @@ dependencies {
     api(libs.edc.data.plane.spi)
     api(libs.edc.http.spi)
     api(libs.edc.participant.context.single.spi)
+    implementation(project(":extensions:agreements:retirement-evaluation-spi"))
     implementation(libs.edc.dsp.catalog.transform.lib)
 
     testImplementation(libs.edc.json.ld.lib)

@@ -2,7 +2,12 @@ package eu.dataspace.dataplane.dfrs.subscriber;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementRetired;
+import eu.dataspace.dataplane.dfrs.model.ObserverContractAgreementRetired;
+import eu.dataspace.dataplane.dfrs.model.ObserverContractNegotiationFinalized;
+import eu.dataspace.dataplane.dfrs.model.ObserverEvent;
 import eu.dataspace.dataplane.dfrs.model.ObserverEventEnvelope;
+import eu.dataspace.dataplane.dfrs.model.ObserverTransferProcessStarted;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -20,6 +25,7 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 
 import java.time.Clock;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import static eu.dataspace.dataplane.dfrs.DfrsObserverManager.DFRS_OBSERVER_ADDRESS_KEY;
@@ -50,15 +56,19 @@ public class SendEventToObserver implements EventSubscriber {
 
     @Override
     public <E extends Event> void on(EventEnvelope<E> event) {
-        if (event.getPayload() instanceof ContractNegotiationFinalized finalized && isProviderNegotiation(finalized)) {
-            var eventEnvelope = ObserverEventEnvelope.create(finalized, participantContext, clock);
+        var observerEvent = switch (event.getPayload()) {
+            case ContractNegotiationFinalized finalized when isProviderNegotiation(finalized) ->
+                    Optional.of(ObserverContractNegotiationFinalized.from(finalized));
+            case TransferProcessStarted started when isProviderTransfer(started) ->
+                    Optional.of(ObserverTransferProcessStarted.from(started));
+            case ContractAgreementRetired retired ->
+                    Optional.of(ObserverContractAgreementRetired.from(retired));
+            default -> Optional.<ObserverEvent>empty();
+        };
 
-            dispatch(eventEnvelope);
-        } else if (event.getPayload() instanceof TransferProcessStarted started && isProviderTransfer(started)) {
-            var eventEnvelope = ObserverEventEnvelope.create(started, participantContext, clock);
-
-            dispatch(eventEnvelope);
-        }
+        observerEvent
+                .map(e -> ObserverEventEnvelope.create(e, participantContext, clock))
+                .ifPresent(this::dispatch);
     }
 
     private void dispatch(ObserverEventEnvelope eventEnvelope) {
