@@ -45,6 +45,10 @@ allprojects {
                 useVersion("42.7.12")
                 because("CVE-2026-42198, CVE-2026-54291")
             }
+            if (requested.group == "org.apache.httpcomponents.core5" && requested.name == "httpcore5") {
+                useVersion("5.4.3")
+                because("CVE-2026-54399")
+            }
         }
     }
 

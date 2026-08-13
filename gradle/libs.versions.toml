@@ -8,6 +8,7 @@ dsp-tck = "1.0.1"
 edc = "0.18.0"
 flyway = "13.2.0"
 jose4j = "0.9.6"
+json-schema-validator = "2.0.4"
 junit-jupiter = "6.1.2"
 kafka = "4.3.1"
 keycloak = "26.0.12"
@@ -96,6 +97,7 @@ flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-database-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 jakarta-ws-rs-api = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version = "4.0.0" }
 jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "jose4j" }
+json-schema-validator = { module = "com.networknt:json-schema-validator", version.ref = "json-schema-validator" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "6.1.2" }
 kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka" }
