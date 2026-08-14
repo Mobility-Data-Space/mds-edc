@@ -34,12 +34,16 @@ allprojects {
                 because("CVE-2026-45292")
             }
             if (requested.group == "tools.jackson.core" && requested.name == "jackson-databind") {
-                useVersion("3.1.4")
-                because("CVE-2026-54512, CVE-2026-54513, CVE-2026-54514, CVE-2026-54515, CVE-2026-54516, CVE-2026-54517, CVE-2026-54518")
+                useVersion("3.1.5")
+                because("CVE-2026-54512, CVE-2026-54513, CVE-2026-54514, CVE-2026-54515, CVE-2026-54516, CVE-2026-54517, CVE-2026-54518, CVE-2026-59889")
             }
             if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-core") {
                 useVersion("2.22.1")
                 because("GHSA-r7wm-3cxj-wff9")
+            }
+            if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-databind") {
+                useVersion("2.22.1")
+                because("CVE-2026-54515")
             }
             if (requested.group == "org.postgresql" && requested.name == "postgresql") {
                 useVersion("42.7.12")
@@ -48,6 +52,10 @@ allprojects {
             if (requested.group == "org.apache.httpcomponents.core5" && requested.name == "httpcore5") {
                 useVersion("5.4.3")
                 because("CVE-2026-54399")
+            }
+            if (requested.group == "at.yawk.lz4" && requested.name == "lz4-java") {
+                useVersion("1.11.1")
+                because("CVE-2026-59949")
             }
         }
     }
