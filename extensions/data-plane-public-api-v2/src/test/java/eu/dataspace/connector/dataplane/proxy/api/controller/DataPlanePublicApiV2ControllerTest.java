@@ -13,6 +13,7 @@
 
 package eu.dataspace.connector.dataplane.proxy.api.controller;
 
+import eu.dataspace.connector.dataplane.proxy.api.sink.AsyncStreamingDataSink;
 import io.restassured.specification.RequestSpecification;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
@@ -26,7 +27,6 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.web.jersey.testfixtures.RestControllerTestBase;
-import eu.dataspace.connector.dataplane.proxy.api.sink.AsyncStreamingDataSink;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

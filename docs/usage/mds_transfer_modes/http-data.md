@@ -98,6 +98,8 @@ The consumer uses the EDR to:
 
 The consumer can make multiple requests using the same EDR until the authentication token expires.
 
+> **Note:** Every request forwarded by the provider's data plane to the source server includes an `X-Sender-ID` HTTP header containing the participant ID of the consumer. Data providers can use this header on their backend to identify which consumer is accessing the data.
+
 ### Endpoint Data Reference (EDR) Structure
 
 An EDR contains all the information needed for the consumer to access the provider's data:

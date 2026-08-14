@@ -53,6 +53,14 @@ allprojects {
                 useVersion("5.4.3")
                 because("CVE-2026-54399")
             }
+            if (requested.group == "org.apache.httpcomponents.core5" && requested.name == "httpcore5-h2") {
+                useVersion("5.4.3")
+                because("CVE-2026-54428")
+            }
+            if (requested.group == "org.apache.httpcomponents.client5" && requested.name == "httpclient5") {
+                useVersion("5.6.3")
+                because("CVE-2026-64607")
+            }
             if (requested.group == "at.yawk.lz4" && requested.name == "lz4-java") {
                 useVersion("1.11.1")
                 because("CVE-2026-59949")

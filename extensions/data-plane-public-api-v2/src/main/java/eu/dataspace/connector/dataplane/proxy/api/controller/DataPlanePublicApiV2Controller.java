@@ -13,6 +13,7 @@
 
 package eu.dataspace.connector.dataplane.proxy.api.controller;
 
+import com.nimbusds.jwt.SignedJWT;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HEAD;
@@ -31,12 +32,15 @@ import jakarta.ws.rs.core.StreamingOutput;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.connector.dataplane.spi.response.TransferErrorResponse;
+import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import eu.dataspace.connector.dataplane.proxy.api.sink.AsyncStreamingDataSink;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -50,6 +54,7 @@ import static jakarta.ws.rs.core.Response.status;
 @Produces(WILDCARD)
 public class DataPlanePublicApiV2Controller implements DataPlanePublicApiV2 {
 
+    private static final String HEADER_X_SENDER_ID = "header:x-sender-id";
     private final PipelineService pipelineService;
     private final DataFlowRequestSupplier requestSupplier;
     private final ExecutorService executorService;
@@ -143,9 +148,21 @@ public class DataPlanePublicApiV2Controller implements DataPlanePublicApiV2 {
             return;
         }
 
-        var startMessage = requestSupplier.apply(contextApi, sourceDataAddress.getContent());
+        var sourceDataAddressBuilder = sourceDataAddress.getContent().toBuilder();
+        getConsumerIdFrom(token).ifPresent(consumerId -> sourceDataAddressBuilder.property(HEADER_X_SENDER_ID, consumerId));
+
+        var startMessage = requestSupplier.apply(contextApi, sourceDataAddressBuilder.build());
 
         processRequest(startMessage, response);
+    }
+
+    private Optional<String> getConsumerIdFrom(String token) {
+        try {
+            var parse = SignedJWT.parse(token);
+            return parse.getJWTClaimsSet().getAudience().stream().findFirst();
+        } catch (ParseException e) {
+            return Optional.empty();
+        }
     }
 
     private Map<String, Object> buildRequestData(ContainerRequestContext requestContext) {
