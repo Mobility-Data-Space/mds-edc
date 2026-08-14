@@ -19,6 +19,10 @@ The MDS EDC Connector builds upon the Eclipse Dataspace Components (EDC) framewo
 - **[MDS Vocabulary and Semantics](mds_vocabulary_semantics.md)** - Mobility-specific metadata properties and semantic validation for assets
 - **[On-Request Data Offers](on-request-data-offers.md)** - Publish data availability intentions without immediate data source
 
+### Observability
+
+- **[DFRS Observer](dfrs-observer.md)** - Automatic dispatch of dataspace events (contract negotiations, transfers, retirements) to a designated observer connector
+
 ## See Also
 
 - [Transfer Modes Documentation](../mds_transfer_modes/README.md)
