@@ -173,12 +173,12 @@ public class DfrsObserverTest {
                     .withTransferType("HttpData-PULL")
                     .execute();
 
-            observerServer.waitForEvent("org.eclipse.edc.ContractNegotiationFinalized");
-            observerServer.waitForEvent("org.eclipse.edc.TransferProcessStarted");
+            observerServer.waitForEvent(provider.getId(), "org.eclipse.edc.ContractNegotiationFinalized");
+            observerServer.waitForEvent(provider.getId(), "org.eclipse.edc.TransferProcessStarted");
 
             provider.retireAgreement(providerContractAgreementId.get()).statusCode(204);
 
-            observerServer.waitForEvent("eu.dataspace.mds.ContractAgreementRetired");
+            observerServer.waitForEvent(provider.getId(), "eu.dataspace.mds.ContractAgreementRetired");
 
             provider.afterAll(null); // stop provider
         }

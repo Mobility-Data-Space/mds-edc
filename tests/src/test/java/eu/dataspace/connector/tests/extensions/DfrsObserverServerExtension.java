@@ -20,7 +20,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 public class DfrsObserverServerExtension implements BeforeAllCallback, AfterAllCallback {
 
     private final LazySupplier<Integer> port = new LazySupplier<>(Ports::getFreePort);
-    private final BlockingQueue<String> events = new LinkedBlockingDeque<>();
+    private final BlockingQueue<Event> events = new LinkedBlockingDeque<>();
     private WireMockServer server;
     private final String apiKey = UUID.randomUUID().toString();
 
@@ -30,7 +30,11 @@ public class DfrsObserverServerExtension implements BeforeAllCallback, AfterAllC
         server.start();
 
         server.addMockServiceRequestListener((request, response) -> {
-            events.add(request.getBodyAsString());
+            var header = request.getHeader("X-Sender-ID");
+            if (header == null) {
+                throw new IllegalArgumentException("No X-Sender-ID header contained in the request");
+            }
+            events.add(new Event(header, request.getBodyAsString()));
         });
 
         server.stubFor(WireMock.any(WireMock.anyUrl())
@@ -49,7 +53,7 @@ public class DfrsObserverServerExtension implements BeforeAllCallback, AfterAllC
         return apiKey;
     }
 
-    public String waitForEvent(String eventType) {
+    public String waitForEvent(String senderId, String eventType) {
         try {
             do {
                 var event = events.poll(10, TimeUnit.SECONDS);
@@ -57,8 +61,8 @@ public class DfrsObserverServerExtension implements BeforeAllCallback, AfterAllC
                     throw new TimeoutException("No event of type " + eventType + " received");
                 }
 
-                if (event.contains(eventType)) {
-                    return event;
+                if (event.senderId().equals(senderId) && event.body().contains(eventType)) {
+                    return event.body();
                 }
             } while (true);
 
@@ -69,5 +73,9 @@ public class DfrsObserverServerExtension implements BeforeAllCallback, AfterAllC
 
     public String getBaseUrl() {
         return server.baseUrl();
+    }
+
+    record Event(String senderId, String body) {
+
     }
 }

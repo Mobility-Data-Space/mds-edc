@@ -11,6 +11,7 @@ dependencies {
     api(libs.edc.data.plane.spi)
 
     implementation(libs.edc.util.lib)
+    implementation(libs.nimbus.jwt)
     implementation(libs.swagger.annotations)
     implementation(libs.swagger.jaxrs2.jakarta)
     implementation(libs.jakarta.ws.rs.api)
