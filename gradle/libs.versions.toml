@@ -99,7 +99,7 @@ jakarta-ws-rs-api = { module = "jakarta.ws.rs:jakarta.ws.rs-api", version = "4.0
 jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "jose4j" }
 json-schema-validator = { module = "com.networknt:json-schema-validator", version.ref = "json-schema-validator" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "6.1.2" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "6.1.3" }
 kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka" }
 keycloak-admin-client = { module = "org.keycloak:keycloak-admin-client", version.ref = "keycloak" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
