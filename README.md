@@ -56,6 +56,7 @@ Guides on deploying and configuring the MDS Connector:
 - [Production Vault Setup](docs/deployment/production_vault_setup.md) - Configuring Vault for production use
 - [Backup and Recovery](docs/deployment/backup_and_recovery.md) - Backup strategies and disaster recovery procedures
 - [Identity Wallet Deployment](docs/deployment/wallet_deployment.md) - Running the MDS Identity Wallet (Identity Hub + STS + Credential Service) and self-provisioning a participant
+- [DAPS to DCP Migration](docs/deployment/migration_daps_to_dcp.md) - Upgrading an on-premise connector from the DAPS identity profile to DCP
 
 ## Directory Structure
 
