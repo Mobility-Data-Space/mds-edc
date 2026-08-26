@@ -20,6 +20,9 @@ It is responsible for the following:
 - Verifies connector identities
 - Enforces participant authentication in the dataspace
 
+DAPS is being replaced by the Decentralized Claims Protocol (DCP). Self-hosted deployments should follow the
+[DAPS to DCP migration guide](deployment/migration_daps_to_dcp.md); Connector-as-a-Service participants are migrated by MDS.
+
 ### How do I secure my EDC Management API?
 
 The Management API should be secured using:
