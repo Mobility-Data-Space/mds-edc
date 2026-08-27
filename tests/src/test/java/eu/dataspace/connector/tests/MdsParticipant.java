@@ -280,7 +280,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .orElse(null);
     }
 
-    public JsonArray getTransferProcessesOn(String contractAgreementId) {
+    public JsonArray getTransferProcessesOnAgreement(String contractAgreementId) {
         var query = createObjectBuilder()
                 .add(CONTEXT, managementContext)
                 .add(TYPE, "QuerySpec")
@@ -289,6 +289,21 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                         .add("operandLeft", "contractId")
                         .add("operator", "=")
                         .add("operandRight", contractAgreementId)
+                )
+                .build();
+
+        return getTransferProcesses(query);
+    }
+
+    public JsonArray getTransferProcessesOnAsset(String assetId) {
+        var query = createObjectBuilder()
+                .add(CONTEXT, managementContext)
+                .add(TYPE, "QuerySpec")
+                .add("filterExpression", createObjectBuilder()
+                        .add(TYPE, "Criterion")
+                        .add("operandLeft", "assetId")
+                        .add("operator", "=")
+                        .add("operandRight", assetId)
                 )
                 .build();
 
