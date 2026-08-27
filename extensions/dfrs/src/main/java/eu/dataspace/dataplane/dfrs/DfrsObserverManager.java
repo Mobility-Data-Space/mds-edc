@@ -2,6 +2,7 @@ package eu.dataspace.dataplane.dfrs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementRetired;
+import eu.dataspace.dataplane.dfrs.subscriber.ReNegotiateObserver;
 import eu.dataspace.dataplane.dfrs.subscriber.SendEventToObserver;
 import eu.dataspace.dataplane.dfrs.subscriber.StartObserverTransfer;
 import eu.dataspace.dataplane.dfrs.subscriber.StoreObserverAddress;
@@ -14,6 +15,7 @@ import org.eclipse.edc.connector.controlplane.services.spi.catalog.CatalogServic
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessStarted;
+import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessTerminated;
 import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.participantcontext.spi.service.ParticipantContextSupplier;
@@ -91,6 +93,8 @@ public class DfrsObserverManager {
         eventRouter.register(TransferProcessStarted.class, sendEventToObserver);
         eventRouter.register(ContractAgreementRetired.class, sendEventToObserver);
 
+        eventRouter.register(TransferProcessTerminated.class, new ReNegotiateObserver(configuration, participantContext, this, transferProcessService));
+
         var query = QuerySpec.Builder.newInstance()
                 .filter(criterion("counterPartyId", "=", configuration.id()))
                 .filter(criterion("counterPartyAddress", "=", configuration.url()))
@@ -105,13 +109,12 @@ public class DfrsObserverManager {
             return Result.success();
         }
 
-        activate(configuration, participantContext);
+        negotiateObserverOffer(configuration, participantContext);
 
         return Result.success();
-
     }
 
-    private void activate(DfrsObserverConfig configuration, ParticipantContext participantContext) {
+    public void negotiateObserverOffer(DfrsObserverConfig configuration, ParticipantContext participantContext) {
         catalogService
                 .requestDataset(participantContext, configuration.datasetId(), configuration.id(), configuration.url(), configuration.profile())
                 .thenAccept(datasetResult -> {

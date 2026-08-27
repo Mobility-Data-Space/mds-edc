@@ -153,12 +153,12 @@ public class DfrsObserverTest {
             await().atMost(timeout).untilAsserted(() -> {
                 var contractNegotiations = provider.getContractNegotiationsWith(observer.getId());
 
-                assertThat(contractNegotiations).hasSize(1).first().extracting(JsonValue::asJsonObject).satisfies(negotiation -> {
+                assertThat(contractNegotiations).hasSizeGreaterThan(0).last().extracting(JsonValue::asJsonObject).satisfies(negotiation -> {
                     assertThat(negotiation.getString("state")).isEqualTo(ContractNegotiationStates.FINALIZED.name());
 
                     providerContractAgreementId.set(negotiation.getString("contractAgreementId"));
-                    var transferProcesses = provider.getTransferProcessesOn(providerContractAgreementId.get());
-                    assertThat(transferProcesses).hasSize(1).first().extracting(JsonValue::asJsonObject).satisfies(transfer -> {
+                    var transferProcesses = provider.getTransferProcessesOnAgreement(providerContractAgreementId.get());
+                    assertThat(transferProcesses).hasSize(1).last().extracting(JsonValue::asJsonObject).satisfies(transfer -> {
                         assertThat(transfer.getString("state")).isEqualTo(TransferProcessStates.STARTED.name());
                     });
                 });
@@ -179,6 +179,71 @@ public class DfrsObserverTest {
             provider.retireAgreement(providerContractAgreementId.get()).statusCode(204);
 
             observerServer.waitForEvent(provider.getId(), "eu.dataspace.mds.ContractAgreementRetired");
+
+            provider.afterAll(null); // stop provider
+        }
+
+        @Test
+        void shouldReinitiateObserverNegotiation_whenTransferGetsTerminated() {
+            var observerDatasetId = observer.createOffer(Map.of(
+                    "type", "HttpData",
+                    "baseUrl", observerServer.getBaseUrl() + "/api/v1/events",
+                    "method", "POST",
+                    "proxyBody", "true",
+                    "authKey", "X-Api-Key",
+                    "secretName", "observer-api-key"
+            ));
+
+            provider.configurationProvider(() -> ConfigFactory.fromMap(Map.of(
+                    "edc.mds.dfrs.observer.id", observer.getId(),
+                    "edc.mds.dfrs.observer.url", observer.getProtocolUrl(),
+                    "edc.mds.dfrs.observer.dataset.id", observerDatasetId,
+                    "edc.mds.dfrs.observer.profile", "dataspace-protocol-http:2025-1",
+                    "edc.mds.dfrs.observer.transfer.profile", "HttpData-PULL"
+            )));
+
+            provider.beforeAll(null); // start provider
+
+            var providerContractAgreementId = new AtomicReference<String>();
+            await().atMost(timeout).untilAsserted(() -> {
+                var contractNegotiations = provider.getContractNegotiationsWith(observer.getId());
+
+                assertThat(contractNegotiations).hasSize(1).first().extracting(JsonValue::asJsonObject).satisfies(negotiation -> {
+                    assertThat(negotiation.getString("state")).isEqualTo(ContractNegotiationStates.FINALIZED.name());
+
+                    providerContractAgreementId.set(negotiation.getString("contractAgreementId"));
+                    var transferProcesses = provider.getTransferProcessesOnAgreement(providerContractAgreementId.get());
+                    assertThat(transferProcesses).hasSize(1).first().extracting(JsonValue::asJsonObject).satisfies(transfer -> {
+                        assertThat(transfer.getString("state")).isEqualTo(TransferProcessStates.STARTED.name());
+                    });
+                });
+            });
+
+            // observer terminates transfer, for any reason
+            var observerTransferProcesses = observer.getTransferProcessesOnAsset(observerDatasetId);
+            assertThat(observerTransferProcesses).hasSizeGreaterThan(0);
+            var observerTransferProcessCount = observerTransferProcesses.size();
+            var observerTransferProcessId = observerTransferProcesses.get(0).asJsonObject().getString("@id");
+            observer.terminateTransfer(observerTransferProcessId);
+
+            observer.awaitTransferToBeInState(observerTransferProcessId, TransferProcessStates.TERMINATED);
+
+            // wait to find another observer negotiation & transfer on provider
+            await().untilAsserted(() -> {
+                assertThat(observer.getTransferProcessesOnAsset(observerDatasetId)).hasSize(observerTransferProcessCount + 1);
+            });
+
+            // events are flowing again
+            var assetId = provider.createOffer(Map.of(
+                    "type", "HttpData",
+                    "baseUrl", "http://any"
+            ));
+
+            consumer.requestAssetFrom(assetId, provider)
+                    .withTransferType("HttpData-PULL")
+                    .execute();
+
+            observerServer.waitForEvent(provider.getId(), "org.eclipse.edc.ContractNegotiationFinalized");
 
             provider.afterAll(null); // stop provider
         }
