@@ -15,6 +15,7 @@ import org.apache.kafka.common.resource.ResourcePattern;
 import org.apache.kafka.common.resource.ResourcePatternFilter;
 import org.apache.kafka.common.resource.ResourceType;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -35,10 +36,12 @@ public class KafkaAccessControlLists implements AccessControlLists {
     public static final String KAFKA_PRINCIPAL_NAME_KEY_PREFIX = "kafka-principal-name-";
     private final Vault vault;
     private final DataPlaneStore dataPlaneStore;
+    private final Monitor monitor;
 
-    public KafkaAccessControlLists(Vault vault, DataPlaneStore dataPlaneStore) {
+    public KafkaAccessControlLists(Vault vault, DataPlaneStore dataPlaneStore, Monitor monitor) {
         this.vault = vault;
         this.dataPlaneStore = dataPlaneStore;
+        this.monitor = monitor;
     }
 
     @Override
@@ -82,14 +85,18 @@ public class KafkaAccessControlLists implements AccessControlLists {
         try (var reader = new StringReader(plainProperties)) {
             adminProperties.load(reader);
         } catch (IOException e) {
-            return ServiceResult.unexpected("Cannot parse Kafka Admin properties: " + e.getMessage());
+            var message = "Cannot parse Kafka Admin properties";
+            monitor.severe(message, e);
+            return ServiceResult.unexpected(message + ": " + e.getMessage());
         }
 
         try (var adminClient = AdminClient.create(adminProperties)) {
             action.apply(adminClient).get();
             return ServiceResult.success();
         } catch (Exception e) {
-            return ServiceResult.unexpected("Cannot create ACLs: " + e.getMessage());
+            var message = "Cannot create KafkaAdmin nor ACLs";
+            monitor.severe(message, e);
+            return ServiceResult.unexpected(message + ": " + e.getMessage());
         }
     }
 

@@ -15,6 +15,7 @@ package eu.dataspace.connector.extension.kafka.broker.acls;
 
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.junit.jupiter.api.Nested;
@@ -25,13 +26,17 @@ import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressS
 import static eu.dataspace.connector.extension.kafka.broker.acls.KafkaAccessControlLists.KAFKA_PRINCIPAL_NAME_KEY_PREFIX;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class KafkaAccessControlListsTest {
 
     private final DataPlaneStore dataPlaneStore = Mockito.mock();
     private final Vault vault = Mockito.mock();
-    private final KafkaAccessControlLists kafkaAccessControlLists = new KafkaAccessControlLists(vault, dataPlaneStore);
+    private final Monitor monitor = mock();
+    private final KafkaAccessControlLists kafkaAccessControlLists = new KafkaAccessControlLists(vault, dataPlaneStore, monitor);
 
     @Nested
     class DenyAccess {
@@ -79,6 +84,7 @@ class KafkaAccessControlListsTest {
             var result = kafkaAccessControlLists.denyAccessTo("dataFlowId");
 
             assertThat(result).isFailed().detail().contains("Failed to create new KafkaAdminClient");
+            verify(monitor).severe(anyString(), any());
         }
     }
 
