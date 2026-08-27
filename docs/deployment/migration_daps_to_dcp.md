@@ -1,4 +1,4 @@
-# Migrating an on-premise connector from DAPS to DCP
+# Migrating an on-premise MDS connector from DAPS to DCP
 
 This guide covers self-hosted MDS Connector deployments moving from the DAPS identity profile to the Decentralized Claims Protocol (DCP).
 
@@ -25,7 +25,7 @@ That means version and identity are independent changes, and you should make the
 | | Phase A | Phase B |
 |---|---|---|
 | What | Upgrade to 2.6.0 or later | Switch to the DCP image |
-| Identity | DAPS throughout | DAPS → DID |
+| Identity | DAPS | DAPS → DID |
 | Database | schema migrations run | untouched |
 | Rollback | needs a database restore | redeploy the old image |
 
@@ -35,7 +35,7 @@ Running them together makes a failed cutover impossible to attribute, and forces
 
 ## Phase A — upgrade to 2.6.0, still on DAPS
 
-Coming from 2.0.0, this crosses EDC 0.15.1 → 0.18.0 and three schema migrations. 2.6.0 is the minimum for Phase B: it is the first release that publishes the wallet image, and the release where Management API V4 became the active version. Any later release works too — take the newest from the [releases page](https://github.com/Mobility-Data-Space/mds-edc/releases).
+Coming from 2.0.0, this crosses EDC 0.15.1 → 0.18.0 and three schema migrations. It is the recommended release that publishes the wallet image, and the release where Management API V4 became the active version. Any later release works too — take the newest from the [releases page](https://github.com/Mobility-Data-Space/mds-edc/releases).
 
 1. **Back up the database.** Schema migrations are forward-only; this backup is your only way back. See [Backup and Recovery](backup_and_recovery.md).
 2. **Bump the image tag**, leaving every environment variable untouched:
@@ -58,7 +58,7 @@ Do not continue until this is stable in production. Note the exact tag — Phase
 
 ### Get a wallet
 
-**MDS-hosted (default).** MDS operates the wallet and hands over four values: your DID, the STS token endpoint, the STS client id (equal to your DID) and client secret, and the MDS issuer DID. Request these and confirm your `MembershipCredential` has been issued.
+**MDS-hosted (default).** MDS operates the wallet and hands over four values: your DID, the STS token endpoint, the STS client id (equal to your DID) and client secret, and the MDS issuer DID. Request these in the MDS Portal and confirm your `MembershipCredential` has been issued.
 
 **Self-hosted (advanced).** You run the `wallet` image on its own hostname, with its own PostgreSQL schema and Vault. Follow [Identity Wallet deployment](wallet_deployment.md) end to end — deploy, register your participant context, verify the DID document, request credential issuance — then return here with the same four values. You then also own DID resolution availability: if your wallet host is unreachable, counterparties cannot verify you.
 
