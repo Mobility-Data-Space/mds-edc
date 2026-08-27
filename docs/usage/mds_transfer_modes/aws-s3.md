@@ -292,4 +292,4 @@ Use AWS Security Token Service (STS) to generate temporary credentials with:
 
 For more detailed information about the AWS S3 data plane extension, see:
 
-- [EDC AWS Technology Extensions](https://github.com/eclipse-edc/Technology-Aws/tree/main/extensions/data-plane/data-plane-aws-s3)
+- [EDC AWS Technology Extensions](https://github.com/eclipse-edc/Technology-Aws/tree/v0.18.0/extensions/data-plane/data-plane-aws-s3) — pinned to v0.18.0, the EDC version MDS ships. The data plane modules were removed from upstream `main`, so branch links no longer resolve.
