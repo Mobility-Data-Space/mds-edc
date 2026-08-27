@@ -198,4 +198,4 @@ A populated catalog means the migration succeeded. Then re-negotiate your contra
 - [Production Docker image](production_docker_image.md) — ports, reverse proxy, TLS
 - [Production Vault setup](production_vault_setup.md)
 - [mds-identity-issuer](https://github.com/Mobility-Data-Space/mds-identity-issuer) — the credential issuer service
-- [EDC Decentralized Claims Protocol documentation](https://eclipse-edc.github.io/documentation/for-adopters/control-plane/identity/)
+- [EDC IdentityHub documentation](https://eclipse-edc.github.io/documentation/for-adopters/identity-hub/) — upstream reference for the wallet components

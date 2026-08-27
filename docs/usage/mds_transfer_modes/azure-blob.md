@@ -287,4 +287,4 @@ The consumer connector uses vault-stored access keys for **destination only**:
 
 For more detailed information about the Azure Storage data plane extension, see:
 
-- [EDC Azure Technology Extensions](https://github.com/eclipse-edc/Technology-Azure/tree/main/extensions/data-plane/data-plane-azure-storage)
+- [EDC Azure Technology Extensions](https://github.com/eclipse-edc/Technology-Azure/tree/v0.18.0/extensions/data-plane/data-plane-azure-storage) — pinned to v0.18.0, the EDC version MDS ships. The data plane modules were removed from upstream `main`, so branch links no longer resolve.
