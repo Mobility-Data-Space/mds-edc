@@ -21,7 +21,7 @@ The MDS EDC Connector builds upon the Eclipse Dataspace Components (EDC) framewo
 
 ### Observability
 
-- **[DFRS Observer](dfrs-observer.md)** - Automatic dispatch of dataspace events (contract negotiations, transfers, retirements) to a designated observer connector
+- **[DFRS Observer](observer.md)** - Automatic dispatch of dataspace events (contract negotiations, transfers, retirements) to a designated observer connector
 
 ## See Also
 
