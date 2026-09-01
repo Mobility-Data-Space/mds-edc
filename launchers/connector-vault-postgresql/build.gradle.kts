@@ -18,6 +18,7 @@ dependencies {
     runtimeOnly(libs.edc.dataplane.feature.sql.bom)
 
     implementation(project(":extensions:agreements:retirement-evaluation-store-sql"))
+    implementation(project(":extensions:observer-sql"))
     implementation(project(":extensions:database-schema-migration-connector"))
 
     runtimeOnly(libs.logging.house.client)
