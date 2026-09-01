@@ -3,6 +3,8 @@ package eu.dataspace.dataplane.observer;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.runtime.metamodel.annotation.Settings;
 
+import java.time.Duration;
+
 @Settings
 public record ObserverConfig(
         @Setting(key = "id", required = false,
@@ -21,7 +23,11 @@ public record ObserverConfig(
         @Setting(key = "transfer.profile", required = false,
                 description = "Tre transfer profile used in DPS communication."
         )
-        String transferProfile
+        String transferProfile,
+        @Setting(key = "retry.interval", required = false, defaultValue = "PT30S",
+                description = "Interval in ISO-8061 duration format between retry attempts for failed observer event dispatches. Also used as the base for exponential backoff."
+        )
+        Duration retryInterval
 ) {
     public boolean isConfigured() {
         return id != null && url != null && datasetId != null && profile != null && transferProfile != null;

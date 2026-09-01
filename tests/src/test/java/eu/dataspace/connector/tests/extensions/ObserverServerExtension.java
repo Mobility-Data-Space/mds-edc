@@ -3,24 +3,26 @@ package eu.dataspace.connector.tests.extensions;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.util.io.Ports;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static org.awaitility.Awaitility.await;
 
 public class ObserverServerExtension implements BeforeAllCallback, AfterAllCallback {
 
     private final LazySupplier<Integer> port = new LazySupplier<>(Ports::getFreePort);
-    private final BlockingQueue<Event> events = new LinkedBlockingDeque<>();
     private WireMockServer server;
     private final String apiKey = UUID.randomUUID().toString();
 
@@ -28,18 +30,7 @@ public class ObserverServerExtension implements BeforeAllCallback, AfterAllCallb
     public void beforeAll(ExtensionContext context) {
         server = new WireMockServer(WireMockConfiguration.options().port(port.get()));
         server.start();
-
-        server.addMockServiceRequestListener((request, response) -> {
-            var header = request.getHeader("X-Sender-ID");
-            if (header == null) {
-                throw new IllegalArgumentException("No X-Sender-ID header contained in the request");
-            }
-            events.add(new Event(header, request.getBodyAsString()));
-        });
-
-        server.stubFor(WireMock.any(WireMock.anyUrl())
-            .withHeader("X-Api-Key", equalTo(apiKey))
-            .willReturn(WireMock.aResponse().withStatus(202)));
+        stubUp();
     }
 
     @Override
@@ -53,29 +44,48 @@ public class ObserverServerExtension implements BeforeAllCallback, AfterAllCallb
         return apiKey;
     }
 
+    public List<String> receivedEvents() {
+        return allEvents()
+                .map(e -> e.getRequest().getBodyAsString())
+                .toList();
+    }
+
+    public void clearEvents() {
+        server.resetRequests();
+    }
+
     public String waitForEvent(String senderId, String eventType) {
-        try {
-            do {
-                var event = events.poll(10, TimeUnit.SECONDS);
-                if (event == null) {
-                    throw new TimeoutException("No event of type " + eventType + " received");
-                }
+        return await().atMost(10, TimeUnit.SECONDS)
+                .until(() -> allEvents()
+                        .filter(e -> senderId.equals(e.getRequest().getHeader("X-Sender-ID")))
+                        .filter(e -> e.getRequest().getBodyAsString().contains(eventType))
+                        .findFirst(), Optional::isPresent)
+                .get().getRequest().getBodyAsString();
+    }
 
-                if (event.senderId().equals(senderId) && event.body().contains(eventType)) {
-                    return event.body();
-                }
-            } while (true);
+    public void simulateDown() {
+        server.resetMappings();
+        server.stubFor(WireMock.any(WireMock.anyUrl())
+                .willReturn(WireMock.aResponse().withStatus(503)));
+    }
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public void simulateUp() {
+        server.resetMappings();
+        stubUp();
+    }
+
+    private @NonNull Stream<ServeEvent> allEvents() {
+        return server.getAllServeEvents().stream()
+                .filter(e -> e.getResponse().getStatus() / 100 == 2);
+    }
+
+    private void stubUp() {
+        server.stubFor(WireMock.any(WireMock.anyUrl())
+                .withHeader("X-Api-Key", equalTo(apiKey))
+                .willReturn(WireMock.aResponse().withStatus(202)));
     }
 
     public String getBaseUrl() {
         return server.baseUrl();
-    }
-
-    record Event(String senderId, String body) {
-
     }
 }

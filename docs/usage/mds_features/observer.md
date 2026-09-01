@@ -17,6 +17,8 @@ The feature involves two distinct roles:
 
 The feature is **idempotent**: if a finalized negotiation with the observer already exists at startup, no new negotiation is initiated.
 
+Events are dispatched using a **store-and-forward** mechanism to avoid event loss: every qualifying event is persisted to a store before any delivery attempt is made. A background retry job with exponential backoff re-attempts delivery of any events that could not be dispatched immediately.
+
 ---
 
 ## Observer Setup
@@ -83,13 +85,14 @@ The policy requirements depend on your dataspace setup (DAPS or DCP).
 
 The participant connector requires five configuration properties to enable the observer feature. If any property is missing, the feature is disabled at startup with a warning log.
 
-| Property                            | Description                                   | Example                                |
-|-------------------------------------|-----------------------------------------------|----------------------------------------|
-| `edc.mds.observer.id`               | Participant ID of the observer connector      | `did:web:observer.example.com`         |
-| `edc.mds.observer.url`              | DSP protocol URL of the observer connector    | `https://observer.example.com/api/dsp` |
-| `edc.mds.observer.dataset.id`       | Dataset ID of the observer's event-sink offer | `event-sink`                      |
-| `edc.mds.observer.profile`          | DSP communication profile                     | `dataspace-protocol-http:2025-1`       |
-| `edc.mds.observer.transfer.profile` | Transfer profile for the observer channel     | `HttpData-PULL`                        |
+| Property                              | Description                                                                                    | Default  | Example                                |
+|---------------------------------------|-----------------------------------------------------------------------------------------------|----------|----------------------------------------|
+| `edc.mds.observer.id`                 | Participant ID of the observer connector                                                       | —        | `did:web:observer.example.com`         |
+| `edc.mds.observer.url`                | DSP protocol URL of the observer connector                                                     | —        | `https://observer.example.com/api/dsp` |
+| `edc.mds.observer.dataset.id`         | Dataset ID of the observer's event-sink offer                                                  | —        | `event-sink`                           |
+| `edc.mds.observer.profile`            | DSP communication profile                                                                      | —        | `dataspace-protocol-http:2025-1`       |
+| `edc.mds.observer.transfer.profile`   | Transfer profile for the observer channel                                                      | —        | `HttpData-PULL`                        |
+| `edc.mds.observer.retry.interval`     | Base retry interval (ISO-8601) for failed event dispatches; doubled on each failure up to 1 h | `PT30S`  | `PT1M`                                 |
 
 ### Example: `config.properties`
 
@@ -99,6 +102,8 @@ edc.mds.observer.url=https://observer.example.com/api/dsp
 edc.mds.observer.dataset.id=event-sink
 edc.mds.observer.profile=dataspace-protocol-http:2025-1
 edc.mds.observer.transfer.profile=HttpData-PULL
+# optional – default is PT30S
+edc.mds.observer.retry.interval=PT30S
 ```
 
 ### Example: Environment Variables
@@ -109,6 +114,8 @@ EDC_MDS_OBSERVER_URL=https://observer.example.com/api/dsp
 EDC_MDS_OBSERVER_DATASET_ID=event-sink
 EDC_MDS_OBSERVER_PROFILE=dataspace-protocol-http:2025-1
 EDC_MDS_OBSERVER_TRANSFER_PROFILE=HttpData-PULL
+# optional – default is PT30S
+EDC_MDS_OBSERVER_RETRY_INTERVAL=PT30S
 ```
 
 ---
@@ -117,6 +124,20 @@ EDC_MDS_OBSERVER_TRANSFER_PROFILE=HttpData-PULL
 
 Events are dispatched as [CloudEvents 1.0](https://cloudevents.io/) JSON payloads via `POST` to the observer endpoint. Each event uses `Content-Type: application/json` and the configured authorization header.
 Please refer to the [json-schema](https://mobility-data-space.github.io/mds-observer/schemas/v1/event-envelope.json) for details
+
+---
+
+## Event Reliability: Store and Retry
+
+To prevent event loss when the observer endpoint is temporarily unreachable, events are handled through a **store-and-forward** pipeline:
+
+1. When a qualifying dataspace event occurs, the participant serialises it as a CloudEvent envelope and **persists it to an internal store** before attempting any delivery.
+2. A `DispatchObserverEvent` subscriber immediately tries to deliver the stored event to the observer HTTP endpoint.
+   - On success, the event is removed from the store.
+   - On failure, the event is kept in the store and rescheduled for a later retry.
+3. A background **retry job** periodically scans the store for events whose `nextRetryAt` has passed and attempts delivery again. Failed attempts are rescheduled using **exponential backoff**: the wait time doubles after each failure, starting from `edc.mds.observer.retry.interval`, and is capped at 1 hour.
+
+This means no event is silently dropped due to a transient network error or observer downtime — it will keep being retried until it succeeds.
 
 ---
 

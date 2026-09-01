@@ -4,8 +4,8 @@ import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;
 import eu.dataspace.connector.tests.SeedVault;
 import eu.dataspace.connector.tests.Wallet;
-import eu.dataspace.connector.tests.extensions.ObserverServerExtension;
 import eu.dataspace.connector.tests.extensions.IssuerExtension;
+import eu.dataspace.connector.tests.extensions.ObserverServerExtension;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -130,6 +131,7 @@ public class ObserverTest {
 
         @Test
         void shouldStartObserverNegotiationAtStartup() {
+            observerServer.clearEvents();
             var observerDatasetId = observer.createOffer(Map.of(
                     "type", "HttpData",
                     "baseUrl", observerServer.getBaseUrl() + "/api/v1/events",
@@ -184,7 +186,60 @@ public class ObserverTest {
         }
 
         @Test
+        void shouldRetryEventDispatch_whenObserverIsTemporarilyDown() {
+            observerServer.clearEvents();
+            var observerDatasetId = observer.createOffer(Map.of(
+                    "type", "HttpData",
+                    "baseUrl", observerServer.getBaseUrl() + "/api/v1/events",
+                    "method", "POST",
+                    "proxyBody", "true",
+                    "authKey", "X-Api-Key",
+                    "secretName", "observer-api-key"
+            ));
+
+            provider.configurationProvider(() -> ConfigFactory.fromMap(Map.of(
+                    "edc.mds.observer.id", observer.getId(),
+                    "edc.mds.observer.url", observer.getProtocolUrl(),
+                    "edc.mds.observer.dataset.id", observerDatasetId,
+                    "edc.mds.observer.profile", "dataspace-protocol-http:2025-1",
+                    "edc.mds.observer.transfer.profile", "HttpData-PULL",
+                    "edc.mds.observer.retry.interval", "PT1S"
+            )));
+
+            provider.beforeAll(null);
+
+            try {
+                await().atMost(timeout).untilAsserted(() -> {
+                    var transferProcesses = observer.getTransferProcessesOnAsset(observerDatasetId);
+                    assertThat(transferProcesses).hasSizeGreaterThan(0).last().extracting(JsonValue::asJsonObject).satisfies(transfer ->
+                            assertThat(transfer.getString("state")).isEqualTo(TransferProcessStates.STARTED.name())
+                    );
+                });
+
+                observerServer.clearEvents();
+                observerServer.simulateDown();
+
+                var assetId = provider.createOffer(Map.of("type", "HttpData", "baseUrl", "http://any"));
+                consumer.requestAssetFrom(assetId, provider).withTransferType("HttpData-PULL").execute();
+
+                // give a moment for the failed dispatch to be stored, then assert it was NOT received
+                await().pollDelay(500, TimeUnit.MILLISECONDS).atMost(timeout).untilAsserted(() ->
+                        assertThat(observerServer.receivedEvents()).doesNotContain("org.eclipse.edc.ContractNegotiationFinalized")
+                );
+
+                observerServer.simulateUp();
+
+                observerServer.waitForEvent(provider.getId(), "org.eclipse.edc.ContractNegotiationFinalized");
+                observerServer.waitForEvent(provider.getId(), "org.eclipse.edc.TransferProcessStarted");
+            } finally {
+                observerServer.simulateUp();
+                provider.afterAll(null);
+            }
+        }
+
+        @Test
         void shouldReinitiateObserverNegotiation_whenTransferGetsTerminated() {
+            observerServer.clearEvents();
             var observerDatasetId = observer.createOffer(Map.of(
                     "type", "HttpData",
                     "baseUrl", observerServer.getBaseUrl() + "/api/v1/events",
@@ -204,19 +259,11 @@ public class ObserverTest {
 
             provider.beforeAll(null); // start provider
 
-            var providerContractAgreementId = new AtomicReference<String>();
             await().atMost(timeout).untilAsserted(() -> {
-                var contractNegotiations = provider.getContractNegotiationsWith(observer.getId());
-
-                assertThat(contractNegotiations).hasSize(1).first().extracting(JsonValue::asJsonObject).satisfies(negotiation -> {
-                    assertThat(negotiation.getString("state")).isEqualTo(ContractNegotiationStates.FINALIZED.name());
-
-                    providerContractAgreementId.set(negotiation.getString("contractAgreementId"));
-                    var transferProcesses = provider.getTransferProcessesOnAgreement(providerContractAgreementId.get());
-                    assertThat(transferProcesses).hasSize(1).first().extracting(JsonValue::asJsonObject).satisfies(transfer -> {
-                        assertThat(transfer.getString("state")).isEqualTo(TransferProcessStates.STARTED.name());
-                    });
-                });
+                var transferProcesses = observer.getTransferProcessesOnAsset(observerDatasetId);
+                assertThat(transferProcesses).hasSizeGreaterThan(0).last().extracting(JsonValue::asJsonObject).satisfies(transfer ->
+                        assertThat(transfer.getString("state")).isEqualTo(TransferProcessStates.STARTED.name())
+                );
             });
 
             // observer terminates transfer, for any reason

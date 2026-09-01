@@ -14,6 +14,8 @@ import org.eclipse.edc.spi.result.ServiceResult;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.time.Duration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,7 +31,7 @@ class StartObserverTransferTest {
     private final String observerParticipantId = "provider-id";
     private final ObserverConfig config = new ObserverConfig(
             observerParticipantId, "http://provider-url", "dataset-id",
-            "dataspace-protocol-http:2025-1", "HttpData-PULL");
+            "dataspace-protocol-http:2025-1", "HttpData-PULL", Duration.ofSeconds(30));
     private final ParticipantContext participantContext = ParticipantContext.Builder.newInstance()
             .participantContextId("consumer-participant-id")
             .identity("consumer-identity")

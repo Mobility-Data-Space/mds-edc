@@ -1,2 +1,3 @@
+eu.dataspace.dataplane.observer.ObserverDefaultServicesExtension
 eu.dataspace.dataplane.observer.ObserverExtension
 eu.dataspace.dataplane.observer.ObserverManagerExtension
