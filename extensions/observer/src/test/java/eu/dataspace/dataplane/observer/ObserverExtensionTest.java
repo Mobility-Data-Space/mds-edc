@@ -51,7 +51,8 @@ class ObserverExtensionTest {
                     "edc.mds.observer.url", "http://any-url",
                     "edc.mds.observer.dataset.id", "dataset-id",
                     "edc.mds.observer.profile", "dataspace-protocol-http:2025-1",
-                    "edc.mds.observer.transfer.profile", "HttpData-PULL"
+                    "edc.mds.observer.transfer.profile", "HttpData-PULL",
+                    "edc.mds.observer.retry.interval", "PT30S"
             )));
 
             var extension = objectFactory.constructInstance(ObserverExtension.class);
@@ -71,7 +72,8 @@ class ObserverExtensionTest {
                     "edc.mds.observer.url", "http://any-url",
                     "edc.mds.observer.dataset.id", "dataset-id",
                     "edc.mds.observer.profile", "dataspace-protocol-http:2025-1",
-                    "edc.mds.observer.transfer.profile", "HttpData-PULL"
+                    "edc.mds.observer.transfer.profile", "HttpData-PULL",
+                    "edc.mds.observer.retry.interval", "PT30S"
             )));
 
             var extension = objectFactory.constructInstance(ObserverExtension.class);
