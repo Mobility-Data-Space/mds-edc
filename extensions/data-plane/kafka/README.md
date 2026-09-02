@@ -38,4 +38,4 @@ These properties point to `vault` entries:
 
 ## Example
 
-Please look at the [KafkaTransferTest](../../tests/src/test/java/eu/dataspace/connector/tests/feature/KafkaTransferTest.java)
+Please look at the [KafkaTransferTest](../../../tests/src/test/java/eu/dataspace/connector/tests/feature/KafkaTransferTest.java)
