@@ -3,6 +3,7 @@ import java.net.URI
 
 plugins {
     `java-library`
+    `java-test-fixtures`
     `maven-publish`
 }
 
@@ -20,6 +21,9 @@ dependencies {
     testImplementation(libs.mockito.core)
     testImplementation(libs.assertj)
     testImplementation(libs.json.schema.validator)
+
+    testFixturesImplementation(libs.assertj)
+    testFixturesImplementation(libs.junit.jupiter)
 }
 
 val observerSchemasDir = layout.buildDirectory.dir("observer-schemas")
