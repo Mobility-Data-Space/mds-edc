@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":extensions:observer"))
+    implementation(project(":extensions:data-plane:observer"))
 
     implementation(libs.edc.core.spi)
     implementation(libs.edc.transaction.spi)
@@ -14,5 +14,5 @@ dependencies {
     testImplementation(libs.junit.platform.launcher)
     testImplementation(testFixtures(libs.edc.sql.test.fixtures))
     testImplementation(testFixtures(libs.edc.junit))
-    testImplementation(testFixtures(project(":extensions:observer")))
+    testImplementation(testFixtures(project(":extensions:data-plane:observer")))
 }
