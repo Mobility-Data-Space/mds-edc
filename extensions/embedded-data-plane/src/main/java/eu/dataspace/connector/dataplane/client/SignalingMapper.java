@@ -45,19 +45,17 @@ public final class SignalingMapper {
                             .transferType(transferType)
                             .agreementId(message.getAgreementId())
                             .assetId(message.getDatasetId())
-                            .participantId(message.getParticipantId())
+                            .participantId(message.getCounterPartyId())
                             .callbackAddress(message.getCallbackAddress());
 
                     ofNullable(message.getMessageId()).ifPresent(builder::id);
                     ofNullable(message.getDataAddress()).map(SignalingMapper::toDataAddress).ifPresent(builder::destinationDataAddress);
-                    ofNullable(message.getCounterPartyId()).ifPresent(v -> builder.property(SIGNALING_COUNTER_PARTY_ID, v));
-                    ofNullable(message.getCounterPartyId()).ifPresent(v -> builder.property("https://w3id.org/tractusx/auth/audience", v));
                     ofNullable(message.getDataspaceContext()).ifPresent(v -> builder.property(SIGNALING_DATASPACE_CONTEXT, v));
 
                     ofNullable(message.getMetadata())
                             .map(metadata -> {
                                 if (metadata.isEmpty()) {
-                                    // if no dataplaneMetadata was in the message, get it out the data address
+                                    // if no dataplaneMetadata was in the message, get it out of the data address
                                     return assetIndex.findById(message.getDatasetId()).getDataAddress().getProperties()
                                             .entrySet().stream()
                                             .flatMap(entry -> Stream.of(
@@ -86,10 +84,9 @@ public final class SignalingMapper {
                             .transferType(transferType)
                             .agreementId(message.getAgreementId())
                             .assetId(message.getDatasetId())
-                            .participantId(message.getParticipantId())
+                            .participantId(message.getCounterPartyId())
                             .callbackAddress(message.getCallbackAddress());
 
-                    ofNullable(message.getCounterPartyId()).ifPresent(v -> builder.property(SIGNALING_COUNTER_PARTY_ID, v));
                     ofNullable(message.getDataspaceContext()).ifPresent(v -> builder.property(SIGNALING_DATASPACE_CONTEXT, v));
 
                     return builder.build();
