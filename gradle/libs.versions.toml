@@ -35,6 +35,7 @@ edc-controlplane-dcp-bom = { module = "org.eclipse.edc:controlplane-dcp-bom", ve
 edc-controlplane-feature-sql-bom = { module = "org.eclipse.edc:controlplane-feature-sql-bom", version.ref = "edc" }
 edc-data-address-http-data-spi = { module = "org.eclipse.edc:data-address-http-data-spi", version.ref = "edc" }
 edc-data-plane-selector-spi = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
+edc-data-plane-signaling-core = { module = "org.eclipse.edc:data-plane-signaling-core", version.ref = "edc" }
 edc-dsp-catalog-transform-lib = { module = "org.eclipse.edc:dsp-catalog-transform-lib", version.ref = "edc" }
 edc-http-lib = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
 edc-http-spi = { module = "org.eclipse.edc:http-spi", version.ref = "edc" }
@@ -76,7 +77,6 @@ edc-token-spi = { module = "org.eclipse.edc:token-spi", version.ref = "edc" }
 edc-transaction-spi = { module = "org.eclipse.edc:transaction-spi", version.ref = "edc" }
 edc-transaction-datasource-spi = { module = "org.eclipse.edc:transaction-datasource-spi", version.ref = "edc" }
 edc-transfer-spi = { module = "org.eclipse.edc:transfer-spi", version.ref = "edc" }
-edc-transfer-data-plane-signaling = { module = "org.eclipse.edc:transfer-data-plane-signaling", version.ref = "edc" }
 edc-transform-spi = { module = "org.eclipse.edc:transform-spi", version.ref = "edc" }
 edc-util-lib = { module = "org.eclipse.edc:util-lib", version.ref = "edc" }
 edc-vault-hashicorp = { module = "org.eclipse.edc:vault-hashicorp", version.ref = "edc" }
