@@ -28,6 +28,7 @@ import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressS
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.SASL_OAUTHBEARER_EXTENSIONS;
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.SECURITY_PROTOCOL;
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.TOPIC;
+import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 /**
  * Manages EDR creation and revocation for Kafka-PULL transfers
@@ -71,6 +72,7 @@ class KafkaEndpointDataReferenceService implements EndpointDataReferenceService 
     private DataAddress createEdr(Properties kafkaConsumerProperties, Credentials credentials, DataAddress dataAddress) {
         return DataAddress.Builder.newInstance()
                 .type("EDR")
+                .property(EDC_NAMESPACE + "endpoint", dataAddress.getStringProperty(BOOTSTRAP_SERVERS))
                 .property(KAFKA_CONSUMER_PROPERTIES, serializeToString(kafkaConsumerProperties))
                 .property(OIDC_CLIENT_ID, credentials.clientId())
                 .property(OIDC_CLIENT_SECRET, credentials.clientSecret())
@@ -104,7 +106,7 @@ class KafkaEndpointDataReferenceService implements EndpointDataReferenceService 
 
     private String serializeToString(Properties properties) {
         try (var writer = new StringWriter()) {
-            properties.store(writer, "Serialized kafka admin properties");
+            properties.store(writer, "Serialized kafka consumer properties");
             return writer.toString();
         } catch (IOException e) {
             throw new RuntimeException(e);

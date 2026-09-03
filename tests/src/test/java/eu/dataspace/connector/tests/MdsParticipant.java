@@ -108,9 +108,6 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 entry("edc.participant.context.id", id),
                 entry("web.http.path", "/api"),
                 entry("web.http.port", getFreePort() + ""),
-                // TODO: can control be not registered?!
-                entry("web.http.control.path", "/control"),
-                entry("web.http.control.port", getFreePort() + ""),
                 entry("web.http.signaling.path", "/signaling"),
                 entry("web.http.signaling.port", getFreePort() + ""),
                 entry("web.http.management.path", controlPlaneManagement.get().getPath()),
