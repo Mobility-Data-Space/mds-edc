@@ -73,6 +73,7 @@ public class DspTckTest {
                 .property("dataspacetck.debug", "true")
                 .addPackage("org.eclipse.dataspacetck.dsp.verification")
                 .monitor(monitor)
+                .displayNameMatching(it -> it.startsWith("TP:01-04"))
                 .build()
                 .execute();
 

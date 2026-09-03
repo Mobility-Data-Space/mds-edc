@@ -15,13 +15,17 @@ import org.eclipse.edc.spi.types.domain.transfer.TransferType;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import static java.util.Map.entry;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toMap;
 import static org.eclipse.edc.signaling.domain.DspDataAddress.DSP_DATA_ADDRESS_ENDPOINT;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public final class SignalingMapper {
 
+    public static final String SIGNALING_COUNTER_PARTY_ID = EDC_NAMESPACE + "counterPartyId";
     public static final String SIGNALING_DATASPACE_CONTEXT = EDC_NAMESPACE + "dataspaceContext";
 
     private SignalingMapper() {
@@ -49,7 +53,21 @@ public final class SignalingMapper {
                     ofNullable(message.getDataspaceContext()).ifPresent(v -> builder.property(SIGNALING_DATASPACE_CONTEXT, v));
 
                     ofNullable(message.getMetadata())
-                            .map(metadata -> toDataAddress(metadata, message.getTransferType())).ifPresent(builder::sourceDataAddress);
+                            .map(metadata -> {
+                                if (metadata.isEmpty()) {
+                                    // if no dataplaneMetadata was in the message, get it out of the data address
+                                    return assetIndex.findById(message.getDatasetId()).getDataAddress().getProperties()
+                                            .entrySet().stream()
+                                            .flatMap(entry -> Stream.of(
+                                                    entry,
+                                                    entry(entry.getKey().replace(EDC_NAMESPACE, ""), entry.getValue()))
+                                            )
+                                            .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+                                } else {
+                                    return metadata;
+                                }
+                            })
+                            .map(it -> toDataAddress(it, message.getTransferType())).ifPresent(builder::sourceDataAddress);
 
                     return builder.build();
                 });
