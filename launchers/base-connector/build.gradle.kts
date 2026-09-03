@@ -7,7 +7,6 @@ val edcGroupId = "org.eclipse.edc"
 dependencies {
     runtimeOnly(libs.edc.controlplane.base.bom)
     runtimeOnly(libs.edc.dataplane.base.bom)
-    runtimeOnly(libs.edc.transfer.data.plane.signaling) // legacy signaling protocol
 
     runtimeOnly(libs.edc.aws.data.plane.aws.s3)
     runtimeOnly(libs.edc.aws.validator.data.address.s3)
