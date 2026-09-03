@@ -17,8 +17,6 @@ allprojects {
 
     configurations.all {
         exclude(group = "org.eclipse.edc", module = "control-plane-api-client")
-        exclude(group = "org.eclipse.edc", module = "data-plane-signaling-core")
-        exclude(group = "org.eclipse.edc", module = "data-plane-signaling-oauth2")
 
         resolutionStrategy.eachDependency {
             if (requested.group.startsWith("org.eclipse.jetty")) {

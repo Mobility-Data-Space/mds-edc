@@ -1,1 +1,3 @@
+eu.dataspace.connector.dataplane.controller.DataplaneSelfRegistrationExtension
 eu.dataspace.connector.dataplane.controller.EmbeddedDataPlaneExtension
+eu.dataspace.connector.dataplane.client.EmbeddedDataPlaneClientExtension
