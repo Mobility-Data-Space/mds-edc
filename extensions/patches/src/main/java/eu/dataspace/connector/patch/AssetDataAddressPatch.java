@@ -40,7 +40,6 @@ public class AssetDataAddressPatch implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        webService.registerDynamicResource(ApiContext.MANAGEMENT, AssetApiV3Controller.class, new DataAddressToDataplaneMetadata(typeManager, monitor));
         webService.registerDynamicResource(ApiContext.MANAGEMENT, AssetApiV4Controller.class, new DataAddressToDataplaneMetadata(typeManager, monitor));
     }
 
