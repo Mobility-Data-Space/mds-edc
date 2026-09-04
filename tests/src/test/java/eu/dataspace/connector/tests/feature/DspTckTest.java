@@ -91,7 +91,7 @@ public class DspTckTest {
         properties.put("dataspacetck.dsp.connector.negotiation.initiate.url", WEBHOOK_URL + "/negotiations/requests");
         properties.put("dataspacetck.dsp.connector.transfer.initiate.url", WEBHOOK_URL + "/transfers/requests");
         properties.put("dataspacetck.dsp.connector.agent.id", "participantContextId");
-        properties.put("dataspacetck.dsp.connector.http.headers.authorization", "{\"region\": \"any\", \"audience\": \"any\", \"clientId\":\"any\"}");
+        properties.put("dataspacetck.dsp.connector.http.headers.authorization", "{\"clientId\":\"TCK_PARTICIPANT\"}");
         properties.put("dataspacetck.dsp.jsonld.context.edc.uri", "https://w3id.org/edc/dspace/v0.0.1");
         properties.put("dataspacetck.dsp.jsonld.context.edc.path", resourceConfig("tck/dspace-edc-context-v1.jsonld"));
 
