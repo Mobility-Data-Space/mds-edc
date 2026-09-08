@@ -53,20 +53,6 @@ public final class SignalingMapper {
                     ofNullable(message.getDataspaceContext()).ifPresent(v -> builder.property(SIGNALING_DATASPACE_CONTEXT, v));
 
                     ofNullable(message.getMetadata())
-                            .map(metadata -> {
-                                if (metadata.isEmpty()) {
-                                    // if no dataplaneMetadata was in the message, get it out of the data address
-                                    return assetIndex.findById(message.getDatasetId()).getDataAddress().getProperties()
-                                            .entrySet().stream()
-                                            .flatMap(entry -> Stream.of(
-                                                    entry,
-                                                    entry(entry.getKey().replace(EDC_NAMESPACE, ""), entry.getValue()))
-                                            )
-                                            .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
-                                } else {
-                                    return metadata;
-                                }
-                            })
                             .map(SignalingMapper::toDataAddress).ifPresent(builder::sourceDataAddress);
 
                     return builder.build();
@@ -128,7 +114,7 @@ public final class SignalingMapper {
      */
     public static DataAddress toDataAddress(Map<String, Object> metadata) {
         var builder = DataAddress.Builder.newInstance()
-                .type(metadata.get("type").toString());
+                .type(metadata.get(EDC_NAMESPACE + "type").toString());
 
         metadata.forEach((key, value) -> builder.property(key, value.toString()));
 
