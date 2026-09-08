@@ -7,6 +7,7 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.ReaderInterceptor;
 import jakarta.ws.rs.ext.ReaderInterceptorContext;
+import org.eclipse.edc.connector.controlplane.api.management.asset.v3.AssetApiV3Controller;
 import org.eclipse.edc.connector.controlplane.api.management.asset.v4.AssetApiV4Controller;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.DataplaneMetadata;
@@ -37,16 +38,17 @@ public class AssetDataAddressPatch implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        webService.registerDynamicResource(ApiContext.MANAGEMENT, AssetApiV4Controller.class, new MyClientRequestFilter(typeManager, monitor));
+        webService.registerDynamicResource(ApiContext.MANAGEMENT, AssetApiV3Controller.class, new DataAddressToDataplaneMetadata(typeManager, monitor));
+        webService.registerDynamicResource(ApiContext.MANAGEMENT, AssetApiV4Controller.class, new DataAddressToDataplaneMetadata(typeManager, monitor));
     }
 
     @Provider
     @Priority(10_000)
-    public static class MyClientRequestFilter implements ReaderInterceptor {
+    public static class DataAddressToDataplaneMetadata implements ReaderInterceptor {
         private final TypeManager typeManager;
         private final Monitor monitor;
 
-        public MyClientRequestFilter(TypeManager typeManager, Monitor monitor) {
+        public DataAddressToDataplaneMetadata(TypeManager typeManager, Monitor monitor) {
             this.typeManager = typeManager;
             this.monitor = monitor;
         }

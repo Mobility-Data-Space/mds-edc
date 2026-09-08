@@ -23,6 +23,8 @@ web.http.protocol.path = /api/dsp
 web.http.protocol.port = 8183
 web.http.public.path = /public
 web.http.public.port = 8185
+web.http.signaling.path = /api/signaling
+web.http.signaling.port = 8186
 
 edc.dsp.callback.address = "https://my-connector-address/api/dsp"
 edc.dataplane.api.public.baseurl = "http://my-connector-address/public"
