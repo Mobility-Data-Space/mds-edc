@@ -35,6 +35,8 @@ edc-controlplane-base-bom = { module = "org.eclipse.edc:controlplane-base-bom", 
 edc-controlplane-dcp-bom = { module = "org.eclipse.edc:controlplane-dcp-bom", version.ref = "edc" }
 edc-controlplane-feature-sql-bom = { module = "org.eclipse.edc:controlplane-feature-sql-bom", version.ref = "edc" }
 edc-data-plane-spi = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
+edc-data-plane-core = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
+edc-data-plane-util = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
 edc-dataplane-base-bom = { module = "org.eclipse.edc:dataplane-base-bom", version.ref = "edc" }
 edc-dataplane-feature-sql-bom = { module = "org.eclipse.edc:dataplane-feature-sql-bom", version.ref = "edc" }
 edc-dsp-catalog-transform-lib = { module = "org.eclipse.edc:dsp-catalog-transform-lib", version.ref = "edc" }
@@ -79,9 +81,6 @@ edc-validator-spi = { module = "org.eclipse.edc:validator-spi", version.ref = "e
 edc-validator-lib = { module = "org.eclipse.edc:validator-lib", version.ref = "edc" }
 edc-web-spi = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 
-edc-aws-data-plane-aws-s3 = { module = "org.eclipse.edc.aws:data-plane-aws-s3", version.ref = "edc" }
-edc-aws-validator-data-address-s3 = { module = "org.eclipse.edc.aws:validator-data-address-s3", version.ref = "edc" }
-
 edc-azure-data-plane-azure-storage = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
 
 logging-house-client = { module = "mds-logging-house:client", version.ref = "logging-house-client" }
@@ -90,6 +89,7 @@ assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
 aws-iam = { module = "software.amazon.awssdk:iam", version.ref = "aws" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
+aws-sts = { module = "software.amazon.awssdk:sts", version.ref = "aws" }
 azure-storage-blob = { group = "com.azure", name = "azure-storage-blob", version.ref = "azure-storage-blob" }
 bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
 dsp-tck = { module = "org.eclipse.dataspacetck.dsp:dsp-tck", version.ref = "dsp-tck" }

@@ -9,8 +9,8 @@ dependencies {
     runtimeOnly(libs.edc.dataplane.base.bom)
     runtimeOnly(libs.edc.transfer.data.plane.signaling) // legacy signaling protocol
 
-    runtimeOnly(libs.edc.aws.data.plane.aws.s3)
-    runtimeOnly(libs.edc.aws.validator.data.address.s3)
+    implementation(project(":extensions:data-plane:aws:data-plane-aws-s3"))
+    implementation(project(":extensions:data-plane:aws:validator-data-address-s3"))
     runtimeOnly(libs.edc.azure.data.plane.azure.storage)
 
     implementation(project(":extensions:agreements:retirement-evaluation-api"))
