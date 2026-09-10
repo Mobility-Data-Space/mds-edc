@@ -11,7 +11,7 @@ dependencies {
 
     implementation(project(":extensions:data-plane:aws:data-plane-aws-s3"))
     implementation(project(":extensions:data-plane:aws:validator-data-address-s3"))
-    runtimeOnly(libs.edc.azure.data.plane.azure.storage)
+    implementation(project(":extensions:data-plane:azure:data-plane-azure-storage"))
 
     implementation(project(":extensions:agreements:retirement-evaluation-api"))
     implementation(project(":extensions:agreements:retirement-evaluation-core"))

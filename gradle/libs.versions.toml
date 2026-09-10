@@ -2,7 +2,6 @@
 assertj = "3.27.7"
 awaitility = "4.3.0"
 aws = "2.54.12"
-azure-storage-blob = "12.35.1"
 bouncycastle = "1.85"
 dsp-tck = "1.0.1"
 edc = "0.18.0"
@@ -47,6 +46,7 @@ edc-identityhub-feature-sql-bom = { module = "org.eclipse.edc:identityhub-featur
 edc-iam-mock = { module = "org.eclipse.edc:iam-mock", version.ref = "edc" }
 edc-jersey-core = { module = "org.eclipse.edc:jersey-core", version.ref = "edc" }
 edc-jersey-providers-lib = { module = "org.eclipse.edc:jersey-providers-lib", version.ref = "edc" }
+edc-json-lib = { module = "org.eclipse.edc:json-lib", version.ref = "edc" }
 edc-json-ld-spi = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-json-ld-lib = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
 edc-junit = { module = "org.eclipse.edc:junit", version.ref = "edc" }
@@ -81,8 +81,6 @@ edc-validator-spi = { module = "org.eclipse.edc:validator-spi", version.ref = "e
 edc-validator-lib = { module = "org.eclipse.edc:validator-lib", version.ref = "edc" }
 edc-web-spi = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 
-edc-azure-data-plane-azure-storage = { module = "org.eclipse.edc.azure:data-plane-azure-storage", version.ref = "edc" }
-
 logging-house-client = { module = "mds-logging-house:client", version.ref = "logging-house-client" }
 
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
@@ -90,7 +88,8 @@ awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" 
 aws-iam = { module = "software.amazon.awssdk:iam", version.ref = "aws" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 aws-sts = { module = "software.amazon.awssdk:sts", version.ref = "aws" }
-azure-storage-blob = { group = "com.azure", name = "azure-storage-blob", version.ref = "azure-storage-blob" }
+azure-storage-blob = { group = "com.azure", name = "azure-storage-blob", version = "12.35.1" }
+azure-identity = { group = "com.azure", name = "azure-identity", version = "1.18.2" }
 bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
 dsp-tck = { module = "org.eclipse.dataspacetck.dsp:dsp-tck", version.ref = "dsp-tck" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
