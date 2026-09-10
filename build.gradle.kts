@@ -22,8 +22,8 @@ allprojects {
 
         resolutionStrategy.eachDependency {
             if (requested.group == "io.netty" && !requested.name.startsWith("netty-tcnative")) {
-                useVersion("4.1.136.Final")
-                because("CVE-2026-42578, CVE-2026-42579, CVE-2026-45536, CVE-2026-45673, CVE-2026-45674, CVE-2026-47691, CVE-2026-59901, CVE-2026-55831, CVE-2026-55833, CVE-2026-56745")
+                useVersion("4.1.137.Final")
+                because("CVE-2026-42578, CVE-2026-42579, CVE-2026-45536, CVE-2026-45673, CVE-2026-45674, CVE-2026-47691, CVE-2026-59901, CVE-2026-55831, CVE-2026-55833, CVE-2026-56745, CVE-2026-75595")
             }
             if (requested.group.startsWith("org.eclipse.jetty")) {
                 useVersion("12.1.10")
@@ -74,8 +74,10 @@ allprojects {
     }
 
     dependencies {
+        testImplementation(rootProject.libs.assertj)
         testImplementation(rootProject.libs.junit.jupiter)
         testImplementation(rootProject.libs.junit.platform.launcher)
+        testImplementation(rootProject.libs.mockito.core)
     }
 
     tasks.register("resolveAndLockAll") {
