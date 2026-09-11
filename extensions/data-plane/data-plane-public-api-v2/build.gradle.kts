@@ -8,7 +8,7 @@ dependencies {
     api(libs.edc.core.spi)
     api(libs.edc.http.spi)
     api(libs.edc.web.spi)
-    api(libs.edc.data.plane.spi)
+    api(project(":extensions:data-plane:data-plane-spi"))
 
     implementation(libs.edc.util.lib)
     implementation(libs.nimbus.jwt)

@@ -6,7 +6,7 @@ plugins {
 dependencies {
     implementation(project(":extensions:data-plane:kafka:data-plane-kafka-spi"))
     implementation(libs.edc.core.spi)
-    implementation(libs.edc.data.plane.spi)
+    implementation(project(":extensions:data-plane:data-plane-spi"))
     implementation(libs.edc.http.spi)
     implementation(libs.edc.jwt.spi)
     implementation(libs.edc.util.lib)

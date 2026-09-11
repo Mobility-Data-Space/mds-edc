@@ -16,11 +16,11 @@ dependencies {
     runtimeOnly(libs.edc.vault.hashicorp)
 
     runtimeOnly(libs.edc.controlplane.feature.sql.bom)
-    runtimeOnly(libs.edc.dataplane.feature.sql.bom)
 
     implementation(project(":extensions:agreements:retirement-evaluation-store-sql"))
-    implementation(project(":extensions:data-plane:observer-sql"))
     implementation(project(":extensions:database-schema-migration-connector"))
+
+    implementation(project(":extensions:data-plane:sql"))
 
     runtimeOnly(libs.logging.house.client)
 

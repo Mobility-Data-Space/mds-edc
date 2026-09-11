@@ -10,7 +10,7 @@ dependencies {
     implementation(libs.azure.identity)
     implementation(libs.edc.util.lib)
 
-    testFixturesApi(libs.edc.data.plane.util)
+    testFixturesApi(project(":extensions:data-plane:data-plane-util"))
 }
 
 
