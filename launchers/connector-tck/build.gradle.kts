@@ -9,8 +9,7 @@ val edcGroupId = "org.eclipse.edc"
 
 dependencies {
     runtimeOnly(libs.edc.controlplane.base.bom)
-    runtimeOnly(libs.edc.dataplane.base.bom)
-
+    implementation(project(":extensions:data-plane"))
     implementation(project(":extensions:embedded-data-plane"))
 
     runtimeOnly(libs.edc.iam.mock)

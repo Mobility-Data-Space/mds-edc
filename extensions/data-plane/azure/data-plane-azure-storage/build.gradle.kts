@@ -4,9 +4,9 @@ plugins {
 
 dependencies {
     api(project(":extensions:data-plane:azure:azure-blob-core"))
-    api(libs.edc.data.plane.spi)
+    api(project(":extensions:data-plane:data-plane-spi"))
     api(libs.edc.participant.context.single.spi)
-    implementation(libs.edc.data.plane.util)
+    implementation(project(":extensions:data-plane:data-plane-util"))
     implementation(libs.edc.util.lib)
 
     implementation(libs.azure.storage.blob)

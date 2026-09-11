@@ -6,7 +6,7 @@ val edcGroupId = "org.eclipse.edc"
 
 dependencies {
     runtimeOnly(libs.edc.controlplane.base.bom)
-    runtimeOnly(libs.edc.dataplane.base.bom)
+    implementation(project(":extensions:data-plane"))
     runtimeOnly(libs.edc.transfer.data.plane.signaling) // legacy signaling protocol
 
     implementation(project(":extensions:data-plane:aws:data-plane-aws-s3"))
@@ -16,10 +16,7 @@ dependencies {
     implementation(project(":extensions:agreements:retirement-evaluation-api"))
     implementation(project(":extensions:agreements:retirement-evaluation-core"))
     implementation(project(":extensions:data-address-store-patch"))
-    implementation(project(":extensions:data-plane:data-plane-public-api-v2"))
-    implementation(project(":extensions:data-plane:observer"))
     implementation(project(":extensions:embedded-data-plane"))
-    implementation(project(":extensions:data-plane:kafka:data-plane-kafka"))
     implementation(project(":extensions:logging-house-publisher"))
     implementation(project(":extensions:management-jsonld-context"))
     implementation(project(":extensions:manual-negotiation-approval"))

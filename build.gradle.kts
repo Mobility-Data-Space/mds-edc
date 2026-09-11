@@ -75,6 +75,7 @@ allprojects {
 
     dependencies {
         testImplementation(rootProject.libs.assertj)
+        testImplementation(rootProject.libs.edc.junit)
         testImplementation(rootProject.libs.junit.jupiter)
         testImplementation(rootProject.libs.junit.platform.launcher)
         testImplementation(rootProject.libs.mockito.core)
