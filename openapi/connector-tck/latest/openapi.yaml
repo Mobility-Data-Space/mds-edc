@@ -1512,6 +1512,79 @@ paths:
           description: A contract negotiation with the given ID does not exist
       tags:
       - Contract Negotiation v4
+  /{any}:
+    delete:
+      description: Send `DELETE` data query to the Data Plane.
+      operationId: delete
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+      tags:
+      - Data Plane public API
+    get:
+      description: Send `GET` data query to the Data Plane.
+      operationId: get
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+      tags:
+      - Data Plane public API
+    head:
+      description: Send `HEAD` data query to the Data Plane.
+      operationId: head
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+      tags:
+      - Data Plane public API
+    patch:
+      description: Send `PATCH` data query to the Data Plane.
+      operationId: patch
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+      tags:
+      - Data Plane public API
+    post:
+      description: Send `POST` data query to the Data Plane.
+      operationId: post
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+      tags:
+      - Data Plane public API
+    put:
+      description: Send `PUT` data query to the Data Plane.
+      operationId: put
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+      tags:
+      - Data Plane public API
   /v3/dataplanes:
     get:
       deprecated: true
