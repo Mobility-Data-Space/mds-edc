@@ -18,7 +18,6 @@ public class EmbeddedDataPlaneClientExtension implements ServiceExtension {
     @Inject
     private AssetIndex assetIndex;
 
-
     @Override
     public void initialize(ServiceExtensionContext context) {
         context.registerService(ClientFactory.class, new EmbeddedClientFactory(dataPlaneManager, context.getMonitor(), assetIndex));
