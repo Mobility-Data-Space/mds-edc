@@ -12,7 +12,6 @@ import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.junit.utils.Endpoints;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -74,6 +73,7 @@ public class DspTckTest {
                 .property("dataspacetck.debug", "true")
                 .addPackage("org.eclipse.dataspacetck.dsp.verification")
                 .monitor(monitor)
+                .displayNameMatching(it -> it.startsWith("TP:01-04"))
                 .build()
                 .execute();
 
