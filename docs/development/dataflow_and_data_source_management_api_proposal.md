@@ -181,7 +181,7 @@ Built as the four-module quartet used by `retirement-evaluation`: a `datasource-
 The `edc_data_source` table holds only the queryable attributes — `id`, `name`, `type` — and acts as the lookup index
 for `POST /v4/datasources/request`. The `properties` are sensitive backend configuration, **stored in the vault** keyed
 by data source id and hydrated on read, mirroring `VaultDataAddressStorePatch`. The migration adds `edc_data_source`
-after the current head (`V1_10_0__Asset_DataAddress_DataplaneMetadata.sql`), as `V1_11_0`.
+after the current head (`V1_11_0__Asset_DataAddress_DataplaneMetadata.sql`), as `V1_12_0`.
 
 ## Implementation Plan
 

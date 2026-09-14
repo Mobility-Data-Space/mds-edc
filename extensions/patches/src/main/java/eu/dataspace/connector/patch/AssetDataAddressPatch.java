@@ -2,6 +2,7 @@ package eu.dataspace.connector.patch;
 
 import jakarta.annotation.Priority;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.ext.Provider;
@@ -59,23 +60,22 @@ public class AssetDataAddressPatch implements ServiceExtension {
                 return context.proceed();
             }
 
-            var bytes = context.getInputStream().readAllBytes();
-            if (bytes.length == 0) {
+            var stream = context.getInputStream();
+            if (stream.available() == 0) {
                 return context.proceed();
             }
 
+            var bytes = stream.readAllBytes();
             var jsonObject = typeManager.getMapper(JSON_LD).readValue(bytes, JsonObject.class);
-            if (!jsonObject.getJsonArray(TYPE).contains(Json.createValue(Asset.EDC_ASSET_TYPE))) {
-                return context.proceed();
-            }
-
-            if (!jsonObject.containsKey(Asset.EDC_ASSET_DATA_ADDRESS)) {
+            var type = jsonObject.getJsonArray(TYPE);
+            if (type == null || !type.contains(Json.createValue(Asset.EDC_ASSET_TYPE)) || !jsonObject.containsKey(Asset.EDC_ASSET_DATA_ADDRESS)) {
+                context.setInputStream(new ByteArrayInputStream(bytes));
                 return context.proceed();
             }
 
             monitor.warning("`dataAddress` attribute has been deprecated, `dataplaneMetadata` should be used instead");
 
-            var dataAddress = jsonObject.getJsonArray(Asset.EDC_ASSET_DATA_ADDRESS);
+            var dataAddress = jsonObject.get(Asset.EDC_ASSET_DATA_ADDRESS);
             var modified = Json.createObjectBuilder(jsonObject)
                     .remove(Asset.EDC_ASSET_DATA_ADDRESS)
                     .add(Asset.EDC_ASSET_DATAPLANE_METADATA, Json.createArrayBuilder().add(Json.createObjectBuilder()

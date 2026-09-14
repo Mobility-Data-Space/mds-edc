@@ -194,7 +194,7 @@ public class ConnectorPostgresqlMigrationTest {
 
     }
     @Nested
-    class V1_10_0 {
+    class V1_11_0 {
 
         @BeforeEach
         void setUp(ServiceExtensionContext context) {
@@ -211,7 +211,7 @@ public class ConnectorPostgresqlMigrationTest {
         void shouldMigrateAssetDataAddressToDataplaneMetadataProperties(ObjectFactory objectFactory, ServiceExtensionContext context) {
             var participantContextId = UUID.randomUUID().toString();
 
-            migrateTo(objectFactory, context, "1.9.0", participantContextId);
+            migrateTo(objectFactory, context, "1.10.0", participantContextId);
 
             var assetIndexServiceExtension = objectFactory.constructInstance(SqlAssetIndexServiceExtension.class);
             assetIndexServiceExtension.initialize(context);
@@ -223,7 +223,7 @@ public class ConnectorPostgresqlMigrationTest {
                     .participantContextId(participantContextId).build();
             assetIndex.create(asset).orElseThrow(f -> new EdcException("Asset Index could not be created " + f.getFailureDetail()));
 
-            migrateTo(objectFactory, context, "1.10.0", participantContextId);
+            migrateTo(objectFactory, context, "1.11.0", participantContextId);
 
             var byId = assetIndex.findById(assetId);
             assertThat(byId.getDataplaneMetadata().getProperties()).isEqualTo(asset.getDataAddress().getProperties());

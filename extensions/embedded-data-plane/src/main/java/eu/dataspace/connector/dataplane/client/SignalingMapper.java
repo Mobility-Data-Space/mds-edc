@@ -15,17 +15,13 @@ import org.eclipse.edc.spi.types.domain.transfer.TransferType;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import static java.util.Map.entry;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toMap;
 import static org.eclipse.edc.signaling.domain.DspDataAddress.DSP_DATA_ADDRESS_ENDPOINT;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public final class SignalingMapper {
 
-    public static final String SIGNALING_COUNTER_PARTY_ID = EDC_NAMESPACE + "counterPartyId";
     public static final String SIGNALING_DATASPACE_CONTEXT = EDC_NAMESPACE + "dataspaceContext";
 
     private SignalingMapper() {
@@ -53,7 +49,7 @@ public final class SignalingMapper {
                     ofNullable(message.getDataspaceContext()).ifPresent(v -> builder.property(SIGNALING_DATASPACE_CONTEXT, v));
 
                     ofNullable(message.getMetadata())
-                            .map(SignalingMapper::toDataAddress).ifPresent(builder::sourceDataAddress);
+                            .map(metadata -> toDataAddress(metadata, message.getTransferType())).ifPresent(builder::sourceDataAddress);
 
                     return builder.build();
                 });
@@ -112,9 +108,10 @@ public final class SignalingMapper {
     /**
      * Converts a protocol {@link DspDataAddress} to a legacy {@link DataAddress}.
      */
-    public static DataAddress toDataAddress(Map<String, Object> metadata) {
+    public static DataAddress toDataAddress(Map<String, Object> metadata, String transferType) {
+        var type = metadata.getOrDefault(EDC_NAMESPACE + "type", transferType.split("-")[0]);
         var builder = DataAddress.Builder.newInstance()
-                .type(metadata.get(EDC_NAMESPACE + "type").toString());
+                .type(type.toString());
 
         metadata.forEach((key, value) -> builder.property(key, value.toString()));
 
@@ -180,7 +177,7 @@ public final class SignalingMapper {
      */
     public static DataFlowStatusMessage statusMessage(String dataFlowId, DataFlowStates state, DataAddress dataAddress) {
         return DataFlowStatusMessage.Builder.newInstance()
-//                .dataFlowId(dataFlowId) TODO: this can be enabled when EDC updates to 1.0.0
+                //  .dataFlowId(dataFlowId) TODO: this can be enabled when EDC updates to 1.0.0
                 .state(toProtocolState(state))
                 .dataAddress(Optional.ofNullable(dataAddress).map(SignalingMapper::toDspDataAddress).orElse(null))
                 .build();
