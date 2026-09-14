@@ -1,7 +1,7 @@
 [versions]
 assertj = "3.27.7"
 awaitility = "4.3.0"
-aws = "2.54.12"
+aws = "2.54.16"
 bouncycastle = "1.85"
 dsp-tck = "1.0.1"
 edc = "0.18.0"
