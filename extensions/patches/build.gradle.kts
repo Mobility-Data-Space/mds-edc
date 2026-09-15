@@ -6,6 +6,8 @@ plugins {
 dependencies {
     api(libs.edc.core.spi)
     api(libs.edc.json.ld.spi)
+    api(libs.edc.policy.monitor.spi)
+    api(libs.edc.transaction.spi)
     api(libs.edc.transfer.spi)
     api(libs.edc.transform.spi)
 
