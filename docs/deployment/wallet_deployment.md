@@ -180,8 +180,8 @@ The connector participant that owns this DID needs four config values that point
 EDC_IAM_STS_OAUTH_CLIENT_ID=${PARTICIPANT_DID}
 EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS=${PARTICIPANT_DID}-sts-client-secret
 EDC_IAM_STS_OAUTH_TOKEN_URL=${WALLET_HOST}/api/sts/token
-EDC_IAM_TRUSTED_ISSUER_ISSUER_ID=${ISSUER_DID}
-EDC_IAM_TRUSTED_ISSUER_ISSUER_SUPPORTEDTYPES=["MembershipCredential"]
+EDC_IAM_TRUSTEDISSUER_ISSUER_ID=${ISSUER_DID}
+EDC_IAM_TRUSTEDISSUER_ISSUER_SUPPORTEDTYPES=["MembershipCredential"]
 ```
 
 The connector reads `EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS` from **its own** Vault, not from the wallet's Vault — store the client secret returned by the participant-registration call at that alias in the connector's Vault before the connector boots.

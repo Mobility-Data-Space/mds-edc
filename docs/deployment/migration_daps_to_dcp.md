@@ -127,8 +127,8 @@ EDC_IAM_ISSUER_ID=did:web:wallet.example.com
 EDC_IAM_STS_OAUTH_CLIENT_ID=did:web:wallet.example.com
 EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS=did:web:wallet.example.com-sts-client-secret
 EDC_IAM_STS_OAUTH_TOKEN_URL=https://wallet.example.com/api/sts/token
-EDC_IAM_TRUSTED_ISSUER_ISSUER_ID=did:web:issuer.mobility-dataspace.eu
-EDC_IAM_TRUSTED_ISSUER_ISSUER_SUPPORTEDTYPES=["MembershipCredential"]
+EDC_IAM_TRUSTEDISSUER_ISSUER_ID=did:web:issuer.mobility-dataspace.eu
+EDC_IAM_TRUSTEDISSUER_ISSUER_SUPPORTEDTYPES=["MembershipCredential"]
 EDC_IAM_DID_WEB_USE_HTTPS=true
 ```
 
@@ -137,8 +137,8 @@ EDC_IAM_DID_WEB_USE_HTTPS=true
 | `EDC_PARTICIPANT_ID`, `EDC_IAM_ISSUER_ID`, `EDC_IAM_STS_OAUTH_CLIENT_ID` | your DID |
 | `EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS` | the Vault alias from step 1 |
 | `EDC_IAM_STS_OAUTH_TOKEN_URL` | your wallet's STS endpoint |
-| `EDC_IAM_TRUSTED_ISSUER_ISSUER_ID` | the MDS issuer DID |
-| `EDC_IAM_TRUSTED_ISSUER_ISSUER_SUPPORTEDTYPES` | `["MembershipCredential"]` |
+| `EDC_IAM_TRUSTEDISSUER_ISSUER_ID` | the MDS issuer DID |
+| `EDC_IAM_TRUSTEDISSUER_ISSUER_SUPPORTEDTYPES` | `["MembershipCredential"]` |
 | `EDC_IAM_DID_WEB_USE_HTTPS` | `true` — required in production |
 
 ### 4. Restart
