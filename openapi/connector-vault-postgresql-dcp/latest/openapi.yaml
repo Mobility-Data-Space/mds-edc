@@ -5472,6 +5472,82 @@ components:
         errorDetail: errorDetail
         correlationId: correlationId
         assetId: assetId
+        policy:
+          '@type': '@type'
+          profile:
+          - PolicyClass_profile
+          - PolicyClass_profile
+          permission:
+          - action: action
+            constraint:
+            - and:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              or:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - and:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              or:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          - action: action
+            constraint:
+            - and:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              or:
+              - null
+              - null
+              xone:
+              - null
+              - null
+            - and:
+              - null
+              - null
+              andSequence:
+              - null
+              - null
+              or:
+              - null
+              - null
+              xone:
+              - null
+              - null
+          prohibition:
+          - action: action
+            constraint:
+            - null
+            - null
+          - action: action
+            constraint:
+            - null
+            - null
+          obligation:
+          - action: null
+            constraint:
+            - null
+            - null
+          - action: null
+            constraint:
+            - null
+            - null
         contractAgreementId: contractAgreementId
       title: ContractNegotiationSchema
       type: object
@@ -5518,6 +5594,8 @@ components:
           type: string
         assetId:
           type: string
+        policy:
+          $ref: "#/components/schemas/PolicyClass_1"
         contractAgreementId:
           type: string
       required:
@@ -5531,6 +5609,106 @@ components:
       - protocol
       - state
       - type
+      type: object
+    PolicyClass_1:
+      example:
+        '@type': '@type'
+        profile:
+        - PolicyClass_profile
+        - PolicyClass_profile
+        permission:
+        - action: action
+          constraint:
+          - and:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            or:
+            - null
+            - null
+            xone:
+            - null
+            - null
+          - and:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            or:
+            - null
+            - null
+            xone:
+            - null
+            - null
+        - action: action
+          constraint:
+          - and:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            or:
+            - null
+            - null
+            xone:
+            - null
+            - null
+          - and:
+            - null
+            - null
+            andSequence:
+            - null
+            - null
+            or:
+            - null
+            - null
+            xone:
+            - null
+            - null
+        prohibition:
+        - action: action
+          constraint:
+          - null
+          - null
+        - action: action
+          constraint:
+          - null
+          - null
+        obligation:
+        - action: null
+          constraint:
+          - null
+          - null
+        - action: null
+          constraint:
+          - null
+          - null
+      properties:
+        '@type':
+          type: string
+        profile:
+          $ref: "#/components/schemas/PolicyClass_profile"
+        permission:
+          items:
+            $ref: "#/components/schemas/Permission"
+          minItems: 1
+          type: array
+        prohibition:
+          items:
+            $ref: "#/components/schemas/Prohibition"
+          minItems: 1
+          type: array
+        obligation:
+          items:
+            $ref: "#/components/schemas/Duty"
+          minItems: 1
+          type: array
+      required:
+      - '@type'
       type: object
     NegotiationState_1:
       example:
@@ -5947,106 +6125,6 @@ components:
       - '@context'
       - '@type'
       - policy
-      type: object
-    PolicyClass_1:
-      example:
-        '@type': '@type'
-        profile:
-        - PolicyClass_profile
-        - PolicyClass_profile
-        permission:
-        - action: action
-          constraint:
-          - and:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            or:
-            - null
-            - null
-            xone:
-            - null
-            - null
-          - and:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            or:
-            - null
-            - null
-            xone:
-            - null
-            - null
-        - action: action
-          constraint:
-          - and:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            or:
-            - null
-            - null
-            xone:
-            - null
-            - null
-          - and:
-            - null
-            - null
-            andSequence:
-            - null
-            - null
-            or:
-            - null
-            - null
-            xone:
-            - null
-            - null
-        prohibition:
-        - action: action
-          constraint:
-          - null
-          - null
-        - action: action
-          constraint:
-          - null
-          - null
-        obligation:
-        - action: null
-          constraint:
-          - null
-          - null
-        - action: null
-          constraint:
-          - null
-          - null
-      properties:
-        '@type':
-          type: string
-        profile:
-          $ref: "#/components/schemas/PolicyClass_profile"
-        permission:
-          items:
-            $ref: "#/components/schemas/Permission"
-          minItems: 1
-          type: array
-        prohibition:
-          items:
-            $ref: "#/components/schemas/Prohibition"
-          minItems: 1
-          type: array
-        obligation:
-          items:
-            $ref: "#/components/schemas/Duty"
-          minItems: 1
-          type: array
-      required:
-      - '@type'
       type: object
     policy-evaluation-plan-schema:
       allOf:
