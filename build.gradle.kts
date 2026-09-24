@@ -65,6 +65,10 @@ allprojects {
                 useVersion("1.11.1")
                 because("CVE-2026-59949")
             }
+            if (requested.group == "org.bouncycastle") {
+                useVersion("1.85")
+                because("CVE-2026-8763, CVE-2026-13506")
+            }
         }
     }
 
