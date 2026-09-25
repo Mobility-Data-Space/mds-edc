@@ -2,19 +2,21 @@ package eu.dataspace.dataplane.observer.subscriber;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementRetired;
+import eu.dataspace.dataplane.observer.ObserverConfig;
 import eu.dataspace.dataplane.observer.model.event.ObserverEventStored;
 import eu.dataspace.dataplane.observer.store.ObserverEventStore;
 import eu.dataspace.dataplane.observer.store.PendingObserverEvent;
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessStarted;
-import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.edc.spi.event.EventRouter;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -30,12 +32,15 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 class StoreObserverEventTest {
 
     private final ObjectMapper objectMapper = JacksonJsonLd.createObjectMapper();
     private final ObserverEventStore store = mock();
     private final EventRouter eventRouter = mock();
+    private final ObserverConfig configuration = mock();
+    private final ContractAgreementService agreementService = mock();
     private final Clock clock = Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneId.of("UTC"));
 
     private final ParticipantContext participantContext = ParticipantContext.Builder.newInstance()
@@ -44,7 +49,12 @@ class StoreObserverEventTest {
             .build();
 
     private final StoreObserverEvent subscriber = new StoreObserverEvent(
-            participantContext, () -> objectMapper, store, eventRouter, clock, Duration.ofSeconds(1));
+            participantContext, () -> objectMapper, store, eventRouter, clock, Duration.ofSeconds(1), configuration, agreementService);
+
+    @BeforeEach
+    void setUp() {
+        when(configuration.id()).thenReturn("observer-id");
+    }
 
     @Test
     void shouldSaveToStoreAndPublishEvent_onContractNegotiationFinalized() {
@@ -74,7 +84,6 @@ class StoreObserverEventTest {
         var event = TransferProcessStarted.Builder.newInstance()
                 .transferProcessId("tp-1")
                 .assetId("asset-1")
-                .type(TransferProcess.Type.PROVIDER.name())
                 .contractId("contract-1")
                 .protocol("dataspace-protocol-http:2025-1")
                 .build();
@@ -98,13 +107,13 @@ class StoreObserverEventTest {
     }
 
     @Test
-    void shouldIgnore_whenContractNegotiationIsConsumerSide() {
+    void shouldIgnore_whenContractNegotiationIsObserverNegotiation() {
         var event = ContractNegotiationFinalized.Builder.newInstance()
                 .contractNegotiationId("neg-1")
                 .counterPartyAddress("http://consumer.example/dsp")
                 .counterPartyId("consumer-participant")
                 .protocol("dataspace-protocol-http:2025-1")
-                .contractAgreement(contractAgreement("another-provider"))
+                .contractAgreement(contractAgreement("observer-id"))
                 .build();
 
         subscriber.on(envelope(event));
@@ -113,11 +122,11 @@ class StoreObserverEventTest {
     }
 
     @Test
-    void shouldIgnore_whenTransferProcessIsConsumerSide() {
+    void shouldIgnore_whenTransferProcessIsObserverTransfer() {
+        when(agreementService.findById("contract-1")).thenReturn(contractAgreement("observer-id"));
         var event = TransferProcessStarted.Builder.newInstance()
                 .transferProcessId("tp-1")
                 .assetId("asset-1")
-                .type(TransferProcess.Type.CONSUMER.name())
                 .contractId("contract-1")
                 .protocol("dataspace-protocol-http:2025-1")
                 .build();

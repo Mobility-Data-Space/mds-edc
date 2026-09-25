@@ -2,6 +2,7 @@ package eu.dataspace.dataplane.observer;
 
 import eu.dataspace.dataplane.observer.store.ObserverEventStore;
 import org.eclipse.edc.connector.controlplane.services.spi.catalog.CatalogService;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.connector.controlplane.services.spi.contractnegotiation.ContractNegotiationService;
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.http.spi.EdcHttpClient;
@@ -28,6 +29,8 @@ public class ObserverManagerExtension implements ServiceExtension {
     private Monitor monitor;
     @Inject
     private ContractNegotiationService negotiationService;
+    @Inject
+    private ContractAgreementService contractAgreementService;
     @Inject
     private CatalogService catalogService;
     @Inject
@@ -78,9 +81,9 @@ public class ObserverManagerExtension implements ServiceExtension {
                 monitor, () -> typeManager.getMapper(JSON_LD), jsonLd);
 
         return new ObserverManager(
-                monitor.withPrefix("[observer-manager]"),
+                monitor.withPrefix("observer-manager"),
                 participantContextSupplier, () -> typeManager.getMapper(JSON_LD),
                 eventRouter, transferProcessService, vault, httpClient, clock, eventStore, retryExecutor,
-                observerNegotiationService);
+                observerNegotiationService, contractAgreementService);
     }
 }

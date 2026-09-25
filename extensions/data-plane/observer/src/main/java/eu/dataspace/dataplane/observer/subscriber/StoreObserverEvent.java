@@ -3,6 +3,7 @@ package eu.dataspace.dataplane.observer.subscriber;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementRetired;
+import eu.dataspace.dataplane.observer.ObserverConfig;
 import eu.dataspace.dataplane.observer.model.ObserverContractAgreementRetired;
 import eu.dataspace.dataplane.observer.model.ObserverContractNegotiationFinalized;
 import eu.dataspace.dataplane.observer.model.ObserverEventEnvelope;
@@ -11,8 +12,9 @@ import eu.dataspace.dataplane.observer.model.event.ObserverEventStored;
 import eu.dataspace.dataplane.observer.store.ObserverEventStore;
 import eu.dataspace.dataplane.observer.store.PendingObserverEvent;
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
+import org.eclipse.edc.connector.controlplane.contract.spi.types.agreement.ContractAgreement;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessStarted;
-import org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess;
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.event.EventEnvelope;
@@ -33,23 +35,28 @@ public class StoreObserverEvent implements EventSubscriber {
     private final EventRouter eventRouter;
     private final Clock clock;
     private final Duration retryInterval;
+    private final ObserverConfig configuration;
+    private final ContractAgreementService agreementService;
 
     public StoreObserverEvent(ParticipantContext participantContext, Supplier<ObjectMapper> mapperSupplier,
-                              ObserverEventStore store, EventRouter eventRouter, Clock clock, Duration retryInterval) {
+                              ObserverEventStore store, EventRouter eventRouter, Clock clock, Duration retryInterval,
+                              ObserverConfig configuration, ContractAgreementService agreementService) {
         this.participantContext = participantContext;
         this.mapperSupplier = mapperSupplier;
         this.store = store;
         this.eventRouter = eventRouter;
         this.clock = clock;
         this.retryInterval = retryInterval;
+        this.configuration = configuration;
+        this.agreementService = agreementService;
     }
 
     @Override
     public <E extends Event> void on(EventEnvelope<E> event) {
         var observerEvent = switch (event.getPayload()) {
-            case ContractNegotiationFinalized finalized when isProviderNegotiation(finalized) ->
+            case ContractNegotiationFinalized finalized when !isObserverNegotiation(finalized) ->
                     ObserverContractNegotiationFinalized.from(finalized);
-            case TransferProcessStarted started when isProviderTransfer(started) ->
+            case TransferProcessStarted started when !isObserverTransfer(started) ->
                     ObserverTransferProcessStarted.from(started);
             case ContractAgreementRetired retired ->
                     ObserverContractAgreementRetired.from(retired);
@@ -75,11 +82,16 @@ public class StoreObserverEvent implements EventSubscriber {
         }
     }
 
-    private boolean isProviderTransfer(TransferProcessStarted started) {
-        return started.getType().equals(TransferProcess.Type.PROVIDER.name());
+    private boolean isObserverTransfer(TransferProcessStarted started) {
+        var contractAgreement = agreementService.findById(started.getContractId());
+        return contractAgreement != null && isObserverContract(contractAgreement);
     }
 
-    private boolean isProviderNegotiation(ContractNegotiationFinalized finalized) {
-        return finalized.getContractAgreement().getProviderId().equals(participantContext.getIdentity());
+    private boolean isObserverNegotiation(ContractNegotiationFinalized finalized) {
+        return isObserverContract(finalized.getContractAgreement());
+    }
+
+    private boolean isObserverContract(ContractAgreement contractAgreement) {
+        return contractAgreement.getProviderId().equals(configuration.id());
     }
 }
