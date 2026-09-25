@@ -12,6 +12,7 @@ import eu.dataspace.dataplane.observer.subscriber.StartObserverTransfer;
 import eu.dataspace.dataplane.observer.subscriber.StoreObserverAddress;
 import eu.dataspace.dataplane.observer.subscriber.StoreObserverEvent;
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import org.eclipse.edc.connector.controlplane.services.spi.transferprocess.TransferProcessService;
 import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessStarted;
 import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessTerminated;
@@ -43,13 +44,15 @@ public class ObserverManager {
     private final ObserverEventStore eventStore;
     private final ScheduledExecutorService retryExecutor;
     private final ObserverNegotiationService observerNegotiationService;
+    private final ContractAgreementService agreementService;
 
     public ObserverManager(Monitor monitor,
                            ParticipantContextSupplier participantContextSupplier,
                            Supplier<ObjectMapper> mapperSupplier,
                            EventRouter eventRouter, TransferProcessService transferProcessService, Vault vault,
                            EdcHttpClient httpClient, Clock clock, ObserverEventStore eventStore,
-                           ScheduledExecutorService retryExecutor, ObserverNegotiationService observerNegotiationService) {
+                           ScheduledExecutorService retryExecutor, ObserverNegotiationService observerNegotiationService,
+                           ContractAgreementService agreementService) {
         this.monitor = monitor;
         this.participantContextSupplier = participantContextSupplier;
         this.mapperSupplier = mapperSupplier;
@@ -61,6 +64,7 @@ public class ObserverManager {
         this.eventStore = eventStore;
         this.retryExecutor = retryExecutor;
         this.observerNegotiationService = observerNegotiationService;
+        this.agreementService = agreementService;
     }
 
     public Result<Void> activate(ObserverConfig configuration) {
@@ -78,7 +82,7 @@ public class ObserverManager {
                 new StoreObserverAddress(configuration, participantContext, mapperSupplier, vault, monitor));
 
         var retryInterval = configuration.retryInterval();
-        var storeObserverEvent = new StoreObserverEvent(participantContext, mapperSupplier, eventStore, eventRouter, clock, retryInterval);
+        var storeObserverEvent = new StoreObserverEvent(participantContext, mapperSupplier, eventStore, eventRouter, clock, retryInterval, configuration, agreementService);
         eventRouter.registerSync(ContractNegotiationFinalized.class, storeObserverEvent);
         eventRouter.registerSync(TransferProcessStarted.class, storeObserverEvent);
         eventRouter.registerSync(ContractAgreementRetired.class, storeObserverEvent);
