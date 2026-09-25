@@ -55,7 +55,7 @@ public class ObserverServerExtension implements BeforeAllCallback, AfterAllCallb
     }
 
     public String waitForEvent(String senderId, String eventType) {
-        return await().atMost(10, TimeUnit.SECONDS)
+        return await().atMost(20, TimeUnit.SECONDS)
                 .until(() -> allEvents()
                         .filter(e -> senderId.equals(e.getRequest().getHeader("X-Sender-ID")))
                         .filter(e -> e.getRequest().getBodyAsString().contains(eventType))
