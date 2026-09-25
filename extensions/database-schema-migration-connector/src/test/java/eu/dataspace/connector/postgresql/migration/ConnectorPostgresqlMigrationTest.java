@@ -14,18 +14,33 @@
 package eu.dataspace.connector.postgresql.migration;
 
 import org.eclipse.edc.boot.system.injection.ObjectFactory;
+import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
+import org.eclipse.edc.connector.controlplane.asset.spi.index.AssetIndex;
+import org.eclipse.edc.connector.controlplane.store.sql.assetindex.SqlAssetIndexServiceExtension;
+import org.eclipse.edc.connector.controlplane.store.sql.assetindex.schema.AssetStatements;
+import org.eclipse.edc.connector.controlplane.store.sql.assetindex.schema.postgres.PostgresDialectStatements;
+import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
+import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.sql.QueryExecutor;
+import org.eclipse.edc.sql.SqlQueryExecutor;
+import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
+import org.eclipse.edc.transaction.datasource.spi.DefaultDataSourceRegistry;
+import org.eclipse.edc.transaction.local.LocalTransactionContext;
+import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.postgresql.util.PGobject;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -37,6 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.flywaydb.core.api.CoreMigrationType.SQL;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Testcontainers
@@ -44,7 +60,7 @@ import static org.mockito.Mockito.when;
 public class ConnectorPostgresqlMigrationTest {
 
     @Container
-    private final PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>("postgres:18.1");
+    private final PostgreSQLContainer postgresql = new PostgreSQLContainer("postgres:18.1");
 
     @BeforeEach
     void setUp(ServiceExtensionContext context) {
@@ -96,6 +112,7 @@ public class ConnectorPostgresqlMigrationTest {
 
     @Nested
     class Lease {
+
         @Test
         void shouldRun110whenLeaseEntryAlreadyExists(ObjectFactory objectFactory, ServiceExtensionContext context) {
             var participantContextId = UUID.randomUUID().toString();
@@ -115,9 +132,9 @@ public class ConnectorPostgresqlMigrationTest {
         }
 
     }
-
     @Nested
     class ParticipantContextId {
+
         @Test
         void shouldAddParticipantContextId_withConfiguredValue(ObjectFactory objectFactory, ServiceExtensionContext context) {
             var participantContextId = UUID.randomUUID().toString();
@@ -144,7 +161,6 @@ public class ConnectorPostgresqlMigrationTest {
                 throw new RuntimeException(e);
             }
         }
-
         @Test
         void shouldAddParticipantContextId_withConfiguredValue_onJsonTable(ObjectFactory objectFactory, ServiceExtensionContext context) {
             var participantContextId = UUID.randomUUID().toString();
@@ -175,8 +191,44 @@ public class ConnectorPostgresqlMigrationTest {
             }
         }
 
-    }
 
+    }
+    @Nested
+    class V1_10_0 {
+
+        @BeforeEach
+        void setUp(ServiceExtensionContext context) {
+            context.registerService(AssetStatements.class, new PostgresDialectStatements());
+            context.registerService(TypeManager.class, new JacksonTypeManager());
+            var dataSourceRegistry = new DefaultDataSourceRegistry();
+            dataSourceRegistry.register("default", createDataSource());
+            context.registerService(DataSourceRegistry.class, dataSourceRegistry);
+            context.registerService(TransactionContext.class, new LocalTransactionContext(mock()));
+            context.registerService(QueryExecutor.class, new SqlQueryExecutor());
+        }
+
+        @Test
+        void shouldMigrateAssetDataAddressToDataplaneMetadataProperties(ObjectFactory objectFactory, ServiceExtensionContext context) {
+            var participantContextId = UUID.randomUUID().toString();
+
+            migrateTo(objectFactory, context, "1.9.0", participantContextId);
+
+            var assetIndexServiceExtension = objectFactory.constructInstance(SqlAssetIndexServiceExtension.class);
+            assetIndexServiceExtension.initialize(context);
+            var assetIndex = context.getService(AssetIndex.class);
+
+            var assetId = UUID.randomUUID().toString();
+            var asset = Asset.Builder.newInstance()
+                    .id(assetId).dataAddress(DataAddress.Builder.newInstance().type("any").build())
+                    .participantContextId(participantContextId).build();
+            assetIndex.create(asset).orElseThrow(f -> new EdcException("Asset Index could not be created " + f.getFailureDetail()));
+
+            migrateTo(objectFactory, context, "1.10.0", participantContextId);
+
+            var byId = assetIndex.findById(assetId);
+            assertThat(byId.getDataplaneMetadata().getProperties()).isEqualTo(asset.getDataAddress().getProperties());
+        }
+    }
     private void migrateTo(ObjectFactory objectFactory, ServiceExtensionContext context, String target, String participantContextId) {
         when(context.getConfig()).thenReturn(ConfigFactory.fromMap(Map.of(
                 "edc.participant.context.id", participantContextId,
@@ -188,6 +240,7 @@ public class ConnectorPostgresqlMigrationTest {
         var extension = objectFactory.constructInstance(ConnectorPostgresqlMigration.class);
         extension.initialize(context);
         extension.prepare();
+
     }
 
     private DataSource createDataSource() {

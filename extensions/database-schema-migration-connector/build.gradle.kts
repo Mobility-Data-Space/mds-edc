@@ -11,6 +11,8 @@ dependencies {
     runtimeOnly(libs.flyway.database.postgres)
 
     testImplementation(libs.edc.junit)
+    testImplementation(libs.edc.asset.index.sql)
+    testImplementation(libs.edc.transaction.local)
     testImplementation(libs.assertj)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.launcher)
