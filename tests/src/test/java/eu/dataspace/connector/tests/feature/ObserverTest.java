@@ -24,7 +24,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -59,8 +58,10 @@ public class ObserverTest {
 
         private static final MdsParticipant PROVIDER = MdsParticipantFactory.hashicorpVault("provider", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
 
+        private static final MdsParticipant CONSUMER = MdsParticipantFactory.hashicorpVault("consumer", VAULT_EXTENSION, DAPS_EXTENSION, POSTGRES_EXTENSION);
+
         protected Daps() {
-            super(OBSERVER, PROVIDER, OBSERVER_SERVER);
+            super(OBSERVER, PROVIDER, CONSUMER, OBSERVER_SERVER);
         }
 
     }
@@ -99,16 +100,20 @@ public class ObserverTest {
 
         private static final MdsParticipant PROVIDER = MdsParticipantFactory.hashicorpVaultDcp("provider", VAULT_EXTENSION, POSTGRES_EXTENSION, IDENTITY_HUB, ISSUER.did());
 
+        private static final MdsParticipant CONSUMER = MdsParticipantFactory.hashicorpVaultDcp("consumer", VAULT_EXTENSION, POSTGRES_EXTENSION, IDENTITY_HUB, ISSUER.did());
+
         protected Dcp() {
-            super(OBSERVER, PROVIDER, OBSERVER_SERVER);
+            super(OBSERVER, PROVIDER, CONSUMER, OBSERVER_SERVER);
         }
 
         @BeforeAll
         static void setUp() {
             ISSUER.registerAttestationAndCredentialDefinition();
             ISSUER.registerHolder(PROVIDER.getId(), PROVIDER.getName());
+            ISSUER.registerHolder(CONSUMER.getId(), CONSUMER.getName());
             ISSUER.registerHolder(OBSERVER.getId(), OBSERVER.getName());
             IDENTITY_HUB.requestCredentialIssuance(PROVIDER.getId(), ISSUER.did().get());
+            IDENTITY_HUB.requestCredentialIssuance(CONSUMER.getId(), ISSUER.did().get());
             IDENTITY_HUB.requestCredentialIssuance(OBSERVER.getId(), ISSUER.did().get());
         }
     }
@@ -121,10 +126,9 @@ public class ObserverTest {
         private final ObserverServerExtension observerServer;
         private final Duration timeout = Duration.ofSeconds(10);
 
-        public Tests(MdsParticipant observer, MdsParticipant provider, ObserverServerExtension observerServer) {
+        public Tests(MdsParticipant observer, MdsParticipant provider, MdsParticipant consumer, ObserverServerExtension observerServer) {
             this.observer = observer;
-            // note: to avoid adding another connector, the Observer will also act as a consumer to trigger a negotiation
-            this.consumer = observer;
+            this.consumer = consumer;
             this.provider = provider;
             this.observerServer = observerServer;
         }
@@ -132,34 +136,18 @@ public class ObserverTest {
         @Test
         void shouldStartObserverNegotiationAtStartup() {
             observerServer.clearEvents();
-            var observerDatasetId = observer.createOffer(Map.of(
-                    "type", "HttpData",
-                    "baseUrl", observerServer.getBaseUrl() + "/api/v1/events",
-                    "method", "POST",
-                    "proxyBody", "true",
-                    "authKey", "X-Api-Key",
-                    "secretName", "observer-api-key"
-            ));
+            var observerDatasetId = offerObserverDataset();
 
-            provider.configurationProvider(() -> ConfigFactory.fromMap(Map.of(
-                    "edc.mds.observer.id", observer.getId(),
-                    "edc.mds.observer.url", observer.getProtocolUrl(),
-                    "edc.mds.observer.dataset.id", observerDatasetId,
-                    "edc.mds.observer.profile", "dataspace-protocol-http:2025-1",
-                    "edc.mds.observer.transfer.profile", "HttpData-PULL"
-            )));
+            configureObserverAndStart(provider, observerDatasetId);
+            configureObserverAndStart(consumer, observerDatasetId);
 
-            provider.beforeAll(null); // start provider
-
-            var providerContractAgreementId = new AtomicReference<String>();
             await().atMost(timeout).untilAsserted(() -> {
                 var contractNegotiations = provider.getContractNegotiationsWith(observer.getId());
 
                 assertThat(contractNegotiations).hasSizeGreaterThan(0).last().extracting(JsonValue::asJsonObject).satisfies(negotiation -> {
                     assertThat(negotiation.getString("state")).isEqualTo(ContractNegotiationStates.FINALIZED.name());
 
-                    providerContractAgreementId.set(negotiation.getString("contractAgreementId"));
-                    var transferProcesses = provider.getTransferProcessesOnAgreement(providerContractAgreementId.get());
+                    var transferProcesses = provider.getTransferProcessesOnAgreement(negotiation.getString("contractAgreementId"));
                     assertThat(transferProcesses).hasSize(1).last().extracting(JsonValue::asJsonObject).satisfies(transfer -> {
                         assertThat(transfer.getString("state")).isEqualTo(TransferProcessStates.STARTED.name());
                     });
@@ -176,37 +164,26 @@ public class ObserverTest {
                     .execute();
 
             observerServer.waitForEvent(provider.getId(), "org.eclipse.edc.ContractNegotiationFinalized");
+            observerServer.waitForEvent(consumer.getId(), "org.eclipse.edc.ContractNegotiationFinalized");
             observerServer.waitForEvent(provider.getId(), "org.eclipse.edc.TransferProcessStarted");
+            observerServer.waitForEvent(consumer.getId(), "org.eclipse.edc.TransferProcessStarted");
 
-            provider.retireAgreement(providerContractAgreementId.get()).statusCode(204);
+            var agreementId = provider.getTransferProcessesOnAsset(assetId).get(0).asJsonObject().getString("contractId");
+
+            provider.retireAgreement(agreementId).statusCode(204);
 
             observerServer.waitForEvent(provider.getId(), "eu.dataspace.mds.ContractAgreementRetired");
 
-            provider.afterAll(null); // stop provider
+            shutdown(provider, consumer);
         }
 
         @Test
         void shouldRetryEventDispatch_whenObserverIsTemporarilyDown() {
             observerServer.clearEvents();
-            var observerDatasetId = observer.createOffer(Map.of(
-                    "type", "HttpData",
-                    "baseUrl", observerServer.getBaseUrl() + "/api/v1/events",
-                    "method", "POST",
-                    "proxyBody", "true",
-                    "authKey", "X-Api-Key",
-                    "secretName", "observer-api-key"
-            ));
+            var observerDatasetId = offerObserverDataset();
 
-            provider.configurationProvider(() -> ConfigFactory.fromMap(Map.of(
-                    "edc.mds.observer.id", observer.getId(),
-                    "edc.mds.observer.url", observer.getProtocolUrl(),
-                    "edc.mds.observer.dataset.id", observerDatasetId,
-                    "edc.mds.observer.profile", "dataspace-protocol-http:2025-1",
-                    "edc.mds.observer.transfer.profile", "HttpData-PULL",
-                    "edc.mds.observer.retry.interval", "PT1S"
-            )));
-
-            provider.beforeAll(null);
+            configureObserverAndStart(provider, observerDatasetId);
+            configureObserverAndStart(consumer, observerDatasetId);
 
             try {
                 await().atMost(timeout).untilAsserted(() -> {
@@ -233,31 +210,17 @@ public class ObserverTest {
                 observerServer.waitForEvent(provider.getId(), "org.eclipse.edc.TransferProcessStarted");
             } finally {
                 observerServer.simulateUp();
-                provider.afterAll(null);
+                shutdown(provider, consumer);
             }
         }
 
         @Test
         void shouldReinitiateObserverNegotiation_whenTransferGetsTerminated() {
             observerServer.clearEvents();
-            var observerDatasetId = observer.createOffer(Map.of(
-                    "type", "HttpData",
-                    "baseUrl", observerServer.getBaseUrl() + "/api/v1/events",
-                    "method", "POST",
-                    "proxyBody", "true",
-                    "authKey", "X-Api-Key",
-                    "secretName", "observer-api-key"
-            ));
+            var observerDatasetId = offerObserverDataset();
 
-            provider.configurationProvider(() -> ConfigFactory.fromMap(Map.of(
-                    "edc.mds.observer.id", observer.getId(),
-                    "edc.mds.observer.url", observer.getProtocolUrl(),
-                    "edc.mds.observer.dataset.id", observerDatasetId,
-                    "edc.mds.observer.profile", "dataspace-protocol-http:2025-1",
-                    "edc.mds.observer.transfer.profile", "HttpData-PULL"
-            )));
-
-            provider.beforeAll(null); // start provider
+            configureObserverAndStart(provider, observerDatasetId);
+            configureObserverAndStart(consumer, observerDatasetId);
 
             await().atMost(timeout).untilAsserted(() -> {
                 var transferProcesses = observer.getTransferProcessesOnAsset(observerDatasetId);
@@ -292,7 +255,38 @@ public class ObserverTest {
 
             observerServer.waitForEvent(provider.getId(), "org.eclipse.edc.ContractNegotiationFinalized");
 
-            provider.afterAll(null); // stop provider
+            shutdown(provider, consumer);
         }
+
+        private String offerObserverDataset() {
+            return observer.createOffer(Map.of(
+                    "type", "HttpData",
+                    "baseUrl", observerServer.getBaseUrl() + "/api/v1/events",
+                    "method", "POST",
+                    "proxyBody", "true",
+                    "authKey", "X-Api-Key",
+                    "secretName", "observer-api-key"
+            ));
+        }
+
+        private void configureObserverAndStart(MdsParticipant participant, String observerDatasetId) {
+            participant
+                    .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
+                            "edc.mds.observer.id", observer.getId(),
+                            "edc.mds.observer.url", observer.getProtocolUrl(),
+                            "edc.mds.observer.dataset.id", observerDatasetId,
+                            "edc.mds.observer.profile", "dataspace-protocol-http:2025-1",
+                            "edc.mds.observer.transfer.profile", "HttpData-PULL",
+                            "edc.mds.observer.retry.interval", "PT1S"
+                    )))
+                    .beforeAll(null);
+        }
+
+        private void shutdown(MdsParticipant... participants) {
+            for (var participant : participants) {
+                participant.afterAll(null);
+            }
+        }
+
     }
 }

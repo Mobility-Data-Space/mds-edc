@@ -36,7 +36,7 @@ class ObserverManagerTest {
 
     private final ObserverManager manager = new ObserverManager(monitor,
             participantContextSupplier, () -> objectMapper, eventRouter, mock(), mock(), mock(), mock(), mock(), mock(),
-            observerNegotiationService);
+            observerNegotiationService, mock());
     private final ObserverConfig config = new ObserverConfig("provider-id", "http://provider-url",
             "dataset-id", "dataspace-protocol-http:2025-1", "HttpData-PULL", Duration.ofSeconds(30));
 

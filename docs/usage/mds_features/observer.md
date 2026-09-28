@@ -123,7 +123,102 @@ EDC_MDS_OBSERVER_RETRY_INTERVAL=PT30S
 ## Dispatched Events
 
 Events are dispatched as [CloudEvents 1.0](https://cloudevents.io/) JSON payloads via `POST` to the observer endpoint. Each event uses `Content-Type: application/json` and the configured authorization header.
-Please refer to the [json-schema](https://mobility-data-space.github.io/mds-observer/schemas/v1/event-envelope.json) for details
+Please refer to the [json-schema](https://mobility-data-space.github.io/mds-observer/schemas/v1/event-envelope.json) for the full schema.
+
+### Event Envelope
+
+Every dispatched event is wrapped in a CloudEvents 1.0 envelope:
+
+```json
+{
+  "specversion": "1.0",
+  "id": "<random-uuid>",
+  "source": "<participant-identity>",
+  "type": "<event-type>",
+  "time": "<ISO-8601-utc-timestamp>",
+  "datacontenttype": "application/json",
+  "data": { }
+}
+```
+
+| Field             | Value                                               |
+|-------------------|-----------------------------------------------------|
+| `specversion`     | `"1.0"` (fixed)                                     |
+| `id`              | Random UUID generated per event                     |
+| `source`          | Identity of the dispatching participant connector   |
+| `type`            | Event-specific type string (see below)              |
+| `time`            | UTC timestamp of when the event was stored          |
+| `datacontenttype` | `"application/json"` (fixed)                        |
+
+### Event Types
+
+Three dataspace event types trigger a notification to the observer.
+
+#### ContractNegotiationFinalized
+
+**CloudEvent type:** `org.eclipse.edc.ContractNegotiationFinalized`
+
+Dispatched when a contract negotiation reaches `FINALIZED` state, provided the resulting contract agreement's provider is **not** the observer connector itself (see [Filtering](#filtering)).
+
+**`data` payload:**
+
+```json
+{
+  "contractNegotiationId": "neg-1",
+  "counterPartyAddress": "https://consumer.example.com/dsp",
+  "counterPartyId": "did:web:consumer.example.com",
+  "protocol": "dataspace-protocol-http:2025-1",
+  "contractAgreement": {
+    "id": "agr-1",
+    "providerId": "did:web:provider.example.com",
+    "consumerId": "did:web:consumer.example.com",
+    "assetId": "asset-1",
+    "contractSigningDate": 1721469600,
+    "policy": { }
+  }
+}
+```
+
+#### TransferProcessStarted
+
+**CloudEvent type:** `org.eclipse.edc.TransferProcessStarted`
+
+Dispatched when a transfer process reaches `STARTED` state, provided the contract agreement for that transfer does not have the observer connector as provider (see [Filtering](#filtering)).
+
+**`data` payload:**
+
+```json
+{
+  "transferProcessId": "tp-1",
+  "assetId": "asset-1",
+  "type": "PROVIDER",
+  "contractId": "agr-1",
+  "protocol": "dataspace-protocol-http:2025-1"
+}
+```
+
+#### ContractAgreementRetired
+
+**CloudEvent type:** `eu.dataspace.mds.ContractAgreementRetired`
+
+Dispatched whenever a contract agreement is retired. No filtering is applied — every retirement event is forwarded unconditionally.
+
+**`data` payload:**
+
+```json
+{
+  "contractAgreementId": "agr-1"
+}
+```
+
+### Filtering
+
+`ContractNegotiationFinalized` and `TransferProcessStarted` events are suppressed when they originate from the observer channel setup itself, to avoid re-forwarding the internal contracts the participant negotiated with the observer:
+
+- **ContractNegotiationFinalized**: suppressed when the contract agreement's `providerId` equals `edc.mds.observer.id`.
+- **TransferProcessStarted**: suppressed when the contract agreement (looked up by the transfer's `contractId`) has a `providerId` equal to `edc.mds.observer.id`. If the agreement is not found, the event is forwarded.
+
+`ContractAgreementRetired` events are never suppressed.
 
 ---
 
