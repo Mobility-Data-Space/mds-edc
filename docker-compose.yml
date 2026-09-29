@@ -46,8 +46,8 @@ services:
       # Web Server Configuration
       WEB_HTTP_PATH: "/api"
       WEB_HTTP_PORT: "8181"
-      WEB_HTTP_CONTROL_PATH: "/api/control"
-      WEB_HTTP_CONTROL_PORT: "8186"
+      WEB_HTTP_SIGNALING_PATH: "/api/signaling"
+      WEB_HTTP_SIGNALING_PORT: "8186"
       WEB_HTTP_MANAGEMENT_PATH: "/api/management"
       WEB_HTTP_MANAGEMENT_PORT: "8182"
       WEB_HTTP_MANAGEMENT_AUTH_TYPE: "tokenbased"

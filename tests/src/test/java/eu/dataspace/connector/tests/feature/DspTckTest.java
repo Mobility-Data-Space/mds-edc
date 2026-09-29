@@ -12,7 +12,6 @@ import org.eclipse.edc.junit.testfixtures.TestUtils;
 import org.eclipse.edc.junit.utils.Endpoints;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -74,6 +73,7 @@ public class DspTckTest {
                 .property("dataspacetck.debug", "true")
                 .addPackage("org.eclipse.dataspacetck.dsp.verification")
                 .monitor(monitor)
+                .displayNameMatching(it -> it.startsWith("TP:01-04"))
                 .build()
                 .execute();
 
@@ -91,7 +91,7 @@ public class DspTckTest {
         properties.put("dataspacetck.dsp.connector.negotiation.initiate.url", WEBHOOK_URL + "/negotiations/requests");
         properties.put("dataspacetck.dsp.connector.transfer.initiate.url", WEBHOOK_URL + "/transfers/requests");
         properties.put("dataspacetck.dsp.connector.agent.id", "participantContextId");
-        properties.put("dataspacetck.dsp.connector.http.headers.authorization", "{\"region\": \"any\", \"audience\": \"any\", \"clientId\":\"any\"}");
+        properties.put("dataspacetck.dsp.connector.http.headers.authorization", "{\"clientId\":\"TCK_PARTICIPANT\"}");
         properties.put("dataspacetck.dsp.jsonld.context.edc.uri", "https://w3id.org/edc/dspace/v0.0.1");
         properties.put("dataspacetck.dsp.jsonld.context.edc.path", resourceConfig("tck/dspace-edc-context-v1.jsonld"));
 
