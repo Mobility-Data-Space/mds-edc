@@ -92,7 +92,7 @@ aws-iam = { module = "software.amazon.awssdk:iam", version.ref = "aws" }
 aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws" }
 aws-sts = { module = "software.amazon.awssdk:sts", version.ref = "aws" }
 azure-storage-blob = { group = "com.azure", name = "azure-storage-blob", version = "12.35.1" }
-azure-identity = { group = "com.azure", name = "azure-identity", version = "1.18.2" }
+azure-identity = { group = "com.azure", name = "azure-identity", version = "1.18.6" }
 bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
 dsp-tck = { module = "org.eclipse.dataspacetck.dsp:dsp-tck", version.ref = "dsp-tck" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
