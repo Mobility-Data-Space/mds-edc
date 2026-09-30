@@ -29,9 +29,7 @@ Content-Type: application/json
           "rightOperand": "2025-07-20T12:34:56Z"
         }]
       }]
-    }],
-    "obligation": [],
-    "prohibition": []
+    }]
   }
 }
 ```
