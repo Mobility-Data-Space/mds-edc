@@ -21,8 +21,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tags=$(gh api \
-            /orgs/Mobility-Data-Space/packages/container/mds-edc%2Fconnector-inmemory/versions \
-            --jq '[.[] | select(.metadata.container.tags | length > 0) | .metadata.container.tags[] | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))] | unique | sort_by(split(".") | map(tonumber)) | reverse | .[0:3]')
+            "/repos/${{ github.repository }}/releases?per_page=20" \
+            --jq '[.[] | select(.draft == false and .prerelease == false) | .tag_name | ltrimstr("v") | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))] | .[0:3]')
           echo "tags=${tags}" >> "$GITHUB_OUTPUT"
 
   rescan:

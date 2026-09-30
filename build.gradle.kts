@@ -21,52 +21,20 @@ allprojects {
         exclude(group = "org.eclipse.edc", module = "data-plane-signaling-oauth2")
 
         resolutionStrategy.eachDependency {
-            if (requested.group == "io.netty" && !requested.name.startsWith("netty-tcnative")) {
-                useVersion("4.1.137.Final")
-                because("CVE-2026-42578, CVE-2026-42579, CVE-2026-45536, CVE-2026-45673, CVE-2026-45674, CVE-2026-47691, CVE-2026-59901, CVE-2026-55831, CVE-2026-55833, CVE-2026-56745, CVE-2026-75595")
-            }
             if (requested.group.startsWith("org.eclipse.jetty")) {
                 useVersion("12.1.10")
                 because("CVE-2026-10050")
             }
-            if (requested.group == "io.opentelemetry") {
-                useVersion("1.63.0")
-                because("CVE-2026-45292")
-            }
-            if (requested.group == "tools.jackson.core" && requested.name == "jackson-databind") {
-                useVersion("3.1.5")
-                because("CVE-2026-54512, CVE-2026-54513, CVE-2026-54514, CVE-2026-54515, CVE-2026-54516, CVE-2026-54517, CVE-2026-54518, CVE-2026-59889")
-            }
-            if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-core") {
-                useVersion("2.22.1")
-                because("GHSA-r7wm-3cxj-wff9")
-            }
-            if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-databind") {
-                useVersion("2.22.1")
-                because("CVE-2026-54515")
+            if (requested.group == "com.fasterxml.jackson.core" && requested.name in setOf("jackson-core", "jackson-databind")) {
+                useVersion("2.22.2")
+                because("CVE-2026-68497")
             }
             if (requested.group == "org.postgresql" && requested.name == "postgresql") {
                 useVersion("42.7.12")
                 because("CVE-2026-42198, CVE-2026-54291")
             }
-            if (requested.group == "org.apache.httpcomponents.core5" && requested.name == "httpcore5") {
-                useVersion("5.4.3")
-                because("CVE-2026-54399")
-            }
-            if (requested.group == "org.apache.httpcomponents.core5" && requested.name == "httpcore5-h2") {
-                useVersion("5.4.3")
-                because("CVE-2026-54428")
-            }
-            if (requested.group == "org.apache.httpcomponents.client5" && requested.name == "httpclient5") {
-                useVersion("5.6.3")
-                because("CVE-2026-64607")
-            }
-            if (requested.group == "at.yawk.lz4" && requested.name == "lz4-java") {
-                useVersion("1.11.1")
-                because("CVE-2026-59949")
-            }
             if (requested.group == "org.bouncycastle") {
-                useVersion("1.85")
+                useVersion(rootProject.libs.versions.bouncycastle.get())
                 because("CVE-2026-8763, CVE-2026-13506")
             }
         }
