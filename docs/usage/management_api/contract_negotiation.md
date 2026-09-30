@@ -17,20 +17,18 @@ Content-Type: application/json
   "protocol": "dataspace-protocol-http:2025-1",
   "policy": {
     "@context": "http://www.w3.org/ns/odrl.jsonld",
-    "@type": "odrl:Offer",
+    "@type": "Offer",
     "@id": "offer-id",
     "assigner": "MDSLXXX.XXXXX",
-    "odrl:permission": {
-      "odrl:action": {
-        "@id": "use"
-      }
-    },
-    "odrl:prohibition": [],
-    "odrl:obligation": [],
-    "target": "asset-id"
+    "target": "asset-id",
+    "permission": [{
+      "action": "use"
+    }]
   }
 }
 ```
+
+The `policy` must match the offer returned by the provider's catalog (`@id`, `assigner`, `target`, rules and constraints). When copying it from the catalog response, adapt the compacted form: `@type` is `Offer`, rules are unprefixed (`permission`, `prohibition`, `obligation`) and given as arrays, `action` is a plain string, and empty rule arrays are omitted.
 
 ## Get Negotiation State
 
