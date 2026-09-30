@@ -35,7 +35,7 @@ Content-Type: application/json
   "assetsSelector": [
     {
       "@type": "Criterion",
-      "operandLeft": "@id",
+      "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
       "operator": "in",
       "operandRight": "asset-id"
     }
@@ -58,7 +58,7 @@ Content-Type: application/json
   "assetsSelector": [
     {
       "@type": "Criterion",
-      "operandLeft": "@id",
+      "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
       "operator": "in",
       "operandRight": "asset-id"
     }

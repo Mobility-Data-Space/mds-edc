@@ -419,7 +419,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"@context\": \"https://w3id.org/edc/connector/management/v2\",\n  \"@type\": \"ContractDefinition\",\n  \"@id\": \"{{definitionId}}\",\n  \"accessPolicyId\": \"{{accessPolicyId}}\",\n  \"contractPolicyId\": \"{{contractPolicyId}}\",\n  \"assetsSelector\": [\n    {\n      \"@type\": \"Criterion\",\n      \"operandLeft\": \"@id\",\n      \"operator\": \"in\",\n      \"operandRight\": \"{{assetId}}\"\n    }\n  ]\n}"
+              "raw": "{\n  \"@context\": \"https://w3id.org/edc/connector/management/v2\",\n  \"@type\": \"ContractDefinition\",\n  \"@id\": \"{{definitionId}}\",\n  \"accessPolicyId\": \"{{accessPolicyId}}\",\n  \"contractPolicyId\": \"{{contractPolicyId}}\",\n  \"assetsSelector\": [\n    {\n      \"@type\": \"Criterion\",\n      \"operandLeft\": \"https://w3id.org/edc/v0.0.1/ns/id\",\n      \"operator\": \"in\",\n      \"operandRight\": \"{{assetId}}\"\n    }\n  ]\n}"
             }
           },
           "response": []
@@ -446,7 +446,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"@context\": \"https://w3id.org/edc/connector/management/v2\",\n  \"@type\": \"ContractDefinition\",\n  \"@id\": \"{{definitionId}}\",\n  \"accessPolicyId\": \"{{accessPolicyId}}\",\n  \"contractPolicyId\": \"{{contractPolicyId}}\",\n  \"assetsSelector\": [\n    {\n      \"@type\": \"Criterion\",\n      \"operandLeft\": \"@id\",\n      \"operator\": \"in\",\n      \"operandRight\": \"{{assetId}}\"\n    }\n  ],\n  \"privateProperties\": {\n    \"manualApproval\": \"true\"\n  }\n}"
+              "raw": "{\n  \"@context\": \"https://w3id.org/edc/connector/management/v2\",\n  \"@type\": \"ContractDefinition\",\n  \"@id\": \"{{definitionId}}\",\n  \"accessPolicyId\": \"{{accessPolicyId}}\",\n  \"contractPolicyId\": \"{{contractPolicyId}}\",\n  \"assetsSelector\": [\n    {\n      \"@type\": \"Criterion\",\n      \"operandLeft\": \"https://w3id.org/edc/v0.0.1/ns/id\",\n      \"operator\": \"in\",\n      \"operandRight\": \"{{assetId}}\"\n    }\n  ],\n  \"privateProperties\": {\n    \"manualApproval\": \"true\"\n  }\n}"
             }
           },
           "response": []
