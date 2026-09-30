@@ -82,10 +82,12 @@ Expect `id` to equal your DID and one service entry of type `CredentialService`.
 The connector reads this from **its own** Vault, not the wallet's:
 
 ```bash
-vault kv put "secret/<did>-sts-client-secret" content="<client-secret>"
+vault kv put "secret/wallet.example.com-sts-client-secret" content="<client-secret>"
 ```
 
-The alias is arbitrary but must match `EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS` below. The convention is `<did>-sts-client-secret`.
+The alias is arbitrary but must match `EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS` below. The convention is your DID **without** the `did:web:` prefix, followed by `-sts-client-secret`.
+
+> **Important:** The alias must not contain `:` or `%`, so never use the full DID (`did:web:...-sts-client-secret`). The connector URL-encodes the alias twice when it calls Vault, so an alias with a colon is looked up under a different key than the one you stored, and the connector cannot obtain an STS token. This also applies to a DID with a port or path (`did:web:host%3A8443:org`): replace every `:` and `%3A` in the alias with another character, for example `host-8443-org-sts-client-secret`.
 
 Leave the DAPS entries (`daps-private-key`, `daps-public-key`) in place — the DCP runtime ignores them, and keeping them makes rollback trivial. The `transfer-proxy-token-signer-*` keys are still required.
 
@@ -125,7 +127,7 @@ EDC_PARTICIPANT_ID=did:web:wallet.example.com
 # added
 EDC_IAM_ISSUER_ID=did:web:wallet.example.com
 EDC_IAM_STS_OAUTH_CLIENT_ID=did:web:wallet.example.com
-EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS=did:web:wallet.example.com-sts-client-secret
+EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS=wallet.example.com-sts-client-secret
 EDC_IAM_STS_OAUTH_TOKEN_URL=https://wallet.example.com/api/sts/token
 EDC_IAM_TRUSTEDISSUER_ISSUER_ID=did:web:issuer.mobility-dataspace.eu
 EDC_IAM_TRUSTEDISSUER_ISSUER_SUPPORTEDTYPES=["MembershipCredential"]

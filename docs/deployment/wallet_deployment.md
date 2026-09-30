@@ -131,7 +131,7 @@ The response body includes the participant's **client id** and **client secret**
 }
 ```
 
-The wallet will not return the client secret again. Store it in the **connector's** Vault under the alias the connector expects (`edc.iam.sts.oauth.client.secret.alias`; by convention `<did>-sts-client-secret`).
+The wallet will not return the client secret again. Store it in the **connector's** Vault under the alias the connector expects (`edc.iam.sts.oauth.client.secret.alias`; by convention your DID without the `did:web:` prefix, followed by `-sts-client-secret`, e.g. `wallet.example.com-sts-client-secret`). The alias must not contain `:` or `%`; see [the migration guide](migration_daps_to_dcp.md#1-store-the-sts-client-secret-in-the-connectors-vault).
 
 ### Verify the DID document
 
