@@ -25,9 +25,21 @@ allprojects {
                 useVersion("12.1.10")
                 because("CVE-2026-10050")
             }
-            if (requested.group == "com.fasterxml.jackson.core" && requested.name in setOf("jackson-core", "jackson-databind")) {
-                useVersion("2.22.2")
-                because("CVE-2026-68497")
+            if (requested.group == "io.opentelemetry") {
+                useVersion("1.63.0")
+                because("CVE-2026-45292")
+            }
+            if (requested.group == "tools.jackson.core" && requested.name == "jackson-databind") {
+                useVersion("3.1.5")
+                because("CVE-2026-54512, CVE-2026-54513, CVE-2026-54514, CVE-2026-54515, CVE-2026-54516, CVE-2026-54517, CVE-2026-54518, CVE-2026-59889")
+            }
+            if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-core") {
+                useVersion("2.22.3")
+                because("GHSA-r7wm-3cxj-wff9, aligned with jackson-databind")
+            }
+            if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-databind") {
+                useVersion("2.22.3")
+                because("CVE-2026-54515, CVE-2026-68497, CVE-2026-91776, CVE-2026-91777")
             }
             if (requested.group == "org.postgresql" && requested.name == "postgresql") {
                 useVersion("42.7.12")
