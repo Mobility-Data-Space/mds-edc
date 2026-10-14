@@ -154,6 +154,10 @@ Every dispatched event is wrapped in a CloudEvents 1.0 envelope:
 
 Three dataspace event types trigger a notification to the observer.
 
+Events are dispatched regardless of whether the participant acts as **provider** or **consumer**. When both parties
+of an exchange have the observer configured, the observer receives one event from each of them; the two can be told
+apart by the envelope's `source` field and share the same contract agreement id.
+
 #### ContractNegotiationFinalized
 
 **CloudEvent type:** `org.eclipse.edc.ContractNegotiationFinalized`
@@ -179,6 +183,10 @@ Dispatched when a contract negotiation reaches `FINALIZED` state, provided the r
 }
 ```
 
+The example above is dispatched by the provider. `counterPartyId` and `counterPartyAddress` are relative to the
+dispatching participant (on the consumer side they identify the provider), while `contractAgreement.providerId` and
+`contractAgreement.consumerId` are the same on both sides.
+
 #### TransferProcessStarted
 
 **CloudEvent type:** `org.eclipse.edc.TransferProcessStarted`
@@ -197,11 +205,16 @@ Dispatched when a transfer process reaches `STARTED` state, provided the contrac
 }
 ```
 
+`type` is the role of the dispatching participant in the transfer: `PROVIDER` or `CONSUMER`. `transferProcessId` is
+the local id of the transfer on the dispatching participant, so it differs between the provider and consumer events
+of the same transfer, while `contractId` is shared.
+
 #### ContractAgreementRetired
 
 **CloudEvent type:** `eu.dataspace.mds.ContractAgreementRetired`
 
 Dispatched whenever a contract agreement is retired. No filtering is applied — every retirement event is forwarded unconditionally.
+The event is dispatched by the participant that retires the agreement (typically the provider).
 
 **`data` payload:**
 
