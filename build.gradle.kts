@@ -49,6 +49,10 @@ allprojects {
                 useVersion(rootProject.libs.versions.bouncycastle.get())
                 because("CVE-2026-8763, CVE-2026-13506")
             }
+            if (requested.group == "at.yawk.lz4" && requested.name == "lz4-java") {
+                useVersion("1.11.4")
+                because("CVE-2026-106451")
+            }
         }
     }
 
