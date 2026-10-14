@@ -5446,6 +5446,7 @@ components:
         '@id': '@id'
         type: CONSUMER
         state: state
+        pending: true
         stateTimestamp: 0
         protocol: protocol
         profile: profile
@@ -5572,6 +5573,8 @@ components:
           type: string
         state:
           type: string
+        pending:
+          type: boolean
         stateTimestamp:
           type: integer
         protocol:
