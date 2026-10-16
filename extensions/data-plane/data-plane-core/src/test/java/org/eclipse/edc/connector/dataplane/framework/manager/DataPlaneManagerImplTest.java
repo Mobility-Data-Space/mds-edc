@@ -244,7 +244,9 @@ class DataPlaneManagerImplTest {
         @Test
         void shouldStartFlow() {
             var request = dataFlowStartMessageBuilder().flowType(PUSH).build();
-            var existingFlow = DataFlow.Builder.newInstance().transferType(new TransferType("any", PUSH)).build();
+            var existingFlow = DataFlow.Builder.newInstance()
+                    .source(DataAddress.Builder.newInstance().type("type").build())
+                    .transferType(new TransferType("any", PUSH)).build();
             when(store.findByIdAndLease(any())).thenReturn(StoreResult.success(existingFlow));
 
             var result = manager.start(request);

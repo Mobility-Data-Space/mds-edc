@@ -170,6 +170,10 @@ public class DataPlaneManagerImpl extends AbstractStateEntityManager<DataFlow, D
             return StatusResult.failure(ERROR_RETRY, "Provisioning has not completed");
         }
 
+        if (dataFlow.isConsumer()) {
+            return StatusResult.success(DataFlowResponseMessage.Builder.newInstance().build());
+        }
+
         return triggerDataFlow(dataFlow)
                 .map(edr -> DataFlowResponseMessage.Builder.newInstance().dataAddress(edr).build());
     }
@@ -348,12 +352,14 @@ public class DataPlaneManagerImpl extends AbstractStateEntityManager<DataFlow, D
                 }
             }
         } else {
-            var revokeResult = endpointDataReferenceServiceRegistry.revoke(dataFlow, reason);
-            if (revokeResult.failed()) {
-                if (dataFlow.getState() == SUSPENDED.code() && revokeResult.reason().equals(ServiceFailure.Reason.NOT_FOUND)) {
-                    monitor.warning("Revoking an EDR for DataFlow '%s' in state suspended returned not found error. This may indicate that the EDR was already revoked when it was suspended".formatted(dataFlow.getId()));
-                } else {
-                    return StatusResult.failure(FATAL_ERROR, "DataFlow %s cannot be terminated: %s".formatted(dataFlow.getId(), revokeResult.getFailureDetail()));
+            if (!dataFlow.isConsumer()) {
+                var revokeResult = endpointDataReferenceServiceRegistry.revoke(dataFlow, reason);
+                if (revokeResult.failed()) {
+                    if (dataFlow.getState() == SUSPENDED.code() && revokeResult.reason().equals(ServiceFailure.Reason.NOT_FOUND)) {
+                        monitor.warning("Revoking an EDR for DataFlow '%s' in state suspended returned not found error. This may indicate that the EDR was already revoked when it was suspended".formatted(dataFlow.getId()));
+                    } else {
+                        return StatusResult.failure(FATAL_ERROR, "DataFlow %s cannot be terminated: %s".formatted(dataFlow.getId(), revokeResult.getFailureDetail()));
+                    }
                 }
             }
         }
