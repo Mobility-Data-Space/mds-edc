@@ -9,6 +9,7 @@ dependencies {
     implementation(project(":extensions:data-plane"))
     runtimeOnly(libs.edc.transfer.data.plane.signaling) // legacy signaling protocol
 
+    implementation(project(":extensions:data-plane:data-plane-management-api"))
     implementation(project(":extensions:data-plane:aws:data-plane-aws-s3"))
     implementation(project(":extensions:data-plane:aws:validator-data-address-s3"))
     implementation(project(":extensions:data-plane:azure:data-plane-azure-storage"))

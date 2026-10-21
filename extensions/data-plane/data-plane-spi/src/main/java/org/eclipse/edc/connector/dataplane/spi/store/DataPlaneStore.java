@@ -16,10 +16,21 @@ package org.eclipse.edc.connector.dataplane.spi.store;
 
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.spi.persistence.StateEntityStore;
+import org.eclipse.edc.spi.query.QuerySpec;
+
+import java.util.stream.Stream;
 
 /**
  * Stores states of data flow requests.
  */
 public interface DataPlaneStore extends StateEntityStore<DataFlow> {
+
+    /**
+     * Returns all the data flows that match the given {@link QuerySpec}.
+     *
+     * @param querySpec the query to apply.
+     * @return a stream of matching data flows, never null.
+     */
+    Stream<DataFlow> findAll(QuerySpec querySpec);
 
 }
