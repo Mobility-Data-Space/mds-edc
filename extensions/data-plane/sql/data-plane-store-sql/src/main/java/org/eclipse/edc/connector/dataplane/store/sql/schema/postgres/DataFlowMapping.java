@@ -18,6 +18,7 @@ import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.DataFlowStates;
 import org.eclipse.edc.connector.dataplane.store.sql.schema.DataFlowStatements;
 import org.eclipse.edc.sql.lease.StatefulEntityMapping;
+import org.eclipse.edc.sql.translation.JsonFieldTranslator;
 import org.eclipse.edc.sql.translation.TranslationMapping;
 
 /**
@@ -30,6 +31,9 @@ public class DataFlowMapping extends StatefulEntityMapping {
         super(statements, state -> DataFlowStates.valueOf(state).code());
         add("transferType", new TransferTypeMapping(statements));
         add("runtimeId", statements.getRuntimeIdColumn());
+        // assetId, agreementId and participantId are stored inside the properties json column, so that they can be
+        // filtered on through "properties.<key>" (e.g. "properties.assetId"), consistently with the in-memory store
+        add("properties", new JsonFieldTranslator(statements.getPropertiesColumn()));
     }
 
     private static class TransferTypeMapping extends TranslationMapping {

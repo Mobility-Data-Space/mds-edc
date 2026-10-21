@@ -23,6 +23,7 @@ import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.edc.spi.entity.Entity;
 import org.eclipse.edc.spi.entity.StatefulEntity;
 import org.eclipse.edc.spi.query.Criterion;
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreFailure;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.TransferType;
@@ -229,6 +230,55 @@ public abstract class DataPlaneStoreTestBase {
                 // noop
             }
             t.updateStateTimestamp();
+        }
+    }
+
+    @Nested
+    class FindAll {
+
+        @Test
+        void shouldReturnAll() {
+            range(0, 5)
+                    .mapToObj(i -> createDataFlow("id-" + i, STARTED))
+                    .forEach(getStore()::save);
+
+            var result = getStore().findAll(QuerySpec.max());
+
+            assertThat(result).hasSize(5);
+        }
+
+        @Test
+        void shouldFilterByState() {
+            getStore().save(createDataFlow("started", STARTED));
+            getStore().save(createDataFlow("completed", COMPLETED));
+
+            var query = QuerySpec.Builder.newInstance().filter(new Criterion("state", "=", STARTED.code())).build();
+            var result = getStore().findAll(query);
+
+            assertThat(result).extracting(DataFlow::getId).containsExactly("started");
+        }
+
+        @Test
+        void shouldFilterByAssetId() {
+            getStore().save(createDataFlowBuilder().id("first").assetId("asset-1").build());
+            getStore().save(createDataFlowBuilder().id("second").assetId("asset-2").build());
+
+            var query = QuerySpec.Builder.newInstance().filter(new Criterion("properties.assetId", "=", "asset-2")).build();
+            var result = getStore().findAll(query);
+
+            assertThat(result).extracting(DataFlow::getId).containsExactly("second");
+        }
+
+        @Test
+        void shouldApplyLimitAndOffset() {
+            range(0, 10)
+                    .mapToObj(i -> createDataFlow("id-" + i, STARTED))
+                    .forEach(getStore()::save);
+
+            var query = QuerySpec.Builder.newInstance().offset(2).limit(3).build();
+            var result = getStore().findAll(query);
+
+            assertThat(result).hasSize(3);
         }
     }
 

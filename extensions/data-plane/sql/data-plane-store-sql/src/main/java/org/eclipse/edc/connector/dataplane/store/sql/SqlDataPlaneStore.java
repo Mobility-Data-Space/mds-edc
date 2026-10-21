@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -139,6 +140,19 @@ public class SqlDataPlaneStore extends AbstractSqlStore implements DataPlaneStor
                 );
 
                 return leaseContext.withConnection(connection).breakLease(entity.getId());
+            } catch (SQLException e) {
+                throw new EdcPersistenceException(e);
+            }
+        });
+    }
+
+    @Override
+    public Stream<DataFlow> findAll(QuerySpec querySpec) {
+        return transactionContext.execute(() -> {
+            try {
+                var connection = getConnection();
+                var statement = statements.createQuery(querySpec);
+                return queryExecutor.query(connection, true, this::mapDataFlow, statement.getQueryAsString(), statement.getParameters());
             } catch (SQLException e) {
                 throw new EdcPersistenceException(e);
             }

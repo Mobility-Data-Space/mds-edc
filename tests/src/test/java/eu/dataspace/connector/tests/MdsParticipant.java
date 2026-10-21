@@ -214,6 +214,32 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .log().ifValidationFails();
     }
 
+    public JsonArray requestDataFlows() {
+        var query = createObjectBuilder()
+                .add(CONTEXT, managementContext)
+                .add(TYPE, "QuerySpec")
+                .build();
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(query)
+                .when()
+                .post("/dataflows/request")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .extract().body().as(JsonArray.class);
+    }
+
+    public ValidatableResponse getDataFlowDataAddress(String dataFlowId) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .when()
+                .get("/dataflows/{id}/dataaddress", dataFlowId)
+                .then()
+                .log().ifValidationFails();
+    }
+
     public JsonObject getTransferProcess(String transferProcessId) {
         return baseManagementRequest()
                 .contentType(JSON)
