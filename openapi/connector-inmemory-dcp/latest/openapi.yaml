@@ -1512,6 +1512,46 @@ paths:
           description: A contract negotiation with the given ID does not exist
       tags:
       - Contract Negotiation v4
+  /v4/dataflows/{id}/dataaddress:
+    get:
+      description: Retrieve the source data address of a data flow.
+      operationId: getDataAddressV4
+      parameters:
+      - description: The data flow id (matches the transfer process id)
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The source data address of the data flow
+        "404":
+          description: No data flow with the given id exists
+      tags:
+      - DataFlow v4
+  /v4/dataflows/request:
+    post:
+      description: Query the data flows known to the data plane.
+      operationId: requestDataFlowsV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query-spec-schema"
+      responses:
+        "200":
+          description: A list of the matching data flows
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - DataFlow v4
   /{any}:
     delete:
       description: Send `DELETE` data query to the Data Plane.
