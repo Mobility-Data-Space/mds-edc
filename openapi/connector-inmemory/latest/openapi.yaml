@@ -1552,6 +1552,112 @@ paths:
           description: Request body was malformed
       tags:
       - DataFlow v4
+  /v4/datasources:
+    post:
+      description: Creates a new data source.
+      operationId: createDataSourceV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataSourceExample"
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/id-response-schema"
+          description: The data source was created
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Data Source v4
+    put:
+      description: Updates an existing data source.
+      operationId: updateDataSourceV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataSourceExample"
+      responses:
+        "204":
+          description: The data source was updated
+        "404":
+          description: No data source with the given id exists
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Data Source v4
+  /v4/datasources/{id}:
+    delete:
+      description: Deletes a data source by id.
+      operationId: deleteDataSourceV4
+      parameters:
+      - description: The data source id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: The data source was deleted
+        "404":
+          description: No data source with the given id exists
+      tags:
+      - Data Source v4
+    get:
+      description: Gets a data source by id.
+      operationId: getDataSourceV4
+      parameters:
+      - description: The data source id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The data source
+        "404":
+          description: No data source with the given id exists
+      tags:
+      - Data Source v4
+  /v4/datasources/request:
+    post:
+      description: "Query the data sources, filtering over name and type only."
+      operationId: requestDataSourcesV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query-spec-schema"
+      responses:
+        "200":
+          description: A list of the matching data sources
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Data Source v4
   /{any}:
     delete:
       description: Send `DELETE` data query to the Data Plane.
@@ -5797,6 +5903,25 @@ components:
       required:
       - '@context'
       - '@type'
+      type: object
+    DataSourceExample:
+      example:
+        '@context': https://w3id.org/mobility-dataspace/connector/management/v1
+        '@type': DataSource
+        '@id': data-source-id
+        name: My HTTP backend
+        type: HttpData
+        properties:
+          baseUrl: https://backend.example.com/data
+          authKey: Authorization
+          secretName: backend-credential-alias
+      properties:
+        '@id':
+          type: string
+        name:
+          type: string
+        type:
+          type: string
       type: object
     DataPlaneInstanceSchemaV3:
       example:
