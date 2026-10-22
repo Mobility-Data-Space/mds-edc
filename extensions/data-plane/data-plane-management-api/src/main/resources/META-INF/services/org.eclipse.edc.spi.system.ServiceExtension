@@ -1,1 +1,2 @@
 eu.dataspace.connector.dataplane.api.DataFlowManagementApiExtension
+eu.dataspace.connector.datasource.api.DataSourceApiExtension
