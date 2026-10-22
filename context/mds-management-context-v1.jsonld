@@ -36,6 +36,21 @@
         "destination": "edc:destination"
       }
     },
+    "DataSource": {
+      "@id": "edc:DataSource",
+      "@context": {
+        "name": "edc:name",
+        "type": "edc:type",
+        "createdAt": "edc:createdAt",
+        "updatedAt": "edc:updatedAt",
+        "properties": {
+          "@id": "edc:properties",
+          "@context": {
+            "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+          }
+        }
+      }
+    },
     "REFERRING_CONNECTOR": "edc:REFERRING_CONNECTOR",
     "POLICY_EVALUATION_TIME": "edc:POLICY_EVALUATION_TIME"
   }
