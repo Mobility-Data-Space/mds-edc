@@ -17,6 +17,19 @@ public interface DataSourceStore {
     String ALREADY_EXISTS_TEMPLATE = "Data Source with id %s already exists";
     String NOT_FOUND_TEMPLATE = "Data Source with id %s not found";
 
+    String VAULT_KEY_PREFIX = "data-source-";
+
+    /**
+     * Builds the vault key under which a data source's {@code properties} are stored, prefixing the id to avoid
+     * collisions with other secrets kept in the same vault.
+     *
+     * @param id the data source id.
+     * @return the vault key.
+     */
+    static String vaultKey(String id) {
+        return VAULT_KEY_PREFIX + id;
+    }
+
     /**
      * Persists a new data source.
      *
