@@ -240,6 +240,80 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .log().ifValidationFails();
     }
 
+    public String createDataSource(String name, String type, Map<String, Object> properties) {
+        var body = createObjectBuilder()
+                .add(CONTEXT, managementContext)
+                .add(TYPE, "DataSource")
+                .add("name", name)
+                .add("type", type)
+                .add("properties", createObjectBuilder(properties))
+                .build();
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .post("/datasources")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(201)
+                .extract().jsonPath().getString(ID);
+    }
+
+    public ValidatableResponse updateDataSource(String id, String name, String type, Map<String, Object> properties) {
+        var body = createObjectBuilder()
+                .add(CONTEXT, managementContext)
+                .add(TYPE, "DataSource")
+                .add(ID, id)
+                .add("name", name)
+                .add("type", type)
+                .add("properties", createObjectBuilder(properties))
+                .build();
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .put("/datasources")
+                .then()
+                .log().ifValidationFails();
+    }
+
+    public ValidatableResponse getDataSource(String id) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .when()
+                .get("/datasources/{id}", id)
+                .then()
+                .log().ifValidationFails();
+    }
+
+    public JsonArray requestDataSources() {
+        var query = createObjectBuilder()
+                .add(CONTEXT, managementContext)
+                .add(TYPE, "QuerySpec")
+                .build();
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(query)
+                .when()
+                .post("/datasources/request")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .extract().body().as(JsonArray.class);
+    }
+
+    public ValidatableResponse deleteDataSource(String id) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .when()
+                .delete("/datasources/{id}", id)
+                .then()
+                .log().ifValidationFails();
+    }
+
     public JsonObject getTransferProcess(String transferProcessId) {
         return baseManagementRequest()
                 .contentType(JSON)

@@ -14,8 +14,9 @@ dependencies {
 
     implementation(libs.opentelemetry.instrumentation.annotations)
 
+    implementation(libs.edc.boot.spi)
+    implementation(libs.edc.transaction.spi)
+
     testImplementation(libs.awaitility)
     testImplementation(testFixtures(project(":extensions:data-plane:data-plane-spi")))
 }
-
-
