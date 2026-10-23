@@ -50,7 +50,7 @@ public class InMemoryDataSourceStore implements DataSourceStore {
         dataSource.setUpdatedAt(now);
 
         index.put(dataSource.getId(), copyIndex(dataSource));
-        vault.storeSecret(dataSource.getId(), serialize(dataSource.getProperties()));
+        vault.storeSecret(DataSourceStore.vaultKey(dataSource.getId()), serialize(dataSource.getProperties()));
 
         return StoreResult.success(dataSource);
     }
@@ -66,7 +66,7 @@ public class InMemoryDataSourceStore implements DataSourceStore {
         dataSource.setUpdatedAt(clock.millis());
 
         index.put(dataSource.getId(), copyIndex(dataSource));
-        vault.storeSecret(dataSource.getId(), serialize(dataSource.getProperties()));
+        vault.storeSecret(DataSourceStore.vaultKey(dataSource.getId()), serialize(dataSource.getProperties()));
 
         return StoreResult.success();
     }
@@ -90,7 +90,7 @@ public class InMemoryDataSourceStore implements DataSourceStore {
         if (index.remove(id) == null) {
             return StoreResult.notFound(NOT_FOUND_TEMPLATE.formatted(id));
         }
-        vault.deleteSecret(id);
+        vault.deleteSecret(DataSourceStore.vaultKey(id));
         return StoreResult.success();
     }
 
@@ -111,7 +111,7 @@ public class InMemoryDataSourceStore implements DataSourceStore {
                 .type(indexed.getType())
                 .createdAt(indexed.getCreatedAt())
                 .updatedAt(indexed.getUpdatedAt())
-                .properties(deserialize(vault.resolveSecret(indexed.getId())))
+                .properties(deserialize(vault.resolveSecret(DataSourceStore.vaultKey(indexed.getId()))))
                 .build();
     }
 
