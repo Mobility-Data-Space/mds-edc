@@ -1749,21 +1749,122 @@ paths:
       tags:
       - Dataplane Selector V3
   /v4/dataplanes:
-    get:
-      description: Returns a list of all currently registered data plane instances
-      operationId: getAllDataPlaneInstancesV4
+    put:
+      description: Register or update a Dataplane instance
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneRegistrationMessage"
       responses:
         "200":
+          description: Dataplane instance correctly registered
+        "400":
           content:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/DataPlaneInstanceSchemaV4"
+                  $ref: "#/components/schemas/ApiErrorDetail"
                 type: array
-          description: A (potentially empty) list of currently registered data plane
-            instances
+          description: Request was malformed
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Not found
       tags:
-      - Dataplane Selector v4
+      - Dataplane Signaling Registration v4
+  /v4/dataplanes/{dataplaneId}:
+    delete:
+      description: Delete a Dataplane instance
+      operationId: delete
+      parameters:
+      - in: path
+        name: dataplaneId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Dataplane instance correctly deleted
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Not found
+      tags:
+      - Dataplane Signaling Registration v4
+  /v5beta/participants/{participantContextId}/dataplanes:
+    put:
+      description: Register or update a Dataplane instance
+      operationId: registerV5
+      parameters:
+      - in: path
+        name: participantContextId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataPlaneRegistrationMessage"
+      responses:
+        "200":
+          description: Dataplane instance correctly registered
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request was malformed
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Not found
+      tags:
+      - Dataplane Signaling Registration v5beta
+  /v5beta/participants/{participantContextId}/dataplanes/{dataplaneId}:
+    delete:
+      description: Delete a Dataplane instance
+      operationId: deleteV5
+      parameters:
+      - in: path
+        name: participantContextId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: dataplaneId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Dataplane instance correctly deleted
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Not found
+      tags:
+      - Dataplane Signaling Registration v5beta
   /v3/edrs/request:
     post:
       deprecated: true
@@ -5979,47 +6080,37 @@ components:
       - allowedSourceTypes
       - url
       type: object
-    DataPlaneInstanceSchemaV4:
+    DataPlaneRegistrationMessage:
       example:
-        '@context':
-          '@vocab': https://w3id.org/edc/v0.0.1/ns/
-        '@id': your-dataplane-id
-        url: http://somewhere.com:1234/api/v1
-        allowedSourceTypes:
-        - source-type1
-        - source-type2
-        allowedTransferTypes:
-        - transfer-type
-        state: AVAILABLE
-        stateTimestamp: 1688465655
+        authorization:
+          key: "{}"
+        dataplaneId: dataplaneId
+        endpoint: endpoint
+        labels:
+        - labels
+        - labels
+        transferTypes:
+        - transferTypes
+        - transferTypes
       properties:
-        '@context':
+        authorization:
+          additionalProperties:
+            type: object
           type: object
-        '@id':
+        dataplaneId:
           type: string
-        '@type':
-          example: https://w3id.org/edc/v0.0.1/ns/DataPlaneInstance
+        endpoint:
           type: string
-        allowedSourceTypes:
+        labels:
           items:
             type: string
           type: array
           uniqueItems: true
-        lastActive:
-          format: int64
-          type: integer
-        state:
-          type: string
-        stateTimestamp:
-          format: int64
-          type: integer
-        url:
-          format: url
-          type: string
-      required:
-      - '@context'
-      - allowedSourceTypes
-      - url
+        transferTypes:
+          items:
+            type: string
+          type: array
+          uniqueItems: true
       type: object
     EndpointDataReferenceEntryV3:
       example:
