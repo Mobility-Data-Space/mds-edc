@@ -1,24 +1,11 @@
-/*
- *  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
- *
- *  This program and the accompanying materials are made available under the
- *  terms of the Apache License, Version 2.0 which is available at
- *  https://www.apache.org/licenses/LICENSE-2.0
- *
- *  SPDX-License-Identifier: Apache-2.0
- *
- *  Contributors:
- *       Bayerische Motoren Werke Aktiengesellschaft (BMW AG) - initial API and implementation
- *
- */
-
-package org.eclipse.edc.connector.dataplane.registration;
+package eu.dataspace.connector.dataplane.controller;
 
 import org.eclipse.edc.connector.dataplane.selector.spi.DataPlaneSelectorService;
 import org.eclipse.edc.connector.dataplane.selector.spi.instance.DataPlaneInstance;
 import org.eclipse.edc.connector.dataplane.spi.edr.EndpointDataReferenceServiceRegistry;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.connector.dataplane.spi.provision.ResourceDefinitionGeneratorManager;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
@@ -31,7 +18,6 @@ import org.eclipse.edc.spi.system.health.LivenessProvider;
 import org.eclipse.edc.spi.system.health.ReadinessProvider;
 import org.eclipse.edc.spi.system.health.StartupStatusProvider;
 import org.eclipse.edc.spi.types.domain.transfer.FlowType;
-import org.eclipse.edc.web.spi.configuration.context.ControlApiUrl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -40,11 +26,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
-import static org.eclipse.edc.connector.dataplane.registration.DataplaneSelfRegistrationExtension.NAME;
 import static org.eclipse.edc.spi.types.domain.transfer.FlowType.PULL;
 import static org.eclipse.edc.spi.types.domain.transfer.FlowType.PUSH;
 
-@Extension(NAME)
+@Extension(DataplaneSelfRegistrationExtension.NAME)
 public class DataplaneSelfRegistrationExtension implements ServiceExtension {
 
     public static final boolean DEFAULT_SELF_UNREGISTRATION = false;
@@ -57,8 +42,6 @@ public class DataplaneSelfRegistrationExtension implements ServiceExtension {
     @Inject
     private DataPlaneSelectorService dataPlaneSelectorService;
     @Inject
-    private ControlApiUrl controlApiUrl;
-    @Inject
     private PipelineService pipelineService;
     @Inject
     private EndpointDataReferenceServiceRegistry endpointDataReferenceServiceRegistry;
@@ -66,6 +49,8 @@ public class DataplaneSelfRegistrationExtension implements ServiceExtension {
     private HealthCheckService healthCheckService;
     @Inject
     private ResourceDefinitionGeneratorManager resourceDefinitionGeneratorManager;
+    @Inject
+    private SingleParticipantContextSupplier participantContextSupplier;
 
     private ServiceExtensionContext context;
 
@@ -86,9 +71,12 @@ public class DataplaneSelfRegistrationExtension implements ServiceExtension {
                 toTransferTypes(PUSH, pipelineService.supportedSinkTypes(), endpointDataReferenceServiceRegistry.supportedResponseTypes())
         );
 
+        var participantContext = participantContextSupplier.get().orElseThrow(f -> new EdcException("Cannot load participant context: " + f.getFailureDetail()));
+
         var instance = DataPlaneInstance.Builder.newInstance()
                 .id(context.getComponentId())
-                .url(controlApiUrl.get().toString() + "/v1/dataflows")
+                .url("http://localhost") // not used, as it's embedded
+                .participantContextId(participantContext.getParticipantContextId())
                 .allowedSourceTypes(pipelineService.supportedSourceTypes())
                 .allowedSourceTypes(resourceDefinitionGeneratorManager.sourceTypes())
                 .allowedTransferType(transferTypes.collect(toSet()))
