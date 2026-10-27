@@ -2,7 +2,7 @@ package eu.dataspace.connector.iam.oauth2;
 
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.message.ProtocolRemoteMessage;
+import org.eclipse.edc.controlplane.ProtocolRemoteMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 

@@ -25,10 +25,8 @@ import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
-import org.eclipse.edc.validator.spi.DataAddressValidatorRegistry;
-import org.eclipse.edc.validator.spi.ValidationResult;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -38,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.connector.dataplane.aws.s3.TestFunctions.s3DataAddressWithCredentials;
 import static org.eclipse.edc.connector.dataplane.aws.s3.TestFunctions.s3DataAddressWithoutCredentials;
-import static org.eclipse.edc.validator.spi.Violation.violation;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -49,38 +46,33 @@ class S3DataSourceFactoryTest {
     private final AwsClientProvider clientProvider = mock();
     private final TypeManager typeManager = new JacksonTypeManager();
     private final Vault vault = mock();
-    private final DataAddressValidatorRegistry validator = mock();
 
     private final S3DataSourceFactory factory = new S3DataSourceFactory(clientProvider,
-            vault, typeManager.getMapper(), validator);
+            vault, typeManager.getMapper());
 
     @Test
     void validate_shouldSucceed_whenValidatorSucceeds() {
-        when(validator.validateSource(any())).thenReturn(ValidationResult.success());
         var source = s3DataAddressWithCredentials();
         var request = createRequest(source);
 
         var result = factory.validateRequest(request);
 
         assertThat(result.succeeded()).isTrue();
-        verify(validator).validateSource(source);
     }
 
     @Test
     void validate_shouldFail_whenValidatorFails() {
-        when(validator.validateSource(any())).thenReturn(ValidationResult.failure(violation("error", "path")));
-        var source = s3DataAddressWithCredentials();
+        // invalid S3 address (missing bucket/region) -> S3SourceDataAddressValidator fails
+        var source = DataAddress.Builder.newInstance().type(S3BucketSchema.TYPE).build();
         var request = createRequest(source);
 
         var result = factory.validateRequest(request);
 
         assertThat(result.succeeded()).isFalse();
-        verify(validator).validateSource(source);
     }
 
     @Test
     void createSource_shouldCreateDataSource() {
-        when(validator.validateSource(any())).thenReturn(ValidationResult.success());
         var source = s3DataAddressWithCredentials();
         var request = createRequest(source);
 
@@ -91,7 +83,6 @@ class S3DataSourceFactoryTest {
 
     @Test
     void createSink_shouldLetTheProviderGetTheCredentialsIfNotProvidedByTheAddress() {
-        when(validator.validateSource(any())).thenReturn(ValidationResult.success());
         var destination = s3DataAddressWithoutCredentials();
         var request = createRequest(destination);
 
@@ -108,10 +99,9 @@ class S3DataSourceFactoryTest {
     
     @Test
     void createSource_shouldGetTheSecretTokenFromTheVault() {
-        when(validator.validateSource(any())).thenReturn(ValidationResult.success());
         var source = TestFunctions.s3DataAddressWithCredentials();
         var secretToken = new AwsSecretToken("accessKeyId", "secretAccessKey");
-        when(vault.resolveSecret(source.getKeyName())).thenReturn(typeManager.writeValueAsString(secretToken));
+        when(vault.resolveSecret(source.getStringProperty("keyName"))).thenReturn(typeManager.writeValueAsString(secretToken));
         var request = createRequest(source);
         
         var s3Source = factory.createSource(request);
@@ -127,10 +117,9 @@ class S3DataSourceFactoryTest {
 
     @Test
     void createSource_shouldGetTheTemporarySecretTokenFromTheVault() {
-        when(validator.validateSource(any())).thenReturn(ValidationResult.success());
         var source = TestFunctions.s3DataAddressWithCredentials();
         var temporaryKey = new AwsTemporarySecretToken("temporaryId", "temporarySecret", null, 0);
-        when(vault.resolveSecret(source.getKeyName())).thenReturn(typeManager.writeValueAsString(temporaryKey));
+        when(vault.resolveSecret(source.getStringProperty("keyName"))).thenReturn(typeManager.writeValueAsString(temporaryKey));
         var request = createRequest(source);
 
         var s3Source = factory.createSource(request);
@@ -146,7 +135,6 @@ class S3DataSourceFactoryTest {
 
     @Test
     void createSource_shouldThrowExceptionIfValidationFails() {
-        when(validator.validateSource(any())).thenReturn(ValidationResult.failure(violation("error", "path")));
         var source = DataAddress.Builder.newInstance()
                 .type(S3BucketSchema.TYPE)
                 .build();

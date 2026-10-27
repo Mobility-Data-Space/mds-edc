@@ -32,7 +32,7 @@ import jakarta.ws.rs.core.StreamingOutput;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.connector.dataplane.spi.response.TransferErrorResponse;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import eu.dataspace.connector.dataplane.proxy.api.sink.AsyncStreamingDataSink;
 

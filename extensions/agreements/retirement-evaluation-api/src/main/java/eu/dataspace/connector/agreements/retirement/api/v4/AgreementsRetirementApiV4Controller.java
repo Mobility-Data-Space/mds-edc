@@ -33,7 +33,7 @@ public class AgreementsRetirementApiV4Controller extends BaseAgreementsRetiremen
     @POST
     @Path("/request")
     @Override
-    public JsonArray getAllRetiredV4(@SchemaType(EDC_QUERY_SPEC_TYPE_TERM) @RequestBody JsonObject querySpecJson) {
+    public JsonArray getAllRetiredV4(@SchemaType(value = EDC_QUERY_SPEC_TYPE_TERM, version = "v4") @RequestBody JsonObject querySpecJson) {
         return getAllRetired(querySpecJson);
     }
 
@@ -46,7 +46,7 @@ public class AgreementsRetirementApiV4Controller extends BaseAgreementsRetiremen
 
     @POST
     @Override
-    public void retireAgreementV4(@SchemaType(AGREEMENTS_RETIREMENT_ENTRY_TYPE) @RequestBody JsonObject entry) {
+    public void retireAgreementV4(@SchemaType(value = AGREEMENTS_RETIREMENT_ENTRY_TYPE, version = "v4") @RequestBody JsonObject entry) {
         retireAgreement(entry);
     }
 }

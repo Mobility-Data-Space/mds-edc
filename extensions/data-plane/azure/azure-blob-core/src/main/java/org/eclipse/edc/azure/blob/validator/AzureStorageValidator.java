@@ -15,7 +15,7 @@
 package org.eclipse.edc.azure.blob.validator;
 
 
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.util.string.StringUtils;
 
 import java.util.regex.Pattern;
@@ -45,6 +45,8 @@ public class AzureStorageValidator {
     private static final String BLOB = "blob";
     private static final String CONTAINER = "container";
     private static final String KEY_NAME = "keyName";
+    // Was DataAddress.EDC_DATA_ADDRESS_SECRET, removed in EDC 1.0.0; preserves the pre-1.0 inline-secret property key.
+    private static final String EDC_DATA_ADDRESS_SECRET = "https://w3id.org/edc/v0.0.1/ns/secret";
     private static final String METADATA = "metadata";
     private static final String PREFIX = "prefix";
 
@@ -137,8 +139,8 @@ public class AzureStorageValidator {
      * @throws IllegalArgumentException if the string is null or blank.
      */
     public static void validateKeyNameOrSecret(DataAddress keyName) {
-        if (StringUtils.isNullOrBlank(keyName.getKeyName()) && StringUtils.isNullOrBlank(keyName.getStringProperty(DataAddress.EDC_DATA_ADDRESS_SECRET))) {
-            throw new IllegalArgumentException(String.format(INVALID_RESOURCE_NAME, KEY_NAME + " or " + DataAddress.EDC_DATA_ADDRESS_SECRET));
+        if (StringUtils.isNullOrBlank(keyName.getStringProperty(KEY_NAME)) && StringUtils.isNullOrBlank(keyName.getStringProperty(EDC_DATA_ADDRESS_SECRET))) {
+            throw new IllegalArgumentException(String.format(INVALID_RESOURCE_NAME, KEY_NAME + " or " + EDC_DATA_ADDRESS_SECRET));
         }
     }
 

@@ -35,7 +35,7 @@ import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceFailure;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.result.StoreFailure;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowProvisionMessage;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowResponseMessage;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
@@ -397,6 +397,7 @@ public class DataPlaneManagerImpl extends AbstractStateEntityManager<DataFlow, D
                     }
 
                     update(flow);
+                    return StatusResult.success();
                 })
                 .onFailure((flow, t) -> {
                     monitor.warning("Failed to provision flow " + flow.getId(), t);
@@ -421,6 +422,7 @@ public class DataPlaneManagerImpl extends AbstractStateEntityManager<DataFlow, D
                     } else {
                         triggerDataFlow(dataFlow);
                     }
+                    return StatusResult.success();
                 })
                 .onFailure((flow, t) -> {
                     flow.transitionToProvisionNotifying();
@@ -449,6 +451,7 @@ public class DataPlaneManagerImpl extends AbstractStateEntityManager<DataFlow, D
                     }
 
                     update(flow);
+                    return StatusResult.success();
                 })
                 .onFailure((flow, t) -> {
                     flow.transitionToDeprovisioning();
@@ -480,6 +483,7 @@ public class DataPlaneManagerImpl extends AbstractStateEntityManager<DataFlow, D
 
                     flow.transitionToStarted(runtimeId);
                     update(flow);
+                    return StatusResult.success();
                 })
                 .onFailure((f, t) -> {
                     f.transitToReceived(runtimeId);
@@ -524,6 +528,7 @@ public class DataPlaneManagerImpl extends AbstractStateEntityManager<DataFlow, D
                         dataFlow.transitionToDeprovisioning();
                     }
                     update(dataFlow);
+                    return StatusResult.success();
                 })
                 .onFailure((d, t) -> {
                     dataFlow.transitToCompleted();
@@ -542,6 +547,7 @@ public class DataPlaneManagerImpl extends AbstractStateEntityManager<DataFlow, D
                 .onSuccess((d, v) -> {
                     dataFlow.transitionToNotified();
                     update(dataFlow);
+                    return StatusResult.success();
                 })
                 .onFailure((d, t) -> {
                     dataFlow.transitToFailed(dataFlow.getErrorDetail());

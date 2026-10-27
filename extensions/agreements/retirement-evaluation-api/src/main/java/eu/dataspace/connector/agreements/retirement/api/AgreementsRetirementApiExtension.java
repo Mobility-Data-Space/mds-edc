@@ -68,7 +68,7 @@ public class AgreementsRetirementApiExtension implements ServiceExtension {
         webService.registerDynamicResource(ApiContext.MANAGEMENT, AgreementsRetirementApiV3Controller.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, MANAGEMENT_SCOPE));
 
         webService.registerResource(ApiContext.MANAGEMENT, new AgreementsRetirementApiV4Controller(agreementsRetirementService, managementTypeTransformerRegistryV4, validator, monitor));
-        webService.registerDynamicResource(ApiContext.MANAGEMENT, AgreementsRetirementApiV4Controller.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, MANAGEMENT_SCOPE_V4, validator, ManagementApiJsonSchema.V4.version()));
+        webService.registerDynamicResource(ApiContext.MANAGEMENT, AgreementsRetirementApiV4Controller.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, MANAGEMENT_SCOPE_V4));
     }
 
 }

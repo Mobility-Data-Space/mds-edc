@@ -15,7 +15,7 @@
 package org.eclipse.edc.connector.dataplane.spi.iam;
 
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 
 import java.util.Map;

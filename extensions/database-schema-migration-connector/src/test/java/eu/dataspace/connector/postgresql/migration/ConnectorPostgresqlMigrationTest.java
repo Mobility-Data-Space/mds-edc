@@ -25,7 +25,7 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.SqlQueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
@@ -225,7 +225,7 @@ public class ConnectorPostgresqlMigrationTest {
 
             migrateTo(objectFactory, context, "1.11.0", participantContextId);
 
-            var byId = assetIndex.findById(assetId);
+            var byId = assetIndex.findById(participantContextId, assetId);
             assertThat(byId.getDataplaneMetadata().getProperties()).isEqualTo(asset.getDataAddress().getProperties());
         }
     }

@@ -1,7 +1,7 @@
 package eu.dataspace.connector.extension.logginghouse.publisher;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.node.ObjectNode;
 import com.truzzt.extension.logginghouse.client.events.CustomLoggingHouseEvent;
 import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementEvent;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -55,7 +55,7 @@ public class LoggingHousePublisherExtension implements ServiceExtension {
                 ObjectNode tree = typeManager.getMapper().valueToTree(event);
                 tree.put("className", event.getClass().getSimpleName());
                 return typeManager.getMapper().writeValueAsString(tree);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 var message = "Cannot serialize event " + event;
                 monitor.severe(message);
                 throw new EdcException(message, e);

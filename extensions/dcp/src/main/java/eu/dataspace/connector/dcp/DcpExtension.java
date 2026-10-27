@@ -22,11 +22,11 @@ import org.eclipse.edc.policy.engine.spi.PolicyValidatorRule;
 import org.eclipse.edc.policy.model.Policy;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.EdcException;
-import org.eclipse.edc.spi.iam.RequestContext;
+import org.eclipse.edc.controlplane.ProtocolRemoteMessage;
+import org.eclipse.edc.protocol.spi.RequestContext;
 import org.eclipse.edc.spi.iam.RequestScope;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.types.domain.message.RemoteMessage;
 
 import java.util.Map;
 import java.util.Set;
@@ -64,7 +64,7 @@ public class DcpExtension implements ServiceExtension {
             var protocol = java.util.Optional.of(policyContext)
                     .map(RequestPolicyContext::requestContext)
                     .map(RequestContext::getMessage)
-                    .map(RemoteMessage::getProtocol)
+                    .map(ProtocolRemoteMessage::getProtocol)
                     .orElse(null);
 
             defaultScopes.get(protocol).forEach(scopes::scope);

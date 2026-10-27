@@ -17,9 +17,9 @@ package org.eclipse.edc.connector.dataplane.http.spi;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
+import org.eclipse.edc.controlplane.DataAddress;
 
 import java.util.Map;
 import java.util.Objects;

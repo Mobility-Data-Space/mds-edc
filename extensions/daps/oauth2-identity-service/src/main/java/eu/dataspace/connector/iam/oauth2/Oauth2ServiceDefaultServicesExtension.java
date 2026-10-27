@@ -3,7 +3,7 @@ package eu.dataspace.connector.iam.oauth2;
 import eu.dataspace.connector.iam.oauth2.certificate.VaultCertificateResolver;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
-import org.eclipse.edc.spi.iam.AudienceResolver;
+import org.eclipse.edc.controlplane.iam.AudienceResolver;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;

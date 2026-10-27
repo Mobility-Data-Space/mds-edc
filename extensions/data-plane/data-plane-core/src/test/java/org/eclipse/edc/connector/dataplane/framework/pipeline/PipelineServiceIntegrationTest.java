@@ -22,7 +22,7 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.InputStreamDataSource;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.StreamResult;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;

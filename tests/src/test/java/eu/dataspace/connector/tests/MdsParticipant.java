@@ -1,6 +1,6 @@
 package eu.dataspace.connector.tests;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
@@ -430,7 +430,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
             var responseBody = objectMapper.readValue(response, JsonObject.class);
             var catalog = jsonLd.expand(responseBody).orElseThrow((f) -> new EdcException(f.getFailureDetail()));
             return catalog.getJsonArray("http://www.w3.org/ns/dcat#dataset");
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
 

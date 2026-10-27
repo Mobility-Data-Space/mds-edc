@@ -1,7 +1,7 @@
 package eu.dataspace.connector.dataplane.controller;
 
-import org.eclipse.edc.connector.dataplane.selector.spi.DataPlaneSelectorService;
-import org.eclipse.edc.connector.dataplane.selector.spi.instance.DataPlaneInstance;
+import org.eclipse.edc.connector.controlplane.dataplane.spi.DataPlaneSelectorService;
+import org.eclipse.edc.connector.controlplane.dataplane.spi.instance.DataPlaneInstance;
 import org.eclipse.edc.connector.dataplane.spi.edr.EndpointDataReferenceServiceRegistry;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.PipelineService;
 import org.eclipse.edc.connector.dataplane.spi.provision.ResourceDefinitionGeneratorManager;
@@ -79,7 +79,7 @@ public class DataplaneSelfRegistrationExtension implements ServiceExtension {
                 .participantContextId(participantContext.getParticipantContextId())
                 .allowedSourceTypes(pipelineService.supportedSourceTypes())
                 .allowedSourceTypes(resourceDefinitionGeneratorManager.sourceTypes())
-                .allowedTransferType(transferTypes.collect(toSet()))
+                .allowedTransferTypes(transferTypes.collect(toSet()))
                 .destinationProvisionTypes(resourceDefinitionGeneratorManager.destinationTypes())
                 .build();
 

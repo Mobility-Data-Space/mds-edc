@@ -1,7 +1,7 @@
 package eu.dataspace.dataplane.observer.subscriber;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import eu.dataspace.dataplane.observer.store.PendingObserverEvent;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -10,7 +10,7 @@ import org.eclipse.edc.http.spi.EdcHttpClient;
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 
 import java.util.function.Supplier;
 
@@ -63,7 +63,7 @@ public class ObserverEventDispatcher {
             }
             var deserialized = mapperSupplier.get().readValue(json, DataAddress.class);
             return Result.success(deserialized);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             return Result.failure("Cannot deserialize DataAddress: " + e.getMessage());
         }
     }

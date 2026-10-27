@@ -16,7 +16,7 @@ package org.eclipse.edc.connector.dataplane.framework;
 
 import org.eclipse.edc.connector.dataplane.spi.Endpoint;
 import org.eclipse.edc.connector.dataplane.spi.iam.PublicEndpointGeneratorService;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

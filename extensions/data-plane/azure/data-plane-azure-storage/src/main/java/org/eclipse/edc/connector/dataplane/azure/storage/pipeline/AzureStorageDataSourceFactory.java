@@ -15,6 +15,7 @@
 package org.eclipse.edc.connector.dataplane.azure.storage.pipeline;
 
 import dev.failsafe.RetryPolicy;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSource;
@@ -74,11 +75,11 @@ public class AzureStorageDataSourceFactory implements DataSourceFactory {
                 .retryPolicy(retryPolicy)
                 .monitor(monitor);
 
-        Optional.ofNullable(dataAddress.getKeyName())
+        Optional.ofNullable(dataAddress.getStringProperty(DataAddress.SIMPLE_KEY_NAME))
                 .filter(it -> !it.isBlank())
                 .ifPresentOrElse(keyName -> {
                     monitor.debug("Attempting to use shared key authentication for Azure Storage data source");
-                    builder.sharedKey(vault.resolveSecret(dataAddress.getKeyName()));
+                    builder.sharedKey(vault.resolveSecret(dataAddress.getStringProperty(DataAddress.SIMPLE_KEY_NAME)));
                 }, () -> monitor.debug("Attempting to use default identity for Azure Storage data source"));
 
         return builder.build();

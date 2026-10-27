@@ -1,6 +1,6 @@
 package eu.dataspace.dataplane.observer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;

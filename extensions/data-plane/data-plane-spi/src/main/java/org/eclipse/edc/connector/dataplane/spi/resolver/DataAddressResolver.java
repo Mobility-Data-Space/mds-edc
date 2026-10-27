@@ -15,7 +15,7 @@
 package org.eclipse.edc.connector.dataplane.spi.resolver;
 
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 
 /**
  * Resolves an access token into a {@link DataAddress}.

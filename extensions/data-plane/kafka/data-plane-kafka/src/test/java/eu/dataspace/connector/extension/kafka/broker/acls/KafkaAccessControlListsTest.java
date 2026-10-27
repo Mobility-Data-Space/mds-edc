@@ -17,7 +17,7 @@ import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.connector.dataplane.spi.store.DataPlaneStore;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

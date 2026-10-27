@@ -72,6 +72,6 @@ public class DataFlowManagementApiExtension implements ServiceExtension {
         var service = new DataFlowServiceImpl(dataPlaneStore, transferProcessStore, dataAddressStore, transactionContext);
 
         webService.registerResource(ApiContext.MANAGEMENT, new DataFlowApiV4Controller(service, managementTypeTransformerRegistryV4, validator, monitor));
-        webService.registerDynamicResource(ApiContext.MANAGEMENT, DataFlowApiV4Controller.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, MANAGEMENT_SCOPE_V4, validator, ManagementApiJsonSchema.V4.version()));
+        webService.registerDynamicResource(ApiContext.MANAGEMENT, DataFlowApiV4Controller.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, MANAGEMENT_SCOPE_V4));
     }
 }
