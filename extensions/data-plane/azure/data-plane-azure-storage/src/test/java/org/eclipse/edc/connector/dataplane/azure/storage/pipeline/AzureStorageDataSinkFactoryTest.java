@@ -27,7 +27,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.Test;
 
@@ -70,7 +70,7 @@ class AzureStorageDataSinkFactoryTest {
         assertThat(factory.validateRequest(request.destinationDataAddress(dataAddress
                                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
                                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
-                                .keyName(keyName)
+                                .property("keyName", keyName)
                                 .build())
                         .build())
                 .succeeded()).isTrue();
@@ -81,7 +81,7 @@ class AzureStorageDataSinkFactoryTest {
         assertThat(factory.validateRequest(request.destinationDataAddress(dataAddress
                                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
                                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
-                                .keyName(keyName)
+                                .property("keyName", keyName)
                                 .build())
                         .sourceDataAddress(dataAddress.property(AzureBlobStoreSchema.BLOB_PREFIX, blobPrefix).build())
                         .build())
@@ -92,7 +92,7 @@ class AzureStorageDataSinkFactoryTest {
     void validate_whenMissingAccountName_fails() {
         assertThat(factory.validateRequest(request.destinationDataAddress(dataAddress
                                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
-                                .keyName(keyName)
+                                .property("keyName", keyName)
                                 .build())
                         .build())
                 .failed()).isTrue();
@@ -102,7 +102,7 @@ class AzureStorageDataSinkFactoryTest {
     void validate_whenMissingContainerName_fails() {
         assertThat(factory.validateRequest(request.destinationDataAddress(dataAddress
                                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
-                                .keyName(keyName)
+                                .property("keyName", keyName)
                                 .build())
                         .build())
                 .failed()).isTrue();
@@ -123,8 +123,8 @@ class AzureStorageDataSinkFactoryTest {
         var validRequest = request.destinationDataAddress(dataAddress
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
-                .property(DataAddress.EDC_DATA_ADDRESS_SECRET, typeManager.writeValueAsString(token))
-                .keyName(keyName)
+                .property("https://w3id.org/edc/v0.0.1/ns/secret", typeManager.writeValueAsString(token))
+                .property("keyName", keyName)
                 .build());
         assertThat(factory.createSink(validRequest.build())).isNotNull();
     }
@@ -141,7 +141,7 @@ class AzureStorageDataSinkFactoryTest {
         var validRequest = request.destinationDataAddress(dataAddress
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
-                .keyName(keyName)
+                .property("keyName", keyName)
                 .build());
         assertThatThrownBy(() -> factory.createSink(validRequest.build()))
                 .isInstanceOf(EdcException.class)

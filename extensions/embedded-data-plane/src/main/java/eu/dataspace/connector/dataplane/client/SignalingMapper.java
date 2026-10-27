@@ -2,12 +2,12 @@ package eu.dataspace.connector.dataplane.client;
 
 import org.eclipse.edc.connector.controlplane.asset.spi.index.AssetIndex;
 import org.eclipse.edc.connector.dataplane.spi.DataFlowStates;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.signaling.domain.DataFlowPrepareMessage;
 import org.eclipse.edc.signaling.domain.DataFlowResumeMessage;
 import org.eclipse.edc.signaling.domain.DataFlowStatusMessage;
 import org.eclipse.edc.signaling.domain.DspDataAddress;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowProvisionMessage;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.spi.types.domain.transfer.FlowType;
@@ -25,7 +25,6 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public final class SignalingMapper {
 
-    public static final String SIGNALING_COUNTER_PARTY_ID = EDC_NAMESPACE + "counterPartyId";
     public static final String SIGNALING_DATASPACE_CONTEXT = EDC_NAMESPACE + "dataspaceContext";
 
     private SignalingMapper() {
@@ -38,10 +37,10 @@ public final class SignalingMapper {
      */
     public static Result<DataFlowStartMessage> toFrameworkStartMessage(
             org.eclipse.edc.signaling.domain.DataFlowStartMessage message, AssetIndex assetIndex) {
-        return transferType(message.getTransferType())
+        return transferType(message.getProfile())
                 .map(transferType -> {
                     var builder = DataFlowStartMessage.Builder.newInstance()
-                            .processId(message.getProcessId())
+                            .processId(message.getDataFlowId())
                             .transferType(transferType)
                             .agreementId(message.getAgreementId())
                             .assetId(message.getDatasetId())
@@ -56,7 +55,7 @@ public final class SignalingMapper {
                             .map(metadata -> {
                                 if (metadata.isEmpty()) {
                                     // if no dataplaneMetadata was in the message, get it out of the data address
-                                    return assetIndex.findById(message.getDatasetId()).getDataAddress().getProperties()
+                                    return assetIndex.findById(message.getParticipantId(), message.getDatasetId()).getDataAddress().getProperties()
                                             .entrySet().stream()
                                             .flatMap(entry -> Stream.of(
                                                     entry,
@@ -67,7 +66,7 @@ public final class SignalingMapper {
                                     return metadata;
                                 }
                             })
-                            .map(it -> toDataAddress(it, message.getTransferType())).ifPresent(builder::sourceDataAddress);
+                            .map(it -> toDataAddress(it, message.getProfile())).ifPresent(builder::sourceDataAddress);
 
                     return builder.build();
                 });
@@ -77,10 +76,10 @@ public final class SignalingMapper {
      * Builds a legacy {@link DataFlowProvisionMessage} from the protocol {@code DataFlowPrepareMessage}.
      */
     public static Result<DataFlowProvisionMessage> toFrameworkProvisionMessage(DataFlowPrepareMessage message) {
-        return transferType(message.getTransferType())
+        return transferType(message.getProfile())
                 .map(transferType -> {
                     var builder = DataFlowProvisionMessage.Builder.newInstance()
-                            .processId(message.getProcessId())
+                            .processId(message.getDataFlowId())
                             .transferType(transferType)
                             .agreementId(message.getAgreementId())
                             .assetId(message.getDatasetId())

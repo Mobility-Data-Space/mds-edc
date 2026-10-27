@@ -1,6 +1,6 @@
 package eu.dataspace.dataplane.observer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Dataset;
 import org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractRequest;
@@ -105,7 +105,7 @@ public class ObserverNegotiationService {
     private Result<JsonObject> fromJson(byte[] datasetBytes) {
         try {
             return Result.success(mapperSupplier.get().readValue(datasetBytes, JsonObject.class));
-        } catch (IOException e) {
+        } catch (Exception e) {
             return Result.failure("Cannot deserialize Dataset: " + e.getMessage());
         }
     }

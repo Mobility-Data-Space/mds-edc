@@ -6,23 +6,26 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.Provider;
-import jakarta.ws.rs.ext.ReaderInterceptor;
-import jakarta.ws.rs.ext.ReaderInterceptorContext;
-import org.eclipse.edc.connector.controlplane.api.management.asset.v3.AssetApiV3Controller;
-import org.eclipse.edc.connector.controlplane.api.management.asset.v4.AssetApiV4Controller;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.DataplaneMetadata;
+import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
+import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
+import org.eclipse.edc.web.jersey.providers.jsonld.JsonObjectMessageBodyReader;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
@@ -37,58 +40,51 @@ public class AssetDataAddressPatch implements ServiceExtension {
     private TypeManager typeManager;
     @Inject
     private Monitor monitor;
+    @Inject
+    private JsonLd jsonLd;
+    @Inject
+    private JsonObjectValidatorRegistry validatorRegistry;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        webService.registerDynamicResource(ApiContext.MANAGEMENT, AssetApiV4Controller.class, new DataAddressToDataplaneMetadata(typeManager, monitor));
+        webService.registerResource(ApiContext.MANAGEMENT, new DataAddressToDataplaneMetadataBodyReader(jsonLd, typeManager, JSON_LD, validatorRegistry, monitor));
     }
 
     @Provider
     @Priority(10_000)
-    public static class DataAddressToDataplaneMetadata implements ReaderInterceptor {
-        private final TypeManager typeManager;
+    public static class DataAddressToDataplaneMetadataBodyReader extends JsonObjectMessageBodyReader {
+
         private final Monitor monitor;
 
-        public DataAddressToDataplaneMetadata(TypeManager typeManager, Monitor monitor) {
-            this.typeManager = typeManager;
+        public DataAddressToDataplaneMetadataBodyReader(JsonLd jsonLd, TypeManager typeManager, String typeContext,
+                                                        JsonObjectValidatorRegistry validatorRegistry, Monitor monitor) {
+            super(jsonLd, typeManager, typeContext, validatorRegistry);
             this.monitor = monitor;
         }
 
         @Override
-        public Object aroundReadFrom(ReaderInterceptorContext context) throws WebApplicationException, IOException {
-            if (!context.getType().equals(JsonObject.class)) {
-                return context.proceed();
+        public JsonObject readFrom(Class<JsonObject> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+            var expanded = super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream);
+            if (expanded == null) {
+                return null;
             }
 
-            var stream = context.getInputStream();
-            if (stream.available() == 0) {
-                return context.proceed();
-            }
-
-            var bytes = stream.readAllBytes();
-            var jsonObject = typeManager.getMapper(JSON_LD).readValue(bytes, JsonObject.class);
-            var type = jsonObject.getJsonArray(TYPE);
-            if (type == null || !type.contains(Json.createValue(Asset.EDC_ASSET_TYPE)) || !jsonObject.containsKey(Asset.EDC_ASSET_DATA_ADDRESS)) {
-                context.setInputStream(new ByteArrayInputStream(bytes));
-                return context.proceed();
+            var jsonType = expanded.getJsonArray(TYPE);
+            if (jsonType == null || !jsonType.contains(Json.createValue(Asset.EDC_ASSET_TYPE)) || !expanded.containsKey(Asset.EDC_ASSET_DATA_ADDRESS)) {
+                return expanded;
             }
 
             monitor.warning("`dataAddress` attribute has been deprecated, `dataplaneMetadata` should be used instead");
 
-            var dataAddress = jsonObject.get(Asset.EDC_ASSET_DATA_ADDRESS);
+            var dataAddress = expanded.get(Asset.EDC_ASSET_DATA_ADDRESS);
             var properties = withoutType(dataAddress);
-            var modified = Json.createObjectBuilder(jsonObject)
+
+            return Json.createObjectBuilder(expanded)
                     .remove(Asset.EDC_ASSET_DATA_ADDRESS)
                     .add(Asset.EDC_ASSET_DATAPLANE_METADATA, Json.createArrayBuilder().add(Json.createObjectBuilder()
                             .add(DataplaneMetadata.EDC_DATAPLANE_METADATA_PROPERTIES, properties)
                     ))
                     .build();
-
-
-            var modifiedBytes = typeManager.getMapper(JSON_LD).writeValueAsBytes(modified);
-            context.setInputStream(new ByteArrayInputStream(modifiedBytes));
-
-            return context.proceed();
         }
 
         /**

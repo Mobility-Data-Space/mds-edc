@@ -14,9 +14,9 @@
 
 package org.eclipse.edc.connector.dataplane.spi.provision;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import org.eclipse.edc.json.JacksonTypeManager;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -28,7 +28,7 @@ class ProvisionResourceTest {
     private final JacksonTypeManager typeManager = new JacksonTypeManager();
 
     @Test
-    void serdes() throws JsonProcessingException {
+    void serdes() throws JacksonException {
         var resource = ProvisionResource.Builder.newInstance()
                 .flowId(UUID.randomUUID().toString())
                 .dataAddress(DataAddress.Builder.newInstance().type("any").build())

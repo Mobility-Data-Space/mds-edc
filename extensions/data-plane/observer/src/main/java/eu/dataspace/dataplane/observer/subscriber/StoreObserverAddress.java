@@ -1,7 +1,7 @@
 package eu.dataspace.dataplane.observer.subscriber;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import eu.dataspace.dataplane.observer.ObserverConfig;
 import eu.dataspace.dataplane.observer.ObserverManager;
 import org.eclipse.edc.connector.controlplane.transfer.spi.event.TransferProcessStarted;
@@ -53,7 +53,7 @@ public class StoreObserverAddress implements EventSubscriber {
                             monitor.severe("Cannot store DFRS Observer address: " + f.getFailureDetail());
 
                         });
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 monitor.severe("Cannot serialize to JSON", e);
             }
         }
