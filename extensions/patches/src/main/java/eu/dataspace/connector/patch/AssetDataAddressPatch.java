@@ -4,6 +4,7 @@ import jakarta.annotation.Priority;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.ReaderInterceptor;
@@ -76,10 +77,11 @@ public class AssetDataAddressPatch implements ServiceExtension {
             monitor.warning("`dataAddress` attribute has been deprecated, `dataplaneMetadata` should be used instead");
 
             var dataAddress = jsonObject.get(Asset.EDC_ASSET_DATA_ADDRESS);
+            var properties = withoutType(dataAddress);
             var modified = Json.createObjectBuilder(jsonObject)
                     .remove(Asset.EDC_ASSET_DATA_ADDRESS)
                     .add(Asset.EDC_ASSET_DATAPLANE_METADATA, Json.createArrayBuilder().add(Json.createObjectBuilder()
-                            .add(DataplaneMetadata.EDC_DATAPLANE_METADATA_PROPERTIES, dataAddress)
+                            .add(DataplaneMetadata.EDC_DATAPLANE_METADATA_PROPERTIES, properties)
                     ))
                     .build();
 
@@ -88,6 +90,22 @@ public class AssetDataAddressPatch implements ServiceExtension {
             context.setInputStream(new ByteArrayInputStream(modifiedBytes));
 
             return context.proceed();
+        }
+
+        /**
+         * Removes the JSON-LD {@code @type} from a (possibly expanded) dataAddress so it is not carried
+         * into dataplaneMetadata.properties. Handles both a bare node object and the expanded array of nodes.
+         */
+        private static JsonValue withoutType(JsonValue dataAddress) {
+            if (dataAddress instanceof JsonArray array) {
+                var builder = Json.createArrayBuilder();
+                array.forEach(it -> builder.add(withoutType(it)));
+                return builder.build();
+            }
+            if (dataAddress instanceof JsonObject object) {
+                return Json.createObjectBuilder(object).remove(TYPE).build();
+            }
+            return dataAddress;
         }
     }
 }
