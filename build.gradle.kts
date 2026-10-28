@@ -51,6 +51,10 @@ allprojects {
                 useVersion("1.11.4")
                 because("CVE-2026-106451")
             }
+            if (requested.group == "org.xerial.snappy" && requested.name == "snappy-java") {
+                useVersion("1.1.10.9")
+                because("CVE-2026-108106, CVE-2026-93451")
+            }
         }
     }
 
