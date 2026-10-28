@@ -6,23 +6,26 @@ import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
 import org.eclipse.edc.signaling.port.ClientFactory;
 import org.eclipse.edc.signaling.port.DataPlaneSignalingClient;
 import org.eclipse.edc.spi.monitor.Monitor;
+import org.eclipse.edc.spi.security.Vault;
 
 public class EmbeddedClientFactory extends ClientFactory {
 
     private final DataPlaneManager dataPlaneManager;
     private final Monitor monitor;
     private final AssetIndex assetIndex;
+    private final Vault vault;
 
-    public EmbeddedClientFactory(DataPlaneManager dataPlaneManager, Monitor monitor, AssetIndex assetIndex) {
+    public EmbeddedClientFactory(DataPlaneManager dataPlaneManager, Monitor monitor, AssetIndex assetIndex, Vault vault) {
         super(null, null, null);
         this.dataPlaneManager = dataPlaneManager;
         this.monitor = monitor;
         this.assetIndex = assetIndex;
+        this.vault = vault;
     }
 
     @Override
     public DataPlaneSignalingClient createClient(DataPlaneInstance instance) {
-        return new EmbeddedDataPlaneSignalingClient(instance, dataPlaneManager, monitor, assetIndex);
+        return new EmbeddedDataPlaneSignalingClient(instance, dataPlaneManager, monitor, assetIndex, vault);
     }
 
 }

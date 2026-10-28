@@ -14,6 +14,7 @@ import org.eclipse.edc.signaling.port.DataPlaneSignalingClient;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.response.ResponseStatus;
 import org.eclipse.edc.spi.response.StatusResult;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowResponseMessage;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,18 +25,20 @@ public class EmbeddedDataPlaneSignalingClient extends DataPlaneSignalingClient {
     private final DataPlaneManager dataPlaneManager;
     private final Monitor monitor;
     private final AssetIndex assetIndex;
+    private final Vault vault;
 
     public EmbeddedDataPlaneSignalingClient(DataPlaneInstance dataPlane, DataPlaneManager dataPlaneManager,
-                                            Monitor monitor, AssetIndex assetIndex) {
+                                            Monitor monitor, AssetIndex assetIndex, Vault vault) {
         super(dataPlane, null, null, null);
         this.dataPlaneManager = dataPlaneManager;
         this.monitor = monitor;
         this.assetIndex = assetIndex;
+        this.vault = vault;
     }
 
     @Override
     public StatusResult<DataFlowStatusMessage> prepare(DataFlowPrepareMessage request) {
-        var messageTransformation = SignalingMapper.toFrameworkProvisionMessage(request);
+        var messageTransformation = SignalingMapper.toFrameworkProvisionMessage(request, vault::resolveSecret);
         if (messageTransformation.failed()) {
             return StatusResult.failure(ResponseStatus.FATAL_ERROR, "Cannot transform incoming prepare message: " + messageTransformation.getFailureDetail());
         }

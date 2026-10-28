@@ -135,9 +135,16 @@ public class DataPlaneManagerImpl extends AbstractStateEntityManager<DataFlow, D
 
         update(dataFlow);
 
-        return StatusResult.success(DataFlowResponseMessage.Builder.newInstance()
-                .provisioning(!resources.isEmpty())
-                .build());
+        var responseBuilder = DataFlowResponseMessage.Builder.newInstance()
+                .provisioning(!resources.isEmpty());
+
+        if (resources.isEmpty()) {
+            // nothing to provision: echo the destination back so the control plane stores it as the owned data
+            // address and forwards it to the provider in the subsequent TransferRequestMessage (consumer PUSH).
+            responseBuilder.dataAddress(dataFlow.getDestination());
+        }
+
+        return StatusResult.success(responseBuilder.build());
     }
 
     @Override

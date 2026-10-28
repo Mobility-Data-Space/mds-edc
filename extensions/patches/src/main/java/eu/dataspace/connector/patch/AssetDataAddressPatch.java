@@ -6,29 +6,22 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.ReaderInterceptor;
+import jakarta.ws.rs.ext.ReaderInterceptorContext;
+import org.eclipse.edc.connector.controlplane.api.management.asset.v4.AssetApiV4Controller;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.DataplaneMetadata;
-import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
-import org.eclipse.edc.web.jersey.providers.jsonld.JsonObjectMessageBodyReader;
 import org.eclipse.edc.web.spi.WebService;
 import org.eclipse.edc.web.spi.configuration.ApiContext;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
-import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 /**
  * Patch that automatically maps incoming Asset dataAddress into dataplaneMetadata.properties, to fully support DPS capabilities.
@@ -37,36 +30,28 @@ public class AssetDataAddressPatch implements ServiceExtension {
     @Inject
     private WebService webService;
     @Inject
-    private TypeManager typeManager;
-    @Inject
     private Monitor monitor;
-    @Inject
-    private JsonLd jsonLd;
-    @Inject
-    private JsonObjectValidatorRegistry validatorRegistry;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        webService.registerResource(ApiContext.MANAGEMENT, new DataAddressToDataplaneMetadataBodyReader(jsonLd, typeManager, JSON_LD, validatorRegistry, monitor));
+        webService.registerDynamicResource(ApiContext.MANAGEMENT, AssetApiV4Controller.class, new DataAddressToDataplaneMetadata(monitor));
     }
 
     @Provider
     @Priority(10_000)
-    public static class DataAddressToDataplaneMetadataBodyReader extends JsonObjectMessageBodyReader {
+    public static class DataAddressToDataplaneMetadata implements ReaderInterceptor {
 
         private final Monitor monitor;
 
-        public DataAddressToDataplaneMetadataBodyReader(JsonLd jsonLd, TypeManager typeManager, String typeContext,
-                                                        JsonObjectValidatorRegistry validatorRegistry, Monitor monitor) {
-            super(jsonLd, typeManager, typeContext, validatorRegistry);
+        public DataAddressToDataplaneMetadata(Monitor monitor) {
             this.monitor = monitor;
         }
 
         @Override
-        public JsonObject readFrom(Class<JsonObject> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-            var expanded = super.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream);
-            if (expanded == null) {
-                return null;
+        public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
+            var result = context.proceed();
+            if (!(result instanceof JsonObject expanded)) {
+                return result;
             }
 
             var jsonType = expanded.getJsonArray(TYPE);
