@@ -478,6 +478,64 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .extract().jsonPath().getString(ID);
     }
 
+    /**
+     * EDC 1.0.0 removed the dedicated {@code dataDestination} field from the transfer request: the destination is now
+     * expressed through {@code dataplaneMetadata}, which the control plane maps into the actual destination data
+     * address. This override keeps the {@link Participant} transfer API (e.g. {@code requestAssetFrom().withDestination()})
+     * working by translating the destination address into {@code dataplaneMetadata.properties}.
+     */
+    @Override
+    public String initiateTransfer(Participant provider, String contractAgreementId, JsonObject privateProperties,
+                                   JsonObject destination, String transferType, JsonArray callbacks) {
+        var requestBodyBuilder = createObjectBuilder()
+                .add(CONTEXT, managementContext)
+                .add(TYPE, "TransferRequest")
+                .add("protocol", protocol.name())
+                .add("contractId", contractAgreementId)
+                .add("connectorId", provider.getId())
+                .add("counterPartyAddress", provider.getProtocolUrl());
+
+        if (privateProperties != null) {
+            requestBodyBuilder.add("privateProperties", privateProperties);
+        }
+
+        if (destination != null) {
+            requestBodyBuilder.add("dataplaneMetadata", dataplaneMetadataFrom(destination));
+        }
+
+        if (transferType != null) {
+            requestBodyBuilder.add("transferType", transferType);
+        }
+
+        if (callbacks != null) {
+            requestBodyBuilder.add("callbackAddresses", callbacks);
+        }
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(requestBodyBuilder.build())
+                .when()
+                .post("/transferprocesses")
+                .then()
+                .log().ifError()
+                .statusCode(200)
+                .extract().body().jsonPath().getString(ID);
+    }
+
+    private JsonObject dataplaneMetadataFrom(JsonObject destination) {
+        var properties = createObjectBuilder();
+        destination.forEach((key, value) -> {
+            if (!TYPE.equals(key)) {
+                properties.add(key, value);
+            }
+        });
+
+        return createObjectBuilder()
+                .add(TYPE, "DataplaneMetadata")
+                .add("properties", properties)
+                .build();
+    }
+
     public <T> T getService(Class<T> clazz) {
         return runtime.getService(clazz);
     }
