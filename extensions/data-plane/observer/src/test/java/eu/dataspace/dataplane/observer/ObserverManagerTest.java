@@ -1,6 +1,6 @@
 package eu.dataspace.dataplane.observer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import eu.dataspace.dataplane.observer.subscriber.StartObserverTransfer;
 import org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized;
 import org.eclipse.edc.jsonld.util.JacksonJsonLd;

@@ -16,7 +16,7 @@
 
 package org.eclipse.edc.connector.dataplane.aws.s3;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.eclipse.edc.aws.s3.AwsClientProvider;
 import org.eclipse.edc.aws.s3.AwsSecretToken;
 import org.eclipse.edc.aws.s3.AwsTemporarySecretToken;
@@ -31,9 +31,9 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
-import org.eclipse.edc.validator.spi.DataAddressValidatorRegistry;
+import org.eclipse.edc.aws.s3.validator.S3DestinationDataAddressValidator;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +53,8 @@ import static org.eclipse.edc.aws.s3.spi.S3BucketSchema.SECRET_ACCESS_KEY;
 
 
 public class S3DataSinkFactory implements DataSinkFactory {
+    // Was DataAddress.EDC_DATA_ADDRESS_SECRET, removed in EDC 1.0.0; preserves the pre-1.0 inline-secret property key.
+    private static final String EDC_DATA_ADDRESS_SECRET = "https://w3id.org/edc/v0.0.1/ns/secret";
     private final Validator<DataAddress> credentialsValidation = new S3DataAddressCredentialsValidator();
     private final AwsClientProvider clientProvider;
     private final ExecutorService executorService;
@@ -60,11 +62,11 @@ public class S3DataSinkFactory implements DataSinkFactory {
     private final Vault vault;
     private final ObjectMapper objectMapper;
     private final int chunkSizeInBytes;
-    private final DataAddressValidatorRegistry dataAddressValidator;
+    private final Validator<DataAddress> dataAddressValidator = new S3DestinationDataAddressValidator();
     private final ParticipantContextSupplier singleParticipantContextSupplier;
 
     public S3DataSinkFactory(AwsClientProvider clientProvider, ExecutorService executorService, Monitor monitor, Vault vault,
-                             ObjectMapper objectMapper, int chunkSizeInBytes, DataAddressValidatorRegistry dataAddressValidator,
+                             ObjectMapper objectMapper, int chunkSizeInBytes,
                              ParticipantContextSupplier singleParticipantContextSupplier) {
         this.clientProvider = clientProvider;
         this.executorService = executorService;
@@ -72,7 +74,6 @@ public class S3DataSinkFactory implements DataSinkFactory {
         this.vault = vault;
         this.objectMapper = objectMapper;
         this.chunkSizeInBytes = chunkSizeInBytes;
-        this.dataAddressValidator = dataAddressValidator;
         this.singleParticipantContextSupplier = singleParticipantContextSupplier;
     }
 
@@ -107,7 +108,7 @@ public class S3DataSinkFactory implements DataSinkFactory {
     public @NotNull Result<Void> validateRequest(DataFlowStartMessage request) {
         var destination = request.getDestinationDataAddress();
 
-        return dataAddressValidator.validateDestination(destination).flatMap(ValidationResult::toResult);
+        return dataAddressValidator.validate(destination).flatMap(ValidationResult::toResult);
     }
 
     private S3ClientRequest createS3ClientRequest(DataAddress address) {
@@ -128,12 +129,13 @@ public class S3DataSinkFactory implements DataSinkFactory {
     }
 
     private @Nullable String getSecret(DataAddress dataAddress) {
-        var addressSecret = dataAddress.getStringProperty(DataAddress.EDC_DATA_ADDRESS_SECRET);
+        // EDC_DATA_ADDRESS_SECRET was removed from DataAddress in EDC 1.0.0; keep the pre-1.0 inline-secret property key.
+        var addressSecret = dataAddress.getStringProperty(EDC_DATA_ADDRESS_SECRET);
         if (addressSecret != null) {
             return addressSecret;
         }
 
-        var keyName = dataAddress.getKeyName();
+        var keyName = dataAddress.getStringProperty(DataAddress.SIMPLE_KEY_NAME);
         if (keyName == null) {
             return null;
         }
@@ -152,7 +154,7 @@ public class S3DataSinkFactory implements DataSinkFactory {
             } else {
                 return objectMapper.treeToValue(tree, AwsSecretToken.class);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new EdcException(e);
         }
     }

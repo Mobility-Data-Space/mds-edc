@@ -12,6 +12,7 @@ import static io.restassured.http.ContentType.JSON;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.CONTEXT;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Reproduces MDS-Project#1114: creating an asset whose {@code dataAddress} contains {@code @type}
@@ -48,14 +49,13 @@ class AssetDataAddressWithTypeTest {
                 .log().ifValidationFails()
                 .statusCode(200);
 
-        // the dataAddress is mapped to dataplaneMetadata.properties, @type stripped, values preserved
         CONNECTOR.baseManagementRequest()
                 .contentType(JSON)
                 .when().get("/assets/{id}", assetId)
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200)
-                .body("'dataplaneMetadata'.properties.'edc:type'", org.hamcrest.Matchers.equalTo("HttpData"))
-                .body("'dataplaneMetadata'.properties.'edc:baseUrl'", org.hamcrest.Matchers.equalTo("https://example.com"));
+                .body("dataplaneMetadata.properties.'edc:type'", equalTo("HttpData"))
+                .body("dataplaneMetadata.properties.'edc:baseUrl'", equalTo("https://example.com"));
     }
 }

@@ -10,6 +10,7 @@ val edcGroupId = "org.eclipse.edc"
 configurations.all {
     exclude(group = "org.eclipse.edc", module = "data-plane-signaling-core")
     exclude(group = "org.eclipse.edc", module = "data-plane-signaling-oauth2")
+    exclude(group = "org.eclipse.edc", module = "data-plane-signaling-oauth2-token-exchange")
 }
 
 dependencies {

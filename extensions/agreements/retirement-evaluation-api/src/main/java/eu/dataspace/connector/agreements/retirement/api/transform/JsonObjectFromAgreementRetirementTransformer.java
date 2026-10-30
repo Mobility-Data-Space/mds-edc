@@ -3,7 +3,7 @@ package eu.dataspace.connector.agreements.retirement.api.transform;
 import eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry;
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.jsonld.spi.transformer.AbstractJsonLdTransformer;
+import org.eclipse.edc.jsonld.spi.transformer.JsonLdFromModelTransformer;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +12,7 @@ import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsR
 import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
 import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_RETIREMENT_DATE;
 
-public class JsonObjectFromAgreementRetirementTransformer extends AbstractJsonLdTransformer<AgreementsRetirementEntry, JsonObject> {
+public class JsonObjectFromAgreementRetirementTransformer extends JsonLdFromModelTransformer<AgreementsRetirementEntry, JsonObject> {
 
     private final JsonBuilderFactory jsonFactory;
 

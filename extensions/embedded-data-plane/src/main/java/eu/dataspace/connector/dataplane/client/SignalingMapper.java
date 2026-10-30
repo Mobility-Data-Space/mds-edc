@@ -2,12 +2,12 @@ package eu.dataspace.connector.dataplane.client;
 
 import org.eclipse.edc.connector.controlplane.asset.spi.index.AssetIndex;
 import org.eclipse.edc.connector.dataplane.spi.DataFlowStates;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.signaling.domain.DataFlowPrepareMessage;
 import org.eclipse.edc.signaling.domain.DataFlowResumeMessage;
 import org.eclipse.edc.signaling.domain.DataFlowStatusMessage;
 import org.eclipse.edc.signaling.domain.DspDataAddress;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowProvisionMessage;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.spi.types.domain.transfer.FlowType;
@@ -15,14 +15,22 @@ import org.eclipse.edc.spi.types.domain.transfer.TransferType;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
+import static java.util.Map.entry;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toMap;
 import static org.eclipse.edc.signaling.domain.DspDataAddress.DSP_DATA_ADDRESS_ENDPOINT;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public final class SignalingMapper {
 
     public static final String SIGNALING_DATASPACE_CONTEXT = EDC_NAMESPACE + "dataspaceContext";
+
+    // DataAddress.EDC_DATA_ADDRESS_SECRET was removed in EDC 1.0.0; preserves the pre-1.0 inline-secret property key
+    // that the data sink factories still read (e.g. S3DataSinkFactory).
+    private static final String EDC_DATA_ADDRESS_SECRET = EDC_NAMESPACE + "secret";
 
     private SignalingMapper() {
     }
@@ -34,10 +42,10 @@ public final class SignalingMapper {
      */
     public static Result<DataFlowStartMessage> toFrameworkStartMessage(
             org.eclipse.edc.signaling.domain.DataFlowStartMessage message, AssetIndex assetIndex) {
-        return transferType(message.getTransferType())
+        return transferType(message.getProfile())
                 .map(transferType -> {
                     var builder = DataFlowStartMessage.Builder.newInstance()
-                            .processId(message.getProcessId())
+                            .processId(message.getDataFlowId())
                             .transferType(transferType)
                             .agreementId(message.getAgreementId())
                             .assetId(message.getDatasetId())
@@ -49,7 +57,21 @@ public final class SignalingMapper {
                     ofNullable(message.getDataspaceContext()).ifPresent(v -> builder.property(SIGNALING_DATASPACE_CONTEXT, v));
 
                     ofNullable(message.getMetadata())
-                            .map(metadata -> toDataAddress(metadata, message.getTransferType())).ifPresent(builder::sourceDataAddress);
+                            .map(metadata -> {
+                                if (metadata.isEmpty()) {
+                                    // if no dataplaneMetadata was in the message, get it out of the data address
+                                    return assetIndex.findById(message.getParticipantId(), message.getDatasetId()).getDataAddress().getProperties()
+                                            .entrySet().stream()
+                                            .flatMap(entry -> Stream.of(
+                                                    entry,
+                                                    entry(entry.getKey().replace(EDC_NAMESPACE, ""), entry.getValue()))
+                                            )
+                                            .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+                                } else {
+                                    return metadata;
+                                }
+                            })
+                            .map(it -> toDataAddress(it, message.getProfile())).ifPresent(builder::sourceDataAddress);
 
                     return builder.build();
                 });
@@ -58,11 +80,11 @@ public final class SignalingMapper {
     /**
      * Builds a legacy {@link DataFlowProvisionMessage} from the protocol {@code DataFlowPrepareMessage}.
      */
-    public static Result<DataFlowProvisionMessage> toFrameworkProvisionMessage(DataFlowPrepareMessage message) {
-        return transferType(message.getTransferType())
+    public static Result<DataFlowProvisionMessage> toFrameworkProvisionMessage(DataFlowPrepareMessage message, Function<String, String> secretResolver) {
+        return transferType(message.getProfile())
                 .map(transferType -> {
                     var builder = DataFlowProvisionMessage.Builder.newInstance()
-                            .processId(message.getProcessId())
+                            .processId(message.getDataFlowId())
                             .transferType(transferType)
                             .agreementId(message.getAgreementId())
                             .assetId(message.getDatasetId())
@@ -71,8 +93,30 @@ public final class SignalingMapper {
 
                     ofNullable(message.getDataspaceContext()).ifPresent(v -> builder.property(SIGNALING_DATASPACE_CONTEXT, v));
 
+                    // the destination is no longer a dedicated field on the transfer request: it is carried in the
+                    // dataplaneMetadata (message.metadata) and crafted here, during the prepare phase, into the framework
+                    // destination data address (the same way the asset dataplaneMetadata is mapped into the source address
+                    // in toFrameworkStartMessage). The destination's keyName secret is resolved from the local vault and
+                    // embedded inline so the fully-resolved address travels to the provider in the TransferRequestMessage.
+                    ofNullable(message.getMetadata())
+                            .filter(metadata -> !metadata.isEmpty())
+                            .map(metadata -> withResolvedSecret(toDataAddress(metadata, message.getProfile()), secretResolver))
+                            .ifPresent(builder::destination);
+
                     return builder.build();
                 });
+    }
+
+    /**
+     * Resolves the data address {@code keyName} through the given resolver (the local vault) and, when a secret is
+     * found, embeds it inline as {@link #EDC_DATA_ADDRESS_SECRET} so the destination carries its credentials to the
+     * provider. Addresses without a {@code keyName} (e.g. a plain HttpData endpoint) are returned unchanged.
+     */
+    private static DataAddress withResolvedSecret(DataAddress dataAddress, Function<String, String> secretResolver) {
+        return ofNullable(dataAddress.getStringProperty(DataAddress.SIMPLE_KEY_NAME))
+                .map(secretResolver)
+                .map(secret -> dataAddress.toBuilder().property(EDC_DATA_ADDRESS_SECRET, secret).build())
+                .orElse(dataAddress);
     }
 
     /**
@@ -124,7 +168,9 @@ public final class SignalingMapper {
     public static DspDataAddress toDspDataAddress(DataAddress dataAddress) {
         var builder = DspDataAddress.Builder.newInstance()
                 .endpointType(dataAddress.getType())
-                .endpoint(dataAddress.getStringProperty(DSP_DATA_ADDRESS_ENDPOINT));
+                // the endpoint must not be null: a destination address (e.g. HttpData) carries its location in the
+                // properties and has no dedicated DSP endpoint, and a null here breaks the DSP JSON serialization.
+                .endpoint(ofNullable(dataAddress.getStringProperty(DSP_DATA_ADDRESS_ENDPOINT)).orElse(""));
 
         dataAddress.getProperties().forEach((key, value) -> builder.property(key, String.valueOf(value)));
 

@@ -74,7 +74,10 @@ public class SuperUserSeederExtension implements ServiceExtension {
                 .orElseThrow(failure -> new EdcException("Error creating super-user [%s]: %s".formatted(superUserId, failure.getFailureDetail())));
 
         participantContextService.getParticipantContext(superUserId)
-                .onSuccess(participantContext -> vault.storeSecret(participantContext.getApiTokenAlias(), superUserApiKey))
+                // the API key is stored in the vault partition of the participant context, which is where the Identity
+                // API authentication resolves it from (see ParticipantServicePrincipalResolver). Storing it in the
+                // default partition would leave the auto-generated key in place and cause 401s.
+                .onSuccess(participantContext -> vault.storeSecret(participantContext.getParticipantContextId(), participantContext.getApiTokenAlias(), superUserApiKey))
                 .orElseThrow(failure -> new EdcException("Failed setting api key for super-user [%s]: %s".formatted(superUserId, failure.getFailureDetail())));
     }
 }

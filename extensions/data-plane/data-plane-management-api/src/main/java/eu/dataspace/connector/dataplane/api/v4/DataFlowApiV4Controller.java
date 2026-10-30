@@ -31,7 +31,7 @@ public class DataFlowApiV4Controller extends BaseDataFlowApiController implement
     @POST
     @Path("/request")
     @Override
-    public JsonArray requestDataFlowsV4(@SchemaType(EDC_QUERY_SPEC_TYPE_TERM) @RequestBody JsonObject querySpecJson) {
+    public JsonArray requestDataFlowsV4(@SchemaType(value = EDC_QUERY_SPEC_TYPE_TERM, version = "v4") @RequestBody JsonObject querySpecJson) {
         return requestDataFlows(querySpecJson);
     }
 

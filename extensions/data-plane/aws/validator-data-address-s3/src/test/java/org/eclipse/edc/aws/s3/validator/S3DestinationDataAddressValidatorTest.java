@@ -14,7 +14,7 @@
 
 package org.eclipse.edc.aws.s3.validator;
 
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.validator.spi.ValidationFailure;
 import org.eclipse.edc.validator.spi.Violation;
 import org.junit.jupiter.api.Test;

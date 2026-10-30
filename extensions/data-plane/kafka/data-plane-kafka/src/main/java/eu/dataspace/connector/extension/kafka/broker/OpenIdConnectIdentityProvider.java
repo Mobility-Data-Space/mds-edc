@@ -1,13 +1,13 @@
 package eu.dataspace.connector.extension.kafka.broker;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import eu.dataspace.connector.dataplane.kafka.spi.Credentials;
 import eu.dataspace.connector.dataplane.kafka.spi.IdentityProvider;
 import eu.dataspace.connector.extension.kafka.broker.openid.OpenIdConnectService;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.jetbrains.annotations.NotNull;
 
 import static eu.dataspace.connector.dataplane.kafka.spi.KafkaBrokerDataAddressSchema.OIDC_DISCOVERY_URL;
@@ -60,7 +60,7 @@ public class OpenIdConnectIdentityProvider implements IdentityProvider {
 
         try {
             return objectMapper.readValue(json, ClientInfo.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             return null;
         }
     }
@@ -73,7 +73,7 @@ public class OpenIdConnectIdentityProvider implements IdentityProvider {
         try {
             var json = objectMapper.writeValueAsString(clientInfo);
             vault.storeSecret(clientInfoSecretKey(dataFlowId), json);
-        } catch (JsonProcessingException ignored) {
+        } catch (JacksonException ignored) {
 
         }
     }

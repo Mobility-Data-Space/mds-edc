@@ -16,7 +16,7 @@ package eu.dataspace.connector.dataplane.proxy.api.controller;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import eu.dataspace.connector.dataplane.proxy.api.sink.AsyncStreamingDataSink;
 import org.junit.jupiter.api.Test;
 

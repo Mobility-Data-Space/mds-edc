@@ -19,7 +19,7 @@ import org.eclipse.edc.azure.blob.AzureBlobStoreSchema;
 import org.eclipse.edc.azure.blob.api.BlobStoreApi;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +49,7 @@ class AzureStorageDataSourceFactoryTest {
     @Test
     void validate_whenBlobRequestValid_succeeds() {
         assertThat(factory.validateRequest(request.sourceDataAddress(dataAddress
-                                .keyName(accountName)
+                                .property("keyName", accountName)
                                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
                                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
                                 .property(AzureBlobStoreSchema.BLOB_NAME, blobName)
@@ -61,7 +61,7 @@ class AzureStorageDataSourceFactoryTest {
     @Test
     void validate_whenBlobFolderRequestValid_succeeds() {
         assertThat(factory.validateRequest(request.sourceDataAddress(dataAddress
-                                .keyName(accountName)
+                                .property("keyName", accountName)
                                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
                                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
                                 .property(AzureBlobStoreSchema.BLOB_PREFIX, blobPrefix)
@@ -108,7 +108,7 @@ class AzureStorageDataSourceFactoryTest {
                 .property(AzureBlobStoreSchema.ACCOUNT_NAME, accountName)
                 .property(AzureBlobStoreSchema.CONTAINER_NAME, containerName)
                 .property(AzureBlobStoreSchema.BLOB_NAME, blobName)
-                .keyName(keyName)
+                .property("keyName", keyName)
                 .build());
         assertThat(factory.createSource(validRequest.build())).isNotNull();
     }
