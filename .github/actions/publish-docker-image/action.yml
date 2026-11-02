@@ -10,90 +10,32 @@ inputs:
   image-description:
     description: the image description
     required: true
-  dry-run:
-    description: skip pushing the image and generating SBOM
-    required: false
-    default: 'false'
 
 runs:
   using: "composite"
   steps:
-    - name: Lowercase repository name
-      id: repo
-      uses: ASzc/change-string-case-action@ecd1412d078f2e06e9eedcbaa6fcd988151c3f82 # v8
-      with:
-        string: ${{ github.repository }}
-
-    - name: Generate Docker metadata for ${{ inputs.runtime }}
-      id: meta
-      uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
-      with:
-        images: ghcr.io/${{ steps.repo.outputs.lowercase }}/${{ inputs.runtime }}
-        labels: |
-          org.opencontainers.image.title=${{ inputs.image-title }}
-          org.opencontainers.image.description=${{ inputs.image-description }}
-        tags: |
-          type=semver,pattern={{version}},enable=${{ startsWith(github.ref, 'refs/tags/') }}
-          type=ref,event=branch
-          type=ref,event=pr
-          type=sha
-          type=raw,value=latest,enable={{is_default_branch}}
-
     - name: Build ${{ inputs.runtime }}
-      uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+      id: build
+      uses: ./.github/actions/build-docker-image
       with:
-        context: ./launchers
-        file: launchers/Dockerfile
-        push: false
-        load: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        build-args: |
-          RUNTIME=${{ inputs.runtime }}
-
-    - name: Trivy scan ${{ inputs.runtime }} (report)
-      uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-      with:
-        image-ref: ghcr.io/${{ steps.repo.outputs.lowercase }}/${{ inputs.runtime }}:${{ steps.meta.outputs.version }}
-        format: table
-        output: trivy-${{ inputs.runtime }}.txt
-        severity: MEDIUM,HIGH,CRITICAL
-        scanners: vuln
-
-    - name: Upload scan report for ${{ inputs.runtime }}
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-      if: always()
-      with:
-        name: trivy-${{ inputs.runtime }}
-        path: trivy-${{ inputs.runtime }}.txt
-
-    - name: Fail on HIGH/CRITICAL vulnerabilities in ${{ inputs.runtime }}
-      uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-      with:
-        image-ref: ghcr.io/${{ steps.repo.outputs.lowercase }}/${{ inputs.runtime }}:${{ steps.meta.outputs.version }}
-        format: table
-        severity: HIGH,CRITICAL
-        ignore-unfixed: true
-        exit-code: '1'
-        trivyignores: .trivyignore
-        scanners: vuln
+        runtime: ${{ inputs.runtime }}
+        image-title: ${{ inputs.image-title }}
+        image-description: ${{ inputs.image-description }}
 
     - name: Generate SBOM for ${{ inputs.runtime }}
-      if: ${{ inputs.dry-run != 'true' }}
       uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0
       with:
-        image: ghcr.io/${{ steps.repo.outputs.lowercase }}/${{ inputs.runtime }}:${{ steps.meta.outputs.version }}
+        image: ${{ steps.build.outputs.image-ref }}
         artifact-name: sbom-${{ inputs.runtime }}
         output-file: sbom-${{ inputs.runtime }}.spdx.json
 
     - name: Push ${{ inputs.runtime }}
-      if: ${{ inputs.dry-run != 'true' }}
       uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
       with:
         context: ./launchers
         file: launchers/Dockerfile
         push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+        tags: ${{ steps.build.outputs.tags }}
+        labels: ${{ steps.build.outputs.labels }}
         build-args: |
           RUNTIME=${{ inputs.runtime }}

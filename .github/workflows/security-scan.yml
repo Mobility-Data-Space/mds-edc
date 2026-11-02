@@ -2,8 +2,6 @@ name: Security Scan
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -21,47 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: ./.github/actions/setup-jdk
-
-      - name: Generate Gradle lockfiles
-        run: ./gradlew resolveAndLockAll --write-locks
-        env:
-          USERNAME: ${{ github.actor }}
-          TOKEN: ${{ github.token }}
-
-      - name: Trivy filesystem scan (report)
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-        with:
-          scan-type: fs
-          scan-ref: .
-          format: table
-          output: trivy-fs.txt
-          severity: MEDIUM,HIGH,CRITICAL
-          scanners: vuln,secret
-
-      - name: Upload scan report
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: always()
-        with:
-          name: trivy-fs
-          path: trivy-fs.txt
-
-      - name: Fail on HIGH/CRITICAL vulnerabilities
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-        with:
-          scan-type: fs
-          scan-ref: .
-          severity: HIGH,CRITICAL
-          ignore-unfixed: true
-          exit-code: '1'
-          trivyignores: .trivyignore
-          scanners: vuln,secret
+      - uses: Mobility-Data-Space/.github/actions/trivy-fs-scan@main
 
   image-scan:
     name: Trivy Image Scan
@@ -87,7 +45,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: ./.github/actions/setup-jdk
+      - uses: Mobility-Data-Space/.github/actions/setup-java@main
 
       - name: Build
         run: ./gradlew :launchers:${{ matrix.runtime }}:build -x test -x slowTests
@@ -95,9 +53,9 @@ jobs:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ github.token }}
 
-      - uses: ./.github/actions/publish-docker-image
+      - name: Build and scan ${{ matrix.runtime }} image
+        uses: ./.github/actions/build-docker-image
         with:
           runtime: ${{ matrix.runtime }}
           image-title: ${{ matrix.runtime }}
           image-description: ${{ matrix.runtime }}
-          dry-run: 'true'

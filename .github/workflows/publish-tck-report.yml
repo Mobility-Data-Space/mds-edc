@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: ./.github/actions/setup-jdk
+      - uses: Mobility-Data-Space/.github/actions/setup-java@main
 
       - run: ./gradlew slowTests -Ptags=tck > tck.report
         env:
