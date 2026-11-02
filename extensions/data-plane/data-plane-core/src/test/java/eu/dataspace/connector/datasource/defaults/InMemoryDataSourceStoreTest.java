@@ -1,6 +1,6 @@
 package eu.dataspace.connector.datasource.defaults;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import eu.dataspace.connector.datasource.spi.store.DataSourceStore;
 import eu.dataspace.connector.datasource.store.DataSourceStoreTestBase;
 import org.eclipse.edc.query.CriterionOperatorRegistryImpl;

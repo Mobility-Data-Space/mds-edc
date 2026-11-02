@@ -25,7 +25,7 @@ public class ManualNegotiationApprovalPendingGuard implements ContractNegotiatio
         if (contractNegotiation.getType() == ContractNegotiation.Type.PROVIDER && contractNegotiation.getState() == REQUESTED.code()) {
             var result = ContractOfferId.parseId(contractNegotiation.getLastContractOffer().getId())
                     .map(ContractOfferId::definitionPart)
-                    .map(contractDefinitionStore::findById)
+                    .map(definitionId -> contractDefinitionStore.findById(contractNegotiation.getParticipantContextId(), definitionId))
                     .map(Optional::ofNullable)
                     .map(opt -> opt
                             .map(it -> it.getPrivateProperty(EDC_NAMESPACE + "manualApproval"))

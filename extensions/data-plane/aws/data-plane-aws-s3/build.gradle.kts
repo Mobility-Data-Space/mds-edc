@@ -8,6 +8,7 @@ dependencies {
     implementation(libs.edc.util.lib)
     implementation(project(":extensions:data-plane:data-plane-util"))
     implementation(project(":extensions:data-plane:aws:aws-s3-core"))
+    implementation(project(":extensions:data-plane:aws:validator-data-address-s3"))
 
     testImplementation(project(":extensions:data-plane:data-plane-core"))
     testImplementation(libs.edc.junit)

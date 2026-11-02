@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     api(libs.edc.core.spi)
-    api(libs.edc.data.address.http.data.spi)
+    api(libs.edc.control.plane.spi)
 
     testFixturesApi(libs.edc.junit)
     testFixturesImplementation(libs.junit.jupiter)

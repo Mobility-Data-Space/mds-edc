@@ -18,6 +18,8 @@ import org.assertj.core.api.Assertions;
 import org.eclipse.edc.connector.dataplane.iam.service.DefaultDataPlaneAccessTokenServiceImpl;
 import org.eclipse.edc.connector.dataplane.spi.AccessTokenData;
 import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
+import org.eclipse.edc.controlplane.DataAddress;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
@@ -25,7 +27,6 @@ import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.StoreResult;
-import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.token.spi.TokenDecorator;
 import org.eclipse.edc.token.spi.TokenGenerationService;
 import org.eclipse.edc.token.spi.TokenValidationService;
@@ -55,21 +56,22 @@ class DefaultDataPlaneAccessTokenServiceImplTest {
     private final AccessTokenDataStore store = mock();
     private final TokenGenerationService tokenGenService = mock();
     private final TokenValidationService tokenValidationService = mock();
+    private final ParticipantContext participantContext = ParticipantContext.Builder.newInstance().id("any").identity("any").build();
     private final DefaultDataPlaneAccessTokenServiceImpl accessTokenService = new DefaultDataPlaneAccessTokenServiceImpl(tokenGenService,
-            store, mock(), mock(), mock(), tokenValidationService, mock());
+            store, mock(), mock(), mock(), tokenValidationService, mock(), participantContext);
 
     @Test
     void obtainToken() {
         var params = TokenParameters.Builder.newInstance().claims("foo", "bar").claims("jti", "baz").header("qux", "quz").build();
         var address = DataAddress.Builder.newInstance().type("test-type").build();
 
-        when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
+        when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
         when(store.store(any(AccessTokenData.class))).thenReturn(StoreResult.success());
 
         var result = accessTokenService.obtainToken(params, address, Map.of());
         assertThat(result).isSucceeded().extracting(TokenRepresentation::getToken).isEqualTo("foo-token");
 
-        verify(tokenGenService).generate(any(), any(TokenDecorator[].class));
+        verify(tokenGenService).generate(any(), any(), any(TokenDecorator[].class));
         verify(store).store(any(AccessTokenData.class));
     }
 
@@ -78,13 +80,13 @@ class DefaultDataPlaneAccessTokenServiceImplTest {
         var params = TokenParameters.Builder.newInstance().claims("foo", "bar").claims("jti", "baz").header("qux", "quz").build();
         var address = DataAddress.Builder.newInstance().type("test-type").build();
 
-        when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
+        when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
         when(store.store(any(AccessTokenData.class))).thenReturn(StoreResult.success());
 
         var result = accessTokenService.obtainToken(params, address, Map.of("foo", "bar"));
         assertThat(result).isSucceeded().extracting(TokenRepresentation::getToken).isEqualTo("foo-token");
 
-        verify(tokenGenService).generate(any(), any(TokenDecorator[].class));
+        verify(tokenGenService).generate(any(), any(), any(TokenDecorator[].class));
         verify(store).store(argThat(accessTokenData -> accessTokenData.additionalProperties().get("foo").equals("bar")));
     }
 
@@ -102,13 +104,13 @@ class DefaultDataPlaneAccessTokenServiceImplTest {
         var params = TokenParameters.Builder.newInstance().claims("foo", "bar")/* missing: .claims("jti", "baz")*/.header("qux", "quz").build();
         var address = DataAddress.Builder.newInstance().type("test-type").build();
 
-        when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
+        when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
         when(store.store(any(AccessTokenData.class))).thenReturn(StoreResult.success());
 
         var result = accessTokenService.obtainToken(params, address, Map.of());
         assertThat(result).isSucceeded().extracting(TokenRepresentation::getToken).isEqualTo("foo-token");
 
-        verify(tokenGenService).generate(any(), any(TokenDecorator[].class));
+        verify(tokenGenService).generate(any(), any(), any(TokenDecorator[].class));
         verify(store).store(argThat(accessTokenData -> UUID_PATTERN.matcher(accessTokenData.id()).matches()));
     }
 
@@ -117,12 +119,12 @@ class DefaultDataPlaneAccessTokenServiceImplTest {
         var params = TokenParameters.Builder.newInstance().claims("foo", "bar").claims("jti", "baz").header("qux", "quz").build();
         var address = DataAddress.Builder.newInstance().type("test-type").build();
 
-        when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.failure("test failure"));
+        when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class))).thenReturn(Result.failure("test failure"));
 
         var result = accessTokenService.obtainToken(params, address, Map.of());
         assertThat(result).isFailed().detail().isEqualTo("test failure");
 
-        verify(tokenGenService).generate(any(), any(TokenDecorator[].class));
+        verify(tokenGenService).generate(any(), any(), any(TokenDecorator[].class));
         verifyNoMoreInteractions(store);
     }
 
@@ -131,13 +133,13 @@ class DefaultDataPlaneAccessTokenServiceImplTest {
         var params = TokenParameters.Builder.newInstance().claims("foo", "bar").claims("jti", "baz").header("qux", "quz").build();
         var address = DataAddress.Builder.newInstance().type("test-type").build();
 
-        when(tokenGenService.generate(any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
+        when(tokenGenService.generate(any(), any(), any(TokenDecorator[].class))).thenReturn(Result.success(TokenRepresentation.Builder.newInstance().token("foo-token").build()));
         when(store.store(any(AccessTokenData.class))).thenReturn(StoreResult.alreadyExists("test failure"));
 
         var result = accessTokenService.obtainToken(params, address, Map.of());
         assertThat(result).isFailed().detail().isEqualTo("test failure");
 
-        verify(tokenGenService).generate(any(), any(TokenDecorator[].class));
+        verify(tokenGenService).generate(any(), any(), any(TokenDecorator[].class));
         verify(store).store(any(AccessTokenData.class));
     }
 

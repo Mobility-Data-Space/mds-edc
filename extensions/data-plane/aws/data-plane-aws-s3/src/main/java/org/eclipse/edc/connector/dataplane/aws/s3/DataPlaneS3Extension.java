@@ -24,7 +24,6 @@ import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.validator.spi.DataAddressValidatorRegistry;
 
 import java.util.concurrent.Executors;
 
@@ -47,8 +46,6 @@ public class DataPlaneS3Extension implements ServiceExtension {
     @Inject
     private TypeManager typeManager;
     @Inject
-    private DataAddressValidatorRegistry validator;
-    @Inject
     private SingleParticipantContextSupplier singleParticipantContextSupplier;
 
     @Override
@@ -67,10 +64,10 @@ public class DataPlaneS3Extension implements ServiceExtension {
         }
         var monitor = context.getMonitor();
 
-        var sourceFactory = new S3DataSourceFactory(awsClientProvider, vault, typeManager.getMapper(), validator);
+        var sourceFactory = new S3DataSourceFactory(awsClientProvider, vault, typeManager.getMapper());
         pipelineService.registerFactory(sourceFactory);
 
-        var sinkFactory = new S3DataSinkFactory(awsClientProvider, executorService, monitor, vault, typeManager.getMapper(), chunkSizeInBytes, validator, singleParticipantContextSupplier);
+        var sinkFactory = new S3DataSinkFactory(awsClientProvider, executorService, monitor, vault, typeManager.getMapper(), chunkSizeInBytes, singleParticipantContextSupplier);
         pipelineService.registerFactory(sinkFactory);
     }
 

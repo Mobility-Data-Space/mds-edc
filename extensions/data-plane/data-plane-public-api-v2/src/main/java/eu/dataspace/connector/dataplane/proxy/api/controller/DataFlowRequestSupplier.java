@@ -13,7 +13,7 @@
 
 package eu.dataspace.connector.dataplane.proxy.api.controller;
 
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.spi.types.domain.transfer.FlowType;
 import eu.dataspace.connector.dataplane.proxy.api.sink.AsyncStreamingDataSink;

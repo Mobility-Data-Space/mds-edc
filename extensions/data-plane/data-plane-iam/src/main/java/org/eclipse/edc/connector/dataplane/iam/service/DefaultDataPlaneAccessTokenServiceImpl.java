@@ -17,7 +17,9 @@ package org.eclipse.edc.connector.dataplane.iam.service;
 import org.eclipse.edc.connector.dataplane.spi.AccessTokenData;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAccessTokenService;
 import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.keys.spi.PublicKeyResolver;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
@@ -26,7 +28,6 @@ import org.eclipse.edc.spi.query.Criterion;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
-import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.token.spi.KeyIdDecorator;
 import org.eclipse.edc.token.spi.TokenDecorator;
 import org.eclipse.edc.token.spi.TokenGenerationService;
@@ -60,6 +61,7 @@ public class DefaultDataPlaneAccessTokenServiceImpl implements DataPlaneAccessTo
     private final Supplier<String> publicKeyIdSupplier;
     private final TokenValidationService tokenValidationService;
     private final PublicKeyResolver publicKeyResolver;
+    private final ParticipantContext participantContext;
 
     public DefaultDataPlaneAccessTokenServiceImpl(TokenGenerationService tokenGenerationService,
                                                   AccessTokenDataStore accessTokenDataStore,
@@ -67,7 +69,7 @@ public class DefaultDataPlaneAccessTokenServiceImpl implements DataPlaneAccessTo
                                                   Supplier<String> privateKeyIdSupplier,
                                                   Supplier<String> publicKeyIdSupplier,
                                                   TokenValidationService tokenValidationService,
-                                                  PublicKeyResolver publicKeyResolver) {
+                                                  PublicKeyResolver publicKeyResolver, ParticipantContext participantContext) {
         this.tokenGenerationService = tokenGenerationService;
         this.accessTokenDataStore = accessTokenDataStore;
         this.monitor = monitor;
@@ -75,6 +77,7 @@ public class DefaultDataPlaneAccessTokenServiceImpl implements DataPlaneAccessTo
         this.publicKeyIdSupplier = publicKeyIdSupplier;
         this.tokenValidationService = tokenValidationService;
         this.publicKeyResolver = publicKeyResolver;
+        this.participantContext = participantContext;
     }
 
     /**
@@ -106,7 +109,7 @@ public class DefaultDataPlaneAccessTokenServiceImpl implements DataPlaneAccessTo
             allDecorators.add(tokenIdDecorator);
         }
 
-        var tokenResult = tokenGenerationService.generate(privateKeyIdSupplier.get(), allDecorators.toArray(new TokenDecorator[0]));
+        var tokenResult = tokenGenerationService.generate(participantContext.getId(), privateKeyIdSupplier.get(), allDecorators.toArray(new TokenDecorator[0]));
         if (tokenResult.failed()) {
             return tokenResult.mapEmpty();
         }

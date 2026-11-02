@@ -2,6 +2,7 @@ package eu.dataspace.connector.extension.policy;
 
 import org.eclipse.edc.connector.controlplane.policy.spi.PolicyDefinition;
 import org.eclipse.edc.connector.controlplane.services.spi.policydefinition.PolicyDefinitionService;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
 import org.eclipse.edc.policy.model.Action;
 import org.eclipse.edc.policy.model.Permission;
 import org.eclipse.edc.policy.model.Policy;
@@ -11,7 +12,7 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.system.ServiceExtension;
 
 import static eu.dataspace.connector.extension.policy.AlwaysTruePolicyExtension.NAME;
-import static org.eclipse.edc.policy.model.OdrlNamespace.ODRL_SCHEMA;
+import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.ODRL_SCHEMA;
 
 /**
  * Creates an "always-true" policy with no real constraint in it
@@ -24,6 +25,8 @@ public class AlwaysTruePolicyExtension implements ServiceExtension {
 
     @Inject
     private PolicyDefinitionService policyDefinitionService;
+    @Inject
+    private SingleParticipantContextSupplier singleParticipantContextSupplier;
 
     @Override
     public String name() {
@@ -32,25 +35,28 @@ public class AlwaysTruePolicyExtension implements ServiceExtension {
 
     @Override
     public void start() {
-        if (policyDefinitionService.findById(ALWAYS_TRUE_POLICY_ID) == null) {
-            var policyDefinition = alwaysTruePolicy();
+        var participantContext = singleParticipantContextSupplier.get()
+                .orElseThrow(f -> new EdcException("Cannot load participant context: " + f.getFailureDetail()));
+
+        if (policyDefinitionService.findById(participantContext.getParticipantContextId(), ALWAYS_TRUE_POLICY_ID) == null) {
+
+            var policyDefinition = PolicyDefinition.Builder.newInstance()
+                    .id(ALWAYS_TRUE_POLICY_ID)
+                    .participantContextId(participantContext.getParticipantContextId())
+                    .policy(alwaysTruePolicy())
+                    .build();
 
             policyDefinitionService.create(policyDefinition)
                     .orElseThrow(f -> new EdcException("Cannot create 'always-true' policy: " + f.getFailureDetail()));
         }
     }
 
-    private static PolicyDefinition alwaysTruePolicy() {
+    private Policy alwaysTruePolicy() {
         var alwaysTruePermission = Permission.Builder.newInstance()
                 .action(Action.Builder.newInstance().type(ODRL_SCHEMA + "use").build())
                 .build();
-        var policy = Policy.Builder.newInstance()
+        return Policy.Builder.newInstance()
                 .permission(alwaysTruePermission)
-                .build();
-
-        return PolicyDefinition.Builder.newInstance()
-                .id(ALWAYS_TRUE_POLICY_ID)
-                .policy(policy)
                 .build();
     }
 }
