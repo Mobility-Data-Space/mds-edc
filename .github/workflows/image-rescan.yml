@@ -57,29 +57,9 @@ jobs:
         with:
           string: ${{ github.repository }}
 
-      - name: Trivy image scan (report)
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+      - name: Trivy image scan ${{ matrix.image }}:${{ matrix.tag }}
+        uses: Mobility-Data-Space/.github/actions/trivy-image-scan@main
         with:
           image-ref: ghcr.io/${{ steps.repo.outputs.lowercase }}/${{ matrix.image }}:${{ matrix.tag }}
-          format: table
-          output: trivy-rescan-${{ matrix.image }}-${{ matrix.tag }}.txt
-          severity: MEDIUM,HIGH,CRITICAL
-          scanners: vuln
-
-      - name: Upload rescan report
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: always()
-        with:
-          name: trivy-rescan-${{ matrix.image }}-${{ matrix.tag }}
-          path: trivy-rescan-${{ matrix.image }}-${{ matrix.tag }}.txt
-
-      - name: Fail on HIGH/CRITICAL vulnerabilities
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-        with:
-          image-ref: ghcr.io/${{ steps.repo.outputs.lowercase }}/${{ matrix.image }}:${{ matrix.tag }}
-          format: table
-          severity: HIGH,CRITICAL
-          ignore-unfixed: true
-          exit-code: '1'
-          trivyignores: .trivyignore
-          scanners: vuln
+          report-name: trivy-rescan-${{ matrix.image }}-${{ matrix.tag }}
+          output-file: trivy-rescan-${{ matrix.image }}-${{ matrix.tag }}.txt
