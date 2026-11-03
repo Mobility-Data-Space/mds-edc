@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MDS EDC — API documentation</title>
+  <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23173647'/%3E%3Ctext x='8' y='12' font-size='10' text-anchor='middle' fill='%23fff' font-family='sans-serif'%3EM%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.28.0/swagger-ui.min.css"
+        integrity="sha384-BF77l2l7AvPZBsKNVIuqQi69FYkOYhOJc+Q4zaEsYf3Gsf2BBviRE2EsNalwxWLU"
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+  <style>
+    html { box-sizing: border-box; }
+    *, *:before, *:after { box-sizing: inherit; }
+    body { margin: 0; background: #fafafa; }
+    #spec-error {
+      display: none;
+      margin: 3rem auto;
+      max-width: 40rem;
+      padding: 1.5rem;
+      font-family: sans-serif;
+      color: #8a1f11;
+      background: #fdf2f0;
+      border: 1px solid #f3c6bf;
+      border-radius: 6px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="spec-error">Could not load the list of OpenAPI specifications.</div>
+  <div id="swagger-ui"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.28.0/swagger-ui-bundle.min.js"
+          integrity="sha384-LmlO4p54FYQG8V3SnNl55KdkfbORa32uR7rT0IdMqKiKbtcI1y9M4N/Yl4hxiQ3b"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.28.0/swagger-ui-standalone-preset.min.js"
+          integrity="sha384-qB7VQ/ae87G17ofPIuOzdumKTMV1EvYLY9QQ+ODFrxUI1zYLzfwVAG7AJ+V77/BV"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    async function init() {
+      let specs = [];
+      try {
+        const response = await fetch('openapi/index.json', { cache: 'no-store' });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        specs = await response.json();
+      } catch (error) {
+        console.error('Failed to load the OpenAPI spec manifest', error);
+        document.getElementById('spec-error').style.display = 'block';
+        return;
+      }
+
+      const urls = specs.map(function (name) {
+        return { name: name, url: 'openapi/' + name + '/latest/openapi.yaml' };
+      });
+
+      window.ui = SwaggerUIBundle({
+        urls: urls,
+        'urls.primaryName': urls.length ? urls[0].name : undefined,
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+        plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+        layout: 'StandaloneLayout'
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
