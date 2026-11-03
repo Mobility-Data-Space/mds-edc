@@ -31,11 +31,20 @@ jobs:
           fi
           
           launchers=($(cd launchers && ls */ -d | grep -v "base-connector"))
-          
+
+          specs=()
           for launcher in "${launchers[@]}"
           do
-            mkdir -p public/openapi/${launcher}latest && cp launchers/${launcher}build/generated/openapi/openapi.yaml "$_"
+            name=${launcher%/}
+            mkdir -p public/openapi/${name}/latest && cp launchers/${name}/build/generated/openapi/openapi.yaml "$_"
+            specs+=("\"${name}\"")
           done
+
+          # manifest consumed by the swagger-ui landing page to populate the spec selector
+          printf '[%s]' "$(IFS=,; echo "${specs[*]}")" > public/openapi/index.json
+
+          # swagger-ui landing page served at the GitHub Pages root
+          cp resources/swagger-ui/index.html public/index.html
 
       - uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
         with:

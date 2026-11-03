@@ -8,6 +8,8 @@ The EDC implements the [Dataspace Protocol (DSP)](https://eclipse-dataspace-prot
 
 > **Migrating from V3?** The archived V3 documentation is available in the [v3/](./v3/) subfolder. V3 was deprecated at release `v2.6.0` alongside the promotion of V4 to stable.
 
+> **Interactive API reference.** The OpenAPI specifications for every connector flavour are published with [Swagger UI](https://mobility-data-space.github.io/mds-edc/), where you can browse endpoints, inspect schemas, and try out requests.
+
 ## What Changed in V4
 
 The main change in V4 is a simplified `@context`. Instead of a verbose namespace object, all requests now use a single common context URL:
