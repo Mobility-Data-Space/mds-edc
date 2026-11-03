@@ -17,6 +17,13 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - name: Generate Gradle lockfiles
+        shell: bash
+        run: ./gradlew resolveAndLockAll --write-locks
+        env:
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ github.token }}
+
       - uses: Mobility-Data-Space/.github/actions/trivy-fs-scan@main
 
   build-and-push:
