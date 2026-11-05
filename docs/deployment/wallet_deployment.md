@@ -178,7 +178,8 @@ The connector participant that owns this DID needs four config values that point
 ```env
 # In the connector's env (matches connector-vault-postgresql-dcp).
 EDC_IAM_STS_OAUTH_CLIENT_ID=${PARTICIPANT_DID}
-EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS=${PARTICIPANT_DID}-sts-client-secret
+# The alias must not contain ':' or '%': use the DID without the did:web: prefix (see above).
+EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS=wallet.example.com-sts-client-secret
 EDC_IAM_STS_OAUTH_TOKEN_URL=${WALLET_HOST}/api/sts/token
 EDC_IAM_TRUSTEDISSUER_ISSUER_ID=${ISSUER_DID}
 EDC_IAM_TRUSTEDISSUER_ISSUER_SUPPORTEDTYPES=["MembershipCredential"]
