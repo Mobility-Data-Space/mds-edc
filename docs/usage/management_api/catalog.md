@@ -33,6 +33,7 @@ Content-Type: application/json
   "counterPartyAddress": "https://provider.dataspaces.think-it.io/api/dsp/2025-1",
   "counterPartyId": "PROVIDER_MDS_ID",
   "querySpec": {
+    "@type": "QuerySpec",
     "limit": 100,
     "offset": 0
   }
@@ -52,6 +53,7 @@ Content-Type: application/json
   "counterPartyId": "PROVIDER_MDS_ID",
   "protocol": "dataspace-protocol-http:2025-1",
   "querySpec": {
+    "@type": "QuerySpec",
     "offset": 0,
     "limit": 50,
     "filterExpression": [

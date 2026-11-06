@@ -129,7 +129,7 @@ Content-Type: application/json
   "properties": {
     "dct:title": "Real-time Traffic Events Stream",
     "mobilitydcatap:mobilityTheme": {
-      "mobilitydcatap-theme:data-content-category": "DYNAMIC_TRAFFIC_DATA"
+      "mobilitydcatap-theme:data-content-category": "REAL_TIME_TRAFFIC_DATA"
     }
   },
   "dataAddress": {
@@ -168,7 +168,7 @@ Content-Type: application/json
   "properties": {
     "dct:title": "Real-time Traffic Events Stream (Confluent Cloud)",
     "mobilitydcatap:mobilityTheme": {
-      "mobilitydcatap-theme:data-content-category": "DYNAMIC_TRAFFIC_DATA"
+      "mobilitydcatap-theme:data-content-category": "REAL_TIME_TRAFFIC_DATA"
     }
   },
   "dataAddress": {
