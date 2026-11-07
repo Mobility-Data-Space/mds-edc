@@ -227,7 +227,7 @@ When this property is set on the DataAddress, the provider connector includes `s
   "properties": {
     "dct:title": "Real-time Traffic Events Stream",
     "mobilitydcatap:mobilityTheme": {
-      "mobilitydcatap-theme:data-content-category": "DYNAMIC_TRAFFIC_DATA"
+      "mobilitydcatap-theme:data-content-category": "REAL_TIME_TRAFFIC_DATA"
     }
   },
   "dataAddress": {
@@ -260,7 +260,7 @@ When this property is set on the DataAddress, the provider connector includes `s
   "properties": {
     "dct:title": "Real-time Traffic Events Stream (Confluent Cloud)",
     "mobilitydcatap:mobilityTheme": {
-      "mobilitydcatap-theme:data-content-category": "DYNAMIC_TRAFFIC_DATA"
+      "mobilitydcatap-theme:data-content-category": "REAL_TIME_TRAFFIC_DATA"
     }
   },
   "dataAddress": {
