@@ -4862,7 +4862,7 @@ components:
         '@id': '@id'
         accessPolicyId: accessPolicyId
         contractPolicyId: contractPolicyId
-        privateProperties: "{}"
+        privateProperties: {}
         assetsSelector:
         - '@type': '@type'
           operandLeft: operandLeft

@@ -5396,7 +5396,7 @@ components:
         '@id': '@id'
         accessPolicyId: accessPolicyId
         contractPolicyId: contractPolicyId
-        privateProperties: "{}"
+        privateProperties: {}
         assetsSelector:
         - '@type': '@type'
           operandLeft: operandLeft
@@ -6083,7 +6083,7 @@ components:
     DataPlaneRegistrationMessage:
       example:
         authorization:
-          key: "{}"
+          key: {}
         dataplaneId: dataplaneId
         endpoint: endpoint
         labels:
@@ -6808,7 +6808,7 @@ components:
         message: message
         type: type
         path: path
-        invalidValue: "{}"
+        invalidValue: {}
       properties:
         message:
           type: string
