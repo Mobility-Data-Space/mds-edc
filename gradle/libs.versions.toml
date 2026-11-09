@@ -127,5 +127,5 @@ testcontainers-vault = { module = "org.testcontainers:testcontainers-vault", ver
 wiremock = { module = "org.wiremock:wiremock-jetty12", version.ref = "wiremock" }
 
 [plugins]
-openapi-generator = { id = "org.openapi.generator", version = "7.26.0" }
+openapi-generator = { id = "org.openapi.generator", version = "7.27.0" }
 swagger = { id = "io.swagger.core.v3.swagger-gradle-plugin", version.ref = "swagger" }
