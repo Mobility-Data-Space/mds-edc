@@ -18,7 +18,7 @@ plugins {
 
 dependencies {
     api(project(":extensions:data-plane:aws:aws-spi"))
-    api(libs.edc.validator.spi)
+    api(libs.edc.core.spi)
     api(libs.edc.control.plane.spi)
 
     testImplementation(libs.edc.junit)

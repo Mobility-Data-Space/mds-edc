@@ -57,7 +57,7 @@ public class ObserverEventDispatcher {
 
     private Result<DataAddress> readDataAddress() {
         try {
-            var json = vault.resolveSecret(participantContext.getParticipantContextId(), OBSERVER_ADDRESS_KEY);
+            var json = vault.resolveSecret(participantContext.getId(), OBSERVER_ADDRESS_KEY);
             if (json == null) {
                 return Result.failure("No data-address stored in the vault");
             }

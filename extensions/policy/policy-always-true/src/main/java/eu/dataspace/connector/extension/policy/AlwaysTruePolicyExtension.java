@@ -38,11 +38,11 @@ public class AlwaysTruePolicyExtension implements ServiceExtension {
         var participantContext = singleParticipantContextSupplier.get()
                 .orElseThrow(f -> new EdcException("Cannot load participant context: " + f.getFailureDetail()));
 
-        if (policyDefinitionService.findById(participantContext.getParticipantContextId(), ALWAYS_TRUE_POLICY_ID) == null) {
+        if (policyDefinitionService.findById(participantContext.getId(), ALWAYS_TRUE_POLICY_ID) == null) {
 
             var policyDefinition = PolicyDefinition.Builder.newInstance()
                     .id(ALWAYS_TRUE_POLICY_ID)
-                    .participantContextId(participantContext.getParticipantContextId())
+                    .participantContextId(participantContext.getId())
                     .policy(alwaysTruePolicy())
                     .build();
 

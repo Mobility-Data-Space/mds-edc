@@ -49,8 +49,7 @@ public final class SignalingMapper {
                             .transferType(transferType)
                             .agreementId(message.getAgreementId())
                             .assetId(message.getDatasetId())
-                            .participantId(message.getCounterPartyId())
-                            .callbackAddress(message.getCallbackAddress());
+                            .participantId(message.getCounterPartyId());
 
                     ofNullable(message.getMessageId()).ifPresent(builder::id);
                     ofNullable(message.getDataAddress()).map(SignalingMapper::toDataAddress).ifPresent(builder::destinationDataAddress);
@@ -88,8 +87,7 @@ public final class SignalingMapper {
                             .transferType(transferType)
                             .agreementId(message.getAgreementId())
                             .assetId(message.getDatasetId())
-                            .participantId(message.getCounterPartyId())
-                            .callbackAddress(message.getCallbackAddress());
+                            .participantId(message.getCounterPartyId());
 
                     ofNullable(message.getDataspaceContext()).ifPresent(v -> builder.property(SIGNALING_DATASPACE_CONTEXT, v));
 
@@ -214,8 +212,7 @@ public final class SignalingMapper {
         } catch (IllegalArgumentException e) {
             return Result.failure("Invalid flow type in transferType '%s': %s".formatted(transferType, tokens[1]));
         }
-        var responseChannel = tokens.length > 2 ? tokens[2] : null;
-        return Result.success(new TransferType(tokens[0], flowType, responseChannel));
+        return Result.success(new TransferType(tokens[0], flowType));
     }
 
     /**
@@ -223,7 +220,7 @@ public final class SignalingMapper {
      */
     public static DataFlowStatusMessage statusMessage(String dataFlowId, DataFlowStates state, DataAddress dataAddress) {
         return DataFlowStatusMessage.Builder.newInstance()
-                //  .dataFlowId(dataFlowId) TODO: this can be enabled when EDC updates to 1.0.0
+                // .dataFlowId(dataFlowId) // TODO: this can be enabled when EDC updates to 1.0.0 (? to be verified)
                 .state(toProtocolState(state))
                 .dataAddress(Optional.ofNullable(dataAddress).map(SignalingMapper::toDspDataAddress).orElse(null))
                 .build();

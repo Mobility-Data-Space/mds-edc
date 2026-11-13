@@ -6,11 +6,9 @@ plugins {
 
 dependencies {
     api(libs.edc.core.spi)
-    api(libs.edc.http.spi)
-    api(libs.edc.web.spi)
     api(project(":extensions:data-plane:data-plane-spi"))
 
-    implementation(libs.edc.util.lib)
+    implementation(libs.edc.core.lib)
     implementation(libs.nimbus.jwt)
     implementation(libs.swagger.annotations)
     implementation(libs.swagger.jaxrs2.jakarta)

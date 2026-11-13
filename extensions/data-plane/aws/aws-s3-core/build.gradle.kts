@@ -4,8 +4,8 @@ plugins {
 
 dependencies {
     api(project(":extensions:data-plane:aws:aws-spi"))
-    api(libs.edc.transfer.spi)
-    api(libs.edc.validator.spi)
+    api(libs.edc.control.plane.spi)
+    api(libs.edc.core.spi)
 
     api(libs.aws.iam)
     api(libs.aws.s3)

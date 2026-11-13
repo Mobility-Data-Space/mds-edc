@@ -143,6 +143,6 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
         var participantContext = singleParticipantContextSupplier.get()
                 .orElseThrow(f -> new EdcException("Failed to obtain participant context for data sink creation"));
 
-        return vault.resolveSecret(participantContext.getParticipantContextId(), keyName);
+        return vault.resolveSecret(participantContext.getId(), keyName);
     }
 }

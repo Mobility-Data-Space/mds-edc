@@ -7,10 +7,7 @@ dependencies {
     implementation(project(":extensions:data-plane:kafka:data-plane-kafka-spi"))
     implementation(libs.edc.core.spi)
     implementation(project(":extensions:data-plane:data-plane-spi"))
-    implementation(libs.edc.http.spi)
-    implementation(libs.edc.jwt.spi)
-    implementation(libs.edc.util.lib)
-    implementation(libs.edc.validator.spi)
+    implementation(libs.edc.core.lib)
     implementation(libs.jose4j)
     implementation(libs.kafka.clients)
 

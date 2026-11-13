@@ -4,9 +4,8 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.boot.spi)
-    implementation(libs.edc.sql.lib)
-    implementation(libs.edc.transaction.datasource.spi)
+    implementation(libs.edc.core.spi)
+    implementation(libs.edc.core.lib)
 
     implementation(libs.flyway.core)
     runtimeOnly(libs.flyway.database.postgres)

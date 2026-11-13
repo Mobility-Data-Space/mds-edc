@@ -1,4 +1,4 @@
--- Connector schema changes introduced by EDC between 0.18.0 and 1.0.0-RC5.
+-- Connector schema changes introduced by EDC between 0.18.0 and 1.0.0-RC7.
 --
 -- Only additive, code-required changes are applied here. EDC 1.0.0 also moved several
 -- stores to a composite primary key (participant_context_id, id) on edc_asset,
@@ -11,25 +11,26 @@
 -- edc_data_plane_instance: the store was redesigned from (id, data JSON) to explicit
 -- columns, and EDC ships no in-place migration. The table is empty at migration time and
 -- the embedded data plane re-registers its instance at boot, so it is safe to recreate it.
+-- The upsert uses ON CONFLICT (participant_context_id, id), so the composite key is required.
 DROP TABLE IF EXISTS edc_data_plane_instance;
 CREATE TABLE edc_data_plane_instance
 (
-    id                          VARCHAR NOT NULL PRIMARY KEY,
+    id                          VARCHAR NOT NULL,
     state                       INTEGER NOT NULL,
     state_time_stamp            BIGINT,
     created_at                  BIGINT  NOT NULL,
     updated_at                  BIGINT  NOT NULL,
     url                         VARCHAR NOT NULL,
     last_active                 BIGINT,
-    participant_context_id      VARCHAR,
+    participant_context_id      VARCHAR NOT NULL,
     allowed_source_types        JSON DEFAULT '[]',
     allowed_transfer_types      JSON DEFAULT '[]',
     destination_provision_types JSON DEFAULT '[]',
     labels                      JSON DEFAULT '[]',
     properties                  JSON DEFAULT '{}',
-    authorization_profile       JSON
+    authorization_profile       JSON,
+    PRIMARY KEY (participant_context_id, id)
 );
-CREATE INDEX IF NOT EXISTS data_plane_instance_participant_context_id ON edc_data_plane_instance (participant_context_id);
 CREATE INDEX IF NOT EXISTS data_plane_instance_state ON edc_data_plane_instance (state);
 
 -- edc_transfer_process: the lease moved from the shared edc_lease table onto the row, and
@@ -64,3 +65,19 @@ ALTER TABLE edc_policy_monitor ADD COLUMN IF NOT EXISTS lease_duration INTEGER;
 -- edc_contract_definitions: lookup indexes added in 1.0.0 (e.g. policy-deletion checks).
 CREATE INDEX IF NOT EXISTS contract_definitions_access_policy_index ON edc_contract_definitions (participant_context_id, access_policy_id);
 CREATE INDEX IF NOT EXISTS contract_definitions_contract_policy_index ON edc_contract_definitions (participant_context_id, contract_policy_id);
+
+-- edc_target_node_directory: scoped by participant context (composite primary key) and
+-- gained the counter-party id. Existing rows belong to the single participant context.
+ALTER TABLE edc_target_node_directory ADD COLUMN IF NOT EXISTS counter_party_id VARCHAR;
+ALTER TABLE edc_target_node_directory ADD COLUMN IF NOT EXISTS participant_context_id VARCHAR;
+UPDATE edc_target_node_directory SET participant_context_id = '${ParticipantContextId}' WHERE participant_context_id IS NULL;
+ALTER TABLE edc_target_node_directory ALTER COLUMN participant_context_id SET NOT NULL;
+ALTER TABLE edc_target_node_directory DROP CONSTRAINT IF EXISTS edc_target_node_directory_pkey;
+ALTER TABLE edc_target_node_directory ADD PRIMARY KEY (participant_context_id, id);
+
+-- edc_federated_catalog: scoped by participant context (composite primary key).
+ALTER TABLE edc_federated_catalog ADD COLUMN IF NOT EXISTS participant_context_id VARCHAR;
+UPDATE edc_federated_catalog SET participant_context_id = '${ParticipantContextId}' WHERE participant_context_id IS NULL;
+ALTER TABLE edc_federated_catalog ALTER COLUMN participant_context_id SET NOT NULL;
+ALTER TABLE edc_federated_catalog DROP CONSTRAINT IF EXISTS edc_federated_catalog_pkey;
+ALTER TABLE edc_federated_catalog ADD PRIMARY KEY (participant_context_id, id);

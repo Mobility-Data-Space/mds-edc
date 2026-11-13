@@ -302,7 +302,7 @@ public class DataPlaneManagerImpl extends AbstractStateEntityManager<DataFlow, D
     private StatusResult<DataAddress> triggerDataFlow(DataFlow dataFlow) {
         var edr = switch (dataFlow.getTransferType().flowType()) {
             case PULL -> handlePull(dataFlow);
-            case PUSH -> handlePush(dataFlow);
+            case PUSH -> ServiceResult.<DataAddress>success();
         };
 
         return edr
@@ -377,15 +377,6 @@ public class DataPlaneManagerImpl extends AbstractStateEntityManager<DataFlow, D
     private ServiceResult<DataAddress> handlePull(DataFlow dataFlow) {
         return endpointDataReferenceServiceRegistry.create(dataFlow, dataFlow.getSource())
                 .onFailure(f -> monitor.warning("Error obtaining EDR DataAddress: %s".formatted(f.getFailureDetail())));
-    }
-
-    private ServiceResult<DataAddress> handlePush(DataFlow dataFlow) {
-        var responseChannelType = dataFlow.getTransferType().responseChannelType();
-        if (responseChannelType != null) {
-            monitor.debug("PUSH dataflow with responseChannel '%s' received. Will generate data address".formatted(responseChannelType));
-            return endpointDataReferenceServiceRegistry.createResponseChannel(dataFlow, dataFlow.getSource().getResponseChannel());
-        }
-        return ServiceResult.success();
     }
 
     private CompletableFuture<StatusResult<Void>> processProvisioning(DataFlow dataFlow) {

@@ -76,7 +76,7 @@ public class DataplaneSelfRegistrationExtension implements ServiceExtension {
         var instance = DataPlaneInstance.Builder.newInstance()
                 .id(context.getComponentId())
                 .url("http://localhost") // not used, as it's embedded
-                .participantContextId(participantContext.getParticipantContextId())
+                .participantContextId(participantContext.getId())
                 .allowedSourceTypes(pipelineService.supportedSourceTypes())
                 .allowedSourceTypes(resourceDefinitionGeneratorManager.sourceTypes())
                 .allowedTransferTypes(transferTypes.collect(toSet()))
@@ -102,7 +102,9 @@ public class DataplaneSelfRegistrationExtension implements ServiceExtension {
     @Override
     public void shutdown() {
         if (selfUnregistration) {
-            dataPlaneSelectorService.unregister(context.getComponentId())
+            var participantContext = participantContextSupplier.get().orElseThrow(f -> new EdcException("Cannot load participant context: " + f.getFailureDetail()));
+
+            dataPlaneSelectorService.unregister(participantContext.getId(), context.getComponentId())
                     .onSuccess(it -> context.getMonitor().debug("data plane successfully unregistered"))
                     .onFailure(failure -> context.getMonitor().severe("error during data plane de-registration. %s: %s"
                             .formatted(failure.getReason(), failure.getFailureDetail())));

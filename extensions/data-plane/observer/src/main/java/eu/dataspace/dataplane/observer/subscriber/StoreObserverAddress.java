@@ -45,7 +45,7 @@ public class StoreObserverAddress implements EventSubscriber {
         if (event.getPayload() instanceof TransferProcessStarted transferProcessStarted && isObserverTransfer(transferProcessStarted)) {
             try {
                 var json = mapperSupplier.get().writeValueAsString(transferProcessStarted.getDataAddress());
-                vault.storeSecret(participantContext.getParticipantContextId(), OBSERVER_ADDRESS_KEY, json)
+                vault.storeSecret(participantContext.getId(), OBSERVER_ADDRESS_KEY, json)
                         .onSuccess(i -> {
                             monitor.info("DFRS Observer address stored in vault with key " + OBSERVER_ADDRESS_KEY);
                         })

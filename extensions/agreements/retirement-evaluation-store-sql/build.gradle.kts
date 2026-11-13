@@ -7,8 +7,7 @@ dependencies {
     implementation(project(":extensions:agreements:retirement-evaluation-spi"))
 
     implementation(libs.edc.core.spi)
-    implementation(libs.edc.transaction.spi)
-    implementation(libs.edc.sql.lib)
+    implementation(libs.edc.core.lib)
 
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.launcher)
