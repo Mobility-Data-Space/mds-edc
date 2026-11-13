@@ -51,8 +51,8 @@ public interface MdsParticipantFactory {
                                 Map.entry("edc.iam.sts.oauth.client.id", did),
                                 Map.entry("edc.iam.sts.oauth.client.secret.alias", stsClientSecretAlias),
                                 Map.entry("edc.iam.sts.oauth.token.url", wallet.tokenEndpoint()),
-                                Map.entry("edc.iam.trusted-issuer.issuer.id", issuerDid.get()),
-                                Map.entry("edc.iam.trusted-issuer.issuer.supportedtypes", "[\"MembershipCredential\"]")
+                                Map.entry("edc.iam.trustedissuer.issuer.id", issuerDid.get()),
+                                Map.entry("edc.iam.trustedissuer.issuer.supportedtypes", "[\"MembershipCredential\"]")
                         )))
                         .registerSystemExtension(ServiceExtension.class, new ServiceExtension() {
                             @Inject

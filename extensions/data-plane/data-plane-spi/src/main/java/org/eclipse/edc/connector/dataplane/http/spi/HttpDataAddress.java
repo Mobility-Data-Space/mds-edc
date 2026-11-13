@@ -17,9 +17,9 @@ package org.eclipse.edc.connector.dataplane.http.spi;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
+import org.eclipse.edc.controlplane.DataAddress;
 
 import java.util.Map;
 import java.util.Objects;
@@ -28,8 +28,8 @@ import java.util.Set;
 
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toMap;
-import static org.eclipse.edc.dataaddress.httpdata.spi.HttpDataAddressSchema.BASE_URL;
-import static org.eclipse.edc.dataaddress.httpdata.spi.HttpDataAddressSchema.HTTP_DATA_TYPE;
+import static org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddressSchema.BASE_URL;
+import static org.eclipse.edc.connector.dataplane.http.spi.HttpDataAddressSchema.HTTP_DATA_TYPE;
 
 /**
  * This is a wrapper class for the {@link DataAddress} object, which has typed accessors for properties specific to

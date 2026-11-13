@@ -27,7 +27,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,6 +46,8 @@ import static org.eclipse.edc.azure.blob.validator.AzureStorageValidator.validat
  * Instantiates {@link AzureStorageDataSink}s for requests whose source data type is {@link AzureBlobStoreSchema#TYPE}.
  */
 public class AzureStorageDataSinkFactory implements DataSinkFactory {
+    // Was DataAddress.EDC_DATA_ADDRESS_SECRET, removed in EDC 1.0.0; preserves the pre-1.0 inline-secret property key.
+    private static final String EDC_DATA_ADDRESS_SECRET = "https://w3id.org/edc/v0.0.1/ns/secret";
     private final SingleParticipantContextSupplier singleParticipantContextSupplier;
     private final BlobStoreApi blobStoreApi;
     private final ExecutorService executorService;
@@ -84,7 +86,7 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
 
         if (secret == null) {
             throw new EdcException("SAS token for the Azure Blob DataSink not found neither in DataAddresss (property = '%s') nor Vault (alias = '%s')"
-                    .formatted(DataAddress.EDC_DATA_ADDRESS_SECRET, dataAddress.getKeyName()));
+                    .formatted(EDC_DATA_ADDRESS_SECRET, dataAddress.getStringProperty(DataAddress.SIMPLE_KEY_NAME)));
         }
 
         var token = typeManager.readValue(secret, AzureSasToken.class);
@@ -128,12 +130,12 @@ public class AzureStorageDataSinkFactory implements DataSinkFactory {
     }
 
     private @Nullable String getSecret(DataAddress dataAddress) {
-        var addressSecret = dataAddress.getStringProperty(DataAddress.EDC_DATA_ADDRESS_SECRET);
+        var addressSecret = dataAddress.getStringProperty(EDC_DATA_ADDRESS_SECRET);
         if (addressSecret != null) {
             return addressSecret;
         }
 
-        var keyName = dataAddress.getKeyName();
+        var keyName = dataAddress.getStringProperty(DataAddress.SIMPLE_KEY_NAME);
         if (keyName == null) {
             return null;
         }

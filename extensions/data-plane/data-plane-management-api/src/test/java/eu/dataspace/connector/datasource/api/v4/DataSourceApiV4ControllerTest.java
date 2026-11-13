@@ -18,8 +18,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static eu.dataspace.connector.datasource.spi.types.DataSource.DATA_SOURCE_TYPE_TERM;
 import static io.restassured.RestAssured.given;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
+import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_TYPE_TERM;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -45,7 +48,7 @@ class DataSourceApiV4ControllerTest extends RestControllerTestBase {
 
         baseRequest()
                 .contentType(ContentType.JSON)
-                .body("{}")
+                .body(Json.createObjectBuilder().add(TYPE, DATA_SOURCE_TYPE_TERM).build())
                 .post()
                 .then()
                 .log().ifError()
@@ -61,7 +64,7 @@ class DataSourceApiV4ControllerTest extends RestControllerTestBase {
 
         baseRequest()
                 .contentType(ContentType.JSON)
-                .body("{}")
+                .body(Json.createObjectBuilder().add(TYPE, DATA_SOURCE_TYPE_TERM).build())
                 .put()
                 .then()
                 .log().ifError()
@@ -76,7 +79,7 @@ class DataSourceApiV4ControllerTest extends RestControllerTestBase {
 
         baseRequest()
                 .contentType(ContentType.JSON)
-                .body("{}")
+                .body(Json.createObjectBuilder().add(TYPE, DATA_SOURCE_TYPE_TERM).build())
                 .put()
                 .then()
                 .statusCode(404);
@@ -93,7 +96,7 @@ class DataSourceApiV4ControllerTest extends RestControllerTestBase {
 
         baseRequest()
                 .contentType(ContentType.JSON)
-                .body("{}")
+                .body(Json.createObjectBuilder().add(TYPE, EDC_QUERY_SPEC_TYPE_TERM).build())
                 .post("/request")
                 .then()
                 .log().ifError()

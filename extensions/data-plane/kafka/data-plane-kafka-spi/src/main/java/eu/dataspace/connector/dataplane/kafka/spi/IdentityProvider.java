@@ -1,7 +1,7 @@
 package eu.dataspace.connector.dataplane.kafka.spi;
 
 import org.eclipse.edc.spi.result.ServiceResult;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 
 /**
  * Provide and revoke access through IdP for a specific source address

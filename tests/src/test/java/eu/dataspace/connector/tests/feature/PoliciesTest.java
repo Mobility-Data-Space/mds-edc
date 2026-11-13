@@ -56,7 +56,7 @@ public class PoliciesTest {
     void alwaysTrue_shouldProvideAlwaysTruePolicy() {
         var policyDefinitionService = RUNTIME_EXTENSION.getService(PolicyDefinitionService.class);
 
-        var alwaysTruePolicy = policyDefinitionService.findById("always-true");
+        var alwaysTruePolicy = policyDefinitionService.findById(RUNTIME.getId(), "always-true");
 
         assertThat(alwaysTruePolicy).isNotNull();
     }

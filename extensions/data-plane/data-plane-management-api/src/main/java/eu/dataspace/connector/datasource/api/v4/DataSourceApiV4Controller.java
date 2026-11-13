@@ -34,20 +34,20 @@ public class DataSourceApiV4Controller extends BaseDataSourceApiController imple
 
     @POST
     @Override
-    public Response createDataSourceV4(@SchemaType(DATA_SOURCE_TYPE_TERM) @RequestBody JsonObject dataSource) {
+    public Response createDataSourceV4(@SchemaType(value = DATA_SOURCE_TYPE_TERM, version = "v4") @RequestBody JsonObject dataSource) {
         return Response.status(Response.Status.CREATED).entity(createDataSource(dataSource)).build();
     }
 
     @PUT
     @Override
-    public void updateDataSourceV4(@SchemaType(DATA_SOURCE_TYPE_TERM) @RequestBody JsonObject dataSource) {
+    public void updateDataSourceV4(@SchemaType(value = DATA_SOURCE_TYPE_TERM, version = "v4") @RequestBody JsonObject dataSource) {
         updateDataSource(dataSource);
     }
 
     @POST
     @Path("/request")
     @Override
-    public JsonArray requestDataSourcesV4(@SchemaType(EDC_QUERY_SPEC_TYPE_TERM) @RequestBody JsonObject querySpecJson) {
+    public JsonArray requestDataSourcesV4(@SchemaType(value = EDC_QUERY_SPEC_TYPE_TERM, version = "v4") @RequestBody JsonObject querySpecJson) {
         return queryDataSources(querySpecJson);
     }
 

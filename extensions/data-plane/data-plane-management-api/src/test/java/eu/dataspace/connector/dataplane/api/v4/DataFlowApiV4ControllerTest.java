@@ -10,7 +10,7 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.validator.spi.ValidationResult;
@@ -50,7 +50,6 @@ class DataFlowApiV4ControllerTest extends RestControllerTestBase {
 
         baseRequest()
                 .contentType(ContentType.JSON)
-                .body("{}")
                 .post("/request")
                 .then()
                 .log().ifError()
@@ -61,7 +60,7 @@ class DataFlowApiV4ControllerTest extends RestControllerTestBase {
 
     @Test
     void getDataAddress_shouldReturnAddress() {
-        var address = DataAddress.Builder.newInstance().type("HttpData").keyName("source-key-alias").build();
+        var address = DataAddress.Builder.newInstance().type("HttpData").property("keyName", "source-key-alias").build();
         var addressJson = Json.createObjectBuilder()
                 .add(TYPE, "DataAddress")
                 .add("type", "HttpData")

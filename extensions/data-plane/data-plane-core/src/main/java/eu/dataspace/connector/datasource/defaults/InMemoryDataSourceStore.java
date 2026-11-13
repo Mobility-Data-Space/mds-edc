@@ -1,6 +1,7 @@
 package eu.dataspace.connector.datasource.defaults;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import eu.dataspace.connector.datasource.spi.store.DataSourceStore;
 import eu.dataspace.connector.datasource.spi.types.DataSource;
 import org.eclipse.edc.spi.EdcException;
@@ -15,8 +16,6 @@ import java.time.Clock;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
-
-import static com.fasterxml.jackson.databind.type.TypeFactory.defaultInstance;
 
 /**
  * In-memory implementation of {@link DataSourceStore}. The queryable index ({@code id}, {@code name}, {@code type} plus
@@ -128,7 +127,7 @@ public class InMemoryDataSourceStore implements DataSourceStore {
             return Map.of();
         }
         try {
-            return mapper.readValue(serialized, defaultInstance().constructMapType(Map.class, String.class, Object.class));
+            return mapper.readValue(serialized, new TypeReference<Map<String, Object>>() { });
         } catch (Exception e) {
             throw new EdcException("Failed to deserialize data source properties", e);
         }
