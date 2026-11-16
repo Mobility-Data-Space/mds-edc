@@ -144,81 +144,81 @@ Starting a Gradle Daemon (subsequent builds will be faster)
 > Task :tests:slowTests
 
 DspTckTest STANDARD_OUT
-    [0;32mINFO 2026-11-16T14:33:11.341805104 Starting runtime runtime[0m
-    [0;32m[runtime] INFO 2026-11-16T14:33:11.351121008 Booting EDC runtime[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.382310339 ConfigurationExtension Initialized: org.eclipse.edc.junit.extensions.EmbeddedRuntime$$Lambda/0x00000000712175c8[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.385333611 ConfigurationExtension Initialized: org.eclipse.edc.junit.extensions.EmbeddedRuntime$$Lambda/0x00000000712175c8[0m
-    [0;33m[runtime] WARNING 2026-11-16T14:33:11.386451933 Configuration file does not exist: dataspaceconnector-configuration.properties. Ignoring.[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.386741627 ConfigurationExtension Initialized: FS Configuration[0m
-    [0;33m[runtime] WARNING 2026-11-16T14:33:11.490918667 The runtime is not configured with a participant context id. Using the participant id as the context id.[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.49126168 Initialized Single Participant Context Default Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.493540829 Initialized Boot Services[0m
-    [0;33m[runtime] WARNING 2026-11-16T14:33:11.495230156 Using the InMemoryVault is not suitable for production scenarios and should be replaced with an actual Vault![0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.497235705 Storing secret private-key-alias[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.497676194 Storing secret public-key-alias[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.497893309 Initialized eu.dataspace.connector.tests.SeedVault$1[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.49936491 Config value: no setting found for 'edc.core.retry.retries.max', falling back to default value '5'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.499660102 Config value: no setting found for 'edc.core.retry.backoff.min', falling back to default value '500'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.499894332 Config value: no setting found for 'edc.core.retry.backoff.max', falling back to default value '10000'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.500117656 Config value: no setting found for 'edc.core.retry.log.on.retry', falling back to default value 'false'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.500377315 Config value: no setting found for 'edc.core.retry.log.on.retry.scheduled', falling back to default value 'false'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.500622601 Config value: no setting found for 'edc.core.retry.log.on.retries.exceeded', falling back to default value 'false'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.500859175 Config value: no setting found for 'edc.core.retry.log.on.failed.attempt', falling back to default value 'false'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.501092775 Config value: no setting found for 'edc.core.retry.log.on.abort', falling back to default value 'false'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.50850389 Config value: no setting found for 'edc.http.client.https.enforce', falling back to default value 'false'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.508713744 Config value: no setting found for 'edc.http.client.timeout.connect', falling back to default value '30'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.50885178 Config value: no setting found for 'edc.http.client.timeout.read', falling back to default value '30'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.508977989 Config value: no setting found for 'edc.http.client.send.buffer.size', falling back to default value '0'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.509103487 Config value: no setting found for 'edc.http.client.receive.buffer.size', falling back to default value '0'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.509248984 Config value: no setting found for 'edc.http.client.max.requests', falling back to default value '64'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.509383375 Config value: no setting found for 'edc.http.client.max.requests.per.host', falling back to default value '5'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.509777174 Initialized Runtime Default Core Services[0m
-    [0;32m[runtime] INFO 2026-11-16T14:33:11.71352991 HTTPS enforcement it not enabled, please enable it in a production environment[0m
-    [0;33m[runtime] WARNING 2026-11-16T14:33:11.769415509 Config value: no setting found for 'edc.hostname', falling back to default value 'localhost'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.76970342 Initialized Runtime Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.774335841 Initialized Participant Context Default Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.774484714 Initialized org.eclipse.edc.participantcontext.config.defaults.ParticipantContextConfigDefaultServicesExtension[0m
-    [0;33m[runtime] WARNING 2026-11-16T14:33:11.774717813 No TransactionContext registered, a no-op implementation will be used, not suitable for production environments[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.776185399 Config value: no setting found for 'edc.participants.config.validation.strict', falling back to default value 'false'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.776459459 Initialized org.eclipse.edc.participantcontext.config.ParticipantContextConfigServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.779252269 Initialized Mock IAM[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.779738516 Config value: no setting found for 'edc.transfer.state-machine.lease-duration', falling back to default value 'PT60S'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.780515619 Config value: no setting found for 'edc.negotiation.state-machine.lease-duration', falling back to default value 'PT60S'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.781541594 Initialized Control Plane Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.784262857 Initialized DSP TCK Guard[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.795763456 Initialized DSP TCK Identity[0m
-    [0;33m[runtime] WARNING 2026-11-16T14:33:11.796962811 A service of the type org.eclipse.edc.controlplane.iam.AudienceResolver was already registered and has now been replaced with a TckIdentityExtension$$Lambda/0x00000000712ffd18 instance.[0m
-    [0;33m[runtime] WARNING 2026-11-16T14:33:11.797461597 A service of the type org.eclipse.edc.spi.iam.IdentityService was already registered and has now been replaced with a NoopIdentityService instance.[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.797821967 Initialized org.eclipse.edc.tck.dsp.transfer.TckDataPlaneExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.798290939 Initialized Core Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.7987866 Initialized Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.801069707 Initialized org.eclipse.edc.connector.controlplane.contract.ContractNegotiationDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.802215752 Config value: no setting found for 'edc.jsonld.prefixes.check', falling back to default value 'true'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.805191875 Config value: no setting found for 'edc.jsonld.http.enabled', falling back to default value 'false'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.805420387 Config value: no setting found for 'edc.jsonld.https.enabled', falling back to default value 'false'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.805671283 Config value: no setting found for 'edc.jsonld.vocab.disable', falling back to default value 'false'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.805817491 Initialized JSON-LD Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.941710305 Initialized Dataspace Protocol Core Extension[0m
-    [0;33m[runtime] WARNING 2026-11-16T14:33:11.943830147 No TokenDecorator was registered. The 'scope' field of outgoing protocol messages will be empty[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.946618019 Initialized Participant Context Default Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.947606148 Config value: no setting found for 'edc.dataspace.enable.profiles.all', falling back to default value 'false'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.950038598 Initialized Connector Participant Context Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.951027437 Config value: no setting found for 'edc.negotiation.approval.enabled', falling back to default value 'false'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.951942667 Config value: no setting found for 'edc.negotiation.state-machine.iteration-wait-millis', falling back to default value '1000'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.952238159 Config value: no setting found for 'edc.negotiation.state-machine.batch-size', falling back to default value '20'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.952450587 Config value: no setting found for 'edc.negotiation.send.retry.limit', falling back to default value '7'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.95267282 Config value: no setting found for 'edc.negotiation.send.retry.base-delay.ms', falling back to default value '1000'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.966645769 Initialized Contract Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.969985296 Initialized Transfer Process Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.971540153 Initialized Catalog Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.97240689 Initialized Catalog Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.973968417 Config value: no setting found for 'edc.policy.validation.enabled', falling back to default value 'true'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.976121619 Initialized Control Plane Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.995653046 Config value: no setting found for 'edc.participant.context.id', falling back to default value 'participantContextId'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.996088107 Initialized DSP TCK Setup[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.99635081 Config value: no setting found for 'edc.web.https.keystore.password', falling back to default value 'password'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.996556969 Config value: no setting found for 'edc.web.https.keymanager.password', falling back to default value 'password'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:11.998917642 Config value: no setting found for 'edc.web.https.keystore.type', falling back to default value 'PKCS12'[0m
+    [0;32mINFO 2026-11-16T15:20:38.984464065 Starting runtime runtime[0m
+    [0;32m[runtime] INFO 2026-11-16T15:20:38.993123508 Booting EDC runtime[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.017043899 ConfigurationExtension Initialized: org.eclipse.edc.junit.extensions.EmbeddedRuntime$$Lambda/0x00000000652175c8[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.020218038 ConfigurationExtension Initialized: org.eclipse.edc.junit.extensions.EmbeddedRuntime$$Lambda/0x00000000652175c8[0m
+    [0;33m[runtime] WARNING 2026-11-16T15:20:39.021434508 Configuration file does not exist: dataspaceconnector-configuration.properties. Ignoring.[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.021844648 ConfigurationExtension Initialized: FS Configuration[0m
+    [0;33m[runtime] WARNING 2026-11-16T15:20:39.109364456 The runtime is not configured with a participant context id. Using the participant id as the context id.[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.109985044 Initialized Single Participant Context Default Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.11179413 Initialized Boot Services[0m
+    [0;33m[runtime] WARNING 2026-11-16T15:20:39.113412547 Using the InMemoryVault is not suitable for production scenarios and should be replaced with an actual Vault![0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.114870301 Storing secret private-key-alias[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.115178097 Storing secret public-key-alias[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.115294553 Initialized eu.dataspace.connector.tests.SeedVault$1[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.116204539 Config value: no setting found for 'edc.core.retry.retries.max', falling back to default value '5'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.11639074 Config value: no setting found for 'edc.core.retry.backoff.min', falling back to default value '500'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.116495238 Config value: no setting found for 'edc.core.retry.backoff.max', falling back to default value '10000'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.116614569 Config value: no setting found for 'edc.core.retry.log.on.retry', falling back to default value 'false'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.116756033 Config value: no setting found for 'edc.core.retry.log.on.retry.scheduled', falling back to default value 'false'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.11687351 Config value: no setting found for 'edc.core.retry.log.on.retries.exceeded', falling back to default value 'false'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.117049847 Config value: no setting found for 'edc.core.retry.log.on.failed.attempt', falling back to default value 'false'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.117172342 Config value: no setting found for 'edc.core.retry.log.on.abort', falling back to default value 'false'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.123300048 Config value: no setting found for 'edc.http.client.https.enforce', falling back to default value 'false'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.123515564 Config value: no setting found for 'edc.http.client.timeout.connect', falling back to default value '30'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.123660413 Config value: no setting found for 'edc.http.client.timeout.read', falling back to default value '30'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.123793334 Config value: no setting found for 'edc.http.client.send.buffer.size', falling back to default value '0'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.123932885 Config value: no setting found for 'edc.http.client.receive.buffer.size', falling back to default value '0'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.124043242 Config value: no setting found for 'edc.http.client.max.requests', falling back to default value '64'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.124131766 Config value: no setting found for 'edc.http.client.max.requests.per.host', falling back to default value '5'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.124542957 Initialized Runtime Default Core Services[0m
+    [0;32m[runtime] INFO 2026-11-16T15:20:39.267172666 HTTPS enforcement it not enabled, please enable it in a production environment[0m
+    [0;33m[runtime] WARNING 2026-11-16T15:20:39.318637396 Config value: no setting found for 'edc.hostname', falling back to default value 'localhost'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.31907002 Initialized Runtime Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.323629514 Initialized Participant Context Default Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.323796427 Initialized org.eclipse.edc.participantcontext.config.defaults.ParticipantContextConfigDefaultServicesExtension[0m
+    [0;33m[runtime] WARNING 2026-11-16T15:20:39.323971492 No TransactionContext registered, a no-op implementation will be used, not suitable for production environments[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.32560415 Config value: no setting found for 'edc.participants.config.validation.strict', falling back to default value 'false'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.325860097 Initialized org.eclipse.edc.participantcontext.config.ParticipantContextConfigServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.328786893 Initialized Mock IAM[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.329197984 Config value: no setting found for 'edc.transfer.state-machine.lease-duration', falling back to default value 'PT60S'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.329937993 Config value: no setting found for 'edc.negotiation.state-machine.lease-duration', falling back to default value 'PT60S'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.330757152 Initialized Control Plane Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.333510676 Initialized DSP TCK Guard[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.343402042 Initialized DSP TCK Identity[0m
+    [0;33m[runtime] WARNING 2026-11-16T15:20:39.344613284 A service of the type org.eclipse.edc.controlplane.iam.AudienceResolver was already registered and has now been replaced with a TckIdentityExtension$$Lambda/0x00000000652ffd18 instance.[0m
+    [0;33m[runtime] WARNING 2026-11-16T15:20:39.345295525 A service of the type org.eclipse.edc.spi.iam.IdentityService was already registered and has now been replaced with a NoopIdentityService instance.[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.345640928 Initialized org.eclipse.edc.tck.dsp.transfer.TckDataPlaneExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.346115746 Initialized Core Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.347404324 Initialized Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.34988173 Initialized org.eclipse.edc.connector.controlplane.contract.ContractNegotiationDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.350900501 Config value: no setting found for 'edc.jsonld.prefixes.check', falling back to default value 'true'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.352691869 Config value: no setting found for 'edc.jsonld.http.enabled', falling back to default value 'false'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.35287739 Config value: no setting found for 'edc.jsonld.https.enabled', falling back to default value 'false'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.353039465 Config value: no setting found for 'edc.jsonld.vocab.disable', falling back to default value 'false'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.353152606 Initialized JSON-LD Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.462359677 Initialized Dataspace Protocol Core Extension[0m
+    [0;33m[runtime] WARNING 2026-11-16T15:20:39.464344789 No TokenDecorator was registered. The 'scope' field of outgoing protocol messages will be empty[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.466194726 Initialized Participant Context Default Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.467346618 Config value: no setting found for 'edc.dataspace.enable.profiles.all', falling back to default value 'false'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.468263605 Initialized Connector Participant Context Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.469268634 Config value: no setting found for 'edc.negotiation.approval.enabled', falling back to default value 'false'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.469984356 Config value: no setting found for 'edc.negotiation.state-machine.iteration-wait-millis', falling back to default value '1000'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.470144028 Config value: no setting found for 'edc.negotiation.state-machine.batch-size', falling back to default value '20'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.470224049 Config value: no setting found for 'edc.negotiation.send.retry.limit', falling back to default value '7'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.470294606 Config value: no setting found for 'edc.negotiation.send.retry.base-delay.ms', falling back to default value '1000'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.480313939 Initialized Contract Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.482372953 Initialized Transfer Process Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.483615962 Initialized Catalog Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.484285825 Initialized Catalog Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.485437887 Config value: no setting found for 'edc.policy.validation.enabled', falling back to default value 'true'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.487138208 Initialized Control Plane Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.496439272 Config value: no setting found for 'edc.participant.context.id', falling back to default value 'participantContextId'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.496668098 Initialized DSP TCK Setup[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.496831305 Config value: no setting found for 'edc.web.https.keystore.password', falling back to default value 'password'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.496945808 Config value: no setting found for 'edc.web.https.keymanager.password', falling back to default value 'password'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.498582423 Config value: no setting found for 'edc.web.https.keystore.type', falling back to default value 'PKCS12'[0m
 
 DspTckTest STANDARD_ERROR
     SLF4J(W): No SLF4J providers were found.
@@ -226,446 +226,446 @@ DspTckTest STANDARD_ERROR
     SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
 
 DspTckTest STANDARD_OUT
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.101862872 Initialized Jetty Service[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.103399962 Initialized Jersey Web Service[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.104540148 Initialized DSP TCK Controller[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.104761119 Initialized Discovery Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.105699803 Initialized Discovery Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.105901776 Initialized org.eclipse.edc.security.SecurityDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.221723434 Initialized org.eclipse.edc.token.TokenServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.223301616 Initialized Federated Catalog Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.223887733 Config value: no setting found for 'edc.catalog.cache.execution.enabled', falling back to default value 'true'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.224014873 Config value: no setting found for 'edc.catalog.cache.partition.num.crawlers', falling back to default value '2'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.224103686 Config value: no setting found for 'edc.catalog.cache.execution.period.seconds', falling back to default value '60'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.224579668 Config value: no setting found for 'edc.catalog.cache.execution.delay.seconds', falling back to default value '0'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.224682792 Config value: no setting found for 'edc.catalog.cache.retry.retries.max', falling back to default value '5'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.224791505 Config value: no setting found for 'edc.catalog.cache.retry.delay.seconds', falling back to default value '10'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.231946152 Initialized org.eclipse.edc.catalog.crawler.CatalogCrawlerCoreExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.232441823 Initialized Api Core Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.234311461 Config value: no setting found for 'edc.api.auth.dac.validation.tolerance', falling back to default value '5000'[0m
-    [0;33m[runtime] WARNING 2026-11-16T14:33:12.234670639 [Delegated API Authentication] No audience configured for delegated authentication, defaulting to the participantId[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.236078656 Initialized Delegating Authentication Service Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.241633338 Initialized API Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.28083467 Initialized Observability API[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.284947053 Initialized Management API: Federated Catalog[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.285396786 Config value: no setting found for 'edc.negotiation.state-machine.iteration-wait-millis', falling back to default value '1000'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.285530356 Config value: no setting found for 'edc.negotiation.state-machine.batch-size', falling back to default value '20'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.285633581 Config value: no setting found for 'edc.negotiation.send.retry.limit', falling back to default value '7'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.285747331 Config value: no setting found for 'edc.negotiation.send.retry.base-delay.ms', falling back to default value '1000'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.28958928 Initialized Contract Manager[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.290040906 Config value: no setting found for 'edc.transfer.state-machine.iteration-wait-millis', falling back to default value '1000'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.290186414 Config value: no setting found for 'edc.transfer.state-machine.batch-size', falling back to default value '20'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.290292002 Config value: no setting found for 'edc.transfer.send.retry.limit', falling back to default value '7'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.290379242 Config value: no setting found for 'edc.transfer.send.retry.base-delay.ms', falling back to default value '1000'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.295221498 Initialized Transfer Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.298203621 Config value: no setting found for 'edc.transfer.state-machine.iteration-wait-millis', falling back to default value '1000'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.298347386 Config value: no setting found for 'edc.transfer.state-machine.batch-size', falling back to default value '20'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.298438262 Config value: no setting found for 'edc.transfer.send.retry.limit', falling back to default value '7'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.298527005 Config value: no setting found for 'edc.transfer.send.retry.base-delay.ms', falling back to default value '1000'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.299581553 Initialized Transfer Manager[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.299784477 Config value: no setting found for 'edc.policy.monitor.lease-duration', falling back to default value 'PT60S'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.29994077 Initialized PolicyMonitor Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.301409759 Config value: no setting found for 'edc.policy.monitor.batch-size', falling back to default value '20'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.301539373 Config value: no setting found for 'edc.policy.monitor.period', falling back to default value 'PT1H'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.303293548 Initialized org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.304891078 Initialized Contract Negotiation command handlers[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.307299152 Initialized org.eclipse.edc.connector.controlplane.transfer.TransferProcessCommandExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.307734724 Initialized org.eclipse.edc.security.LocalPublicKeyDefaultExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.307848754 Config value: no setting found for 'edc.dataplane.client.selector.strategy', falling back to default value 'random'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.309799073 Initialized Control Plane Data Plane Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.323447557 Initialized Management API configuration[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.328324455 Initialized Management API: Asset[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.332285302 Initialized Management API: Catalog[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.334607517 Initialized Management API: Contract Agreement[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.337578533 Initialized Management API: Contract Definition[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.34411233 Initialized Management API: Contract Negotiation[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.345466897 Initialized org.eclipse.edc.connector.dataplane.selector.DataPlaneSelectorApiExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.354586604 Initialized Management API: Policy Definition[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.359019598 Initialized Management API: Transfer Process[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.360669867 Initialized Dataspace Protocol Version Api[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.363272822 Initialized Dataspace Protocol 2025/1 API Catalog Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.365882557 Initialized Dataspace Protocol 2025/1 Catalog Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.368307676 Initialized org.eclipse.edc.protocol.dsp.transferprocess.http.api.v2025.DspTransferProcessApi2025Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.372021564 Initialized Dataspace Protocol 2025/1 Transfer Process Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.377029077 Initialized Dataspace Protocol Negotiation Api v2025/1[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.380753431 Initialized Dataspace Protocol 2025/1 Negotiation Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.381032648 Config value: no setting found for 'web.http.protocol.virtual', falling back to default value 'false'[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.382715707 Initialized Dataspace Protocol API Base Configuration Extension[0m
-    [0;33m[runtime] WARNING 2026-11-16T14:33:12.38428154 Overriding transformer registered for interface jakarta.json.JsonObject -> class org.eclipse.edc.spi.query.QuerySpec[0m
-    [0;33m[runtime] WARNING 2026-11-16T14:33:12.384421259 Overriding transformer registered for interface jakarta.json.JsonObject -> class org.eclipse.edc.spi.query.Criterion[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.3855981 Initialized Dataspace Protocol 2025/1 API Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.387350853 Initialized Dataspace Protocol Catalog HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.3886655 Initialized Dataspace Protocol Negotiation HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.389582533 Initialized Dataspace Protocol Transfer HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.389950533 Initialized Static token API Authentication[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.391338631 Initialized Api Authentication Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.393745642 Initialized Management API: Version Information[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.393886774 Initialized OAuth2 Client[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.396157131 Initialized Callback event dispatcher default services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.397587101 Initialized Callback event dispatcher[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.3980874 Initialized Static callbacks extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.398275741 Initialized Classic Participant Context Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.398378585 Prepared Single Participant Context Default Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.398474799 Prepared Boot Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.398538084 Prepared eu.dataspace.connector.tests.SeedVault$1[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.398587668 Prepared Runtime Default Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.398637443 Prepared Runtime Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.398684944 Prepared Participant Context Default Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.398737392 Prepared org.eclipse.edc.participantcontext.config.defaults.ParticipantContextConfigDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.398791523 Prepared org.eclipse.edc.participantcontext.config.ParticipantContextConfigServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.398848939 Prepared Mock IAM[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.398907457 Prepared Control Plane Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.399721936 Prepared DSP TCK Guard[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.399931449 Prepared DSP TCK Identity[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.410734926 Prepared org.eclipse.edc.tck.dsp.transfer.TckDataPlaneExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.410880303 Prepared Core Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.413609778 Prepared Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.413717759 Prepared org.eclipse.edc.connector.controlplane.contract.ContractNegotiationDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.413780032 Prepared JSON-LD Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.413842516 Prepared Dataspace Protocol Core Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.413895505 Prepared Participant Context Default Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.413955044 Prepared Connector Participant Context Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.414007683 Prepared Contract Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.414054824 Prepared Transfer Process Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.414100372 Prepared Catalog Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.414165149 Prepared Catalog Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.414213681 Prepared Control Plane Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.426681739 Prepared DSP TCK Setup[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.426798374 Prepared Jetty Service[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.426870982 Prepared Jersey Web Service[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.426935889 Prepared DSP TCK Controller[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.426989439 Prepared Discovery Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.427046935 Prepared Discovery Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.427088167 Prepared org.eclipse.edc.security.SecurityDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.42715045 Prepared org.eclipse.edc.token.TokenServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.42719729 Prepared Federated Catalog Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.427239744 Prepared org.eclipse.edc.catalog.crawler.CatalogCrawlerCoreExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.42729084 Prepared Api Core Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.42733712 Prepared Delegating Authentication Service Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.427381616 Prepared API Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.427425071 Prepared Observability API[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.42746446 Prepared Management API: Federated Catalog[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.427505982 Prepared Contract Manager[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.427548546 Prepared Transfer Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.427587935 Prepared Transfer Manager[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.42762449 Prepared PolicyMonitor Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.427659833 Prepared org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.427707965 Prepared Contract Negotiation command handlers[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.42775137 Prepared org.eclipse.edc.connector.controlplane.transfer.TransferProcessCommandExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.428537155 Prepared org.eclipse.edc.security.LocalPublicKeyDefaultExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.428635192 Prepared Control Plane Data Plane Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.428683354 Prepared Management API configuration[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.428732237 Prepared Management API: Asset[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.42878045 Prepared Management API: Catalog[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.428828161 Prepared Management API: Contract Agreement[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.428875111 Prepared Management API: Contract Definition[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.428921991 Prepared Management API: Contract Negotiation[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.428968251 Prepared org.eclipse.edc.connector.dataplane.selector.DataPlaneSelectorApiExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.42901488 Prepared Management API: Policy Definition[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.429060969 Prepared Management API: Transfer Process[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.42910806 Prepared Dataspace Protocol Version Api[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.429792915 Prepared Dataspace Protocol 2025/1 API Catalog Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.429997621 Prepared Dataspace Protocol 2025/1 Catalog Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.430153695 Prepared org.eclipse.edc.protocol.dsp.transferprocess.http.api.v2025.DspTransferProcessApi2025Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.4311667 Prepared Dataspace Protocol 2025/1 Transfer Process Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.431253951 Prepared Dataspace Protocol Negotiation Api v2025/1[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.431313109 Prepared Dataspace Protocol 2025/1 Negotiation Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.431610484 Prepared Dataspace Protocol API Base Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.43167406 Prepared Dataspace Protocol 2025/1 API Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.431725537 Prepared Dataspace Protocol Catalog HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.431784875 Prepared Dataspace Protocol Negotiation HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.431832417 Prepared Dataspace Protocol Transfer HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.431873758 Prepared Static token API Authentication[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.432227918 Prepared Api Authentication Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.432309981 Prepared Management API: Version Information[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.43235629 Prepared OAuth2 Client[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.432412825 Prepared Callback event dispatcher default services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.432457983 Prepared Callback event dispatcher[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.432499805 Prepared Static callbacks extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433115497 Prepared Classic Participant Context Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433248325 Started Single Participant Context Default Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433309958 Started Boot Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.43335816 Started eu.dataspace.connector.tests.SeedVault$1[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433402266 Started Runtime Default Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433444048 Started Runtime Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433482596 Started Participant Context Default Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433521394 Started org.eclipse.edc.participantcontext.config.defaults.ParticipantContextConfigDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433562586 Started org.eclipse.edc.participantcontext.config.ParticipantContextConfigServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433602525 Started Mock IAM[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.43363901 Started Control Plane Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433677027 Started DSP TCK Guard[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433713051 Started DSP TCK Identity[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433748233 Started org.eclipse.edc.tck.dsp.transfer.TckDataPlaneExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433787372 Started Core Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433821393 Started Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433858348 Started org.eclipse.edc.connector.controlplane.contract.ContractNegotiationDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.43389984 Started JSON-LD Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.433938708 Started Dataspace Protocol Core Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.434012449 Started Participant Context Default Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.434073049 Started Connector Participant Context Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.434115032 Started Contract Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.434232468 Started Transfer Process Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.434296203 Started Catalog Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.434344686 Started Catalog Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.434417064 Started Control Plane Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.434459267 Started DSP TCK Setup[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.712738272 HTTP context 'tck' listening on port 44278[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.714376363 HTTP context 'protocol' listening on port 37191[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.714577955 HTTP context 'default' listening on port 6361[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.714732456 HTTP context 'management' listening on port 42844[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.740111694 Port mappings: PortMapping[name=tck, port=44278, path=/tck], PortMapping[name=protocol, port=37191, path=/api/dsp], PortMapping[name=default, port=6361, path=/api], PortMapping[name=management, port=42844, path=/api/management][0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:12.740277652 Started Jetty Service[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.125181442 Registered Web API context alias: protocol[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.160904379 Registered Web API context alias: default[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.228115936 Registered Web API context alias: management[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.255556749 Registered Web API context alias: tck[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.2558651 Started Jersey Web Service[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.255950108 Started DSP TCK Controller[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.256000363 Started Discovery Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.256039762 Started Discovery Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.256075796 Started org.eclipse.edc.security.SecurityDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.256115225 Started org.eclipse.edc.token.TokenServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.256178539 Started Federated Catalog Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.259745738 Started org.eclipse.edc.catalog.crawler.CatalogCrawlerCoreExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.260080188 Started Api Core Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.260394318 Started Delegating Authentication Service Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.260668889 Started API Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.260740807 Started Observability API[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.260790872 Started Management API: Federated Catalog[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.264297088 [CatalogCrawlerManager] No node to crawl, to disable the crawler, please configure the 'edc.catalog.cache.execution.enabled' setting accordingly. Next execution in PT1M[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.266221438 Started Contract Manager[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.26648356 Started Transfer Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.269118033 Started Transfer Manager[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.269399313 Started PolicyMonitor Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.270110247 Started org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279067711 Started Contract Negotiation command handlers[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.27932732 Started org.eclipse.edc.connector.controlplane.transfer.TransferProcessCommandExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279385036 Started org.eclipse.edc.security.LocalPublicKeyDefaultExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279424095 Started Control Plane Data Plane Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279455612 Started Management API configuration[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279495221 Started Management API: Asset[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279525136 Started Management API: Catalog[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279553108 Started Management API: Contract Agreement[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279583413 Started Management API: Contract Definition[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279611535 Started Management API: Contract Negotiation[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279638666 Started org.eclipse.edc.connector.dataplane.selector.DataPlaneSelectorApiExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279668781 Started Management API: Policy Definition[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279695401 Started Management API: Transfer Process[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279722371 Started Dataspace Protocol Version Api[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279748861 Started Dataspace Protocol 2025/1 API Catalog Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279775511 Started Dataspace Protocol 2025/1 Catalog Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.27980152 Started org.eclipse.edc.protocol.dsp.transferprocess.http.api.v2025.DspTransferProcessApi2025Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279828931 Started Dataspace Protocol 2025/1 Transfer Process Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279854849 Started Dataspace Protocol Negotiation Api v2025/1[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279896882 Started Dataspace Protocol 2025/1 Negotiation Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279927999 Started Dataspace Protocol API Base Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279958955 Started Dataspace Protocol 2025/1 API Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.279990112 Started Dataspace Protocol Catalog HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.280020297 Started Dataspace Protocol Negotiation HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.280048579 Started Dataspace Protocol Transfer HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.28008257 Started Static token API Authentication[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.280119996 Started Api Authentication Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.280159595 Started Management API: Version Information[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.280185254 Started OAuth2 Client[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.280224012 Started Callback event dispatcher default services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.280265143 Started Callback event dispatcher[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.280292805 Started Static callbacks extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.280320767 Started Classic Participant Context Services Extension[0m
-    [0;32m[runtime] INFO 2026-11-16T14:33:13.280427807 78 service extensions started[0m
-    [0;32m[runtime] INFO 2026-11-16T14:33:13.283007487 Runtime a6699365-e242-4b90-9bcd-b8706c85d5cd ready[0m
-    [0;32mINFO 2026-11-16T14:33:13.283191603 Runtime runtime started[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.283522217 [PolicyMonitorManagerImpl] watchdog completed: 0 entries evaluated. Next execution in PT1H[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.571747632 Initialized Jetty Service[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.573326399 Initialized Jersey Web Service[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.574582559 Initialized DSP TCK Controller[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.574885427 Initialized Discovery Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.575762413 Initialized Discovery Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.575947443 Initialized org.eclipse.edc.security.SecurityDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.59964153 Initialized org.eclipse.edc.token.TokenServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.601155539 Initialized Federated Catalog Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.60187018 Config value: no setting found for 'edc.catalog.cache.execution.enabled', falling back to default value 'true'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.602084023 Config value: no setting found for 'edc.catalog.cache.partition.num.crawlers', falling back to default value '2'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.602189152 Config value: no setting found for 'edc.catalog.cache.execution.period.seconds', falling back to default value '60'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.602287541 Config value: no setting found for 'edc.catalog.cache.execution.delay.seconds', falling back to default value '0'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.602365088 Config value: no setting found for 'edc.catalog.cache.retry.retries.max', falling back to default value '5'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.602438349 Config value: no setting found for 'edc.catalog.cache.retry.delay.seconds', falling back to default value '10'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.608812898 Initialized org.eclipse.edc.catalog.crawler.CatalogCrawlerCoreExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.609107584 Initialized Api Core Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.610621443 Config value: no setting found for 'edc.api.auth.dac.validation.tolerance', falling back to default value '5000'[0m
+    [0;33m[runtime] WARNING 2026-11-16T15:20:39.610890269 [Delegated API Authentication] No audience configured for delegated authentication, defaulting to the participantId[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.611819474 Initialized Delegating Authentication Service Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.615764389 Initialized API Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.661320244 Initialized Observability API[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.666232522 Initialized Management API: Federated Catalog[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.666829745 Config value: no setting found for 'edc.negotiation.state-machine.iteration-wait-millis', falling back to default value '1000'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.666952751 Config value: no setting found for 'edc.negotiation.state-machine.batch-size', falling back to default value '20'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.667045732 Config value: no setting found for 'edc.negotiation.send.retry.limit', falling back to default value '7'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.66711756 Config value: no setting found for 'edc.negotiation.send.retry.base-delay.ms', falling back to default value '1000'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.674763652 Initialized Contract Manager[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.675880621 Config value: no setting found for 'edc.transfer.state-machine.iteration-wait-millis', falling back to default value '1000'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.676650074 Config value: no setting found for 'edc.transfer.state-machine.batch-size', falling back to default value '20'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.676763646 Config value: no setting found for 'edc.transfer.send.retry.limit', falling back to default value '7'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.676835535 Config value: no setting found for 'edc.transfer.send.retry.base-delay.ms', falling back to default value '1000'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.681125812 Initialized Transfer Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.684180291 Config value: no setting found for 'edc.transfer.state-machine.iteration-wait-millis', falling back to default value '1000'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.684618403 Config value: no setting found for 'edc.transfer.state-machine.batch-size', falling back to default value '20'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.684704463 Config value: no setting found for 'edc.transfer.send.retry.limit', falling back to default value '7'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.684762892 Config value: no setting found for 'edc.transfer.send.retry.base-delay.ms', falling back to default value '1000'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.68626992 Initialized Transfer Manager[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.686457594 Config value: no setting found for 'edc.policy.monitor.lease-duration', falling back to default value 'PT60S'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.686599338 Initialized PolicyMonitor Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.687471617 Config value: no setting found for 'edc.policy.monitor.batch-size', falling back to default value '20'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.687574082 Config value: no setting found for 'edc.policy.monitor.period', falling back to default value 'PT1H'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.688962502 Initialized org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.690252813 Initialized Contract Negotiation command handlers[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.692800605 Initialized org.eclipse.edc.connector.controlplane.transfer.TransferProcessCommandExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.693367002 Initialized org.eclipse.edc.security.LocalPublicKeyDefaultExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.693540324 Config value: no setting found for 'edc.dataplane.client.selector.strategy', falling back to default value 'random'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.696795606 Initialized Control Plane Data Plane Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.709332022 Initialized Management API configuration[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.712188091 Initialized Management API: Asset[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.714879451 Initialized Management API: Catalog[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.717104285 Initialized Management API: Contract Agreement[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.719725819 Initialized Management API: Contract Definition[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.724461219 Initialized Management API: Contract Negotiation[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.725873114 Initialized org.eclipse.edc.connector.dataplane.selector.DataPlaneSelectorApiExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.73374044 Initialized Management API: Policy Definition[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.737113734 Initialized Management API: Transfer Process[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.738438287 Initialized Dataspace Protocol Version Api[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.740347143 Initialized Dataspace Protocol 2025/1 API Catalog Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.742415651 Initialized Dataspace Protocol 2025/1 Catalog Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.744357988 Initialized org.eclipse.edc.protocol.dsp.transferprocess.http.api.v2025.DspTransferProcessApi2025Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.746990749 Initialized Dataspace Protocol 2025/1 Transfer Process Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.750225561 Initialized Dataspace Protocol Negotiation Api v2025/1[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.754027489 Initialized Dataspace Protocol 2025/1 Negotiation Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.754354764 Config value: no setting found for 'web.http.protocol.virtual', falling back to default value 'false'[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.75581316 Initialized Dataspace Protocol API Base Configuration Extension[0m
+    [0;33m[runtime] WARNING 2026-11-16T15:20:39.757210312 Overriding transformer registered for interface jakarta.json.JsonObject -> class org.eclipse.edc.spi.query.QuerySpec[0m
+    [0;33m[runtime] WARNING 2026-11-16T15:20:39.757343994 Overriding transformer registered for interface jakarta.json.JsonObject -> class org.eclipse.edc.spi.query.Criterion[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.758477939 Initialized Dataspace Protocol 2025/1 API Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.759815932 Initialized Dataspace Protocol Catalog HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.760749143 Initialized Dataspace Protocol Negotiation HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.7612961 Initialized Dataspace Protocol Transfer HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.761582193 Initialized Static token API Authentication[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.76279725 Initialized Api Authentication Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.76554423 Initialized Management API: Version Information[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.765733356 Initialized OAuth2 Client[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.768483725 Initialized Callback event dispatcher default services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.770197086 Initialized Callback event dispatcher[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.770972869 Initialized Static callbacks extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.771620078 Initialized Classic Participant Context Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.771778547 Prepared Single Participant Context Default Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.771848894 Prepared Boot Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.771901333 Prepared eu.dataspace.connector.tests.SeedVault$1[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.771964388 Prepared Runtime Default Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.772011089 Prepared Runtime Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.772061425 Prepared Participant Context Default Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.772103589 Prepared org.eclipse.edc.participantcontext.config.defaults.ParticipantContextConfigDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.772161386 Prepared org.eclipse.edc.participantcontext.config.ParticipantContextConfigServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.772209809 Prepared Mock IAM[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.772252314 Prepared Control Plane Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.773146005 Prepared DSP TCK Guard[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.773246737 Prepared DSP TCK Identity[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.773304505 Prepared org.eclipse.edc.tck.dsp.transfer.TckDataPlaneExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.773351305 Prepared Core Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.784558311 Prepared Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.784764423 Prepared org.eclipse.edc.connector.controlplane.contract.ContractNegotiationDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.784834519 Prepared JSON-LD Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.784879778 Prepared Dataspace Protocol Core Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.785998779 Prepared Participant Context Default Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.786104599 Prepared Connector Participant Context Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.786156788 Prepared Contract Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.78619806 Prepared Transfer Process Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.786237039 Prepared Catalog Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.786280335 Prepared Catalog Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.786324702 Prepared Control Plane Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.800064378 Prepared DSP TCK Setup[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.80103799 Prepared Jetty Service[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.802238606 Prepared Jersey Web Service[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.802500822 Prepared DSP TCK Controller[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.802582856 Prepared Discovery Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.802642006 Prepared Discovery Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.802686513 Prepared org.eclipse.edc.security.SecurityDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.802735307 Prepared org.eclipse.edc.token.TokenServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.802780846 Prepared Federated Catalog Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.802817581 Prepared org.eclipse.edc.catalog.crawler.CatalogCrawlerCoreExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.802860967 Prepared Api Core Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.802895569 Prepared Delegating Authentication Service Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.80364373 Prepared API Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.803756741 Prepared Observability API[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.80383502 Prepared Management API: Federated Catalog[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.803920619 Prepared Contract Manager[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.804000981 Prepared Transfer Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.8040731 Prepared Transfer Manager[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.804137767 Prepared PolicyMonitor Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.804233422 Prepared org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.804307033 Prepared Contract Negotiation command handlers[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.804381115 Prepared org.eclipse.edc.connector.controlplane.transfer.TransferProcessCommandExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.805014012 Prepared org.eclipse.edc.security.LocalPublicKeyDefaultExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.805150839 Prepared Control Plane Data Plane Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.80524399 Prepared Management API configuration[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.805331102 Prepared Management API: Asset[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.8054424 Prepared Management API: Catalog[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.805525306 Prepared Management API: Contract Agreement[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.805608511 Prepared Management API: Contract Definition[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.805683565 Prepared Management API: Contract Negotiation[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.805767211 Prepared org.eclipse.edc.connector.dataplane.selector.DataPlaneSelectorApiExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.806186005 Prepared Management API: Policy Definition[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.806390814 Prepared Management API: Transfer Process[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.806614633 Prepared Dataspace Protocol Version Api[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.807298266 Prepared Dataspace Protocol 2025/1 API Catalog Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.807383375 Prepared Dataspace Protocol 2025/1 Catalog Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.807425489 Prepared org.eclipse.edc.protocol.dsp.transferprocess.http.api.v2025.DspTransferProcessApi2025Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.807460562 Prepared Dataspace Protocol 2025/1 Transfer Process Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.807492981 Prepared Dataspace Protocol Negotiation Api v2025/1[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.807540332 Prepared Dataspace Protocol 2025/1 Negotiation Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.80785646 Prepared Dataspace Protocol API Base Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.807903231 Prepared Dataspace Protocol 2025/1 API Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.807954899 Prepared Dataspace Protocol Catalog HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.807998195 Prepared Dataspace Protocol Negotiation HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.808030944 Prepared Dataspace Protocol Transfer HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.808062151 Prepared Static token API Authentication[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.808345941 Prepared Api Authentication Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.808402536 Prepared Management API: Version Information[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.808438561 Prepared OAuth2 Client[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.808481996 Prepared Callback event dispatcher default services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.808513844 Prepared Callback event dispatcher[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.80854416 Prepared Static callbacks extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.809440426 Prepared Classic Participant Context Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.809575019 Started Single Participant Context Default Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.809624314 Started Boot Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.809658565 Started eu.dataspace.connector.tests.SeedVault$1[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.809690854 Started Runtime Default Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.809722081 Started Runtime Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.809809213 Started Participant Context Default Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.809888032 Started org.eclipse.edc.participantcontext.config.defaults.ParticipantContextConfigDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.809981023 Started org.eclipse.edc.participantcontext.config.ParticipantContextConfigServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.810084249 Started Mock IAM[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.810161476 Started Control Plane Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.810231612 Started DSP TCK Guard[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.810312444 Started DSP TCK Identity[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.810385234 Started org.eclipse.edc.tck.dsp.transfer.TckDataPlaneExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.81046164 Started Core Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.810536803 Started Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.810625798 Started org.eclipse.edc.connector.controlplane.contract.ContractNegotiationDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.810711157 Started JSON-LD Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.810781674 Started Dataspace Protocol Core Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.810856967 Started Participant Context Default Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.810944059 Started Connector Participant Context Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.811043499 Started Contract Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.811163241 Started Transfer Process Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.812565701 Started Catalog Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.813968181 Started Catalog Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.814072208 Started Control Plane Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:39.814118218 Started DSP TCK Setup[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.063072144 HTTP context 'default' listening on port 51985[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.064790582 HTTP context 'protocol' listening on port 40001[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.065118608 HTTP context 'tck' listening on port 45362[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.065294454 HTTP context 'management' listening on port 53063[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.088559152 Port mappings: PortMapping[name=default, port=51985, path=/api], PortMapping[name=protocol, port=40001, path=/api/dsp], PortMapping[name=tck, port=45362, path=/tck], PortMapping[name=management, port=53063, path=/api/management][0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.08874247 Started Jetty Service[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.434923713 Registered Web API context alias: protocol[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.471457376 Registered Web API context alias: default[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.528839863 Registered Web API context alias: management[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.552208779 Registered Web API context alias: tck[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.552399978 Started Jersey Web Service[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.552459048 Started DSP TCK Controller[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.552490095 Started Discovery Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.552515122 Started Discovery Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.552538999 Started org.eclipse.edc.security.SecurityDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.552564377 Started org.eclipse.edc.token.TokenServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.552588584 Started Federated Catalog Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.554978848 Started org.eclipse.edc.catalog.crawler.CatalogCrawlerCoreExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.555065419 Started Api Core Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.555125439 Started Delegating Authentication Service Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.555150798 Started API Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.555172501 Started Observability API[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.555193282 Started Management API: Federated Catalog[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.559714369 [CatalogCrawlerManager] No node to crawl, to disable the crawler, please configure the 'edc.catalog.cache.execution.enabled' setting accordingly. Next execution in PT1M[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.559973771 Started Contract Manager[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.560746469 Started Transfer Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.562719162 Started Transfer Manager[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.562798852 Started PolicyMonitor Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563281322 Started org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563343226 Started Contract Negotiation command handlers[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.56337266 Started org.eclipse.edc.connector.controlplane.transfer.TransferProcessCommandExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563396346 Started org.eclipse.edc.security.LocalPublicKeyDefaultExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563415645 Started Control Plane Data Plane Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563433993 Started Management API configuration[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.56345168 Started Management API: Asset[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563468585 Started Management API: Catalog[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563485701 Started Management API: Contract Agreement[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563502737 Started Management API: Contract Definition[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563519612 Started Management API: Contract Negotiation[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563535917 Started org.eclipse.edc.connector.dataplane.selector.DataPlaneSelectorApiExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563553313 Started Management API: Policy Definition[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563569918 Started Management API: Transfer Process[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563588106 Started Dataspace Protocol Version Api[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563604871 Started Dataspace Protocol 2025/1 API Catalog Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563622338 Started Dataspace Protocol 2025/1 Catalog Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563638702 Started org.eclipse.edc.protocol.dsp.transferprocess.http.api.v2025.DspTransferProcessApi2025Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.56365728 Started Dataspace Protocol 2025/1 Transfer Process Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563674306 Started Dataspace Protocol Negotiation Api v2025/1[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563690941 Started Dataspace Protocol 2025/1 Negotiation Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563708648 Started Dataspace Protocol API Base Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563728538 Started Dataspace Protocol 2025/1 API Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563745283 Started Dataspace Protocol Catalog HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563764352 Started Dataspace Protocol Negotiation HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563781408 Started Dataspace Protocol Transfer HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563804283 Started Static token API Authentication[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563820978 Started Api Authentication Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563837723 Started Management API: Version Information[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563927179 Started OAuth2 Client[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563962201 Started Callback event dispatcher default services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.563989803 Started Callback event dispatcher[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.564008772 Started Static callbacks extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.564026999 Started Classic Participant Context Services Extension[0m
+    [0;32m[runtime] INFO 2026-11-16T15:20:40.564125979 78 service extensions started[0m
+    [0;32m[runtime] INFO 2026-11-16T15:20:40.564680828 Runtime fe790d49-28e7-4772-b9ab-9899fd10e006 ready[0m
+    [0;32mINFO 2026-11-16T15:20:40.564882173 Runtime runtime started[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.582225928 [PolicyMonitorManagerImpl] watchdog completed: 0 entries evaluated. Next execution in PT1H[0m
 
 DspTckTest > assertDspCompatibility() STANDARD_OUT
 
-    [2026-11-16T14:33:13.449290838] Started: TP:01-04: Verify transfer request, provider started, provider suspended, provider started, provider completed
-    [2026-11-16T14:33:13.460250709] Sending transfer request
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.663828157 DSP: Incoming TransferRequestMessage for class org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess process[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:13.693631446 [PROVIDER] TransferProcess f42be6fc-ffb5-4f25-8826-31835cb012bb is now in state INITIAL[0m
-    [2026-11-16T14:33:13.727645345] Received transfer request response
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:14.291813741 [TransferProcessors] TransferProcess f42be6fc-ffb5-4f25-8826-31835cb012bb is now in state STARTING[0m
-    [2026-11-16T14:33:14.329765663] Received start message: aa34ffef-3db8-4dc9-ab7a-8c3bc23682c6 with correlation id f42be6fc-ffb5-4f25-8826-31835cb012bb
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:14.358923937 [TransferProcessors] TransferProcess f42be6fc-ffb5-4f25-8826-31835cb012bb is now in state STARTED[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:14.412091258 [TckTransferProcessTrigger] [StatefulEntityTriggerSubscriber] TransferProcess f42be6fc-ffb5-4f25-8826-31835cb012bb is now in state SUSPENDING. errorDetail: suspending[0m
-    [2026-11-16T14:33:14.438746114] Done waiting for state to transition to STARTED
-    [2026-11-16T14:33:15.328592123] Received suspension message: aa34ffef-3db8-4dc9-ab7a-8c3bc23682c6 with correlation id f42be6fc-ffb5-4f25-8826-31835cb012bb
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:15.335637416 [TransferProcessors] TransferProcess f42be6fc-ffb5-4f25-8826-31835cb012bb is now in state SUSPENDED. errorDetail: suspending[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:15.386807809 [TckTransferProcessTrigger] [StatefulEntityTriggerSubscriber] TransferProcess f42be6fc-ffb5-4f25-8826-31835cb012bb is now in state RESUMING_REQUESTED. errorDetail: suspending[0m
-    [2026-11-16T14:33:15.430782623] Done waiting for state to transition to SUSPENDED
-    [2026-11-16T14:33:16.336507845] Received start message: aa34ffef-3db8-4dc9-ab7a-8c3bc23682c6 with correlation id f42be6fc-ffb5-4f25-8826-31835cb012bb
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:16.342822113 [TransferProcessors] TransferProcess f42be6fc-ffb5-4f25-8826-31835cb012bb is now in state RESUMED. errorDetail: suspending[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:16.394038535 [TckTransferProcessTrigger] [StatefulEntityTriggerSubscriber] TransferProcess f42be6fc-ffb5-4f25-8826-31835cb012bb is now in state RESUMING. errorDetail: suspending[0m
-    [2026-11-16T14:33:16.437731338] Done waiting for state to transition to STARTED
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:17.332592672 [TransferProcessors] TransferProcess f42be6fc-ffb5-4f25-8826-31835cb012bb is now in state STARTED. errorDetail: suspending[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:17.383983374 [TckTransferProcessTrigger] [StatefulEntityTriggerSubscriber] TransferProcess f42be6fc-ffb5-4f25-8826-31835cb012bb is now in state COMPLETING[0m
-    [2026-11-16T14:33:18.34358723] Received completion message: aa34ffef-3db8-4dc9-ab7a-8c3bc23682c6 with correlation id f42be6fc-ffb5-4f25-8826-31835cb012bb
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.349689041 [TransferProcessors] TransferProcess f42be6fc-ffb5-4f25-8826-31835cb012bb is now in state COMPLETED[0m
-    [2026-11-16T14:33:18.445792513] Done waiting for state to transition to COMPLETED
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.553222764 DSP: Incoming resource request for class org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess id f42be6fc-ffb5-4f25-8826-31835cb012bb[0m
-    [2026-11-16T14:33:18.561730976] Received transfer status response with state https://w3id.org/dspace/2025/1/COMPLETED: f42be6fc-ffb5-4f25-8826-31835cb012bb
-    [2026-11-16T14:33:18.564276525] Done waiting for for provider transfer process state to be COMPLETED
-    [2026-11-16T14:33:18.568637371] SUCCESSFUL: TP:01-04
+    [2026-11-16T15:20:40.793054615] Started: TP:01-04: Verify transfer request, provider started, provider suspended, provider started, provider completed
+    [2026-11-16T15:20:40.805231167] Sending transfer request
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:40.993141675 DSP: Incoming TransferRequestMessage for class org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess process[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:41.018556565 [PROVIDER] TransferProcess b9b04469-4046-4632-958e-398089523355 is now in state INITIAL[0m
+    [2026-11-16T15:20:41.047454387] Received transfer request response
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:41.587175309 [TransferProcessors] TransferProcess b9b04469-4046-4632-958e-398089523355 is now in state STARTING[0m
+    [2026-11-16T15:20:41.619502561] Received start message: d167393e-a8e5-423d-a779-d6ebe059dcf4 with correlation id b9b04469-4046-4632-958e-398089523355
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:41.651132168 [TransferProcessors] TransferProcess b9b04469-4046-4632-958e-398089523355 is now in state STARTED[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:41.704161259 [TckTransferProcessTrigger] [StatefulEntityTriggerSubscriber] TransferProcess b9b04469-4046-4632-958e-398089523355 is now in state SUSPENDING. errorDetail: suspending[0m
+    [2026-11-16T15:20:41.726965965] Done waiting for state to transition to STARTED
+    [2026-11-16T15:20:42.620270341] Received suspension message: d167393e-a8e5-423d-a779-d6ebe059dcf4 with correlation id b9b04469-4046-4632-958e-398089523355
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:42.626833605 [TransferProcessors] TransferProcess b9b04469-4046-4632-958e-398089523355 is now in state SUSPENDED. errorDetail: suspending[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:42.678201538 [TckTransferProcessTrigger] [StatefulEntityTriggerSubscriber] TransferProcess b9b04469-4046-4632-958e-398089523355 is now in state RESUMING_REQUESTED. errorDetail: suspending[0m
+    [2026-11-16T15:20:42.722425428] Done waiting for state to transition to SUSPENDED
+    [2026-11-16T15:20:43.625704724] Received start message: d167393e-a8e5-423d-a779-d6ebe059dcf4 with correlation id b9b04469-4046-4632-958e-398089523355
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:43.630613953 [TransferProcessors] TransferProcess b9b04469-4046-4632-958e-398089523355 is now in state RESUMED. errorDetail: suspending[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:43.682524597 [TckTransferProcessTrigger] [StatefulEntityTriggerSubscriber] TransferProcess b9b04469-4046-4632-958e-398089523355 is now in state RESUMING. errorDetail: suspending[0m
+    [2026-11-16T15:20:43.727257948] Done waiting for state to transition to STARTED
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:44.622387872 [TransferProcessors] TransferProcess b9b04469-4046-4632-958e-398089523355 is now in state STARTED. errorDetail: suspending[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:44.673763742 [TckTransferProcessTrigger] [StatefulEntityTriggerSubscriber] TransferProcess b9b04469-4046-4632-958e-398089523355 is now in state COMPLETING[0m
+    [2026-11-16T15:20:45.630518464] Received completion message: d167393e-a8e5-423d-a779-d6ebe059dcf4 with correlation id b9b04469-4046-4632-958e-398089523355
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.63508935 [TransferProcessors] TransferProcess b9b04469-4046-4632-958e-398089523355 is now in state COMPLETED[0m
+    [2026-11-16T15:20:45.731853336] Done waiting for state to transition to COMPLETED
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.838570268 DSP: Incoming resource request for class org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcess id b9b04469-4046-4632-958e-398089523355[0m
+    [2026-11-16T15:20:45.847193927] Received transfer status response with state https://w3id.org/dspace/2025/1/COMPLETED: b9b04469-4046-4632-958e-398089523355
+    [2026-11-16T15:20:45.847823383] Done waiting for for provider transfer process state to be COMPLETED
+    [2026-11-16T15:20:45.8512665] SUCCESSFUL: TP:01-04
 
 
 DspTckTest STANDARD_OUT
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602039715 Shutdown Classic Participant Context Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602200336 Shutdown Static callbacks extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602241147 Shutdown Callback event dispatcher[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602272484 Shutdown Callback event dispatcher default services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602300986 Shutdown OAuth2 Client[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602326454 Shutdown Management API: Version Information[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602351252 Shutdown Api Authentication Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.60237669 Shutdown Static token API Authentication[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.60240363 Shutdown Dataspace Protocol Transfer HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602431802 Shutdown Dataspace Protocol Negotiation HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602461977 Shutdown Dataspace Protocol Catalog HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602493665 Shutdown Dataspace Protocol 2025/1 API Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602531091 Shutdown Dataspace Protocol API Base Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602561096 Shutdown Dataspace Protocol 2025/1 Negotiation Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602585963 Shutdown Dataspace Protocol Negotiation Api v2025/1[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602611661 Shutdown Dataspace Protocol 2025/1 Transfer Process Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602638061 Shutdown org.eclipse.edc.protocol.dsp.transferprocess.http.api.v2025.DspTransferProcessApi2025Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602663419 Shutdown Dataspace Protocol 2025/1 Catalog Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602690069 Shutdown Dataspace Protocol 2025/1 API Catalog Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602716769 Shutdown Dataspace Protocol Version Api[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602742747 Shutdown Management API: Transfer Process[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602767925 Shutdown Management API: Policy Definition[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602791781 Shutdown org.eclipse.edc.connector.dataplane.selector.DataPlaneSelectorApiExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.60281828 Shutdown Management API: Contract Negotiation[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602844159 Shutdown Management API: Contract Definition[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602874705 Shutdown Management API: Contract Agreement[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602902346 Shutdown Management API: Catalog[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602929357 Shutdown Management API: Asset[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602960473 Shutdown Management API configuration[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.602992351 Shutdown Control Plane Data Plane Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.603023518 Shutdown org.eclipse.edc.security.LocalPublicKeyDefaultExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.603051259 Shutdown org.eclipse.edc.connector.controlplane.transfer.TransferProcessCommandExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.603079611 Shutdown Contract Negotiation command handlers[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:18.60310547 Shutdown org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:28.6034708 Shutdown PolicyMonitor Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:28.603729197 Shutdown Transfer Manager[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:29.343413137 Shutdown Transfer Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:29.343611394 Shutdown Contract Manager[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:30.320705239 Shutdown Management API: Federated Catalog[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:30.320904026 Shutdown Observability API[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:30.320944697 Shutdown API Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:30.320974121 Shutdown Delegating Authentication Service Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:30.320997886 Shutdown Api Core Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:30.321020981 Shutdown org.eclipse.edc.catalog.crawler.CatalogCrawlerCoreExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.321305454 Shutdown Federated Catalog Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.321517561 Shutdown org.eclipse.edc.token.TokenServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.3215771 Shutdown org.eclipse.edc.security.SecurityDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.321614206 Shutdown Discovery Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.321636839 Shutdown Discovery Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.32165698 Shutdown DSP TCK Controller[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.321681206 Shutdown Jersey Web Service[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.321705192 Shutdown Jetty Service[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.334647651 Shutdown DSP TCK Setup[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.33490077 Shutdown Control Plane Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.334937965 Shutdown Catalog Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.334964665 Shutdown Catalog Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.334992106 Shutdown Transfer Process Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335016933 Shutdown Contract Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335040138 Shutdown Connector Participant Context Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335062902 Shutdown Participant Context Default Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335086097 Shutdown Dataspace Protocol Core Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.33510844 Shutdown JSON-LD Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335146848 Shutdown org.eclipse.edc.connector.controlplane.contract.ContractNegotiationDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335176122 Shutdown Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335199136 Shutdown Core Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335220137 Shutdown org.eclipse.edc.tck.dsp.transfer.TckDataPlaneExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335249471 Shutdown DSP TCK Identity[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335274689 Shutdown DSP TCK Guard[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335306406 Shutdown Control Plane Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335328149 Shutdown Mock IAM[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335346597 Shutdown org.eclipse.edc.participantcontext.config.ParticipantContextConfigServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335367117 Shutdown org.eclipse.edc.participantcontext.config.defaults.ParticipantContextConfigDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335390392 Shutdown Participant Context Default Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335411253 Shutdown Runtime Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335431934 Shutdown Runtime Default Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.33545556 Shutdown eu.dataspace.connector.tests.SeedVault$1[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335476932 Shutdown Boot Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335494928 Shutdown Single Participant Context Default Services Extension[0m
-    [0;32m[runtime] INFO 2026-11-16T14:33:40.335517021 Shutdown complete[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.33571669 Cleanup Classic Participant Context Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335772974 Cleanup Static callbacks extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335808417 Cleanup Callback event dispatcher[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335854757 Cleanup Callback event dispatcher default services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335888577 Cleanup OAuth2 Client[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335925352 Cleanup Management API: Version Information[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335953975 Cleanup Api Authentication Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.335980855 Cleanup Static token API Authentication[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336000795 Cleanup Dataspace Protocol Transfer HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336019874 Cleanup Dataspace Protocol Negotiation HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336040304 Cleanup Dataspace Protocol Catalog HTTP Dispatcher Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336061266 Cleanup Dataspace Protocol 2025/1 API Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336088616 Cleanup Dataspace Protocol API Base Configuration Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336114966 Cleanup Dataspace Protocol 2025/1 Negotiation Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336156818 Cleanup Dataspace Protocol Negotiation Api v2025/1[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336183348 Cleanup Dataspace Protocol 2025/1 Transfer Process Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336208556 Cleanup org.eclipse.edc.protocol.dsp.transferprocess.http.api.v2025.DspTransferProcessApi2025Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336232772 Cleanup Dataspace Protocol 2025/1 Catalog Transform Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336256297 Cleanup Dataspace Protocol 2025/1 API Catalog Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336279242 Cleanup Dataspace Protocol Version Api[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336302366 Cleanup Management API: Transfer Process[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.33632486 Cleanup Management API: Policy Definition[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336347894 Cleanup org.eclipse.edc.connector.dataplane.selector.DataPlaneSelectorApiExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336371079 Cleanup Management API: Contract Negotiation[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336393503 Cleanup Management API: Contract Definition[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336416657 Cleanup Management API: Contract Agreement[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336440182 Cleanup Management API: Catalog[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336462936 Cleanup Management API: Asset[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336486452 Cleanup Management API configuration[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336511098 Cleanup Control Plane Data Plane Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336533883 Cleanup org.eclipse.edc.security.LocalPublicKeyDefaultExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336556576 Cleanup org.eclipse.edc.connector.controlplane.transfer.TransferProcessCommandExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336577918 Cleanup Contract Negotiation command handlers[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336611709 Cleanup org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.33663902 Cleanup PolicyMonitor Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336663627 Cleanup Transfer Manager[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.33668579 Cleanup Transfer Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336706381 Cleanup Contract Manager[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336726981 Cleanup Management API: Federated Catalog[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336749375 Cleanup Observability API[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336771187 Cleanup API Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336794512 Cleanup Delegating Authentication Service Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336886039 Cleanup Api Core Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336928763 Cleanup org.eclipse.edc.catalog.crawler.CatalogCrawlerCoreExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336963595 Cleanup Federated Catalog Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.336989093 Cleanup org.eclipse.edc.token.TokenServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337012629 Cleanup org.eclipse.edc.security.SecurityDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337035072 Cleanup Discovery Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337057195 Cleanup Discovery Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337085608 Cleanup DSP TCK Controller[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337108232 Cleanup Jersey Web Service[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337145898 Cleanup Jetty Service[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337171366 Cleanup DSP TCK Setup[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337190665 Cleanup Control Plane Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.33720749 Cleanup Catalog Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337223284 Cleanup Catalog Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337239909 Cleanup Transfer Process Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337256714 Cleanup Contract Core[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337273939 Cleanup Connector Participant Context Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337293328 Cleanup Participant Context Default Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337312717 Cleanup Dataspace Protocol Core Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337331235 Cleanup JSON-LD Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337350003 Cleanup org.eclipse.edc.connector.controlplane.contract.ContractNegotiationDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337370274 Cleanup Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337387239 Cleanup Core Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337404395 Cleanup org.eclipse.edc.tck.dsp.transfer.TckDataPlaneExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337424364 Cleanup DSP TCK Identity[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337443854 Cleanup DSP TCK Guard[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337493478 Cleanup Control Plane Default Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337530323 Cleanup Mock IAM[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337558605 Cleanup org.eclipse.edc.participantcontext.config.ParticipantContextConfigServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337582862 Cleanup org.eclipse.edc.participantcontext.config.defaults.ParticipantContextConfigDefaultServicesExtension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337611084 Cleanup Participant Context Default Services Extension[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337645105 Cleanup Runtime Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337678394 Cleanup Runtime Default Core Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337699556 Cleanup eu.dataspace.connector.tests.SeedVault$1[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337725064 Cleanup Boot Services[0m
-    [0;34m[runtime] DEBUG 2026-11-16T14:33:40.337791113 Cleanup Single Participant Context Default Services Extension[0m
-    [0;32m[runtime] INFO 2026-11-16T14:33:40.337817392 Cleanup complete[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878500626 Shutdown Classic Participant Context Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878640087 Shutdown Static callbacks extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878667598 Shutdown Callback event dispatcher[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878687789 Shutdown Callback event dispatcher default services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878706166 Shutdown OAuth2 Client[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878722521 Shutdown Management API: Version Information[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878738075 Shutdown Api Authentication Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878753819 Shutdown Static token API Authentication[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878769332 Shutdown Dataspace Protocol Transfer HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878785106 Shutdown Dataspace Protocol Negotiation HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878800469 Shutdown Dataspace Protocol Catalog HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878821621 Shutdown Dataspace Protocol 2025/1 API Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878842142 Shutdown Dataspace Protocol API Base Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878856434 Shutdown Dataspace Protocol 2025/1 Negotiation Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878870886 Shutdown Dataspace Protocol Negotiation Api v2025/1[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878885438 Shutdown Dataspace Protocol 2025/1 Transfer Process Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.87890031 Shutdown org.eclipse.edc.protocol.dsp.transferprocess.http.api.v2025.DspTransferProcessApi2025Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878932709 Shutdown Dataspace Protocol 2025/1 Catalog Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878947592 Shutdown Dataspace Protocol 2025/1 API Catalog Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878962023 Shutdown Dataspace Protocol Version Api[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878977998 Shutdown Management API: Transfer Process[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.878994923 Shutdown Management API: Policy Definition[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.87901944 Shutdown org.eclipse.edc.connector.dataplane.selector.DataPlaneSelectorApiExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.879038689 Shutdown Management API: Contract Negotiation[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.879056757 Shutdown Management API: Contract Definition[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.879075114 Shutdown Management API: Contract Agreement[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.879093182 Shutdown Management API: Catalog[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.879110067 Shutdown Management API: Asset[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.879130869 Shutdown Management API configuration[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.879150939 Shutdown Control Plane Data Plane Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.879169938 Shutdown org.eclipse.edc.security.LocalPublicKeyDefaultExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.879188386 Shutdown org.eclipse.edc.connector.controlplane.transfer.TransferProcessCommandExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.879206894 Shutdown Contract Negotiation command handlers[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:45.879226453 Shutdown org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:55.879683684 Shutdown PolicyMonitor Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:55.879961033 Shutdown Transfer Manager[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:56.631690206 Shutdown Transfer Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:56.631869758 Shutdown Contract Manager[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:57.609622049 Shutdown Management API: Federated Catalog[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:57.609809042 Shutdown Observability API[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:57.609833849 Shutdown API Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:57.609859979 Shutdown Delegating Authentication Service Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:57.609877926 Shutdown Api Core Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:20:57.609892017 Shutdown org.eclipse.edc.catalog.crawler.CatalogCrawlerCoreExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.610538031 Shutdown Federated Catalog Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.61109287 Shutdown org.eclipse.edc.token.TokenServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.611168935 Shutdown org.eclipse.edc.security.SecurityDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.611189557 Shutdown Discovery Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.611206232 Shutdown Discovery Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.611369729 Shutdown DSP TCK Controller[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.61138995 Shutdown Jersey Web Service[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.611406975 Shutdown Jetty Service[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623341866 Shutdown DSP TCK Setup[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.62347716 Shutdown Control Plane Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623537371 Shutdown Catalog Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623561969 Shutdown Catalog Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623581538 Shutdown Transfer Process Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623599335 Shutdown Contract Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.62361589 Shutdown Connector Participant Context Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623631874 Shutdown Participant Context Default Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623648069 Shutdown Dataspace Protocol Core Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623663632 Shutdown JSON-LD Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623679636 Shutdown org.eclipse.edc.connector.controlplane.contract.ContractNegotiationDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623704995 Shutdown Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623723763 Shutdown Core Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623739327 Shutdown org.eclipse.edc.tck.dsp.transfer.TckDataPlaneExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.62375492 Shutdown DSP TCK Identity[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623769923 Shutdown DSP TCK Guard[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623792677 Shutdown Control Plane Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623808551 Shutdown Mock IAM[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.623823274 Shutdown org.eclipse.edc.participantcontext.config.ParticipantContextConfigServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624066391 Shutdown org.eclipse.edc.participantcontext.config.defaults.ParticipantContextConfigDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.62409218 Shutdown Participant Context Default Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624109707 Shutdown Runtime Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624134304 Shutdown Runtime Default Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624152802 Shutdown eu.dataspace.connector.tests.SeedVault$1[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624170599 Shutdown Boot Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.6241847 Shutdown Single Participant Context Default Services Extension[0m
+    [0;32m[runtime] INFO 2026-11-16T15:21:07.624203018 Shutdown complete[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624379675 Cleanup Classic Participant Context Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624419686 Cleanup Static callbacks extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624440077 Cleanup Callback event dispatcher[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.6244558 Cleanup Callback event dispatcher default services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624473868 Cleanup OAuth2 Client[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.62448899 Cleanup Management API: Version Information[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624503963 Cleanup Api Authentication Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624518715 Cleanup Static token API Authentication[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624532777 Cleanup Dataspace Protocol Transfer HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624547128 Cleanup Dataspace Protocol Negotiation HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.62456173 Cleanup Dataspace Protocol Catalog HTTP Dispatcher Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624576733 Cleanup Dataspace Protocol 2025/1 API Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624590624 Cleanup Dataspace Protocol API Base Configuration Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624618026 Cleanup Dataspace Protocol 2025/1 Negotiation Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624636564 Cleanup Dataspace Protocol Negotiation Api v2025/1[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624652838 Cleanup Dataspace Protocol 2025/1 Transfer Process Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624668472 Cleanup org.eclipse.edc.protocol.dsp.transferprocess.http.api.v2025.DspTransferProcessApi2025Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624683725 Cleanup Dataspace Protocol 2025/1 Catalog Transform Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624698347 Cleanup Dataspace Protocol 2025/1 API Catalog Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624714141 Cleanup Dataspace Protocol Version Api[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624728883 Cleanup Management API: Transfer Process[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624744226 Cleanup Management API: Policy Definition[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624762164 Cleanup org.eclipse.edc.connector.dataplane.selector.DataPlaneSelectorApiExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624777877 Cleanup Management API: Contract Negotiation[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624795023 Cleanup Management API: Contract Definition[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624809515 Cleanup Management API: Contract Agreement[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624826902 Cleanup Management API: Catalog[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.62483883 Cleanup Management API: Asset[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624849586 Cleanup Management API configuration[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624860723 Cleanup Control Plane Data Plane Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624871319 Cleanup org.eclipse.edc.security.LocalPublicKeyDefaultExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624887453 Cleanup org.eclipse.edc.connector.controlplane.transfer.TransferProcessCommandExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624900493 Cleanup Contract Negotiation command handlers[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624925921 Cleanup org.eclipse.edc.connector.policy.monitor.PolicyMonitorExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624940874 Cleanup PolicyMonitor Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624954765 Cleanup Transfer Manager[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.624968015 Cleanup Transfer Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.62499116 Cleanup Contract Manager[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625006022 Cleanup Management API: Federated Catalog[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625020244 Cleanup Observability API[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625034435 Cleanup API Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625050169 Cleanup Delegating Authentication Service Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625065623 Cleanup Api Core Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625079554 Cleanup org.eclipse.edc.catalog.crawler.CatalogCrawlerCoreExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625094516 Cleanup Federated Catalog Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625107786 Cleanup org.eclipse.edc.token.TokenServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625121898 Cleanup org.eclipse.edc.security.SecurityDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625136249 Cleanup Discovery Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.62514982 Cleanup Discovery Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625167437 Cleanup DSP TCK Controller[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625177972 Cleanup Jersey Web Service[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.62518933 Cleanup Jetty Service[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625197993 Cleanup DSP TCK Setup[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625206626 Cleanup Control Plane Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625215389 Cleanup Catalog Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625224062 Cleanup Catalog Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625234147 Cleanup Transfer Process Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625243141 Cleanup Contract Core[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625251544 Cleanup Connector Participant Context Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625260197 Cleanup Participant Context Default Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625269501 Cleanup Dataspace Protocol Core Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625278505 Cleanup JSON-LD Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625286767 Cleanup org.eclipse.edc.connector.controlplane.contract.ContractNegotiationDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625296412 Cleanup Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625304904 Cleanup Core Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625326968 Cleanup org.eclipse.edc.tck.dsp.transfer.TckDataPlaneExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625340849 Cleanup DSP TCK Identity[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625349622 Cleanup DSP TCK Guard[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625359076 Cleanup Control Plane Default Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625367509 Cleanup Mock IAM[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625375681 Cleanup org.eclipse.edc.participantcontext.config.ParticipantContextConfigServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625384725 Cleanup org.eclipse.edc.participantcontext.config.defaults.ParticipantContextConfigDefaultServicesExtension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625393889 Cleanup Participant Context Default Services Extension[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625432798 Cleanup Runtime Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625453669 Cleanup Runtime Default Core Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625481852 Cleanup eu.dataspace.connector.tests.SeedVault$1[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625507891 Cleanup Boot Services[0m
+    [0;34m[runtime] DEBUG 2026-11-16T15:21:07.625560862 Cleanup Single Participant Context Default Services Extension[0m
+    [0;32m[runtime] INFO 2026-11-16T15:21:07.625585188 Cleanup complete[0m
 
 > Task :extensions:agreements:compileJava NO-SOURCE
 > Task :extensions:agreements:processResources NO-SOURCE
@@ -1109,6 +1109,6 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/9.9.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 2m 31s
+BUILD SUCCESSFUL in 2m 34s
 206 actionable tasks: 206 executed
 Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.9.1/userguide/configuration_cache_enabling.html
