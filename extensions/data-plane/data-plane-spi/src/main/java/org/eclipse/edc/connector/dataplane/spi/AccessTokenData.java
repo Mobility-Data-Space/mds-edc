@@ -15,7 +15,7 @@
 package org.eclipse.edc.connector.dataplane.spi;
 
 import org.eclipse.edc.spi.iam.ClaimToken;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 
 import java.util.Map;
 

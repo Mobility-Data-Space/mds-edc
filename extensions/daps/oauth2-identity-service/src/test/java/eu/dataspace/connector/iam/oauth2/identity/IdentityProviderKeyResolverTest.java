@@ -1,6 +1,6 @@
 package eu.dataspace.connector.iam.oauth2.identity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import eu.dataspace.connector.iam.oauth2.jwt.JwkKeys;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;

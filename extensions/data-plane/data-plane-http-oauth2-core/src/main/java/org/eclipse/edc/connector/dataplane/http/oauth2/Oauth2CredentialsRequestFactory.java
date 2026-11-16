@@ -14,15 +14,16 @@
 
 package org.eclipse.edc.connector.dataplane.http.oauth2;
 
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.iam.oauth2.spi.Oauth2AssertionDecorator;
 import org.eclipse.edc.iam.oauth2.spi.client.Oauth2CredentialsRequest;
 import org.eclipse.edc.iam.oauth2.spi.client.PrivateKeyOauth2CredentialsRequest;
 import org.eclipse.edc.iam.oauth2.spi.client.SharedSecretOauth2CredentialsRequest;
 import org.eclipse.edc.jwt.spi.signer.JwsSignerProvider;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.token.JwtGenerationService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,15 +50,18 @@ public class Oauth2CredentialsRequestFactory {
     private final JwsSignerProvider jwsSignerProvider;
     private final Clock clock;
     private final Vault vault;
+    private final ParticipantContext participantContext;
 
-    public Oauth2CredentialsRequestFactory(JwsSignerProvider jwsSignerProvider, Clock clock, Vault vault) {
+    public Oauth2CredentialsRequestFactory(JwsSignerProvider jwsSignerProvider, Clock clock, Vault vault,
+                                           ParticipantContext participantContext) {
         this.jwsSignerProvider = jwsSignerProvider;
         this.clock = clock;
         this.vault = vault;
+        this.participantContext = participantContext;
     }
 
     /**
-     * Create an {@link Oauth2CredentialsRequest} given a {@link org.eclipse.edc.spi.types.domain.DataAddress}
+     * Create an {@link Oauth2CredentialsRequest} given a {@link org.eclipse.edc.controlplane.DataAddress}
      *
      * @param dataAddress the data address
      * @return a {@link Result} containing the {@link Oauth2CredentialsRequest} object
@@ -84,7 +88,7 @@ public class Oauth2CredentialsRequestFactory {
     private Result<Oauth2CredentialsRequest> createSharedSecretRequest(DataAddress dataAddress) {
         var clientSecret = Optional.of(dataAddress)
                 .map(a -> a.getStringProperty(CLIENT_SECRET_KEY))
-                .map(vault::resolveSecret)
+                .map(key -> vault.resolveSecret(participantContext.getId(), key))
                 .orElse(null);
 
         if (clientSecret == null) {
@@ -114,7 +118,7 @@ public class Oauth2CredentialsRequestFactory {
                 .build();
         var service = new JwtGenerationService(jwsSignerProvider);
 
-        return service.generate(pkSecret, decorator);
+        return service.generate(participantContext.getId(), pkSecret, decorator);
     }
 
     @Nullable

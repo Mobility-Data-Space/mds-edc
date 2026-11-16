@@ -16,7 +16,7 @@
 package org.eclipse.edc.connector.dataplane.framework.registry;
 
 import org.eclipse.edc.connector.dataplane.spi.pipeline.TransferService;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.junit.jupiter.api.Test;
 

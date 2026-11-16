@@ -16,7 +16,7 @@
 
 package org.eclipse.edc.connector.dataplane.aws.s3;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.eclipse.edc.aws.s3.AwsClientProvider;
 import org.eclipse.edc.aws.s3.AwsSecretToken;
 import org.eclipse.edc.aws.s3.AwsTemporarySecretToken;
@@ -29,10 +29,10 @@ import org.eclipse.edc.connector.dataplane.spi.pipeline.DataSourceFactory;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.security.Vault;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.util.string.StringUtils;
-import org.eclipse.edc.validator.spi.DataAddressValidatorRegistry;
+import org.eclipse.edc.aws.s3.validator.S3SourceDataAddressValidator;
 import org.eclipse.edc.validator.spi.ValidationResult;
 import org.eclipse.edc.validator.spi.Validator;
 import org.jetbrains.annotations.NotNull;
@@ -55,13 +55,12 @@ public class S3DataSourceFactory implements DataSourceFactory {
     private final AwsClientProvider clientProvider;
     private final Vault vault;
     private final ObjectMapper objectMapper;
-    private final DataAddressValidatorRegistry validator;
+    private final Validator<DataAddress> validator = new S3SourceDataAddressValidator();
 
-    public S3DataSourceFactory(AwsClientProvider clientProvider, Vault vault, ObjectMapper objectMapper, DataAddressValidatorRegistry validator) {
+    public S3DataSourceFactory(AwsClientProvider clientProvider, Vault vault, ObjectMapper objectMapper) {
         this.clientProvider = clientProvider;
         this.vault = vault;
         this.objectMapper = objectMapper;
-        this.validator = validator;
     }
 
     @Override
@@ -91,13 +90,13 @@ public class S3DataSourceFactory implements DataSourceFactory {
     @Override
     public @NotNull Result<Void> validateRequest(DataFlowStartMessage request) {
         var source = request.getSourceDataAddress();
-        return validator.validateSource(source).flatMap(ValidationResult::toResult);
+        return validator.validate(source).flatMap(ValidationResult::toResult);
     }
 
     private S3ClientRequest createS3ClientRequest(DataAddress address) {
         var endpointOverride = address.getStringProperty(ENDPOINT_OVERRIDE);
         var region = address.getStringProperty(REGION);
-        var awsSecretToken = ofNullable(address.getKeyName())
+        var awsSecretToken = ofNullable(address.getStringProperty(DataAddress.SIMPLE_KEY_NAME))
                 .filter(keyName -> !StringUtils.isNullOrBlank(keyName))
                 .map(vault::resolveSecret)
                 .filter(secret -> !StringUtils.isNullOrBlank(secret))
@@ -123,7 +122,7 @@ public class S3DataSourceFactory implements DataSourceFactory {
             } else {
                 return objectMapper.treeToValue(tree, AwsSecretToken.class);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new EdcException(e);
         }
     }

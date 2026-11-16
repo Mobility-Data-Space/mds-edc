@@ -17,7 +17,7 @@ package org.eclipse.edc.connector.dataplane.spi.edr;
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 
 /**
  * Manages EDRs

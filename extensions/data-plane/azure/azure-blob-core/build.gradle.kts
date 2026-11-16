@@ -8,7 +8,7 @@ dependencies {
     api(libs.edc.control.plane.spi)
     implementation(libs.azure.storage.blob)
     implementation(libs.azure.identity)
-    implementation(libs.edc.util.lib)
+    implementation(libs.edc.core.lib)
 
     testFixturesApi(project(":extensions:data-plane:data-plane-util"))
 }

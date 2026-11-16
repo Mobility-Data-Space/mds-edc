@@ -4,8 +4,8 @@ import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
-import org.eclipse.edc.jsonld.spi.transformer.AbstractJsonLdTransformer;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.jsonld.spi.transformer.JsonLdFromModelTransformer;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.TransferType;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +19,7 @@ import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
  * Transforms a {@link DataFlow} into its JSON-LD representation. Source and destination addresses are serialized as
  * nested {@link DataAddress} objects, which surface vault key aliases but never resolved secrets.
  */
-public class JsonObjectFromDataFlowTransformer extends AbstractJsonLdTransformer<DataFlow, JsonObject> {
+public class JsonObjectFromDataFlowTransformer extends JsonLdFromModelTransformer<DataFlow, JsonObject> {
 
     public static final String DATA_FLOW_TYPE = EDC_NAMESPACE + "DataFlow";
     public static final String DATA_FLOW_STATE = EDC_NAMESPACE + "state";

@@ -9,7 +9,7 @@ import org.eclipse.edc.spi.event.Event;
 import org.eclipse.edc.spi.event.EventEnvelope;
 import org.eclipse.edc.spi.event.EventSubscriber;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 
 /**
  * Listens for {@link org.eclipse.edc.connector.controlplane.contract.spi.event.contractnegotiation.ContractNegotiationFinalized}
@@ -38,8 +38,6 @@ public class StartObserverTransfer implements EventSubscriber {
                     .counterPartyAddress(configuration.url())
                     .contractId(finalized.getContractAgreement().getId())
                     .transferType(configuration.transferProfile())
-                    // this data destination added only to trigger consumer data-plane provisioning. it should change once we adopt DPS (https://github.com/Mobility-Data-Space/mds-edc/issues/558)
-                    .dataDestination(DataAddress.Builder.newInstance().type("HttpData").build())
                     .build();
 
             transferProcessService.initiateTransfer(participantContext, transferRequest)

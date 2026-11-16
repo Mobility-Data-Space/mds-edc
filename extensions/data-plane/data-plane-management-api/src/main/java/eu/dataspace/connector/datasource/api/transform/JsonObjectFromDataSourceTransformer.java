@@ -3,7 +3,7 @@ package eu.dataspace.connector.datasource.api.transform;
 import eu.dataspace.connector.datasource.spi.types.DataSource;
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObject;
-import org.eclipse.edc.jsonld.spi.transformer.AbstractJsonLdTransformer;
+import org.eclipse.edc.jsonld.spi.transformer.JsonLdFromModelTransformer;
 import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +22,7 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
  * Converts a {@link DataSource} into its JSON-LD representation. The opaque {@code properties} are serialized as a
  * nested object keyed by their (expanded) term, which compaction shortens back on the way out.
  */
-public class JsonObjectFromDataSourceTransformer extends AbstractJsonLdTransformer<DataSource, JsonObject> {
+public class JsonObjectFromDataSourceTransformer extends JsonLdFromModelTransformer<DataSource, JsonObject> {
 
     private final JsonBuilderFactory jsonFactory;
     private final TypeManager typeManager;

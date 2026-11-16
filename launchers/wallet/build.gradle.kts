@@ -10,9 +10,7 @@ val edcGroupId = "org.eclipse.edc"
 dependencies {
     runtimeOnly(libs.edc.identityhub.bom)
     runtimeOnly(libs.edc.identityhub.feature.sql.bom)
-    runtimeOnly(libs.edc.vault.hashicorp)
-
-    runtimeOnly(libs.edc.participantcontext.config.store.sql) // this can be deleted after bumping EDC to 0.17.x
+//    runtimeOnly(libs.edc.vault.hashicorp)
 
     implementation(project(":extensions:identity-hub:database-schema-migration-wallet"))
     implementation(project(":extensions:identity-hub:super-user-seeder"))

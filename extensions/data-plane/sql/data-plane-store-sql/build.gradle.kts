@@ -10,8 +10,7 @@ dependencies {
 
     implementation(libs.edc.sql.bootstrapper)
     implementation(libs.edc.sql.lease)
-    implementation(libs.edc.sql.lib)
-    implementation(libs.edc.util.lib)
+    implementation(libs.edc.core.lib)
 
     testImplementation(testFixtures(project(":extensions:data-plane:data-plane-spi")))
     testImplementation(testFixtures(libs.edc.sql.test.fixtures))

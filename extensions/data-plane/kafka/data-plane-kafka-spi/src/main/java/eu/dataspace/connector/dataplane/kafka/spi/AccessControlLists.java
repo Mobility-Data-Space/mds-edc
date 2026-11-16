@@ -1,7 +1,7 @@
 package eu.dataspace.connector.dataplane.kafka.spi;
 
 import org.eclipse.edc.spi.result.ServiceResult;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 
 /**
  * Manages access control on Kafka

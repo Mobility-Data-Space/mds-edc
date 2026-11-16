@@ -14,7 +14,7 @@
 
 package org.eclipse.edc.azure.blob.testfixtures;
 
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 
 import java.time.Instant;

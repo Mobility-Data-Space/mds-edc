@@ -6,16 +6,12 @@ dependencies {
     api(libs.edc.core.spi)
     api(project(":extensions:data-plane:data-plane-spi"))
 
-    implementation(libs.edc.query.lib)
-    implementation(libs.edc.store.lib)
-    implementation(libs.edc.state.machine.lib)
-    implementation(libs.edc.util.lib)
+    implementation(libs.edc.core.lib)
+    implementation(libs.edc.control.plane.lib)
     implementation(project(":extensions:data-plane:data-plane-util"))
 
     implementation(libs.opentelemetry.instrumentation.annotations)
 
-    implementation(libs.edc.boot.spi)
-    implementation(libs.edc.transaction.spi)
 
     testImplementation(libs.awaitility)
     testImplementation(testFixtures(project(":extensions:data-plane:data-plane-spi")))

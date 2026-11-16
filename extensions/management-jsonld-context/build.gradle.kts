@@ -4,6 +4,6 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.json.ld.spi)
-    implementation(libs.edc.management.api.lib)
+    implementation(libs.edc.core.spi)
+    implementation(libs.edc.core.lib)
 }

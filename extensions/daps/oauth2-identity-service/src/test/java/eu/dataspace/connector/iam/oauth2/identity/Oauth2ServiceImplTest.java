@@ -59,7 +59,6 @@ class Oauth2ServiceImplTest {
 
     private static final String TEST_PRIVATE_KEY_ID = "test-private-key-id";
     private static final VerificationContext VERIFICATION_CONTEXT = VerificationContext.Builder.newInstance()
-            .policy(Policy.Builder.newInstance().build())
             .build();
     private static final String OAUTH2_SERVER_URL = "http://oauth2-server.com";
 

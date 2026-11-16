@@ -27,10 +27,8 @@ import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.types.TypeManager;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
-import org.eclipse.edc.validator.spi.DataAddressValidatorRegistry;
-import org.eclipse.edc.validator.spi.ValidationResult;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -39,7 +37,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
-import static org.eclipse.edc.validator.spi.Violation.violation;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -51,41 +48,36 @@ class S3DataSinkFactoryTest {
     private final AwsClientProvider clientProvider = mock();
     private final Vault vault = mock();
     private final TypeManager typeManager = new JacksonTypeManager();
-    private final DataAddressValidatorRegistry validator = mock();
 
     private final S3DataSinkFactory factory = new S3DataSinkFactory(clientProvider, mock(), mock(),
-            vault, typeManager.getMapper(), 1024, validator, () -> ServiceResult.success(ParticipantContext.Builder.newInstance().participantContextId("id").identity("any").build()));
+            vault, typeManager.getMapper(), 1024, () -> ServiceResult.success(ParticipantContext.Builder.newInstance().participantContextId("id").identity("any").build()));
 
     @Test
     void validate_shouldSucceed_whenValidatorSucceeds() {
-        when(validator.validateDestination(any())).thenReturn(ValidationResult.success());
         var destination = TestFunctions.s3DataAddressWithCredentials();
         var request = createRequest(destination);
 
         var result = factory.validateRequest(request);
 
         assertThat(result).isSucceeded();
-        verify(validator).validateDestination(destination);
     }
 
     @Test
     void validate_shouldFail_whenValidatorFails() {
-        when(validator.validateDestination(any())).thenReturn(ValidationResult.failure(violation("error", "path")));
-        var destination = TestFunctions.s3DataAddressWithCredentials();
+        // invalid S3 address (missing bucket/region) -> S3DestinationDataAddressValidator fails
+        var destination = DataAddress.Builder.newInstance().type(S3BucketSchema.TYPE).build();
         var request = createRequest(destination);
 
         var result = factory.validateRequest(request);
 
         assertThat(result).isFailed();
-        verify(validator).validateDestination(destination);
     }
     
     @Test
     void createSink_shouldGetTheSecretTokenFromTheVault() {
         var destination = TestFunctions.s3DataAddressWithCredentials();
         var secretToken = new AwsSecretToken("accessKeyId", "secretAccessKey");
-        when(vault.resolveSecret(destination.getKeyName())).thenReturn(typeManager.writeValueAsString(secretToken));
-        when(validator.validateDestination(any())).thenReturn(ValidationResult.success());
+        when(vault.resolveSecret(destination.getStringProperty("keyName"))).thenReturn(typeManager.writeValueAsString(secretToken));
         var request = createRequest(destination);
         
         var sink = factory.createSink(request);
@@ -103,8 +95,7 @@ class S3DataSinkFactoryTest {
     void createSink_shouldGetTheTemporarySecretTokenFromTheVault() {
         var destination = TestFunctions.s3DataAddressWithCredentials();
         var temporaryKey = new AwsTemporarySecretToken("temporaryId", "temporarySecret", "temporaryToken", 10);
-        when(vault.resolveSecret(any(), eq(destination.getKeyName()))).thenReturn(typeManager.writeValueAsString(temporaryKey));
-        when(validator.validateDestination(any())).thenReturn(ValidationResult.success());
+        when(vault.resolveSecret(any(), eq(destination.getStringProperty("keyName")))).thenReturn(typeManager.writeValueAsString(temporaryKey));
         var request = createRequest(destination);
 
         var sink = factory.createSink(request);
@@ -121,7 +112,6 @@ class S3DataSinkFactoryTest {
     @Test
     void createSink_shouldCreateDataSinkWithCredentialsInDataAddressIfTheresNoSecret() {
         when(vault.resolveSecret(any())).thenReturn(null);
-        when(validator.validateDestination(any())).thenReturn(ValidationResult.success());
         var destination = TestFunctions.s3DataAddressWithCredentials();
         var request = createRequest(destination);
 
@@ -139,7 +129,6 @@ class S3DataSinkFactoryTest {
     @Test
     void createSink_shouldLetTheProviderGetTheCredentialsAsFallback() {
         when(vault.resolveSecret(any())).thenReturn(null);
-        when(validator.validateDestination(any())).thenReturn(ValidationResult.success());
         var destination = TestFunctions.s3DataAddressWithoutCredentials();
         var request = createRequest(destination);
 
@@ -159,7 +148,6 @@ class S3DataSinkFactoryTest {
         var destination = DataAddress.Builder.newInstance()
                 .type(S3BucketSchema.TYPE)
                 .build();
-        when(validator.validateDestination(any())).thenReturn(ValidationResult.failure(violation("error", "path")));
 
         var request = createRequest(destination);
 

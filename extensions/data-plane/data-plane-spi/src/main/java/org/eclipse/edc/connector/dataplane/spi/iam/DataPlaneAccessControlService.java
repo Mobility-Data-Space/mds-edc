@@ -17,7 +17,7 @@ package org.eclipse.edc.connector.dataplane.spi.iam;
 import org.eclipse.edc.runtime.metamodel.annotation.ExtensionPoint;
 import org.eclipse.edc.spi.iam.ClaimToken;
 import org.eclipse.edc.spi.result.Result;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 
 import java.util.Map;
 

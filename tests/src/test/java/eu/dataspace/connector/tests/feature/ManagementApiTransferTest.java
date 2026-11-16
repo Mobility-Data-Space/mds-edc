@@ -1,6 +1,6 @@
 package eu.dataspace.connector.tests.feature;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;

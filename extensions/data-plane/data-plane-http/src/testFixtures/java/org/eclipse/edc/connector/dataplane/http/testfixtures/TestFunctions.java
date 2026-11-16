@@ -21,7 +21,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.Okio;
 import org.eclipse.edc.connector.dataplane.spi.schema.DataFlowRequestSchema;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 import org.eclipse.edc.spi.types.domain.transfer.FlowType;
 

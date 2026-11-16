@@ -21,12 +21,12 @@ import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAccessControlService
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAccessTokenService;
 import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAuthorizationService;
 import org.eclipse.edc.connector.dataplane.spi.iam.PublicEndpointGeneratorService;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.jwt.spi.JwtRegisteredClaimNames;
 import org.eclipse.edc.spi.iam.TokenParameters;
 import org.eclipse.edc.spi.iam.TokenRepresentation;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.result.ServiceResult;
-import org.eclipse.edc.spi.types.domain.DataAddress;
 
 import java.time.Clock;
 import java.util.HashMap;
@@ -77,16 +77,6 @@ public class DataPlaneAuthorizationServiceImpl implements DataPlaneAuthorization
         var dataAddressBuilder = endpointGenerator.generateFor(dataFlow.getTransferType().destinationType(), sourceDataAddress)
                 .compose(ep -> createSecureEndpoint(ep, tokenParams, additionalProperties, sourceDataAddress))
                 .compose(se -> createDataAddress(se.tokenRepresentation(), se.endpoint()));
-
-        // "decorate" the data address with response channel properties
-        var responseChannelType = dataFlow.getTransferType().responseChannelType();
-        if (responseChannelType != null) {
-            var responseChannel = sourceDataAddress.getResponseChannel();
-            var responseChannelTokenParams = createTokenParams(dataFlow);
-            dataAddressBuilder = dataAddressBuilder.compose(builder -> endpointGenerator.generateResponseFor(responseChannelType)
-                    .compose(ep -> createSecureEndpoint(ep, responseChannelTokenParams, additionalProperties, responseChannel))
-                    .compose(endpoint -> addResponseChannel(builder, endpoint.tokenRepresentation(), endpoint.endpoint())));
-        }
 
         return dataAddressBuilder.map(DataAddress.Builder::build);
     }

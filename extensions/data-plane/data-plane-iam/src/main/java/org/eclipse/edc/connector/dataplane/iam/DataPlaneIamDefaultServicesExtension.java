@@ -20,10 +20,13 @@ import org.eclipse.edc.connector.dataplane.spi.iam.DataPlaneAccessTokenService;
 import org.eclipse.edc.connector.dataplane.spi.store.AccessTokenDataStore;
 import org.eclipse.edc.jwt.spi.signer.JwsSignerProvider;
 import org.eclipse.edc.keys.spi.LocalPublicKeyService;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.result.Result;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -49,6 +52,8 @@ public class DataPlaneIamDefaultServicesExtension implements ServiceExtension {
     private LocalPublicKeyService localPublicKeyService;
     @Inject
     private JwsSignerProvider jwsSignerProvider;
+    @Inject
+    private SingleParticipantContextSupplier singleParticipantContextSupplier;
 
     @Override
     public String name() {
@@ -63,12 +68,14 @@ public class DataPlaneIamDefaultServicesExtension implements ServiceExtension {
 
     @Provider(isDefault = true)
     public DataPlaneAccessTokenService defaultAccessTokenService(ServiceExtensionContext context) {
+        var participantContext = singleParticipantContextSupplier.get()
+                .orElseThrow(f -> new EdcException("Cannot obtain participant context: " + f.getFailureDetail()));
         var monitor = context.getMonitor().withPrefix("DataPlane IAM");
         return new DefaultDataPlaneAccessTokenServiceImpl(new JwtGenerationService(jwsSignerProvider),
                 accessTokenDataStore, monitor,
                 () -> tokenSignerPrivateKeyAlias,
                 () -> tokenVerifierPublicKeyAlias,
-                tokenValidationService, localPublicKeyService);
+                tokenValidationService, localPublicKeyService, participantContext);
     }
 
 }

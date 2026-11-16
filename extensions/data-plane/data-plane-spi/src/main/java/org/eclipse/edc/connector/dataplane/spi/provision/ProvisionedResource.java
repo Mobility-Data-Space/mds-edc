@@ -14,7 +14,7 @@
 
 package org.eclipse.edc.connector.dataplane.spi.provision;
 
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 
 import java.util.HashMap;
 import java.util.Map;

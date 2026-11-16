@@ -1,7 +1,7 @@
 package eu.dataspace.dataplane.observer.subscriber;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementRetired;
 import eu.dataspace.dataplane.observer.ObserverConfig;
 import eu.dataspace.dataplane.observer.model.ObserverContractAgreementRetired;
@@ -77,7 +77,7 @@ public class StoreObserverEvent implements EventSubscriber {
     private String toJson(Object object) {
         try {
             return mapperSupplier.get().writeValueAsString(object);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("Cannot serialize observer event envelope", e);
         }
     }

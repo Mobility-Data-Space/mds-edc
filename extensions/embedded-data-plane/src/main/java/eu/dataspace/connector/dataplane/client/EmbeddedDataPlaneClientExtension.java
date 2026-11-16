@@ -5,6 +5,7 @@ import org.eclipse.edc.connector.dataplane.spi.manager.DataPlaneManager;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provides;
 import org.eclipse.edc.signaling.port.ClientFactory;
+import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
@@ -17,10 +18,12 @@ public class EmbeddedDataPlaneClientExtension implements ServiceExtension {
     private DataPlaneManager dataPlaneManager;
     @Inject
     private AssetIndex assetIndex;
+    @Inject
+    private Vault vault;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        context.registerService(ClientFactory.class, new EmbeddedClientFactory(dataPlaneManager, context.getMonitor(), assetIndex));
+        context.registerService(ClientFactory.class, new EmbeddedClientFactory(dataPlaneManager, context.getMonitor(), assetIndex, vault));
     }
 
 }

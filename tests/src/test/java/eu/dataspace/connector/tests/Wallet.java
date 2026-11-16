@@ -69,9 +69,8 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
     }
 
     public void requestCredentialIssuance(String participantDid, String issuerDid) {
-        var holderPid = UUID.randomUUID().toString();
+        // the holderPid must not be set in the request: IdentityHub assigns it and returns it in the Location header
         var requestCredentialIssuance = Map.of(
-                "holderPid", holderPid,
                 "issuerDid", issuerDid,
                 "credentials", List.of(Map.of(
                         "id", "membershipCredential-id",
@@ -82,18 +81,21 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
 
         var participantContext = participantContexts.get(participantDid);
 
-        given()
+        var location = given()
                 .baseUri(identityEndpoint.get().toString())
                 .contentType(JSON)
                 .header("x-api-key", participantContext.credentials().apiKey())
                 .body(requestCredentialIssuance)
-                .post("/v1beta/participants/%s/credentials/request".formatted(participantContext.participantContextId()))
+                .post("/v1/participants/%s/credentials/request".formatted(participantContext.participantContextId()))
                 .then()
                 .log().ifValidationFails()
-                .statusCode(201);
+                .statusCode(201)
+                .extract().header("Location");
+
+        var holderPid = location.substring(location.lastIndexOf('/') + 1);
 
         await().untilAsserted(() -> {
-            var path = "/v1beta/participants/%s/credentials/request/%s"
+            var path = "/v1/participants/%s/credentials/request/%s"
                     .formatted(participantContext.participantContextId(), holderPid);
 
             given()
@@ -145,7 +147,7 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
                                 )
                         )
                 ))
-                .post("/v1beta/participants")
+                .post("/v1/participants")
                 .then()
                 .log().ifValidationFails()
                 .statusCode(200)

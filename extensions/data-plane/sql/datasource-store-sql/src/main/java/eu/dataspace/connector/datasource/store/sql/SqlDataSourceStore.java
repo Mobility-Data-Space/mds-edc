@@ -1,7 +1,7 @@
 package eu.dataspace.connector.datasource.store.sql;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import eu.dataspace.connector.datasource.spi.store.DataSourceStore;
 import eu.dataspace.connector.datasource.spi.types.DataSource;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;

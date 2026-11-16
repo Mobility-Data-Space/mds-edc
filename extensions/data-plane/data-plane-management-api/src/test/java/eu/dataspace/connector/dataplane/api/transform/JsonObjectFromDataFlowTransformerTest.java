@@ -3,7 +3,7 @@ package eu.dataspace.connector.dataplane.api.transform;
 import jakarta.json.Json;
 import jakarta.json.JsonBuilderFactory;
 import org.eclipse.edc.connector.dataplane.spi.DataFlow;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.TransferType;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ class JsonObjectFromDataFlowTransformerTest {
                 .agreementId("agreement-id")
                 .participantId("participant-id")
                 .transferType(new TransferType("HttpData", PULL))
-                .source(DataAddress.Builder.newInstance().type("HttpData").keyName("alias").build())
+                .source(DataAddress.Builder.newInstance().type("HttpData").property("keyName", "alias").build())
                 .build();
 
         var result = transformer.transform(dataFlow, context);

@@ -20,10 +20,8 @@ import org.eclipse.edc.json.JacksonTypeManager;
 import org.eclipse.edc.junit.annotations.EndToEndTest;
 import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.spi.result.ServiceResult;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
-import org.eclipse.edc.validator.spi.DataAddressValidatorRegistry;
-import org.eclipse.edc.validator.spi.ValidationResult;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -82,18 +80,15 @@ public class S3DataPlaneIntegrationTest {
 
     @BeforeEach
     void setup() {
-        DataAddressValidatorRegistry validator = mock();
-        when(validator.validateSource(any())).thenReturn(ValidationResult.success());
-        when(validator.validateDestination(any())).thenReturn(ValidationResult.success());
 
         sourceClient = S3TestClient.create("http://localhost:" + sourceMinio.getFirstMappedPort(), REGION);
         destinationClient = S3TestClient.create("http://localhost:" + destinationMinio.getFirstMappedPort(), REGION);
 
         var typeManager = new JacksonTypeManager();
         var chunkSizeInBytes = 1024 * 1024 * 20;
-        sourceFactory = new S3DataSourceFactory(sourceClient.getClientProvider(), mock(), typeManager.getMapper(), validator);
+        sourceFactory = new S3DataSourceFactory(sourceClient.getClientProvider(), mock(), typeManager.getMapper());
         sinkFactory = new S3DataSinkFactory(destinationClient.getClientProvider(), Executors.newSingleThreadExecutor(),
-                mock(), mock(), typeManager.getMapper(), chunkSizeInBytes, validator,
+                mock(), mock(), typeManager.getMapper(), chunkSizeInBytes,
                 () -> ServiceResult.success(ParticipantContext.Builder.newInstance().participantContextId("id").identity("any").build()));
 
         sourceClient.createBucket(sourceBucketName);
@@ -124,7 +119,7 @@ public class S3DataPlaneIntegrationTest {
 
         var destinationAddress = DataAddress.Builder.newInstance()
                 .type(S3BucketSchema.TYPE)
-                .keyName(KEY_NAME)
+                .property("keyName", KEY_NAME)
                 .property(S3BucketSchema.BUCKET_NAME, destinationBucketName)
                 .property(S3BucketSchema.REGION, REGION)
                 .property(S3BucketSchema.FOLDER_NAME, folderNameInDestination)
@@ -168,7 +163,7 @@ public class S3DataPlaneIntegrationTest {
 
         var destinationAddress = DataAddress.Builder.newInstance()
                 .type(S3BucketSchema.TYPE)
-                .keyName(KEY_NAME)
+                .property("keyName", KEY_NAME)
                 .property(S3BucketSchema.BUCKET_NAME, destinationBucketName)
                 .property(S3BucketSchema.REGION, REGION)
                 .property(S3BucketSchema.OBJECT_NAME, objectNameInDestination)
@@ -215,7 +210,7 @@ public class S3DataPlaneIntegrationTest {
 
         var destinationAddress = DataAddress.Builder.newInstance()
                 .type(S3BucketSchema.TYPE)
-                .keyName(KEY_NAME)
+                .property("keyName", KEY_NAME)
                 .property(S3BucketSchema.BUCKET_NAME, destinationBucketName)
                 .property(S3BucketSchema.REGION, REGION)
                 .property(S3BucketSchema.FOLDER_NAME, folderNameInDestination)
@@ -258,7 +253,7 @@ public class S3DataPlaneIntegrationTest {
     private DataAddress createSingleObjectDataAddress(String folderName, String prefix, String name) {
         var dataAddressBuilder = DataAddress.Builder.newInstance()
                 .type(S3BucketSchema.TYPE)
-                .keyName(KEY_NAME)
+                .property("keyName", KEY_NAME)
                 .property(S3BucketSchema.BUCKET_NAME, sourceBucketName)
                 .property(S3BucketSchema.REGION, REGION)
                 .property(S3BucketSchema.ACCESS_KEY_ID, sourceClient.getCredentials().accessKeyId())
@@ -276,7 +271,7 @@ public class S3DataPlaneIntegrationTest {
     private DataAddress createMultiObjectsDataAddress(String folderName, String prefix) {
         var dataAddressBuilder = DataAddress.Builder.newInstance()
                 .type(S3BucketSchema.TYPE)
-                .keyName(KEY_NAME)
+                .property("keyName", KEY_NAME)
                 .property(S3BucketSchema.BUCKET_NAME, sourceBucketName)
                 .property(S3BucketSchema.REGION, REGION)
                 .property(S3BucketSchema.ACCESS_KEY_ID, sourceClient.getCredentials().accessKeyId())

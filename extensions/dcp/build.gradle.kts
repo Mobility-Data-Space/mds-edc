@@ -4,7 +4,6 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.edc.core.spi)
-    implementation(libs.edc.policy.engine.spi)
-    implementation(libs.edc.request.policy.context.spi)
+    implementation(libs.edc.decentralized.claims.spi)
+    implementation(libs.edc.control.plane.spi)
 }

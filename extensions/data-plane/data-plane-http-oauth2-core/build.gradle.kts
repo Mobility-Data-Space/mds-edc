@@ -5,11 +5,10 @@ plugins {
 
 dependencies {
     api(project(":extensions:data-plane:data-plane-spi"))
+    api(project(":extensions:oauth2-spi"))
     api(libs.edc.core.spi)
-    api(libs.edc.oauth2.spi)
 
-    implementation(libs.edc.token.lib)
-    implementation(libs.edc.util.lib)
+    implementation(libs.edc.core.lib)
 
     testImplementation(libs.rest.assured)
 }

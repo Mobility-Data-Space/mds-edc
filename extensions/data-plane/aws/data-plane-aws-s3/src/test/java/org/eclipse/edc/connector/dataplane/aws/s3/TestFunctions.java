@@ -15,7 +15,7 @@
 package org.eclipse.edc.connector.dataplane.aws.s3;
 
 import org.eclipse.edc.aws.s3.spi.S3BucketSchema;
-import org.eclipse.edc.spi.types.domain.DataAddress;
+import org.eclipse.edc.controlplane.DataAddress;
 import org.eclipse.edc.spi.types.domain.transfer.DataFlowStartMessage;
 
 import java.util.UUID;
@@ -32,7 +32,7 @@ public class TestFunctions {
     public static DataAddress s3DataAddressWithCredentials() {
         return DataAddress.Builder.newInstance()
                 .type(S3BucketSchema.TYPE)
-                .keyName(VALID_KEY_NAME)
+                .property("keyName", VALID_KEY_NAME)
                 .property(S3BucketSchema.BUCKET_NAME, VALID_BUCKET_NAME)
                 .property(S3BucketSchema.REGION, VALID_REGION)
                 .property(S3BucketSchema.OBJECT_NAME, VALID_OBJECT_NAME)
@@ -44,7 +44,7 @@ public class TestFunctions {
     public static DataAddress s3DataAddressWithoutCredentials() {
         return DataAddress.Builder.newInstance()
                 .type(S3BucketSchema.TYPE)
-                .keyName(VALID_KEY_NAME)
+                .property("keyName", VALID_KEY_NAME)
                 .property(S3BucketSchema.BUCKET_NAME, VALID_BUCKET_NAME)
                 .property(S3BucketSchema.REGION, VALID_REGION)
                 .property(S3BucketSchema.OBJECT_NAME, VALID_OBJECT_NAME)

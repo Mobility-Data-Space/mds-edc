@@ -1,6 +1,6 @@
 package eu.dataspace.dataplane.observer.subscriber;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementRetired;
 import eu.dataspace.dataplane.observer.ObserverConfig;
 import eu.dataspace.dataplane.observer.model.event.ObserverEventStored;

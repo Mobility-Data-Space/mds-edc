@@ -1,6 +1,6 @@
 package eu.dataspace.dataplane.observer.store.sql;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import eu.dataspace.dataplane.observer.store.ObserverEventStore;
 import eu.dataspace.dataplane.observer.store.PendingObserverEvent;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;

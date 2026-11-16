@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("dataspaceconnector:azuretoken")
 public class AzureSasToken {
     private final String sas;
-    private final long expiration;
+    private final Long expiration;
 
-    public AzureSasToken(@JsonProperty("sas") String writeOnlySas, @JsonProperty("expiration") long expiration) {
+    public AzureSasToken(@JsonProperty("sas") String writeOnlySas, @JsonProperty("expiration") Long expiration) {
         sas = writeOnlySas;
         this.expiration = expiration;
     }

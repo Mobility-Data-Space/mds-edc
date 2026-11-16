@@ -6,17 +6,9 @@ plugins {
 
 dependencies {
     implementation(project(":extensions:data-plane:data-plane-spi"))
+    implementation(libs.edc.control.plane.spi)
     implementation(libs.edc.core.spi)
-    implementation(libs.edc.transfer.spi)
-    implementation(libs.edc.transaction.spi)
-    implementation(libs.edc.transform.spi)
-    implementation(libs.edc.json.ld.spi)
-    implementation(libs.edc.web.spi)
-    implementation(libs.edc.api.lib)
-    implementation(libs.edc.management.api.lib)
-    implementation(libs.edc.jersey.providers.lib)
-    implementation(libs.edc.validator.spi)
-    implementation(libs.edc.validator.lib)
+    implementation(libs.edc.core.lib)
 
     implementation(libs.swagger.annotations)
     implementation(libs.swagger.jaxrs2.jakarta)
@@ -25,7 +17,6 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.platform.launcher)
     testImplementation(libs.edc.junit)
-    testImplementation(libs.edc.json.ld.lib)
     testImplementation(libs.mockito.core)
     testImplementation(libs.rest.assured)
     testImplementation(testFixtures(libs.edc.jersey.core))

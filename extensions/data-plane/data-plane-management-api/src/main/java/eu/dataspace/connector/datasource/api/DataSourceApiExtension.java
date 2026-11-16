@@ -65,6 +65,6 @@ public class DataSourceApiExtension implements ServiceExtension {
         validator.register(DATA_SOURCE_TYPE, DataSourceValidator.instance());
 
         webService.registerResource(ApiContext.MANAGEMENT, new DataSourceApiV4Controller(dataSourceService, managementTypeTransformerRegistryV4, validator, monitor));
-        webService.registerDynamicResource(ApiContext.MANAGEMENT, DataSourceApiV4Controller.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, MANAGEMENT_SCOPE_V4, validator, ManagementApiJsonSchema.V4.version()));
+        webService.registerDynamicResource(ApiContext.MANAGEMENT, DataSourceApiV4Controller.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, MANAGEMENT_SCOPE_V4));
     }
 }

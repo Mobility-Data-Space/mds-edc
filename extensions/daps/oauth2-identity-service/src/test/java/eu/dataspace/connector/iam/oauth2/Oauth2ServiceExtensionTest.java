@@ -17,7 +17,9 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -91,7 +93,7 @@ class Oauth2ServiceExtensionTest {
     private void mockRsaPrivateKey(String alias) {
         var privateKey = mock(PrivateKey.class);
         when(privateKey.getAlgorithm()).thenReturn("RSA");
-        when(privateKeyResolver.resolvePrivateKey(alias)).thenReturn(Result.success(privateKey));
+        when(privateKeyResolver.resolvePrivateKey(any(), eq(alias))).thenReturn(Result.success(privateKey));
     }
 
     private void mockCertificate(String alias) {

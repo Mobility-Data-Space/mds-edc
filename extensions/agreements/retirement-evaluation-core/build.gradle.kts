@@ -6,13 +6,10 @@ plugins {
 
 dependencies {
 
-    implementation(libs.edc.contract.spi)
     implementation(libs.edc.control.plane.spi)
-    implementation(libs.edc.policy.engine.spi)
-    implementation(libs.edc.policy.monitor.spi)
-    implementation(libs.edc.transaction.spi)
-    implementation(libs.edc.store.lib)
-    implementation(libs.edc.query.lib)
+    implementation(libs.edc.core.spi)
+    implementation(libs.edc.control.plane.lib)
+    implementation(libs.edc.core.lib)
     api(project(":extensions:agreements:retirement-evaluation-spi"))
 
     testImplementation(libs.assertj)

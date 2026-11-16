@@ -18,8 +18,11 @@ package org.eclipse.edc.connector.dataplane.http.oauth2;
 import org.eclipse.edc.connector.dataplane.http.spi.HttpRequestParamsProvider;
 import org.eclipse.edc.iam.oauth2.spi.client.Oauth2Client;
 import org.eclipse.edc.jwt.spi.signer.JwsSignerProvider;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -35,18 +38,16 @@ public class DataPlaneHttpOauth2Extension implements ServiceExtension {
 
     @Inject
     private Clock clock;
-
     @Inject
     private HttpRequestParamsProvider paramsProvider;
-
     @Inject
     private Vault vault;
-
     @Inject
     private JwsSignerProvider jwsSignerProvider;
-
     @Inject
     private Oauth2Client oauth2Client;
+    @Inject
+    private SingleParticipantContextSupplier singleParticipantContextSupplier;
 
     @Override
     public String name() {
@@ -55,7 +56,9 @@ public class DataPlaneHttpOauth2Extension implements ServiceExtension {
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        var requestFactory = new Oauth2CredentialsRequestFactory(jwsSignerProvider, clock, vault);
+        var participantContext = singleParticipantContextSupplier.get()
+                .orElseThrow(f -> new EdcException("Cannot obtain participant context: " + f.getFailureDetail()));
+        var requestFactory = new Oauth2CredentialsRequestFactory(jwsSignerProvider, clock, vault, participantContext);
         var oauth2ParamsDecorator = new Oauth2HttpRequestParamsDecorator(requestFactory, oauth2Client);
 
         paramsProvider.registerSourceDecorator(oauth2ParamsDecorator);

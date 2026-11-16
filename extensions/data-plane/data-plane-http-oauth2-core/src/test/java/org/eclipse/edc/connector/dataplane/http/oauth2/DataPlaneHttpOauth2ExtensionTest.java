@@ -16,6 +16,9 @@ package org.eclipse.edc.connector.dataplane.http.oauth2;
 
 import org.eclipse.edc.connector.dataplane.http.spi.HttpRequestParamsProvider;
 import org.eclipse.edc.junit.extensions.DependencyInjectionExtension;
+import org.eclipse.edc.participantcontext.single.spi.SingleParticipantContextSupplier;
+import org.eclipse.edc.participantcontext.spi.types.ParticipantContext;
+import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +37,8 @@ class DataPlaneHttpOauth2ExtensionTest {
     @BeforeEach
     void setUp(ServiceExtensionContext context) {
         context.registerService(HttpRequestParamsProvider.class, paramsProvider);
+        var participantContext = ParticipantContext.Builder.newInstance().id("any").identity("any").build();
+        context.registerService(SingleParticipantContextSupplier.class, () -> ServiceResult.success(participantContext));
     }
 
     @Test

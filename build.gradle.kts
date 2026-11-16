@@ -28,8 +28,12 @@ allprojects {
                 because("CVE-2026-45292")
             }
             if (requested.group == "tools.jackson.core" && requested.name == "jackson-databind") {
-                useVersion("3.1.5")
-                because("CVE-2026-54512, CVE-2026-54513, CVE-2026-54514, CVE-2026-54515, CVE-2026-54516, CVE-2026-54517, CVE-2026-54518, CVE-2026-59889")
+                useVersion("3.1.7")
+                because("CVE-2026-54512, CVE-2026-54513, CVE-2026-54514, CVE-2026-54515, CVE-2026-54516, CVE-2026-54517, CVE-2026-54518, CVE-2026-59889, CVE-2026-68497, CVE-2026-91776, CVE-2026-91777")
+            }
+            if (requested.group == "tools.jackson.core" && requested.name == "jackson-core") {
+                useVersion("3.1.7")
+                because("CVE-2026-89407, CVE-2026-89425")
             }
             if (requested.group == "com.fasterxml.jackson.core" && requested.name == "jackson-core") {
                 useVersion("2.22.3")
@@ -43,7 +47,9 @@ allprojects {
                 useVersion("42.7.12")
                 because("CVE-2026-42198, CVE-2026-54291")
             }
-            if (requested.group == "org.bouncycastle") {
+            if (requested.group == "org.bouncycastle" && requested.name.endsWith("-jdk18on")) {
+                // Only the jdk18on line has a 1.86 release; the lts8on variant (pulled transitively by io.nats:jnats)
+                // uses a different versioning scheme and must not be forced to this version.
                 useVersion(rootProject.libs.versions.bouncycastle.get())
                 because("CVE-2026-8763, CVE-2026-13506")
             }

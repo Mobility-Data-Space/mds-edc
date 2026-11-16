@@ -4,8 +4,7 @@ plugins {
 }
 
 dependencies {
-    api(libs.edc.jwt.spi)
-    api(libs.edc.token.spi)
+    api(libs.edc.core.spi)
 
     testImplementation(project(":extensions:daps:oauth2-identity-service"))
     testImplementation(libs.assertj)

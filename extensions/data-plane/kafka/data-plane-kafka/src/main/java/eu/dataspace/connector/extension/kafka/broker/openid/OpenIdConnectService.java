@@ -1,6 +1,6 @@
 package eu.dataspace.connector.extension.kafka.broker.openid;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -94,7 +94,7 @@ public class OpenIdConnectService {
         return checkStatus(callName, response).compose(r -> {
             try (var responseBody = r.body()) {
                 return Result.success(objectMapper.readValue(responseBody.byteStream(), type));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 return Result.failure("Cannot deserialize response: " + e.getMessage());
             }
         });
