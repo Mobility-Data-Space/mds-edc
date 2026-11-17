@@ -3,6 +3,7 @@ assertj = "3.27.7"
 awaitility = "4.3.0"
 aws = "2.59.0"
 bouncycastle = "1.87"
+dcp-tck = "1.2.1"
 dsp-tck = "1.0.2"
 edc = "1.0.0-RC7"
 flyway = "13.12.2"
@@ -35,6 +36,8 @@ edc-controlplane-base-bom = { module = "org.eclipse.edc:controlplane-base-bom", 
 edc-controlplane-dcp-bom = { module = "org.eclipse.edc:controlplane-dcp-bom", version.ref = "edc" }
 edc-controlplane-feature-sql-bom = { module = "org.eclipse.edc:controlplane-feature-sql-bom", version.ref = "edc" }
 edc-decentralized-claims-spi = { module = "org.eclipse.edc:decentralized-claims-spi", version.ref = "edc" }
+edc-holder-credential-request-spi = { module = "org.eclipse.edc:holder-credential-request-spi", version.ref = "edc" }
+edc-identity-hub-spi = { module = "org.eclipse.edc:identity-hub-spi", version.ref = "edc" }
 edc-data-plane-signaling-core = { module = "org.eclipse.edc:data-plane-signaling-core", version.ref = "edc" }
 edc-dsp-catalog-transform-lib = { module = "org.eclipse.edc:dsp-lib", version.ref = "edc" }
 edc-identityhub-bom = { module = "org.eclipse.edc:identityhub-bom", version.ref = "edc" }
@@ -64,6 +67,7 @@ aws-sts = { module = "software.amazon.awssdk:sts", version.ref = "aws" }
 azure-storage-blob = { group = "com.azure", name = "azure-storage-blob", version = "12.36.0" }
 azure-identity = { group = "com.azure", name = "azure-identity", version = "1.19.0" }
 bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
+dcp-tck = { module = "org.eclipse.dataspacetck.dcp:dcp-tck", version.ref = "dcp-tck" }
 dsp-tck = { module = "org.eclipse.dataspacetck.dsp:dsp-tck", version.ref = "dsp-tck" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-database-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
