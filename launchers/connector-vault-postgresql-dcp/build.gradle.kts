@@ -24,7 +24,6 @@ dependencies {
 
     runtimeOnly(libs.edc.controlplane.feature.sql.bom)
 
-    implementation(project(":extensions:agreements:retirement-evaluation-store-sql"))
     implementation(project(":extensions:database-schema-migration-connector"))
 
     implementation(project(":extensions:data-plane:sql"))

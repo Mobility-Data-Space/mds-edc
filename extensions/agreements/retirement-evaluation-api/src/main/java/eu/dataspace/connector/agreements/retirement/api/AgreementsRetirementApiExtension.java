@@ -4,9 +4,8 @@ import eu.dataspace.connector.agreements.retirement.api.transform.JsonObjectFrom
 import eu.dataspace.connector.agreements.retirement.api.transform.JsonObjectToAgreementsRetirementEntryTransformer;
 import eu.dataspace.connector.agreements.retirement.api.v3.AgreementsRetirementApiV3Controller;
 import eu.dataspace.connector.agreements.retirement.api.v4.AgreementsRetirementApiV4Controller;
-import eu.dataspace.connector.agreements.retirement.spi.service.AgreementsRetirementService;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import jakarta.json.Json;
-import org.eclipse.edc.api.management.schema.ManagementApiJsonSchema;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
@@ -31,6 +30,7 @@ import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 
 @Extension(value = NAME)
+@Deprecated(since = "2.9.0")
 public class AgreementsRetirementApiExtension implements ServiceExtension {
 
     public static final String NAME = "Contract Agreement Retirement API ";
@@ -47,7 +47,7 @@ public class AgreementsRetirementApiExtension implements ServiceExtension {
     @Inject
     private JsonObjectValidatorRegistry validator;
     @Inject
-    private AgreementsRetirementService agreementsRetirementService;
+    private ContractAgreementService contractAgreementService;
     @Inject
     private Monitor monitor;
     @Inject
@@ -64,10 +64,10 @@ public class AgreementsRetirementApiExtension implements ServiceExtension {
         managementTypeTransformerRegistry.register(new JsonObjectFromAgreementRetirementTransformer(jsonFactory));
         managementTypeTransformerRegistry.register(new JsonObjectToAgreementsRetirementEntryTransformer());
 
-        webService.registerResource(ApiContext.MANAGEMENT, new AgreementsRetirementApiV3Controller(agreementsRetirementService, managementTypeTransformerRegistry, validator, monitor));
+        webService.registerResource(ApiContext.MANAGEMENT, new AgreementsRetirementApiV3Controller(contractAgreementService, managementTypeTransformerRegistry, validator, monitor));
         webService.registerDynamicResource(ApiContext.MANAGEMENT, AgreementsRetirementApiV3Controller.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, MANAGEMENT_SCOPE));
 
-        webService.registerResource(ApiContext.MANAGEMENT, new AgreementsRetirementApiV4Controller(agreementsRetirementService, managementTypeTransformerRegistryV4, validator, monitor));
+        webService.registerResource(ApiContext.MANAGEMENT, new AgreementsRetirementApiV4Controller(contractAgreementService, managementTypeTransformerRegistryV4, validator, monitor));
         webService.registerDynamicResource(ApiContext.MANAGEMENT, AgreementsRetirementApiV4Controller.class, new JerseyJsonLdInterceptor(jsonLd, typeManager, JSON_LD, MANAGEMENT_SCOPE_V4));
     }
 

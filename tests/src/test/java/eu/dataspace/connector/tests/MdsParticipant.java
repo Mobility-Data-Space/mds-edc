@@ -200,6 +200,46 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
     public ValidatableResponse retireAgreement(String agreementId) {
         var body = createObjectBuilder()
                 .add(CONTEXT, managementContext)
+                .add(TYPE, "RetireAgreement")
+                .add("reason", "a good reason")
+                .build();
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .post("/contractagreements/{id}/retire", agreementId)
+                .then()
+                .log().ifValidationFails();
+    }
+
+    public ValidatableResponse unretireAgreement(String agreementId) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .when()
+                .post("/contractagreements/{id}/unretire", agreementId)
+                .then()
+                .log().ifValidationFails();
+    }
+
+    public JsonObject getContractAgreement(String agreementId) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .when()
+                .get("/contractagreements/{id}", agreementId)
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .extract().body().as(JsonObject.class);
+    }
+
+    /**
+     * Legacy MDS retirement endpoints, deprecated in favour of the EDC contract agreement API.
+     */
+    @Deprecated
+    public ValidatableResponse legacyRetireAgreement(String agreementId) {
+        var body = createObjectBuilder()
+                .add(CONTEXT, managementContext)
                 .add(TYPE, "AgreementsRetirementEntry")
                 .add("agreementId", agreementId)
                 .add("reason", "a good reason")
@@ -210,6 +250,31 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .body(body)
                 .when()
                 .post("/contractagreements/retirements")
+                .then()
+                .log().ifValidationFails();
+    }
+
+    @Deprecated
+    public ValidatableResponse legacyQueryRetiredAgreements() {
+        var query = createObjectBuilder()
+                .add(CONTEXT, managementContext)
+                .add(TYPE, "QuerySpec")
+                .build();
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(query)
+                .when()
+                .post("/contractagreements/retirements/request")
+                .then()
+                .log().ifValidationFails();
+    }
+
+    @Deprecated
+    public ValidatableResponse legacyReactivateAgreement(String agreementId) {
+        return baseManagementRequest()
+                .when()
+                .delete("/contractagreements/retirements/{id}", agreementId)
                 .then()
                 .log().ifValidationFails();
     }

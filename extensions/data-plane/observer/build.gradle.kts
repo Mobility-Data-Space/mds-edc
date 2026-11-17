@@ -11,7 +11,6 @@ dependencies {
     api(libs.edc.core.spi)
     api(libs.edc.control.plane.spi)
     api(project(":extensions:data-plane:data-plane-spi"))
-    implementation(project(":extensions:agreements:retirement-evaluation-spi"))
     implementation(libs.edc.dsp.catalog.transform.lib)
 
     testImplementation(libs.edc.core.lib)

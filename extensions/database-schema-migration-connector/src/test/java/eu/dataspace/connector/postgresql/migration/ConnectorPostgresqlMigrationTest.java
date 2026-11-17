@@ -229,6 +229,65 @@ public class ConnectorPostgresqlMigrationTest {
             assertThat(byId.getDataplaneMetadata().getProperties()).isEqualTo(asset.getDataAddress().getProperties());
         }
     }
+
+    @Nested
+    class V1_13_0 {
+
+        @Test
+        void shouldMoveRetirementEntriesToContractAgreement(ObjectFactory objectFactory, ServiceExtensionContext context) throws SQLException {
+            var participantContextId = UUID.randomUUID().toString();
+            migrateTo(objectFactory, context, "1.12.0", participantContextId);
+
+            try (var connection = createDataSource().getConnection()) {
+                insertAgreement(connection, "retired-agreement", participantContextId);
+                insertAgreement(connection, "active-agreement", participantContextId);
+
+                var insertRetirement = connection.prepareStatement("insert into edc_agreement_retirement(contract_agreement_id, reason, agreement_retirement_date) values (?, ?, ?);");
+                insertRetirement.setString(1, "retired-agreement");
+                insertRetirement.setString(2, "a good reason");
+                insertRetirement.setLong(3, 1234L);
+                insertRetirement.execute();
+
+                insertRetirement.setString(1, "not-existing-agreement");
+                insertRetirement.setString(2, "orphan");
+                insertRetirement.setLong(3, 5678L);
+                insertRetirement.execute();
+            }
+
+            migrateTo(objectFactory, context, "1.13.0", participantContextId);
+
+            try (var connection = createDataSource().getConnection()) {
+                var resultSet = connection.prepareStatement("select agr_id, retired, retirement_reason, retirement_date from edc_contract_agreement order by agr_id;").executeQuery();
+
+                resultSet.next();
+                assertThat(resultSet.getString("agr_id")).isEqualTo("active-agreement");
+                assertThat(resultSet.getBoolean("retired")).isFalse();
+                assertThat(resultSet.getString("retirement_reason")).isNull();
+                assertThat(resultSet.getLong("retirement_date")).isEqualTo(0L);
+
+                resultSet.next();
+                assertThat(resultSet.getString("agr_id")).isEqualTo("retired-agreement");
+                assertThat(resultSet.getBoolean("retired")).isTrue();
+                assertThat(resultSet.getString("retirement_reason")).isEqualTo("a good reason");
+                assertThat(resultSet.getLong("retirement_date")).isEqualTo(1234L);
+
+                assertThat(resultSet.next()).isFalse();
+
+                var legacyTable = connection.prepareStatement("select to_regclass('edc_agreement_retirement');").executeQuery();
+                legacyTable.next();
+                assertThat(legacyTable.getString(1)).isNull();
+            }
+        }
+
+        private void insertAgreement(Connection connection, String id, String participantContextId) throws SQLException {
+            var statement = connection.prepareStatement("insert into edc_contract_agreement(agr_id, agr_agreement_id, asset_id, agr_participant_context_id) values (?, ?, ?, ?);");
+            statement.setString(1, id);
+            statement.setString(2, id);
+            statement.setString(3, "asset-id");
+            statement.setString(4, participantContextId);
+            statement.execute();
+        }
+    }
     private void migrateTo(ObjectFactory objectFactory, ServiceExtensionContext context, String target, String participantContextId) {
         when(context.getConfig()).thenReturn(ConfigFactory.fromMap(Map.of(
                 "edc.participant.context.id", participantContextId,

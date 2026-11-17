@@ -1,38 +1,31 @@
-# Agreements Retirement Extension
+# Agreements Retirement API (deprecated)
 
-This extension is introduced to allow a dataspace dataset provider to _prematurely_ retire an active contract agreement.
+Contract agreement retirement is natively supported by EDC since version 1.0.0: the retirement state
+(`retired`, `retirementReason`, `retirementDate`) is stored on the `ContractAgreement` itself, a policy pre-validator
+registered on the `transfer process` and `policy monitor` scopes terminates running transfers and rejects new ones, and
+the EDC management API exposes:
 
-Contract agreements are immutable entities by design. 
-The word prematurely is used here since contract agreements should only expire once the contractual terms agreed upon between participants no longer holds.
+- `POST /v4/contractagreements/{id}/retire` (body of type `RetireAgreement` with a `reason`)
+- `POST /v4/contractagreements/{id}/unretire`
+- `POST /v4/contractagreements/request` (filter on `retired = true` to list retired agreements)
 
-Even though the previous statements are valid, the need to prematurely retire an active contract agreement exists if, for example, 
-the contract agreement is a digital representation of a physical agreement which might have changed via legal
-mechanisms, hence resulting in a new contract. The digital representation is no longer valid and shouldn't allow any data transfers.
+The former MDS `retirement-evaluation-{spi,core,store-sql}` modules have been removed in favour of the upstream
+implementation, and the `edc_agreement_retirement` table is migrated onto `edc_contract_agreement` by the `V1_13_0`
+database migration. The `ContractAgreementRetired`/`ContractAgreementUnretired` events are now the EDC ones
+(`org.eclipse.edc.connector.controlplane.contract.spi.event.contractagreement`).
 
-## Technical approach
+## retirement-evaluation-api
 
-Since contract agreements are immutable, the following approach was used to represent a contract agreement retirement.
+This module only keeps the legacy `/v3/contractagreements/retirements` and `/v4/contractagreements/retirements`
+endpoints for backward compatibility. They are **deprecated** and delegate every operation to the EDC
+`ContractAgreementService`:
 
-A policy pre validator was introduced that checks if the attached contract agreement exists in the `AgreementRetirementStore`.
-If it exists, the validation is considered failed.
+| Deprecated endpoint                                     | Delegates to                                         |
+|---------------------------------------------------------|------------------------------------------------------|
+| `POST /contractagreements/retirements`                  | `ContractAgreementService.retireAgreement`           |
+| `POST /contractagreements/retirements/request`          | `ContractAgreementService.search` with `retired = true` |
+| `DELETE /contractagreements/retirements/{agreementId}`  | `ContractAgreementService.unretireAgreement`         |
 
-This policy pre validator is registered both in the `policy-monitor` and `transfer` scopes. In both cases, a failed pre validation
-leads to transfer process termination.
-
-An API was created to enable dataset providers to manage `AgreementRetirementEntry` entities in the `AgreementRetirementStore` via an endpoint.
-
-## AgreementRetirementEntry schema
-
-An `AgreementRetirementEntry` is composed of:
-- A contract agreement id.
-- A retirement reason.
-- An agreement retirement timestamp.
-
-`AgreementRetirementEntry` entities can be managed via the `/retireagreements` endpoint of the data management API.
-Please refer to the swagger API spec for detailed examples on how to manage these entities.
-
-## Impact on active or new transfer processes
-
-Once a contract agreement is retired, all active transfer processes related with that agreement
-will be terminated. New transfer process requests made from the consumer using the retired agreement will also fail with an 
-agreement is invalid message.
+The legacy `AgreementsRetirementEntry` request/response format and status codes are preserved (reactivating an agreement
+that is not retired still answers `404`). Query fields `agreementId`, `reason` and `agreementRetirementDate` are
+translated to `id`, `retirementReason` and `retirementDate`.

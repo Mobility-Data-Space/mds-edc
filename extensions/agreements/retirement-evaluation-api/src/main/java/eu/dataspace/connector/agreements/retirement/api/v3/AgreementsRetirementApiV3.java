@@ -22,7 +22,7 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 public interface AgreementsRetirementApiV3 {
 
 
-    @Operation(description = "Get all retired contract agreements.",
+    @Operation(deprecated = true, description = "Deprecated: use /v4/contractagreements instead. Get all retired contract agreements.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "A list of retired contract agreements"),
                     @ApiResponse(responseCode = "400", description = "Request body was malformed",
@@ -30,7 +30,7 @@ public interface AgreementsRetirementApiV3 {
             })
     JsonArray getAllRetiredV3(JsonObject querySpecJson);
 
-    @Operation(description = "Removes a contract agreement from the retired list, reactivating it.",
+    @Operation(deprecated = true, description = "Deprecated: use /v4/contractagreements instead. Removes a contract agreement from the retired list, reactivating it.",
             responses = {
                     @ApiResponse(responseCode = "204", description = "The contract agreement is reactivated"),
                     @ApiResponse(responseCode = "404", description = "No entry for the given agreementId was found"),
@@ -39,7 +39,7 @@ public interface AgreementsRetirementApiV3 {
             })
     void reactivateRetiredV3(@Parameter(name = "agreementId", description = "The contract agreement id") String agreementId);
 
-    @Operation(description = "Retires an active contract agreement.",
+    @Operation(deprecated = true, description = "Deprecated: use /v4/contractagreements instead. Retires an active contract agreement.",
             requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = RetirementSchema.class))),
 
             responses = {

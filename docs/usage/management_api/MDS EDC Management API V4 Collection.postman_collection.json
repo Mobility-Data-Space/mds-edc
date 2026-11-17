@@ -1174,19 +1174,45 @@
               }
             ],
             "url": {
-              "raw": "{{management_url}}/v4/contractagreements/retirements",
+              "raw": "{{management_url}}/v4/contractagreements/{{agreementId}}/retire",
               "host": [
                 "{{management_url}}"
               ],
               "path": [
                 "v4",
                 "contractagreements",
-                "retirements"
+                "{{agreementId}}",
+                "retire"
               ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"@context\": \"https://w3id.org/mobility-dataspace/connector/management/v1\",\n  \"@type\": \"AgreementsRetirementEntry\",\n  \"agreementId\": \"{{agreementId}}\",\n  \"reason\": \"This contract agreement was retired since the physical counterpart is no longer valid.\"\n}"
+              "raw": "{\n  \"@context\": \"https://w3id.org/mobility-dataspace/connector/management/v1\",\n  \"@type\": \"RetireAgreement\",\n  \"reason\": \"This contract agreement was retired since the physical counterpart is no longer valid.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unretire Agreement V4",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{management_url}}/v4/contractagreements/{{agreementId}}/unretire",
+              "host": [
+                "{{management_url}}"
+              ],
+              "path": [
+                "v4",
+                "contractagreements",
+                "{{agreementId}}",
+                "unretire"
+              ]
             }
           },
           "response": []
@@ -1202,45 +1228,30 @@
               }
             ],
             "url": {
-              "raw": "{{management_url}}/v4/contractagreements/retirements/request",
+              "raw": "{{management_url}}/v4/contractagreements/request",
               "host": [
                 "{{management_url}}"
               ],
               "path": [
                 "v4",
                 "contractagreements",
-                "retirements",
                 "request"
               ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"@context\": \"https://w3id.org/mobility-dataspace/connector/management/v1\",\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50\n}"
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Reactivate Agreement V4",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{management_url}}/v4/contractagreements/retirements/{{agreementId}}",
-              "host": [
-                "{{management_url}}"
-              ],
-              "path": [
-                "v4",
-                "contractagreements",
-                "retirements",
-                "{{agreementId}}"
-              ]
+              "raw": "{\n  \"@context\": \"https://w3id.org/mobility-dataspace/connector/management/v1\",\n  \"@type\": \"QuerySpec\",\n  \"offset\": 0,\n  \"limit\": 50,\n  \"filterExpression\": [\n    {\n      \"operandLeft\": \"retired\",\n      \"operator\": \"=\",\n      \"operandRight\": true\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           },
           "response": []
         }
-      ]
+      ],
+      "description": "Contract agreement retirement, natively supported by EDC. The former `/v4/contractagreements/retirements` endpoints are deprecated."
     },
     {
       "name": "Dataplane Selector V4",

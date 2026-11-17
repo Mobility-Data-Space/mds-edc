@@ -14,7 +14,6 @@ dependencies {
     implementation(project(":extensions:data-plane:azure:data-plane-azure-storage"))
 
     implementation(project(":extensions:agreements:retirement-evaluation-api"))
-    implementation(project(":extensions:agreements:retirement-evaluation-core"))
     implementation(project(":extensions:patches"))
     implementation(project(":extensions:embedded-data-plane"))
     implementation(project(":extensions:logging-house-publisher"))

@@ -1,6 +1,6 @@
 package eu.dataspace.connector.agreements.retirement.api.transform;
 
-import eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry;
+import eu.dataspace.connector.agreements.retirement.api.model.AgreementsRetirementEntry;
 import jakarta.json.Json;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.junit.jupiter.api.Test;
@@ -23,10 +23,8 @@ class JsonObjectToAgreementsRetirementEntryTransformerTest {
         var result = transformer.transform(jsonEntry, context);
 
         assertThat(result).isNotNull();
-        assertThat(result).isInstanceOf(AgreementsRetirementEntry.class);
-        assertThat(result.getAgreementId()).isEqualTo("agreementId");
-        assertThat(result.getReason()).isEqualTo("reason");
-        assertThat(result.getAgreementRetirementDate()).isNotNull();
+        assertThat(result.agreementId()).isEqualTo("agreementId");
+        assertThat(result.reason()).isEqualTo("reason");
     }
 
 }
