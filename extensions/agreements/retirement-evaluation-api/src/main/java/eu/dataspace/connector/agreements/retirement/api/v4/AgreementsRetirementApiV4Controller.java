@@ -1,7 +1,7 @@
 package eu.dataspace.connector.agreements.retirement.api.v4;
 
 import eu.dataspace.connector.agreements.retirement.api.BaseAgreementsRetirementApiController;
-import eu.dataspace.connector.agreements.retirement.spi.service.AgreementsRetirementService;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -12,21 +12,21 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import org.eclipse.edc.spi.monitor.Monitor;
-import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import org.eclipse.edc.web.spi.validation.SchemaType;
 
-import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AGREEMENTS_RETIREMENT_ENTRY_TYPE;
+import static eu.dataspace.connector.agreements.retirement.api.model.AgreementsRetirementEntry.AGREEMENTS_RETIREMENT_ENTRY_TYPE;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.edc.spi.query.QuerySpec.EDC_QUERY_SPEC_TYPE_TERM;
 
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 @Path("/v4/contractagreements/retirements")
+@Deprecated(since = "2.9.0")
 public class AgreementsRetirementApiV4Controller extends BaseAgreementsRetirementApiController implements AgreementsRetirementApiV4 {
 
-    public AgreementsRetirementApiV4Controller(AgreementsRetirementService service, TypeTransformerRegistry transformerRegistry, JsonObjectValidatorRegistry validator, Monitor monitor) {
+    public AgreementsRetirementApiV4Controller(ContractAgreementService service, TypeTransformerRegistry transformerRegistry, JsonObjectValidatorRegistry validator, Monitor monitor) {
         super(service, transformerRegistry, validator, monitor);
     }
 

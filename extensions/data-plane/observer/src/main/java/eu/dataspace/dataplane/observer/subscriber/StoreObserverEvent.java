@@ -2,7 +2,7 @@ package eu.dataspace.dataplane.observer.subscriber;
 
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
-import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementRetired;
+import org.eclipse.edc.connector.controlplane.contract.spi.event.contractagreement.ContractAgreementRetired;
 import eu.dataspace.dataplane.observer.ObserverConfig;
 import eu.dataspace.dataplane.observer.model.ObserverContractAgreementRetired;
 import eu.dataspace.dataplane.observer.model.ObserverContractNegotiationFinalized;

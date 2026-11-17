@@ -10,6 +10,8 @@ import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
 import eu.dataspace.connector.tests.tags.DapsTest;
 import eu.dataspace.connector.tests.tags.DcpTest;
+import io.restassured.response.ValidatableResponse;
+import jakarta.json.JsonArray;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,6 +21,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -157,8 +160,72 @@ public class ContractRetirementTest {
         }
 
         @Test
+        void shouldExposeRetirementOnAgreement_andAllowUnretire() {
+            var providerAgreementId = startTransferAndGetProviderAgreementId();
+
+            provider.retireAgreement(providerAgreementId).statusCode(204);
+            provider.retireAgreement(providerAgreementId).statusCode(409);
+
+            var retired = provider.getContractAgreement(providerAgreementId);
+            assertThat(retired.getBoolean("retired")).isTrue();
+            assertThat(retired.getString("retirementReason")).isEqualTo("a good reason");
+
+            provider.unretireAgreement(providerAgreementId).statusCode(204);
+            provider.waitForEvent("ContractAgreementUnretired");
+
+            assertThat(provider.getContractAgreement(providerAgreementId).getBoolean("retired")).isFalse();
+            provider.unretireAgreement(providerAgreementId).statusCode(409);
+        }
+
+        @Test
         void shouldFail_whenAgreementDoesNotExist() {
             provider.retireAgreement(UUID.randomUUID().toString()).statusCode(404);
+            provider.unretireAgreement(UUID.randomUUID().toString()).statusCode(404);
+        }
+
+        @Test
+        @SuppressWarnings("deprecation")
+        void legacyEndpoints_shouldBeWiredToUpstreamRetirement() {
+            var providerAgreementId = startTransferAndGetProviderAgreementId();
+
+            provider.legacyRetireAgreement(providerAgreementId).statusCode(204);
+            provider.legacyRetireAgreement(providerAgreementId).statusCode(409);
+
+            assertThat(provider.getContractAgreement(providerAgreementId).getBoolean("retired")).isTrue();
+            var retiredEntries = retiredAgreementIds(provider.legacyQueryRetiredAgreements().statusCode(200));
+            assertThat(retiredEntries).contains(providerAgreementId);
+
+            provider.legacyReactivateAgreement(providerAgreementId).statusCode(204);
+            provider.legacyReactivateAgreement(providerAgreementId).statusCode(404);
+
+            assertThat(provider.getContractAgreement(providerAgreementId).getBoolean("retired")).isFalse();
+            var entriesAfterReactivation = retiredAgreementIds(provider.legacyQueryRetiredAgreements().statusCode(200));
+            assertThat(entriesAfterReactivation).doesNotContain(providerAgreementId);
+
+            provider.legacyRetireAgreement(UUID.randomUUID().toString()).statusCode(404);
+        }
+
+        private List<String> retiredAgreementIds(ValidatableResponse response) {
+            // the legacy response is untyped, so its properties are compacted with the "edc" prefix
+            return response.extract().body().as(JsonArray.class).stream()
+                    .map(it -> it.asJsonObject().getString("edc:agreementId"))
+                    .toList();
+        }
+
+        private String startTransferAndGetProviderAgreementId() {
+            var assetId = provider.createOffer(Map.of("type", "HttpData", "baseUrl", "https://localhost/any"));
+
+            var consumerTransferProcessId = consumer.requestAssetFrom(assetId, provider)
+                    .withTransferType("HttpData-PULL")
+                    .execute();
+
+            consumer.awaitTransferToBeInState(consumerTransferProcessId, STARTED);
+
+            return provider.getTransferProcesses().stream()
+                    .map(it -> it.asJsonObject())
+                    .filter(it -> it.getString("correlationId").equals(consumerTransferProcessId))
+                    .findFirst().orElseThrow()
+                    .getString("contractId");
         }
     }
 

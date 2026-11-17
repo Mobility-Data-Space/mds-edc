@@ -19,9 +19,10 @@ import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 
 @OpenAPIDefinition(info = @Info(description = "With this API clients can retire an active Contract Agreement. Clients can also list all retired agreements.", title = "Agreements Retirement API", version = "v4"))
 @Tag(name = "Agreements Retirement v4")
+@Deprecated(since = "2.9.0")
 public interface AgreementsRetirementApiV4 {
 
-    @Operation(description = "Get all retired contract agreements.",
+    @Operation(deprecated = true, description = "Deprecated: use /v4/contractagreements instead. Get all retired contract agreements.",
             requestBody = @RequestBody(content = @Content(schema = @Schema(ref = ManagementApiJsonSchema.V4.QUERY_SPEC))),
             responses = {
                     @ApiResponse(responseCode = "200", description = "A list of retired contract agreements"),
@@ -30,7 +31,7 @@ public interface AgreementsRetirementApiV4 {
             })
     JsonArray getAllRetiredV4(JsonObject querySpecJson);
 
-    @Operation(description = "Removes a contract agreement from the retired list, reactivating it.",
+    @Operation(deprecated = true, description = "Deprecated: use /v4/contractagreements instead. Removes a contract agreement from the retired list, reactivating it.",
             responses = {
                     @ApiResponse(responseCode = "204", description = "The contract agreement is reactivated"),
                     @ApiResponse(responseCode = "404", description = "No entry for the given agreementId was found"),
@@ -39,7 +40,7 @@ public interface AgreementsRetirementApiV4 {
             })
     void reactivateRetiredV4(@Parameter(name = "agreementId", description = "The contract agreement id") String agreementId);
 
-    @Operation(description = "Retires an active contract agreement.",
+    @Operation(deprecated = true, description = "Deprecated: use /v4/contractagreements instead. Retires an active contract agreement.",
             requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = RetirementSchema.class))),
             responses = {
                     @ApiResponse(responseCode = "204", description = "The contract agreement was successfully retired"),

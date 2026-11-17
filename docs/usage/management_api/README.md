@@ -47,7 +47,7 @@ The `MANAGEMENT_URL` specifies the base URL of the management API.
 | Catalog | `<MANAGEMENT_URL>/v4/catalog` | [Catalog](./catalog.md) |
 | Contract Negotiation | `<MANAGEMENT_URL>/v4/contractnegotiations` | [Contract Negotiation](./contract_negotiation.md) |
 | Contract Agreement | `<MANAGEMENT_URL>/v4/contractagreements` | [Contract Agreement](./contract_agreement.md) |
-| Contract Agreement Retirement | `<MANAGEMENT_URL>/v4/contractagreements/retirements` | [Contract Agreement Retirement](./contract_retirement.md) |
+| Contract Agreement Retirement | `<MANAGEMENT_URL>/v4/contractagreements/{id}/retire` | [Contract Agreement Retirement](./contract_retirement.md) |
 | Transfer Process | `<MANAGEMENT_URL>/v4/transferprocesses` | [Transfer Process](./transfer_process.md) |
 
 ## Brief JSON-LD Introduction

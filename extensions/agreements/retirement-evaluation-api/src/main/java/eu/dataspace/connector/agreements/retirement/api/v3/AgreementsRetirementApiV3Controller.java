@@ -13,16 +13,17 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 import org.eclipse.edc.validator.spi.JsonObjectValidatorRegistry;
 import eu.dataspace.connector.agreements.retirement.api.BaseAgreementsRetirementApiController;
-import eu.dataspace.connector.agreements.retirement.spi.service.AgreementsRetirementService;
+import org.eclipse.edc.connector.controlplane.services.spi.contractagreement.ContractAgreementService;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 @Path("/v3/contractagreements/retirements")
+@Deprecated(since = "2.9.0")
 public class AgreementsRetirementApiV3Controller extends BaseAgreementsRetirementApiController implements AgreementsRetirementApiV3 {
 
-    public AgreementsRetirementApiV3Controller(AgreementsRetirementService service, TypeTransformerRegistry transformerRegistry, JsonObjectValidatorRegistry validator, Monitor monitor) {
+    public AgreementsRetirementApiV3Controller(ContractAgreementService service, TypeTransformerRegistry transformerRegistry, JsonObjectValidatorRegistry validator, Monitor monitor) {
         super(service, transformerRegistry, validator, monitor);
     }
 

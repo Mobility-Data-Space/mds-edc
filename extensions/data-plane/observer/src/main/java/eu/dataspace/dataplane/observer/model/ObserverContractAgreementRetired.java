@@ -1,6 +1,6 @@
 package eu.dataspace.dataplane.observer.model;
 
-import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementRetired;
+import org.eclipse.edc.connector.controlplane.contract.spi.event.contractagreement.ContractAgreementRetired;
 
 public record ObserverContractAgreementRetired(
         String contractAgreementId

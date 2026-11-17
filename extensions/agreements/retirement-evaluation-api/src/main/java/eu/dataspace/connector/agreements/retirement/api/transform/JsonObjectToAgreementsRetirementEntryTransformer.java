@@ -1,15 +1,16 @@
 package eu.dataspace.connector.agreements.retirement.api.transform;
 
-import eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry;
+import eu.dataspace.connector.agreements.retirement.api.model.AgreementsRetirementEntry;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.jsonld.spi.transformer.JsonLdToModelTransformer;
 import org.eclipse.edc.transform.spi.TransformerContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
-import static eu.dataspace.connector.agreements.retirement.spi.types.AgreementsRetirementEntry.AR_ENTRY_REASON;
+import static eu.dataspace.connector.agreements.retirement.api.model.AgreementsRetirementEntry.AR_ENTRY_AGREEMENT_ID;
+import static eu.dataspace.connector.agreements.retirement.api.model.AgreementsRetirementEntry.AR_ENTRY_REASON;
 
+@Deprecated(since = "2.9.0")
 public class JsonObjectToAgreementsRetirementEntryTransformer extends JsonLdToModelTransformer<JsonObject, AgreementsRetirementEntry> {
 
     public JsonObjectToAgreementsRetirementEntryTransformer() {
@@ -18,13 +19,8 @@ public class JsonObjectToAgreementsRetirementEntryTransformer extends JsonLdToMo
 
     @Override
     public @Nullable AgreementsRetirementEntry transform(@NotNull JsonObject jsonObject, @NotNull TransformerContext context) {
-        var entryBuilder = AgreementsRetirementEntry.Builder.newInstance();
-        entryBuilder.withAgreementId(transformString(jsonObject.get(AR_ENTRY_AGREEMENT_ID), context));
+        var agreementId = transformString(jsonObject.get(AR_ENTRY_AGREEMENT_ID), context);
         var reason = jsonObject.get(AR_ENTRY_REASON);
-        if (reason != null) {
-            entryBuilder.withReason(transformString(reason, context));
-        }
-
-        return entryBuilder.build();
+        return new AgreementsRetirementEntry(agreementId, reason == null ? null : transformString(reason, context), 0L);
     }
 }

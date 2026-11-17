@@ -3,7 +3,7 @@ package eu.dataspace.connector.extension.logginghouse.publisher;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.node.ObjectNode;
 import com.truzzt.extension.logginghouse.client.events.CustomLoggingHouseEvent;
-import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementEvent;
+import org.eclipse.edc.connector.controlplane.contract.spi.event.contractagreement.ContractAgreementEvent;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.EdcException;
 import org.eclipse.edc.spi.event.Event;

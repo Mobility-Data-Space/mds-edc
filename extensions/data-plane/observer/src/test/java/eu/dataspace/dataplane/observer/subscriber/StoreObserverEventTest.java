@@ -1,7 +1,7 @@
 package eu.dataspace.dataplane.observer.subscriber;
 
 import tools.jackson.databind.ObjectMapper;
-import eu.dataspace.connector.agreements.retirement.spi.event.ContractAgreementRetired;
+import org.eclipse.edc.connector.controlplane.contract.spi.event.contractagreement.ContractAgreementRetired;
 import eu.dataspace.dataplane.observer.ObserverConfig;
 import eu.dataspace.dataplane.observer.model.event.ObserverEventStored;
 import eu.dataspace.dataplane.observer.store.ObserverEventStore;
