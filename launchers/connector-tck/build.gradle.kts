@@ -8,14 +8,27 @@ plugins {
 val edcGroupId = "org.eclipse.edc"
 
 configurations.all {
+    // no data plane signaling
     exclude(group = "org.eclipse.edc", module = "data-plane-signaling-core")
     exclude(group = "org.eclipse.edc", module = "data-plane-signaling-oauth2")
     exclude(group = "org.eclipse.edc", module = "data-plane-signaling-oauth2-token-exchange")
+
+    // its ContractNegotiationPendingGuard replaces the tck-extension one: CN:01-01..03, 02-04..06, 03-02..04 fail
+    exclude(group = "eu.dataspace", module = "manual-negotiation-approval")
+    // makes the provider send a second TransferStartMessage on RESUMING: TP:01-04 fails
+    exclude(group = "eu.dataspace", module = "embedded-data-plane")
+
+    // needs embedded-data-plane
+    exclude(group = "eu.dataspace", module = "data-plane")
+    exclude(group = "eu.dataspace", module = "data-plane-management-api")
+    exclude(group = "eu.dataspace", module = "data-plane-aws-s3")
+    exclude(group = "eu.dataspace", module = "data-plane-azure-storage")
 }
 
 dependencies {
-    runtimeOnly(libs.edc.controlplane.base.bom)
+    implementation(project(":launchers:base-connector"))
 
+    // TCK-only
     runtimeOnly(libs.edc.iam.mock)
     runtimeOnly(libs.edc.tck.extension)
     runtimeOnly(libs.bouncycastle.bcpkix)

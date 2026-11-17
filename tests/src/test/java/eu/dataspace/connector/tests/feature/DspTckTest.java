@@ -47,6 +47,7 @@ public class DspTckTest {
                     "edc.participant.id", "participantContextId",
                     "web.api.auth.key", "password",
                     "edc.component.id", "DSP-compatibility-test",
+                    "edc.logginghouse.extension.enabled", "false",
                     "edc.transfer.proxy.token.verifier.publickey.alias", "public-key-alias",
                     "edc.transfer.proxy.token.signer.privatekey.alias", "private-key-alias"
             )))
@@ -73,7 +74,6 @@ public class DspTckTest {
                 .property("dataspacetck.debug", "true")
                 .addPackage("org.eclipse.dataspacetck.dsp.verification")
                 .monitor(monitor)
-                .displayNameMatching(it -> it.startsWith("TP:01-04"))
                 .build()
                 .execute();
 
