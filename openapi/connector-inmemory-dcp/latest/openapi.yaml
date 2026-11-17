@@ -1561,7 +1561,8 @@ paths:
   /v3/contractagreements/retirements/request:
     post:
       deprecated: true
-      description: Get all retired contract agreements.
+      description: "Deprecated: use /v4/contractagreements instead. Get all retired\
+        \ contract agreements."
       operationId: getAllRetiredV3
       responses:
         "200":
@@ -1579,8 +1580,8 @@ paths:
   /v3/contractagreements/retirements/{agreementId}:
     delete:
       deprecated: true
-      description: "Removes a contract agreement from the retired list, reactivating\
-        \ it."
+      description: "Deprecated: use /v4/contractagreements instead. Removes a contract\
+        \ agreement from the retired list, reactivating it."
       operationId: reactivateRetiredV3
       parameters:
       - description: The contract agreement id
@@ -1607,7 +1608,8 @@ paths:
   /v3/contractagreements/retirements:
     post:
       deprecated: true
-      description: Retires an active contract agreement.
+      description: "Deprecated: use /v4/contractagreements instead. Retires an active\
+        \ contract agreement."
       operationId: retireAgreementV3
       requestBody:
         content:
@@ -1631,7 +1633,9 @@ paths:
       - Agreements Retirement
   /v4/contractagreements/retirements/request:
     post:
-      description: Get all retired contract agreements.
+      deprecated: true
+      description: "Deprecated: use /v4/contractagreements instead. Get all retired\
+        \ contract agreements."
       operationId: getAllRetiredV4
       requestBody:
         content:
@@ -1653,8 +1657,9 @@ paths:
       - Agreements Retirement v4
   /v4/contractagreements/retirements/{agreementId}:
     delete:
-      description: "Removes a contract agreement from the retired list, reactivating\
-        \ it."
+      deprecated: true
+      description: "Deprecated: use /v4/contractagreements instead. Removes a contract\
+        \ agreement from the retired list, reactivating it."
       operationId: reactivateRetiredV4
       parameters:
       - description: The contract agreement id
@@ -1680,7 +1685,9 @@ paths:
       - Agreements Retirement v4
   /v4/contractagreements/retirements:
     post:
-      description: Retires an active contract agreement.
+      deprecated: true
+      description: "Deprecated: use /v4/contractagreements instead. Retires an active\
+        \ contract agreement."
       operationId: retireAgreementV4
       requestBody:
         content:
