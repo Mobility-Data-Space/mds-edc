@@ -77,7 +77,9 @@ public interface MdsParticipantFactory {
                 .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
                         "eu.dataspace.wallet.postgresql.migration.schema", postgres.getSchema(),
                         "edc.sql.schema.autocreate", "false",
-                        "edc.encryption.strict", "false"
+                        "edc.encryption.strict", "false",
+                        "edc.iam.accesstoken.jti.validation", "true",
+                        "edc.did.resolver.cache.expiry", "0" // tests can rotate keys under the same DIDs, don't serve stale DID documents
                 )));
         return new Wallet(runtime, participants);
     }

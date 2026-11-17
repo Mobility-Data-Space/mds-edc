@@ -1,5 +1,8 @@
 package eu.dataspace.connector.tests;
 
+import org.eclipse.edc.identityhub.spi.credential.request.model.HolderCredentialRequest;
+import org.eclipse.edc.identityhub.spi.credential.request.model.HolderRequestState;
+import org.eclipse.edc.identityhub.spi.credential.request.store.HolderCredentialRequestStore;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.utils.LazySupplier;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
@@ -42,6 +45,8 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
     @Override
     public void beforeAll(ExtensionContext context) {
         runtime.configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
+                entry("web.http.port", String.valueOf(getFreePort())),
+                entry("web.http.path", "/api"),
                 entry("web.http.credentials.port", String.valueOf(credentialsEndpoint.get().getPort())),
                 entry("web.http.credentials.path", credentialsEndpoint.get().getPath()),
                 entry("web.http.did.port", String.valueOf(didEndpoint.get().getPort())),
@@ -114,6 +119,19 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
 
     public String tokenEndpoint() {
         return stsEndpoint.get() + "/token";
+    }
+
+    public String createPendingCredentialRequest(String holderDid, String issuerDid) {
+        var requestId = UUID.randomUUID().toString();
+        runtime.getService(HolderCredentialRequestStore.class).save(HolderCredentialRequest.Builder.newInstance()
+                .issuerDid(issuerDid)
+                .participantContextId(participantContexts.get(holderDid).participantContextId())
+                .requestId(requestId)
+                .state(HolderRequestState.REQUESTED.code())
+                .requestedCredential("membershipCredential-id", "MembershipCredential", "VC1_0_JWT")
+                .requestedCredential("sensitiveDataCredential-id", "SensitiveDataCredential", "VC1_0_JWT")
+                .build()).orElseThrow(f -> new IllegalStateException(f.getFailureDetail()));
+        return requestId;
     }
 
     public WalletParticipantContextCredentials clientCredentials(String did) {

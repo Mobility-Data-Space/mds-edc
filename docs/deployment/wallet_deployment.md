@@ -70,6 +70,9 @@ EDC_IDENTITYHUB_SUPERUSER_API_KEY=<base64(super-user)>.<random>
 
 # did:web must use HTTPS in production so counterparties can resolve DIDs.
 EDC_IAM_DID_WEB_USE_HTTPS=true
+
+# Replay protection (DCP §4.3.3): reject access tokens whose jti was already used. Off by default in EDC.
+EDC_IAM_ACCESSTOKEN_JTI_VALIDATION=true
 ```
 
 The super-user api-key must be formatted `base64(<EDC_IDENTITYHUB_SUPERUSER_ID>).<random-string>` — a random-only value boots but every subsequent admin call returns 401 with the log line `this key appears to have an invalid format`.
