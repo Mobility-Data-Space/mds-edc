@@ -782,8 +782,7 @@ paths:
       - Contract Negotiation v4
   /v4/contractnegotiations/{id}/approve:
     post:
-      description: Approves a provider contract negotiation held for manual approval
-        in the REQUESTED state.
+      description: Approve a pending negotiation
       operationId: approveNegotiationV4
       parameters:
       - in: path
@@ -792,43 +791,15 @@ paths:
         schema:
           type: string
       responses:
-        "204":
-          description: ContractNegotiation is approved
-          links:
-            poll-state:
-              operationId: getNegotiationStateV4
-        "400":
+        default:
           content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: Request was malformed
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: A contract negotiation with the given ID does not exist
-        "409":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: The contract negotiation is not a provider negotiation held
-            in the REQUESTED state
+            '*/*': {}
+          description: default response
       tags:
-      - Contract Negotiation v4
+      - Manual Negotiation Approval v4
   /v4/contractnegotiations/{id}/reject:
     post:
-      description: Rejects a provider contract negotiation held for manual approval
-        in the REQUESTED state. The counter-party is notified with the fixed reason
-        'Negotiation manually rejected'.
+      description: Reject a pending negotiation
       operationId: rejectNegotiationV4
       parameters:
       - in: path
@@ -836,44 +807,13 @@ paths:
         required: true
         schema:
           type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/contract-reject-schema"
       responses:
-        "204":
-          description: ContractNegotiation is rejected and terminating
-          links:
-            poll-state:
-              operationId: getNegotiationStateV4
-        "400":
+        default:
           content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: Request was malformed
-        "404":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: A contract negotiation with the given ID does not exist
-        "409":
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/api-error-schema"
-                type: array
-          description: The contract negotiation is not a provider negotiation held
-            in the REQUESTED state
+            '*/*': {}
+          description: default response
       tags:
-      - Contract Negotiation v4
+      - Manual Negotiation Approval v4
   /v4/contractnegotiations/{id}/state:
     get:
       description: Gets the state of a contract negotiation with the given ID
@@ -948,6 +888,225 @@ paths:
           description: A contract negotiation with the given ID does not exist
       tags:
       - Contract Negotiation v4
+  /v4/dataflows/{id}/dataaddress:
+    get:
+      description: Retrieve the source data address of a data flow.
+      operationId: getDataAddressV4
+      parameters:
+      - description: The data flow id (matches the transfer process id)
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The source data address of the data flow
+        "404":
+          description: No data flow with the given id exists
+      tags:
+      - DataFlow v4
+  /v4/dataflows/request:
+    post:
+      description: Query the data flows known to the data plane.
+      operationId: requestDataFlowsV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query-spec-schema"
+      responses:
+        "200":
+          description: A list of the matching data flows
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - DataFlow v4
+  /v4/datasources:
+    post:
+      description: Creates a new data source.
+      operationId: createDataSourceV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataSourceExample"
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/id-response-schema"
+          description: The data source was created
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Data Source v4
+    put:
+      description: Updates an existing data source.
+      operationId: updateDataSourceV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DataSourceExample"
+      responses:
+        "204":
+          description: The data source was updated
+        "404":
+          description: No data source with the given id exists
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Data Source v4
+  /v4/datasources/{id}:
+    delete:
+      description: Deletes a data source by id.
+      operationId: deleteDataSourceV4
+      parameters:
+      - description: The data source id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: The data source was deleted
+        "404":
+          description: No data source with the given id exists
+      tags:
+      - Data Source v4
+    get:
+      description: Gets a data source by id.
+      operationId: getDataSourceV4
+      parameters:
+      - description: The data source id
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The data source
+        "404":
+          description: No data source with the given id exists
+      tags:
+      - Data Source v4
+  /v4/datasources/request:
+    post:
+      description: "Query the data sources, filtering over name and type only."
+      operationId: requestDataSourcesV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query-spec-schema"
+      responses:
+        "200":
+          description: A list of the matching data sources
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Data Source v4
+  /{any}:
+    delete:
+      description: Send `DELETE` data query to the Data Plane.
+      operationId: delete
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+      tags:
+      - Data Plane public API
+    get:
+      description: Send `GET` data query to the Data Plane.
+      operationId: get
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+      tags:
+      - Data Plane public API
+    head:
+      description: Send `HEAD` data query to the Data Plane.
+      operationId: head
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+      tags:
+      - Data Plane public API
+    patch:
+      description: Send `PATCH` data query to the Data Plane.
+      operationId: patch
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+      tags:
+      - Data Plane public API
+    post:
+      description: Send `POST` data query to the Data Plane.
+      operationId: post
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+      tags:
+      - Data Plane public API
+    put:
+      description: Send `PUT` data query to the Data Plane.
+      operationId: put
+      responses:
+        "400":
+          description: Missing access token
+        "403":
+          description: Access token is expired or invalid
+        "500":
+          description: Failed to transfer data
+      tags:
+      - Data Plane public API
   /v4/dataplanes:
     get:
       description: Returns a list of all currently registered data plane instances
@@ -1026,6 +1185,42 @@ paths:
           description: A query could not be completed due to an internal error
       tags:
       - Catalogs v5
+  /v3/contractnegotiations/{id}/approve:
+    post:
+      deprecated: true
+      description: Approve a pending negotiation
+      operationId: approveNegotiation
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            '*/*': {}
+          description: default response
+      tags:
+      - Manual Negotiation Approval
+  /v3/contractnegotiations/{id}/reject:
+    post:
+      deprecated: true
+      description: Reject a pending negotiation
+      operationId: rejectNegotiation
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        default:
+          content:
+            '*/*': {}
+          description: default response
+      tags:
+      - Manual Negotiation Approval
   /v4/policydefinitions:
     post:
       description: Creates a new policy definition
@@ -1262,6 +1457,157 @@ paths:
             \ not exists"
       tags:
       - Policy Definition v4
+  /v3/contractagreements/retirements/request:
+    post:
+      deprecated: true
+      description: "Deprecated: use /v4/contractagreements instead. Get all retired\
+        \ contract agreements."
+      operationId: getAllRetiredV3
+      responses:
+        "200":
+          description: A list of retired contract agreements
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Agreements Retirement
+  /v3/contractagreements/retirements/{agreementId}:
+    delete:
+      deprecated: true
+      description: "Deprecated: use /v4/contractagreements instead. Removes a contract\
+        \ agreement from the retired list, reactivating it."
+      operationId: reactivateRetiredV3
+      parameters:
+      - description: The contract agreement id
+        in: path
+        name: agreementId
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: The contract agreement is reactivated
+        "404":
+          description: No entry for the given agreementId was found
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Agreements Retirement
+  /v3/contractagreements/retirements:
+    post:
+      deprecated: true
+      description: "Deprecated: use /v4/contractagreements instead. Retires an active\
+        \ contract agreement."
+      operationId: retireAgreementV3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RetirementExample"
+      responses:
+        "204":
+          description: The contract agreement was successfully retired
+        "409":
+          description: The contract agreement is already retired
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Agreements Retirement
+  /v4/contractagreements/retirements/request:
+    post:
+      deprecated: true
+      description: "Deprecated: use /v4/contractagreements instead. Get all retired\
+        \ contract agreements."
+      operationId: getAllRetiredV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query-spec-schema"
+      responses:
+        "200":
+          description: A list of retired contract agreements
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Agreements Retirement v4
+  /v4/contractagreements/retirements/{agreementId}:
+    delete:
+      deprecated: true
+      description: "Deprecated: use /v4/contractagreements instead. Removes a contract\
+        \ agreement from the retired list, reactivating it."
+      operationId: reactivateRetiredV4
+      parameters:
+      - description: The contract agreement id
+        in: path
+        name: agreementId
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: The contract agreement is reactivated
+        "404":
+          description: No entry for the given agreementId was found
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Agreements Retirement v4
+  /v4/contractagreements/retirements:
+    post:
+      deprecated: true
+      description: "Deprecated: use /v4/contractagreements instead. Retires an active\
+        \ contract agreement."
+      operationId: retireAgreementV4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RetirementExample"
+      responses:
+        "204":
+          description: The contract agreement was successfully retired
+        "409":
+          description: The contract agreement is already retired
+        "400":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request body was malformed
+      tags:
+      - Agreements Retirement v4
   /v4/transferprocesses:
     post:
       description: "Initiates a data transfer with the given parameters. Due to the\
@@ -3547,27 +3893,6 @@ components:
       required:
       - '@type'
       type: object
-    contract-reject-schema:
-      allOf:
-      - $ref: "#/components/schemas/RejectNegotiation"
-      title: ContractRejectSchema
-      type: object
-    RejectNegotiation:
-      properties:
-        '@context':
-          allOf:
-          - $ref: "#/components/schemas/ContextSchema"
-          example: {}
-          items:
-            type: string
-          title: ContextSchema
-          type: array
-        '@type':
-          type: string
-      required:
-      - '@context'
-      - '@type'
-      type: object
     NegotiationState:
       example:
         '@context': {}
@@ -3610,6 +3935,25 @@ components:
       required:
       - '@context'
       - '@type'
+      type: object
+    DataSourceExample:
+      example:
+        '@context': https://w3id.org/mobility-dataspace/connector/management/v1
+        '@type': DataSource
+        '@id': data-source-id
+        name: My HTTP backend
+        type: HttpData
+        properties:
+          baseUrl: https://backend.example.com/data
+          authKey: Authorization
+          secretName: backend-credential-alias
+      properties:
+        '@id':
+          type: string
+        name:
+          type: string
+        type:
+          type: string
       type: object
     DataPlaneInstanceSchemaV4:
       example:
@@ -4180,6 +4524,35 @@ components:
       - '@type'
       - errors
       - isValid
+      type: object
+    ApiErrorDetail:
+      example:
+        message: message
+        type: type
+        path: path
+        invalidValue: {}
+      properties:
+        message:
+          type: string
+        type:
+          type: string
+        path:
+          type: string
+        invalidValue:
+          type: object
+      type: object
+    RetirementExample:
+      example:
+        '@context': https://w3id.org/mobility-dataspace/connector/management/v1
+        '@type': AgreementsRetirementEntry
+        agreementId: contract-agreement-id
+        reason: This contract agreement was retired since the physical counterpart
+          is no longer valid.
+      properties:
+        '@id':
+          type: string
+        reason:
+          type: string
       type: object
     transfer-request-schema:
       allOf:
