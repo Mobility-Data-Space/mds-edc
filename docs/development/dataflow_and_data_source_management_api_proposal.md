@@ -114,7 +114,7 @@ response reuses EDC's upstream `DataAddress` transformer. A thin injected `DataF
 + the new `findAll`, mirroring how the retirement controller delegates to `AgreementsRetirementService`.
 
 > **Secrets:** a `source` / `destination` `DataAddress` may reference a vault key alias. The response must surface the
-> alias, never a resolved secret, consistent with `VaultDataAddressStorePatch`.
+> alias, never a resolved secret, consistent with how EDC's `VaultDataAddressStore` keeps it out of the database.
 
 ### Part 2 — Data Source feature
 
@@ -180,7 +180,7 @@ Built as the four-module quartet used by `retirement-evaluation`: a `datasource-
 
 The `edc_data_source` table holds only the queryable attributes — `id`, `name`, `type` — and acts as the lookup index
 for `POST /v4/datasources/request`. The `properties` are sensitive backend configuration, **stored in the vault** keyed
-by data source id and hydrated on read, mirroring `VaultDataAddressStorePatch`. The migration adds `edc_data_source`
+by data source id and hydrated on read, mirroring EDC's `VaultDataAddressStore`. The migration adds `edc_data_source`
 after the current head (`V1_11_0__Asset_DataAddress_DataplaneMetadata.sql`), as `V1_12_0`.
 
 ## Implementation Plan
@@ -207,7 +207,7 @@ These were open during drafting and are now settled:
 - **Data sources live in the vault, queried only by name and type.** A data source is sensitive backend configuration,
   so its `properties` are stored in the vault, keyed by id — never in the connector database. There is no need to query
   over `properties`: data sources are looked up only by `name` and `type`, which are kept in the `edc_data_source` table
-  as a small queryable index (mirroring `VaultDataAddressStorePatch`). `DataFlow` source/destination addresses likewise
+  as a small queryable index (mirroring EDC's `VaultDataAddressStore`). `DataFlow` source/destination addresses likewise
   reference vault key aliases, never raw credentials.
 
 ## References
