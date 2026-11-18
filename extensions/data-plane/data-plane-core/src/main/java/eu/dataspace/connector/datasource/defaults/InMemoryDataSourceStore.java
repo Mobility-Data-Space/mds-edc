@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 /**
  * In-memory implementation of {@link DataSourceStore}. The queryable index ({@code id}, {@code name}, {@code type} plus
  * timestamps) is kept in memory, while the opaque {@code properties} are stored in the {@link Vault} keyed by data
- * source id and hydrated on read, mirroring the way {@code VaultDataAddressStorePatch} keeps addresses out of the
+ * source id and hydrated on read, mirroring the way EDC's {@code VaultDataAddressStore} keeps addresses out of the
  * connector storage.
  */
 public class InMemoryDataSourceStore implements DataSourceStore {

@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 /**
  * PostgreSQL {@link DataSourceStore}. The queryable index ({@code id}, {@code name}, {@code type} plus timestamps) is
  * persisted in {@code edc_data_source}, while the opaque {@code properties} are stored in the {@link Vault} keyed by
- * data source id and hydrated on read, mirroring {@code VaultDataAddressStorePatch} and the in-memory store.
+ * data source id and hydrated on read, mirroring EDC's {@code VaultDataAddressStore} and the in-memory store.
  */
 public class SqlDataSourceStore extends AbstractSqlStore implements DataSourceStore {
 
