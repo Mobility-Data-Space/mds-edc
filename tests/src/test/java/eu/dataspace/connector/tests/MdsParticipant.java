@@ -123,6 +123,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 entry("edc.transfer.proxy.token.signer.privatekey.alias", "private-key-alias"),
 
                 entry("edc.logginghouse.extension.enabled", "false"),
+                entry("edc.negotiation.approval.enabled", "true"),
 
                 // DCP settings
                 entry("edc.iam.did.web.use.https", "false"),

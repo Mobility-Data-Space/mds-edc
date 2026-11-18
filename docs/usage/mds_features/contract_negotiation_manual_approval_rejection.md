@@ -34,6 +34,15 @@ With manual approval enabled:
 
 ### Enabling Manual Approval
 
+The EDC manual approval must be enabled on the provider connector with the following setting (environment variable
+`EDC_NEGOTIATION_APPROVAL_ENABLED`):
+
+```properties
+edc.negotiation.approval.enabled = true
+```
+
+Without it, negotiations are never held, and a warning is logged at startup.
+
 To enable manual approval for specific contract offers, set the following **private property** on the contract definition:
 
 ```text
