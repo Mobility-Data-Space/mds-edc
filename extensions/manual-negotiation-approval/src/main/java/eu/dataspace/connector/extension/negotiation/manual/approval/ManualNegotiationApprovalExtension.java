@@ -1,57 +1,37 @@
 package eu.dataspace.connector.extension.negotiation.manual.approval;
 
-import eu.dataspace.connector.extension.negotiation.manual.approval.api.ManualNegotiationApprovalApiController;
-import eu.dataspace.connector.extension.negotiation.manual.approval.api.v4.ManualNegotiationApprovalApiV4Controller;
-import eu.dataspace.connector.extension.negotiation.manual.approval.command.ApproveNegotiationCommandHandler;
-import eu.dataspace.connector.extension.negotiation.manual.approval.command.RejectNegotiationCommandHandler;
 import eu.dataspace.connector.extension.negotiation.manual.approval.logic.ManualNegotiationApprovalPendingGuard;
-import eu.dataspace.connector.extension.negotiation.manual.approval.logic.ManualNegotiationApprovalService;
-import org.eclipse.edc.connector.controlplane.contract.spi.negotiation.ContractNegotiationPendingGuard;
-import org.eclipse.edc.connector.controlplane.contract.spi.negotiation.store.ContractNegotiationStore;
+import org.eclipse.edc.connector.controlplane.contract.spi.negotiation.ContractNegotiationPendingGuardRegistry;
 import org.eclipse.edc.connector.controlplane.contract.spi.offer.store.ContractDefinitionStore;
+import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
-import org.eclipse.edc.runtime.metamodel.annotation.Provider;
-import org.eclipse.edc.spi.command.CommandHandlerRegistry;
-import org.eclipse.edc.spi.event.EventRouter;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
-import org.eclipse.edc.transaction.spi.TransactionContext;
-import org.eclipse.edc.web.spi.WebService;
 
-import java.time.Clock;
+import static eu.dataspace.connector.extension.negotiation.manual.approval.ManualNegotiationApprovalExtension.NAME;
 
-import static org.eclipse.edc.web.spi.configuration.ApiContext.MANAGEMENT;
-
+/**
+ * Holds provider negotiations for manual approval when the contract definition has the {@code manualApproval} private
+ * property set to {@code true}. Approval and rejection are handled by the EDC contract negotiation API.
+ */
+@Extension(NAME)
 public class ManualNegotiationApprovalExtension implements ServiceExtension {
 
+    static final String NAME = "Manual Negotiation Approval";
+
     @Inject
-    private WebService webService;
-    @Inject
-    private TransactionContext transactionContext;
-    @Inject
-    private CommandHandlerRegistry commandHandlerRegistry;
-    @Inject
-    private ContractNegotiationStore contractNegotiationStore;
+    private ContractNegotiationPendingGuardRegistry pendingGuardRegistry;
     @Inject
     private ContractDefinitionStore contractDefinitionStore;
-    @Inject
-    private EventRouter eventRouter;
-    @Inject
-    private Clock clock;
+
+    @Override
+    public String name() {
+        return NAME;
+    }
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        commandHandlerRegistry.register(new ApproveNegotiationCommandHandler(contractNegotiationStore, eventRouter, clock));
-        commandHandlerRegistry.register(new RejectNegotiationCommandHandler(contractNegotiationStore, eventRouter, clock));
-
-        var service = new ManualNegotiationApprovalService(transactionContext, commandHandlerRegistry);
-        webService.registerResource(MANAGEMENT, new ManualNegotiationApprovalApiController(service));
-        webService.registerResource(MANAGEMENT, new ManualNegotiationApprovalApiV4Controller(service));
-    }
-
-    @Provider
-    public ContractNegotiationPendingGuard contractNegotiationPendingGuard() {
-        return new ManualNegotiationApprovalPendingGuard(contractDefinitionStore);
+        pendingGuardRegistry.register(new ManualNegotiationApprovalPendingGuard(contractDefinitionStore));
     }
 
 }
