@@ -6,6 +6,7 @@ plugins {
 dependencies {
     implementation(libs.edc.core.spi)
     implementation(libs.edc.core.lib)
+    implementation(libs.json.schema.validator)
 
     testImplementation(libs.assertj)
     testImplementation(libs.edc.junit)
