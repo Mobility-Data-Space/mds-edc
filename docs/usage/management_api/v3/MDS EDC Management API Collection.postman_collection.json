@@ -1054,46 +1054,6 @@
           "response": []
         },
         {
-          "name": "Approve Negotiation V3",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{management_url}}/v3/contractnegotiations/{{negotiationId}}/approve",
-              "host": [
-                "{{management_url}}"
-              ],
-              "path": [
-                "v3",
-                "contractnegotiations",
-                "{{negotiationId}}",
-                "approve"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Reject Negotiation V3",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{management_url}}/v3/contractnegotiations/{{negotiationId}}/reject",
-              "host": [
-                "{{management_url}}"
-              ],
-              "path": [
-                "v3",
-                "contractnegotiations",
-                "{{negotiationId}}",
-                "reject"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "Terminate Negotiation V3",
           "request": {
             "method": "POST",

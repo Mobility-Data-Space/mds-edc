@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import jakarta.json.JsonObject;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -114,26 +115,12 @@ public class ContractNegotiationManualApprovalTest {
 
         @Test
         void shouldManuallyApproveNegotiation() {
-            Map<String, Object> dataAddressProperties = Map.of(
-                    EDC_NAMESPACE + "type", "HttpData",
-                    EDC_NAMESPACE + "baseUrl", "http://localhost/any"
-            );
-
-            var assetId = createOfferWithManualApproval(dataAddressProperties);
+            var assetId = createOfferWithManualApproval();
             var consumerContractNegotiationId = consumer.initContractNegotiation(provider, assetId);
 
-            await().untilAsserted(() -> {
-                assertThat(consumer.getContractNegotiationState(consumerContractNegotiationId)).isEqualTo(REQUESTED.name());
-            });
+            var pending = awaitPendingOnProvider(consumerContractNegotiationId);
 
-            var providerNegotiationId = consumer.getContractNegotiation(consumerContractNegotiationId).getString("correlationId");
-            var pending = await().until(() -> provider.getPendingNegotiation(providerNegotiationId), Objects::nonNull);
-            assertThat(pending.asJsonObject().getString("state")).isEqualTo(REQUESTED.name());
-
-            provider.baseManagementRequest()
-                    .post("/contractnegotiations/{id}/approve", pending.asJsonObject().getString(ID))
-                    .then()
-                    .statusCode(204);
+            provider.approveNegotiation(pending.getString(ID)).statusCode(204);
 
             await().untilAsserted(() -> {
                 assertThat(consumer.getContractNegotiationState(consumerContractNegotiationId)).isEqualTo(FINALIZED.name());
@@ -142,27 +129,12 @@ public class ContractNegotiationManualApprovalTest {
 
         @Test
         void shouldManuallyRejectNegotiation() {
-            Map<String, Object> dataAddressProperties = Map.of(
-                    EDC_NAMESPACE + "type", "HttpData",
-                    EDC_NAMESPACE + "baseUrl", "http://localhost/any"
-            );
-
-            var assetId = createOfferWithManualApproval(dataAddressProperties);
-
+            var assetId = createOfferWithManualApproval();
             var consumerContractNegotiationId = consumer.initContractNegotiation(provider, assetId);
 
-            await().untilAsserted(() -> {
-                assertThat(consumer.getContractNegotiationState(consumerContractNegotiationId)).isEqualTo(REQUESTED.name());
-            });
+            var pending = awaitPendingOnProvider(consumerContractNegotiationId);
 
-            var providerNegotiationId = consumer.getContractNegotiation(consumerContractNegotiationId).getString("correlationId");
-            var pending = await().until(() -> provider.getPendingNegotiation(providerNegotiationId), Objects::nonNull);
-            assertThat(pending.asJsonObject().getString("state")).isEqualTo(REQUESTED.name());
-
-            provider.baseManagementRequest()
-                    .post("/contractnegotiations/{id}/reject", pending.asJsonObject().getString(ID))
-                    .then()
-                    .statusCode(204);
+            provider.rejectNegotiation(pending.getString(ID)).statusCode(204);
 
             await().untilAsserted(() -> {
                 assertThat(consumer.getContractNegotiationState(consumerContractNegotiationId)).isEqualTo(TERMINATED.name());
@@ -171,27 +143,16 @@ public class ContractNegotiationManualApprovalTest {
 
         @Test
         void shouldManuallyApproveNegotiationWithEvents() {
-            Map<String, Object> dataAddressProperties = Map.of(
-                    EDC_NAMESPACE + "type", "HttpData",
-                    EDC_NAMESPACE + "baseUrl", "http://localhost/any"
-            );
-
-            var assetId = createOfferWithManualApproval(dataAddressProperties);
+            var assetId = createOfferWithManualApproval();
             var consumerNegotiationId = consumer.initContractNegotiation(provider, assetId);
 
             var contractNegotiationRequested = provider.waitForEvent("ContractNegotiationRequested");
-
             var providerNegotiationId = contractNegotiationRequested.getJsonObject("payload").getString("contractNegotiationId");
 
             consumer.waitForEvent("ContractNegotiationRequested");
-            await().untilAsserted(() -> {
-                provider.baseManagementRequest()
-                        .post("/contractnegotiations/{id}/approve", providerNegotiationId)
-                        .then()
-                        .statusCode(204);
-            });
+            await().untilAsserted(() -> provider.approveNegotiation(providerNegotiationId).statusCode(204));
 
-            provider.waitForEvent("ContractNegotiationManuallyApproved");
+            provider.waitForEvent("ContractNegotiationApproved");
             var contractNegotiationFinalized = consumer.waitForEvent("ContractNegotiationFinalized");
 
             assertThat(contractNegotiationFinalized.getJsonObject("payload").getString("contractNegotiationId")).isEqualTo(consumerNegotiationId);
@@ -200,80 +161,70 @@ public class ContractNegotiationManualApprovalTest {
 
         @Test
         void shouldManuallyRejectNegotiationWithEvents() {
-            Map<String, Object> dataAddressProperties = Map.of(
-                    EDC_NAMESPACE + "type", "HttpData",
-                    EDC_NAMESPACE + "baseUrl", "http://localhost/any"
-            );
-
-            var assetId = createOfferWithManualApproval(dataAddressProperties);
+            var assetId = createOfferWithManualApproval();
             var consumerNegotiationId = consumer.initContractNegotiation(provider, assetId);
 
             var contractNegotiationRequested = provider.waitForEvent("ContractNegotiationRequested");
             var providerNegotiationId = contractNegotiationRequested.getJsonObject("payload").getString("contractNegotiationId");
 
             consumer.waitForEvent("ContractNegotiationRequested");
-            await().untilAsserted(() -> {
-                provider.baseManagementRequest()
-                        .post("/contractnegotiations/{id}/reject", providerNegotiationId)
-                        .then()
-                        .statusCode(204);
-            });
+            await().untilAsserted(() -> provider.rejectNegotiation(providerNegotiationId).statusCode(204));
 
-            provider.waitForEvent("ContractNegotiationManuallyRejected");
-            var contractNegotiationFinalized = consumer.waitForEvent("ContractNegotiationTerminated");
+            provider.waitForEvent("ContractNegotiationRejected");
+            var contractNegotiationTerminated = consumer.waitForEvent("ContractNegotiationTerminated");
 
-            assertThat(contractNegotiationFinalized.getJsonObject("payload").getString("contractNegotiationId")).isEqualTo(consumerNegotiationId);
+            assertThat(contractNegotiationTerminated.getJsonObject("payload").getString("contractNegotiationId")).isEqualTo(consumerNegotiationId);
             assertThat(consumer.getContractNegotiationState(consumerNegotiationId)).isEqualTo(TERMINATED.name());
         }
 
         @Test
         void shouldReturnConflict_whenApprovalOnConsumerSide() {
-            Map<String, Object> dataAddressProperties = Map.of(
-                    EDC_NAMESPACE + "type", "HttpData",
-                    EDC_NAMESPACE + "baseUrl", "http://localhost/any"
-            );
-
-            var assetId = createOfferWithManualApproval(dataAddressProperties);
+            var assetId = createOfferWithManualApproval();
             var consumerContractNegotiationId = consumer.initContractNegotiation(provider, assetId);
 
             await().untilAsserted(() -> {
                 assertThat(consumer.getContractNegotiationState(consumerContractNegotiationId)).isEqualTo(REQUESTED.name());
             });
 
-            consumer.baseManagementRequest()
-                    .post("/contractnegotiations/{id}/approve", consumerContractNegotiationId)
-                    .then()
-                    .statusCode(409);
+            consumer.approveNegotiation(consumerContractNegotiationId).statusCode(409);
         }
 
         @Test
         void shouldReturnConflict_whenRejectionOnConsumerSide() {
-            Map<String, Object> dataAddressProperties = Map.of(
-                    EDC_NAMESPACE + "type", "HttpData",
-                    EDC_NAMESPACE + "baseUrl", "http://localhost/any"
-            );
-
-            var assetId = createOfferWithManualApproval(dataAddressProperties);
+            var assetId = createOfferWithManualApproval();
             var consumerContractNegotiationId = consumer.initContractNegotiation(provider, assetId);
 
             await().untilAsserted(() -> {
                 assertThat(consumer.getContractNegotiationState(consumerContractNegotiationId)).isEqualTo(REQUESTED.name());
             });
 
-            consumer.baseManagementRequest()
-                    .post("/contractnegotiations/{id}/reject", consumerContractNegotiationId)
-                    .then()
-                    .statusCode(409);
+            consumer.rejectNegotiation(consumerContractNegotiationId).statusCode(409);
         }
 
-        private String createOfferWithManualApproval(Map<String, Object> dataAddressProperties) {
+        private JsonObject awaitPendingOnProvider(String consumerContractNegotiationId) {
+            await().untilAsserted(() -> {
+                assertThat(consumer.getContractNegotiationState(consumerContractNegotiationId)).isEqualTo(REQUESTED.name());
+            });
+
+            var providerNegotiationId = consumer.getContractNegotiation(consumerContractNegotiationId).getString("correlationId");
+            var pending = await().until(() -> provider.getPendingNegotiation(providerNegotiationId), Objects::nonNull);
+            assertThat(pending.getString("state")).isEqualTo(REQUESTED.name());
+            return pending;
+        }
+
+        private String createOfferWithManualApproval() {
             var assetId = UUID.randomUUID().toString();
-            provider.createAsset(assetId, emptyMap(), dataAddressProperties);
+            provider.createAsset(assetId, emptyMap(), dataAddressProperties());
             var noConstraintPolicyId = provider.createPolicyDefinition(noConstraintPolicy());
-
             provider.createContractDefinitionWithManualApproval(assetId, noConstraintPolicyId);
-
             return assetId;
+        }
+
+        private Map<String, Object> dataAddressProperties() {
+            return Map.of(
+                    EDC_NAMESPACE + "type", "HttpData",
+                    EDC_NAMESPACE + "baseUrl", "http://localhost/any"
+            );
         }
     }
 }

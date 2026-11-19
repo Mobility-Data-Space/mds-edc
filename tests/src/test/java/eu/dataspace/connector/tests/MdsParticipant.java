@@ -123,6 +123,7 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 entry("edc.transfer.proxy.token.signer.privatekey.alias", "private-key-alias"),
 
                 entry("edc.logginghouse.extension.enabled", "false"),
+                entry("edc.negotiation.approval.enabled", "true"),
 
                 // DCP settings
                 entry("edc.iam.did.web.use.https", "false"),
@@ -512,6 +513,30 @@ public class MdsParticipant extends Participant implements BeforeAllCallback, Af
                 .contentType(JSON)
                 .extract().jsonPath()
                 .getString(ID);
+    }
+
+    public ValidatableResponse approveNegotiation(String negotiationId) {
+        return baseManagementRequest()
+                .contentType(JSON)
+                .when()
+                .post("/contractnegotiations/{id}/approve", negotiationId)
+                .then()
+                .log().ifValidationFails();
+    }
+
+    public ValidatableResponse rejectNegotiation(String negotiationId) {
+        var body = createObjectBuilder()
+                .add(CONTEXT, managementContext)
+                .add(TYPE, "RejectNegotiation")
+                .build();
+
+        return baseManagementRequest()
+                .contentType(JSON)
+                .body(body)
+                .when()
+                .post("/contractnegotiations/{id}/reject", negotiationId)
+                .then()
+                .log().ifValidationFails();
     }
 
     public String createContractDefinitionWithManualApproval(String assetId, String policyId) {

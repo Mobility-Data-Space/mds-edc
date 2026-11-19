@@ -34,6 +34,15 @@ With manual approval enabled:
 
 ### Enabling Manual Approval
 
+The EDC manual approval must be enabled on the provider connector with the following setting (environment variable
+`EDC_NEGOTIATION_APPROVAL_ENABLED`):
+
+```properties
+edc.negotiation.approval.enabled = true
+```
+
+Without it, negotiations are never held, and a warning is logged at startup.
+
 To enable manual approval for specific contract offers, set the following **private property** on the contract definition:
 
 ```text
@@ -104,33 +113,35 @@ Query for negotiations waiting for approval using the contract negotiations requ
 
 To approve a pending negotiation:
 
-**Endpoint**: `POST /v3/contractnegotiations/{negotiationId}/approve`
+**Endpoint**: `POST /v4/contractnegotiations/{negotiationId}/approve`
 
 **Example**:
 
 ```bash
-curl -X POST "https://provider.example.com/api/management/v3/contractnegotiations/negotiation-123/approve" \
-  -H "X-Api-Key: your-api-key" \
-  -H "Content-Type: application/json"
+curl -X POST "https://provider.example.com/api/management/v4/contractnegotiations/negotiation-123/approve" \
+  -H "X-Api-Key: your-api-key"
 ```
 
-**Result**: Negotiation moves from "REQUESTED" to "AGREED" state.
+**Result**: Negotiation moves from "REQUESTED" to "AGREED" state, a `ContractNegotiationApproved` event is emitted.
 
 ### Rejecting a Negotiation
 
 To reject a pending negotiation:
 
-**Endpoint**: `POST /v3/contractnegotiations/{negotiationId}/reject`
+**Endpoint**: `POST /v4/contractnegotiations/{negotiationId}/reject`
 
 **Example**:
 
 ```bash
-curl -X POST "https://provider.example.com/api/management/v3/contractnegotiations/negotiation-123/reject" \
+curl -X POST "https://provider.example.com/api/management/v4/contractnegotiations/negotiation-123/reject" \
   -H "X-Api-Key: your-api-key" \
-  -H "Content-Type: application/json"
+  -H "Content-Type: application/json" \
+  -d '{"@context": "https://w3id.org/mobility-dataspace/connector/management/v1", "@type": "RejectNegotiation"}'
 ```
 
-**Result**: Negotiation moves to "TERMINATED" state
+**Result**: Negotiation moves to "TERMINATED" state, a `ContractNegotiationRejected` event is emitted.
+
+Both endpoints answer `409 Conflict` when the negotiation is not a provider negotiation pending in "REQUESTED" state.
 
 ## Consumer Experience
 

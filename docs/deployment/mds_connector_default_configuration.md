@@ -57,6 +57,10 @@ edc.iam.token.scope = "idsc:IDS_CONNECTOR_ATTRIBUTES_ALL"
 edc.oauth.endpoint.audience = "idsc:IDS_CONNECTORS_ALL"
 edc.agent.identity.key = "referringConnector"
 
+# Manual Negotiation Approval
+# Required to hold negotiations whose contract definition has the `manualApproval` private property
+edc.negotiation.approval.enabled = true
+
 # Logging House configuration
 edc.logginghouse.extension.enabled = true
 edc.logginghouse.extension.url = "https://logging_house.url"

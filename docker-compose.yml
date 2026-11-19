@@ -65,6 +65,9 @@ services:
       EDC_TRANSFER_PROXY_TOKEN_VERIFIER_PUBLICKEY_ALIAS: "transfer-proxy-token-signer-public-key"
       EDC_TRANSFER_PROXY_TOKEN_SIGNER_PRIVATEKEY_ALIAS: "transfer-proxy-token-signer-private-key"
 
+      # Manual Negotiation Approval
+      EDC_NEGOTIATION_APPROVAL_ENABLED: "true"
+
       # Logging House Configuration
       EDC_LOGGINGHOUSE_EXTENSION_ENABLED: "true"
       EDC_LOGGINGHOUSE_EXTENSION_URL: ${LOGGING_HOUSE_URL}

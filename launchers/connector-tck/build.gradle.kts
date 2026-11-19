@@ -13,8 +13,6 @@ configurations.all {
     exclude(group = "org.eclipse.edc", module = "data-plane-signaling-oauth2")
     exclude(group = "org.eclipse.edc", module = "data-plane-signaling-oauth2-token-exchange")
 
-    // its ContractNegotiationPendingGuard replaces the tck-extension one: CN:01-01..03, 02-04..06, 03-02..04 fail
-    exclude(group = "eu.dataspace", module = "manual-negotiation-approval")
     // makes the provider send a second TransferStartMessage on RESUMING: TP:01-04 fails
     exclude(group = "eu.dataspace", module = "embedded-data-plane")
 

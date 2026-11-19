@@ -800,6 +800,60 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Approve Negotiation V4",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{management_url}}/v4/contractnegotiations/{{negotiationId}}/approve",
+              "host": [
+                "{{management_url}}"
+              ],
+              "path": [
+                "v4",
+                "contractnegotiations",
+                "{{negotiationId}}",
+                "approve"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Negotiation V4",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{management_url}}/v4/contractnegotiations/{{negotiationId}}/reject",
+              "host": [
+                "{{management_url}}"
+              ],
+              "path": [
+                "v4",
+                "contractnegotiations",
+                "{{negotiationId}}",
+                "reject"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"@context\": \"https://w3id.org/mobility-dataspace/connector/management/v1\",\n  \"@type\": \"RejectNegotiation\"\n}"
+            }
+          },
+          "response": []
         }
       ]
     },
