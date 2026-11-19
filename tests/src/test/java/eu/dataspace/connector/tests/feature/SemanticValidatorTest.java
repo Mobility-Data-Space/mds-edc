@@ -81,4 +81,29 @@ public class SemanticValidatorTest {
         assertThat(id).isNotNull();
     }
 
+    @Test
+    void shouldPassSemanticValidation_whenMobilityThemeIsSplitInMultipleNodes() {
+        var requestBody = """
+                    {
+                      "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
+                      "@type": "Asset",
+                      "properties": {
+                        "dct:title": "My Asset",
+                        "mobilitydcatap:mobilityTheme": [
+                          { "mobilitydcatap-theme:data-content-category": "FILLING_AND_CHARGING_STATIONS" },
+                          { "mobilitydcatap-theme:data-content-sub-category": "AVAILABILITY_OF_FILLING_STATIONS" }
+                        ]
+                      },
+                      "dataAddress": {
+                        "type": "HttpData",
+                        "baseUrl": "https://example.com/"
+                      }
+                    }
+                    """;
+
+        var id = CONNECTOR.createAsset(requestBody);
+
+        assertThat(id).isNotNull();
+    }
+
 }

@@ -201,7 +201,9 @@ The following transport modes are supported:
 
 ## Semantic Validation
 
-The MDS connector performs semantic validation during asset creation:
+The MDS connector performs semantic validation during asset creation. The rules are defined as a
+[JSON Schema (draft 2020-12)](../../../extensions/semantic-validator/src/main/resources/mds-asset-schema.json)
+that is applied to the **expanded** JSON-LD form of the asset, so property names are full IRIs and literal values are JSON-LD value objects (`[{"@value": "..."}]`), independently of the prefixes used in the request.
 
 ### Validation Steps
 
