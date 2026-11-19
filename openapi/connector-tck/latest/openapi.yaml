@@ -782,7 +782,8 @@ paths:
       - Contract Negotiation v4
   /v4/contractnegotiations/{id}/approve:
     post:
-      description: Approve a pending negotiation
+      description: Approves a provider contract negotiation held for manual approval
+        in the REQUESTED state.
       operationId: approveNegotiationV4
       parameters:
       - in: path
@@ -791,15 +792,43 @@ paths:
         schema:
           type: string
       responses:
-        default:
+        "204":
+          description: ContractNegotiation is approved
+          links:
+            poll-state:
+              operationId: getNegotiationStateV4
+        "400":
           content:
-            '*/*': {}
-          description: default response
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request was malformed
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: A contract negotiation with the given ID does not exist
+        "409":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: The contract negotiation is not a provider negotiation held
+            in the REQUESTED state
       tags:
-      - Manual Negotiation Approval v4
+      - Contract Negotiation v4
   /v4/contractnegotiations/{id}/reject:
     post:
-      description: Reject a pending negotiation
+      description: Rejects a provider contract negotiation held for manual approval
+        in the REQUESTED state. The counter-party is notified with the fixed reason
+        'Negotiation manually rejected'.
       operationId: rejectNegotiationV4
       parameters:
       - in: path
@@ -807,13 +836,44 @@ paths:
         required: true
         schema:
           type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/contract-reject-schema"
       responses:
-        default:
+        "204":
+          description: ContractNegotiation is rejected and terminating
+          links:
+            poll-state:
+              operationId: getNegotiationStateV4
+        "400":
           content:
-            '*/*': {}
-          description: default response
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: Request was malformed
+        "404":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: A contract negotiation with the given ID does not exist
+        "409":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/api-error-schema"
+                type: array
+          description: The contract negotiation is not a provider negotiation held
+            in the REQUESTED state
       tags:
-      - Manual Negotiation Approval v4
+      - Contract Negotiation v4
   /v4/contractnegotiations/{id}/state:
     get:
       description: Gets the state of a contract negotiation with the given ID
@@ -1185,42 +1245,6 @@ paths:
           description: A query could not be completed due to an internal error
       tags:
       - Catalogs v5
-  /v3/contractnegotiations/{id}/approve:
-    post:
-      deprecated: true
-      description: Approve a pending negotiation
-      operationId: approveNegotiation
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          content:
-            '*/*': {}
-          description: default response
-      tags:
-      - Manual Negotiation Approval
-  /v3/contractnegotiations/{id}/reject:
-    post:
-      deprecated: true
-      description: Reject a pending negotiation
-      operationId: rejectNegotiation
-      parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: string
-      responses:
-        default:
-          content:
-            '*/*': {}
-          description: default response
-      tags:
-      - Manual Negotiation Approval
   /v4/policydefinitions:
     post:
       description: Creates a new policy definition
@@ -3891,6 +3915,27 @@ components:
           minItems: 1
           type: array
       required:
+      - '@type'
+      type: object
+    contract-reject-schema:
+      allOf:
+      - $ref: "#/components/schemas/RejectNegotiation"
+      title: ContractRejectSchema
+      type: object
+    RejectNegotiation:
+      properties:
+        '@context':
+          allOf:
+          - $ref: "#/components/schemas/ContextSchema"
+          example: {}
+          items:
+            type: string
+          title: ContextSchema
+          type: array
+        '@type':
+          type: string
+      required:
+      - '@context'
       - '@type'
       type: object
     NegotiationState:
