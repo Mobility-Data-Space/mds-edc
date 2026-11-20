@@ -5,6 +5,7 @@ import org.eclipse.edc.identityhub.spi.credential.request.model.HolderRequestSta
 import org.eclipse.edc.identityhub.spi.credential.request.store.HolderCredentialRequestStore;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.junit.utils.LazySupplier;
+import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -44,7 +45,18 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        runtime.configurationProvider(() -> ConfigFactory.fromMap(Map.ofEntries(
+        runtime.configurationProvider(this::configuration);
+
+        runtime.boot();
+
+        for (var participant : participants) {
+            var did = didFor(participant);
+            participantContexts.put(did.get(), registerParticipantContext(did));
+        }
+    }
+
+    public Config configuration() {
+        return ConfigFactory.fromMap(Map.ofEntries(
                 entry("web.http.port", String.valueOf(getFreePort())),
                 entry("web.http.path", "/api"),
                 entry("web.http.credentials.port", String.valueOf(credentialsEndpoint.get().getPort())),
@@ -58,14 +70,7 @@ public class Wallet implements BeforeAllCallback, AfterAllCallback {
                 entry("edc.identityhub.superuser.id", SUPER_USER),
                 entry("edc.identityhub.superuser.api.key", SUPER_USER_API_KEY),
                 entry("edc.iam.did.web.use.https", "false")
-        )));
-
-        runtime.boot();
-
-        for (var participant : participants) {
-            var did = didFor(participant);
-            participantContexts.put(did.get(), registerParticipantContext(did));
-        }
+        ));
     }
 
     @Override
