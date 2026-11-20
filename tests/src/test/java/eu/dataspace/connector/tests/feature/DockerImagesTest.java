@@ -6,6 +6,7 @@ import eu.dataspace.connector.tests.Wallet;
 import eu.dataspace.connector.tests.extensions.PostgresqlExtension;
 import eu.dataspace.connector.tests.extensions.SovityDapsExtension;
 import eu.dataspace.connector.tests.extensions.VaultExtension;
+import eu.dataspace.connector.tests.tags.DockerTest;
 import org.eclipse.edc.junit.extensions.EmbeddedRuntime;
 import org.eclipse.edc.spi.system.configuration.Config;
 import org.junit.jupiter.api.Nested;
@@ -35,6 +36,7 @@ import static org.eclipse.edc.junit.testfixtures.TestUtils.findBuildRoot;
  * extensions whose absence would go unnoticed, because EDC would silently fall back to a default provider
  * (e.g. InMemoryVault, in-memory stores).
  */
+@DockerTest
 class DockerImagesTest {
 
     private static final Pattern INITIALIZED = Pattern.compile("^DEBUG \\S+ Initialized (.+)$");
