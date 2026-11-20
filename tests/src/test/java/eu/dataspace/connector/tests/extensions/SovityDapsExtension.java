@@ -108,13 +108,15 @@ public class SovityDapsExtension implements BeforeAllCallback, AfterAllCallback 
     }
 
     public SystemExtension seedDapsKeyPair() {
-        return SeedVault.fromMap(context -> {
-            var client = Client.valueOf(context.getConfig().getString("edc.participant.id"));
-            return Map.of(
-                    "daps-private-key", client.encodedPrivateKey(),
-                    "daps-certificate", client.encodedCertificate()
-            );
-        });
+        return SeedVault.fromMap(context -> dapsKeyPair(context.getConfig().getString("edc.participant.id")));
+    }
+
+    public Map<String, String> dapsKeyPair(String participantId) {
+        var client = Client.valueOf(participantId);
+        return Map.of(
+                "daps-private-key", client.encodedPrivateKey(),
+                "daps-certificate", client.encodedCertificate()
+        );
     }
 
     private @NotNull ClientScopeRepresentation createScope(String name) {
