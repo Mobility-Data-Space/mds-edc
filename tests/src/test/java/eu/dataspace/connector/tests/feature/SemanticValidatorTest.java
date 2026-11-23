@@ -2,12 +2,29 @@ package eu.dataspace.connector.tests.feature;
 
 import eu.dataspace.connector.tests.MdsParticipant;
 import eu.dataspace.connector.tests.MdsParticipantFactory;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
+import static jakarta.json.Json.createObjectBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SemanticValidatorTest {
+
+    private static final Path VOCABULARY_DOCUMENTATION = Path.of("../docs/usage/mds_features/mds_vocabulary_semantics.md");
+    private static final Pattern JSON_BLOCK = Pattern.compile("```json\\n(.*?)```", Pattern.DOTALL);
+    private static final String MANAGEMENT_CONTEXT = "https://w3id.org/mobility-dataspace/connector/management/v1";
 
     @RegisterExtension
     private static final MdsParticipant CONNECTOR = MdsParticipantFactory.inMemory("connector");
@@ -104,6 +121,44 @@ public class SemanticValidatorTest {
         var id = CONNECTOR.createAsset(requestBody);
 
         assertThat(id).isNotNull();
+    }
+
+    @ParameterizedTest
+    @MethodSource("documentationExamples")
+    void shouldAcceptDocumentationExamples(JsonObject example) {
+        var requestBody = example.containsKey("@type") ? example : assetWithProperties(example);
+
+        var id = CONNECTOR.createAsset(requestBody.toString());
+
+        assertThat(id).isNotNull();
+    }
+
+    /**
+     * JSON examples of the vocabulary documentation: complete assets are submitted as they are, property fragments are
+     * merged into a minimal asset. The block showing the bare context is skipped.
+     */
+    private static Stream<JsonObject> documentationExamples() throws IOException {
+        var examples = JSON_BLOCK.matcher(Files.readString(VOCABULARY_DOCUMENTATION)).results()
+                .map(match -> Json.createReader(new StringReader(match.group(1))).readObject())
+                .filter(example -> !example.keySet().equals(Set.of("@context")))
+                .toList();
+        assertThat(examples).as("JSON examples in %s", VOCABULARY_DOCUMENTATION).isNotEmpty();
+        return examples.stream();
+    }
+
+    private static JsonObject assetWithProperties(JsonObject properties) {
+        return createObjectBuilder()
+                .add("@context", MANAGEMENT_CONTEXT)
+                .add("@type", "Asset")
+                .add("properties", createObjectBuilder()
+                        .add("dct:title", "My Asset")
+                        .add("mobilitydcatap:mobilityTheme", createObjectBuilder()
+                                .add("mobilitydcatap-theme:data-content-category", "OTHER"))
+                        .addAll(createObjectBuilder(properties)))
+                .add("dataAddress", createObjectBuilder()
+                        .add("type", "HttpData")
+                        .add("baseUrl", "https://example.com/"))
+                .build();
     }
 
 }

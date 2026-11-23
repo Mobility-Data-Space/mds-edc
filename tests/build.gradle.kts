@@ -39,3 +39,7 @@ dependencies {
     testFixturesApi(libs.bouncycastle.bcpkix)
     testFixturesApi(libs.nimbus.jwt)
 }
+
+tasks.test {
+    inputs.file(rootProject.file("docs/usage/mds_features/mds_vocabulary_semantics.md"))
+}

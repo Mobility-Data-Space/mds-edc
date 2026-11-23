@@ -14,3 +14,8 @@ dependencies {
     testImplementation(libs.junit.platform.launcher)
     testImplementation(libs.mockito.core)
 }
+
+tasks.test {
+    inputs.file(rootProject.file("docs/usage/mds_features/mds_vocabulary_semantics.md"))
+    providers.gradleProperty("updateDocs").orNull?.let { systemProperty("updateDocs", it) }
+}
