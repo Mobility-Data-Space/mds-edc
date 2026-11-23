@@ -9,6 +9,7 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.security.Vault;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.system.configuration.Config;
 import org.eclipse.edc.spi.system.configuration.ConfigFactory;
 
 import java.util.Map;
@@ -74,14 +75,18 @@ public interface MdsParticipantFactory {
         var runtime = new EmbeddedRuntime(name, ":launchers:wallet")
                 .configurationProvider(() -> vault.getConfig(name))
                 .configurationProvider(() -> postgres.getConfig(name))
-                .configurationProvider(() -> ConfigFactory.fromMap(Map.of(
-                        "eu.dataspace.wallet.postgresql.migration.schema", postgres.getSchema(),
-                        "edc.sql.schema.autocreate", "false",
-                        "edc.encryption.strict", "false",
-                        "edc.iam.accesstoken.jti.validation", "true",
-                        "edc.did.resolver.cache.expiry", "0" // tests can rotate keys under the same DIDs, don't serve stale DID documents
-                )));
+                .configurationProvider(() -> walletConfiguration(postgres));
         return new Wallet(runtime, participants);
+    }
+
+    static Config walletConfiguration(PostgresqlExtension postgres) {
+        return ConfigFactory.fromMap(Map.of(
+                "eu.dataspace.wallet.postgresql.migration.schema", postgres.getSchema(),
+                "edc.sql.schema.autocreate", "false",
+                "edc.encryption.strict", "false",
+                "edc.iam.accesstoken.jti.validation", "true",
+                "edc.did.resolver.cache.expiry", "0" // tests can rotate keys under the same DIDs, don't serve stale DID documents
+        ));
     }
 
     private static EmbeddedRuntime baseRuntime(String name, String module, MdsParticipant participant) {
