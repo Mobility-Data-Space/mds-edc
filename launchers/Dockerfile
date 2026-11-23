@@ -1,4 +1,4 @@
-FROM eclipse-temurin:25-jre-alpine-3.21
+FROM eclipse-temurin:25.0.5.1_2-jre-alpine-3.24
 
 RUN apk -U upgrade --no-cache
 
