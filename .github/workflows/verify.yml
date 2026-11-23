@@ -42,6 +42,29 @@ jobs:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ github.token }}
 
+  dockerfile-base-image:
+    name: Dockerfile base image is fully pinned
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check eclipse-temurin tag is explicit
+        run: |
+          # Dependabot tends to propose generic tags (e.g. 25-jre-alpine-3.21): the JRE version must stay explicit,
+          # e.g. 25.0.6-jre-alpine-3.24, 25.0.5_8-jre-alpine-3.24 or 25.0.5.1_2-jre-alpine-3.24
+          pattern='^FROM eclipse-temurin:[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?(_[0-9]+)?-jre-alpine-[0-9]+\.[0-9]+$'
+          dockerfile=launchers/Dockerfile
+          status=0
+          while IFS=: read -r line content; do
+            if ! grep -qE "$pattern" <<< "$content"; then
+              echo "::error file=$dockerfile,line=$line::Base image tag must be fully explicit (<major>.<minor>.<patch>[.<n>][_<build>]-jre-alpine-<x.y>), got: $content"
+              status=1
+            fi
+          done < <(grep -nE '^FROM ' "$dockerfile")
+          exit $status
+
   filesystem-scan:
     name: Trivy Filesystem & Secrets Scan
     runs-on: ubuntu-latest
