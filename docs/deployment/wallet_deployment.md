@@ -186,6 +186,10 @@ EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS=wallet.example.com-sts-client-secret
 EDC_IAM_STS_OAUTH_TOKEN_URL=${WALLET_HOST}/api/sts/token
 EDC_IAM_TRUSTEDISSUER_ISSUER_ID=${ISSUER_DID}
 EDC_IAM_TRUSTEDISSUER_ISSUER_SUPPORTEDTYPES=["MembershipCredential"]
+# Request the MembershipCredential on every outgoing DSP message
+EDC_IAM_DCP_SCOPES_MEMBERSHIP_ID=membership
+EDC_IAM_DCP_SCOPES_MEMBERSHIP_TYPE=DEFAULT
+EDC_IAM_DCP_SCOPES_MEMBERSHIP_VALUE=org.eclipse.dspace.dcp.vc.type:MembershipCredential:read
 ```
 
 The connector reads `EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS` from **its own** Vault, not from the wallet's Vault — store the client secret returned by the participant-registration call at that alias in the connector's Vault before the connector boots.

@@ -102,7 +102,7 @@ Leave the DAPS entries (`daps-private-key`, `daps-public-key`) in place — the 
 
 ### 3. Apply the configuration diff
 
-This is the whole migration. Remove nine variables, add seven, change one.
+This is the whole migration. Remove nine variables, add ten, change one.
 
 **Remove** — DAPS-only:
 
@@ -131,6 +131,9 @@ EDC_IAM_STS_OAUTH_CLIENT_SECRET_ALIAS=wallet.example.com-sts-client-secret
 EDC_IAM_STS_OAUTH_TOKEN_URL=https://wallet.example.com/api/sts/token
 EDC_IAM_TRUSTEDISSUER_ISSUER_ID=did:web:issuer.mobility-dataspace.eu
 EDC_IAM_TRUSTEDISSUER_ISSUER_SUPPORTEDTYPES=["MembershipCredential"]
+EDC_IAM_DCP_SCOPES_MEMBERSHIP_ID=membership
+EDC_IAM_DCP_SCOPES_MEMBERSHIP_TYPE=DEFAULT
+EDC_IAM_DCP_SCOPES_MEMBERSHIP_VALUE=org.eclipse.dspace.dcp.vc.type:MembershipCredential:read
 EDC_IAM_DID_WEB_USE_HTTPS=true
 ```
 
@@ -141,6 +144,7 @@ EDC_IAM_DID_WEB_USE_HTTPS=true
 | `EDC_IAM_STS_OAUTH_TOKEN_URL` | your wallet's STS endpoint |
 | `EDC_IAM_TRUSTEDISSUER_ISSUER_ID` | the MDS issuer DID |
 | `EDC_IAM_TRUSTEDISSUER_ISSUER_SUPPORTEDTYPES` | `["MembershipCredential"]` |
+| `EDC_IAM_DCP_SCOPES_MEMBERSHIP_*` | registers `MembershipCredential` as a default DCP scope, so it is requested on every outgoing DSP message (catalog requests included). Without it the counter-party receives no `MembershipCredential` and rejects the request. |
 | `EDC_IAM_DID_WEB_USE_HTTPS` | `true` — required in production |
 
 ### 4. Restart
