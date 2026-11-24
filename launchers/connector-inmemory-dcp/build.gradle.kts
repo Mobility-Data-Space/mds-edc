@@ -16,7 +16,6 @@ configurations.all {
 
 dependencies {
     implementation(project(":launchers:base-connector"))
-    implementation(project(":extensions:dcp"))
     runtimeOnly(libs.edc.controlplane.dcp.bom)
 }
 
