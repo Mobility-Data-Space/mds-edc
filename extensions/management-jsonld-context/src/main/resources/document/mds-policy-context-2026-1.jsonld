@@ -1,0 +1,15 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@protected": true,
+
+    "mds-policy": "https://w3id.org/mobility-dataspace/2026/1/policy/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "ParticipantId": "mds-policy:ParticipantId",
+    "Membership": "mds-policy:Membership",
+    "Group": "mds-policy:Group",
+    "EvaluationTime": "mds-policy:EvaluationTime",
+    "ManualApproval": "mds-policy:ManualApproval"
+  }
+}
