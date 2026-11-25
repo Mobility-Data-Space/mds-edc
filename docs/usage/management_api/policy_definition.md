@@ -86,6 +86,54 @@ Content-Type: application/json
 
 The constraint is evaluated on catalog requests, contract negotiations and transfer processes, so non-members don't see the offer in the catalog.
 
+### ParticipantId
+
+Defined by the [MDS ODRL Profile](https://w3id.org/mobility-dataspace/2026/1/policy/) as
+`https://w3id.org/mobility-dataspace/2026/1/policy/ParticipantId`: the counterparty's `did:web` DID.
+Requires DCP: the DID is read from the `credentialSubject.id` of the MDS `MembershipCredential` presented by the
+counterparty (see [Membership](#membership) for how the credential is recognized). Under DAPS no credentials are
+presented, so it always fails.
+
+| Operators             | Right operand                                                   |
+|-----------------------|-----------------------------------------------------------------|
+| `eq`, `neq`           | one DID: a non-empty string without `,`                         |
+| `isAnyOf`, `isNoneOf` | one or more DIDs: a list of strings (or a single string)        |
+
+Any other operator or right operand fails the evaluation.
+`neq` and `isNoneOf` exclude participants from the MDS members: they fail for a counterparty that doesn't present
+an MDS `MembershipCredential`.
+
+Add the MDS policy context to use the short `ParticipantId` name:
+
+```http
+POST /v4/policydefinitions
+Content-Type: application/json
+
+{
+  "@context": [
+    "https://w3id.org/edc/connector/management/v2",
+    "https://w3id.org/mobility-dataspace/connector/management/v1",
+    "https://w3id.org/mobility-dataspace/2026/1/policy/context.jsonld"
+  ],
+  "@type": "PolicyDefinition",
+  "@id": "selected-participants",
+  "policy": {
+    "@type": "Set",
+    "permission": [{
+      "action": "use",
+      "constraint": [{
+        "leftOperand": "ParticipantId",
+        "operator": "isAnyOf",
+        "rightOperand": ["did:web:connector.mobility-provider.example", "did:web:operator.example"]
+      }]
+    }]
+  }
+}
+```
+
+The constraint is evaluated on catalog requests, contract negotiations and transfer processes.
+It is meant to replace [REFERRING_CONNECTOR](#referring_connector) once DCP is the only supported identity protocol.
+
 ### REFERRING_CONNECTOR
 
 The `rightOperand` will be checked against the `referringConnector` claim.

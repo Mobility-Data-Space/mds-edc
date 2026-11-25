@@ -49,6 +49,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class PoliciesTest {
 
     private static final String MDS_MEMBERSHIP = "https://w3id.org/mobility-dataspace/2026/1/policy/Membership";
+    private static final String MDS_PARTICIPANT_ID = "https://w3id.org/mobility-dataspace/2026/1/policy/ParticipantId";
 
     private static final MdsParticipant RUNTIME = MdsParticipant.Builder.newInstance()
             .id("runtime").name("runtime")
@@ -177,6 +178,75 @@ public class PoliciesTest {
         assertThat(stored).isNotNull();
         var constraint = (AtomicConstraint) stored.getPolicy().getPermissions().get(0).getConstraints().get(0);
         assertThat(constraint.getLeftExpression()).isEqualTo(new LiteralExpression(MDS_MEMBERSHIP));
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ParticipantAgentContexts.class)
+    void participantId_shouldEvaluatePolicy(Function<ParticipantAgent, PolicyContext> contextProvider) {
+        var policyEngine = RUNTIME_EXTENSION.getService(PolicyEngine.class);
+        var policy = Policy.Builder.newInstance()
+                .permission(Permission.Builder.newInstance()
+                        .action(Action.Builder.newInstance().type(ODRL_USE_ACTION_ATTRIBUTE).build())
+                        .constraint(AtomicConstraint.Builder.newInstance()
+                                .leftExpression(new LiteralExpression(MDS_PARTICIPANT_ID))
+                                .operator(Operator.EQ)
+                                .rightExpression(new LiteralExpression("did:web:consumer"))
+                                .build())
+                        .build()
+                )
+                .build();
+
+        assertThat(policyEngine.evaluate(policy, contextProvider.apply(member("did:web:consumer")))).isSucceeded();
+        assertThat(policyEngine.evaluate(policy, contextProvider.apply(member("did:web:another")))).isFailed();
+        assertThat(policyEngine.evaluate(policy, contextProvider.apply(new ParticipantAgent("did:web:consumer", emptyMap(), emptyMap())))).isFailed();
+    }
+
+    @Test
+    void participantId_shouldEvaluatePolicyCreatedWithListRightOperand() {
+        var policyDefinition = Json.createObjectBuilder()
+                .add("@context", Json.createArrayBuilder()
+                        .add("https://w3id.org/edc/connector/management/v2")
+                        .add("https://w3id.org/mobility-dataspace/connector/management/v1")
+                        .add("https://w3id.org/mobility-dataspace/2026/1/policy/context.jsonld"))
+                .add("@type", "PolicyDefinition")
+                .add("@id", "mds-participant-ids")
+                .add("policy", Json.createObjectBuilder()
+                        .add("@type", "Set")
+                        .add("permission", Json.createArrayBuilder().add(Json.createObjectBuilder()
+                                .add("action", "use")
+                                .add("constraint", Json.createArrayBuilder().add(Json.createObjectBuilder()
+                                        .add("leftOperand", "ParticipantId")
+                                        .add("operator", "isAnyOf")
+                                        .add("rightOperand", Json.createArrayBuilder().add("did:web:consumer").add("did:web:operator")))))))
+                .build();
+
+        RUNTIME.baseManagementRequest()
+                .contentType(JSON)
+                .body(policyDefinition.toString())
+                .post("/policydefinitions")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200);
+
+        var stored = RUNTIME_EXTENSION.getService(PolicyDefinitionService.class).findById(RUNTIME.getId(), "mds-participant-ids");
+        assertThat(stored).isNotNull();
+        var constraint = (AtomicConstraint) stored.getPolicy().getPermissions().get(0).getConstraints().get(0);
+        assertThat(constraint.getLeftExpression()).isEqualTo(new LiteralExpression(MDS_PARTICIPANT_ID));
+
+        var policyEngine = RUNTIME_EXTENSION.getService(PolicyEngine.class);
+        assertThat(policyEngine.evaluate(stored.getPolicy(), new CatalogPolicyContext(member("did:web:operator")))).isSucceeded();
+        assertThat(policyEngine.evaluate(stored.getPolicy(), new CatalogPolicyContext(member("did:web:another")))).isFailed();
+    }
+
+    private ParticipantAgent member(String did) {
+        var membershipCredential = VerifiableCredential.Builder.newInstance()
+                .contexts(List.of("https://www.w3.org/ns/credentials/v2", "https://w3id.org/mobility-dataspace/2026/1/credentials/context.jsonld"))
+                .types(List.of("VerifiableCredential", "MembershipCredential"))
+                .issuer(new Issuer("did:web:issuer"))
+                .issuanceDate(Instant.now())
+                .credentialSubject(CredentialSubject.Builder.newInstance().id(did).claim("holderIdentifier", "consumer").build())
+                .build();
+        return new ParticipantAgent(did, Map.of("vc", List.of(membershipCredential)), emptyMap());
     }
 
     private Policy membershipPolicy() {

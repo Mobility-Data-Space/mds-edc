@@ -51,6 +51,8 @@ public class MembershipPolicyExtension implements ServiceExtension {
     @Inject
     private PolicyEngine policyEngine;
 
+    private final MdsMembershipCredentials mdsMembershipCredentials = new MdsMembershipCredentials();
+
     @Override
     public String name() {
         return NAME;
@@ -66,9 +68,9 @@ public class MembershipPolicyExtension implements ServiceExtension {
     private <C extends ParticipantAgentPolicyContext> void registerFunctionAndBindTo(Class<C> contextClass, String scope) {
         ruleBindingRegistry.bind(ODRL_USE_ACTION_ATTRIBUTE, scope);
         ruleBindingRegistry.bind(MEMBERSHIP_CONSTRAINT_KEY, scope);
-        policyEngine.registerFunction(contextClass, Permission.class, MEMBERSHIP_CONSTRAINT_KEY, new MembershipPolicyFunction<>());
-        policyEngine.registerFunction(contextClass, Duty.class, MEMBERSHIP_CONSTRAINT_KEY, new MembershipPolicyFunction<>());
-        policyEngine.registerFunction(contextClass, Prohibition.class, MEMBERSHIP_CONSTRAINT_KEY, new MembershipPolicyFunction<>());
+        policyEngine.registerFunction(contextClass, Permission.class, MEMBERSHIP_CONSTRAINT_KEY, new MembershipPolicyFunction<>(mdsMembershipCredentials));
+        policyEngine.registerFunction(contextClass, Duty.class, MEMBERSHIP_CONSTRAINT_KEY, new MembershipPolicyFunction<>(mdsMembershipCredentials));
+        policyEngine.registerFunction(contextClass, Prohibition.class, MEMBERSHIP_CONSTRAINT_KEY, new MembershipPolicyFunction<>(mdsMembershipCredentials));
     }
 
 }
