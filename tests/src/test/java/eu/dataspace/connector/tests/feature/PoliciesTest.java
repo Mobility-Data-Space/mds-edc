@@ -133,6 +133,7 @@ public class PoliciesTest {
         var policyEngine = RUNTIME_EXTENSION.getService(PolicyEngine.class);
         var policy = membershipPolicy();
         var membershipCredential = VerifiableCredential.Builder.newInstance()
+                .contexts(List.of("https://www.w3.org/ns/credentials/v2", "https://w3id.org/mobility-dataspace/2026/1/credentials/context.jsonld"))
                 .types(List.of("VerifiableCredential", "MembershipCredential"))
                 .issuer(new Issuer("did:web:issuer"))
                 .issuanceDate(Instant.now())

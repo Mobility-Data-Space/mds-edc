@@ -24,7 +24,6 @@ import org.eclipse.edc.policy.model.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.Instant;
 import java.util.List;
@@ -36,12 +35,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MembershipPolicyFunctionTest {
 
+    private static final String VC2_CONTEXT = "https://www.w3.org/ns/credentials/v2";
+    private static final String MDS_CREDENTIALS_CONTEXT = "https://w3id.org/mobility-dataspace/2026/1/credentials/context.jsonld";
+
     private final MembershipPolicyFunction<Rule, ParticipantAgentPolicyContext> function = new MembershipPolicyFunction<>();
 
-    @ParameterizedTest
-    @ValueSource(strings = {"MembershipCredential", "https://w3id.org/mobility-dataspace/2026/1/credentials/MembershipCredential"})
-    void shouldReturnTrue_whenMembershipCredentialIsPresented(String type) {
-        var context = contextWithCredentials(credential("VerifiableCredential", type));
+    @Test
+    void shouldReturnTrue_whenMembershipCredentialWithMdsContextIsPresented() {
+        var context = contextWithCredentials(credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "MembershipCredential"));
+
+        var result = function.evaluate(Operator.EQ, "active", null, context);
+
+        assertThat(result).isTrue();
+        assertThat(context.hasProblems()).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrue_whenMembershipCredentialIsTypedWithMdsIri() {
+        var context = contextWithCredentials(credential(List.of(VC2_CONTEXT), "VerifiableCredential", "https://w3id.org/mobility-dataspace/2026/1/credentials/MembershipCredential"));
 
         var result = function.evaluate(Operator.EQ, "active", null, context);
 
@@ -52,8 +63,8 @@ class MembershipPolicyFunctionTest {
     @Test
     void shouldReturnTrue_whenMembershipCredentialIsPresentedAmongOthers() {
         var context = contextWithCredentials(
-                credential("VerifiableCredential", "GroupMembershipCredential"),
-                credential("VerifiableCredential", "MembershipCredential"));
+                credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "GroupMembershipCredential"),
+                credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "MembershipCredential"));
 
         var result = function.evaluate(Operator.EQ, "active", null, context);
 
@@ -62,17 +73,37 @@ class MembershipPolicyFunctionTest {
 
     @Test
     void shouldReturnFalse_whenNoMembershipCredentialIsPresented() {
-        var context = contextWithCredentials(credential("VerifiableCredential", "GroupMembershipCredential"));
+        var context = contextWithCredentials(credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "GroupMembershipCredential"));
 
         var result = function.evaluate(Operator.EQ, "active", null, context);
 
         assertThat(result).isFalse();
-        assertThat(context.getProblems()).anyMatch(it -> it.contains("No MembershipCredential"));
+        assertThat(context.getProblems()).anyMatch(it -> it.contains("No MDS MembershipCredential"));
+    }
+
+    @Test
+    void shouldReturnFalse_whenMembershipCredentialHasNoMdsContext() {
+        var context = contextWithCredentials(credential(List.of(VC2_CONTEXT), "VerifiableCredential", "MembershipCredential"));
+
+        var result = function.evaluate(Operator.EQ, "active", null, context);
+
+        assertThat(result).isFalse();
+        assertThat(context.getProblems()).anyMatch(it -> it.contains("No MDS MembershipCredential"));
+    }
+
+    @Test
+    void shouldReturnFalse_whenMembershipCredentialHasAnotherDataspaceContext() {
+        var context = contextWithCredentials(credential(List.of(VC2_CONTEXT, "https://example.com/other-dataspace/credentials/context.jsonld"),
+                "VerifiableCredential", "MembershipCredential"));
+
+        var result = function.evaluate(Operator.EQ, "active", null, context);
+
+        assertThat(result).isFalse();
     }
 
     @Test
     void shouldReturnFalse_whenTypeIsInAnotherNamespace() {
-        var context = contextWithCredentials(credential("VerifiableCredential", "https://example.com/credentials/MembershipCredential"));
+        var context = contextWithCredentials(credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "https://example.com/credentials/MembershipCredential"));
 
         var result = function.evaluate(Operator.EQ, "active", null, context);
 
@@ -101,7 +132,7 @@ class MembershipPolicyFunctionTest {
     @ParameterizedTest
     @EnumSource(value = Operator.class, names = "EQ", mode = EnumSource.Mode.EXCLUDE)
     void shouldReturnFalse_whenOperatorIsNotEq(Operator operator) {
-        var context = contextWithCredentials(credential("VerifiableCredential", "MembershipCredential"));
+        var context = contextWithCredentials(mdsMembershipCredential());
 
         var result = function.evaluate(operator, "active", null, context);
 
@@ -111,7 +142,7 @@ class MembershipPolicyFunctionTest {
 
     @Test
     void shouldReturnFalse_whenRightOperandIsNotActive() {
-        var context = contextWithCredentials(credential("VerifiableCredential", "MembershipCredential"));
+        var context = contextWithCredentials(mdsMembershipCredential());
 
         var result = function.evaluate(Operator.EQ, "inactive", null, context);
 
@@ -121,7 +152,7 @@ class MembershipPolicyFunctionTest {
 
     @Test
     void shouldReturnFalse_whenRightOperandIsNotString() {
-        var context = contextWithCredentials(credential("VerifiableCredential", "MembershipCredential"));
+        var context = contextWithCredentials(mdsMembershipCredential());
 
         var result = function.evaluate(Operator.EQ, List.of("active"), null, context);
 
@@ -134,8 +165,13 @@ class MembershipPolicyFunctionTest {
         return new TestPolicyContext(new ParticipantAgent("did:web:consumer", claims, emptyMap()));
     }
 
-    private VerifiableCredential credential(String... types) {
+    private VerifiableCredential mdsMembershipCredential() {
+        return credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "MembershipCredential");
+    }
+
+    private VerifiableCredential credential(List<Object> contexts, String... types) {
         return VerifiableCredential.Builder.newInstance()
+                .contexts(contexts)
                 .types(List.of(types))
                 .issuer(new Issuer("did:web:issuer"))
                 .issuanceDate(Instant.now())

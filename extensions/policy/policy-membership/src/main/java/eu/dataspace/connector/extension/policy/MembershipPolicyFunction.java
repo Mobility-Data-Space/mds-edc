@@ -20,7 +20,6 @@ import org.eclipse.edc.policy.model.Operator;
 import org.eclipse.edc.policy.model.Rule;
 
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * Evaluates the MDS {@code Membership} constraint, as specified by the MDS ODRL profile 2026/1:
@@ -30,16 +29,27 @@ import java.util.Set;
  * <p>
  * The credentials found in the participant agent's {@value #VC_CLAIM} claim have already been verified by the DCP
  * identity service (trusted issuer, subject bound to the presentation holder, validity period, revocation status),
- * so this function only has to look for one of the MembershipCredential type.
+ * so this function only has to look for an MDS MembershipCredential.
+ * <p>
+ * JWT credentials (VC2_0_JOSE, as used by MDS) are not JSON-LD expanded by EDC, so {@code type} holds the terms as
+ * written by the issuer. A credential is an MDS MembershipCredential when its type expands to
+ * {@value #MDS_MEMBERSHIP_CREDENTIAL_IRI}, that is when either:
+ * <ul>
+ *     <li>it is typed with the full IRI (e.g. an expanded LDP credential), or</li>
+ *     <li>it is typed {@code MembershipCredential} and its {@code @context} contains {@value #MDS_CREDENTIALS_CONTEXT}:
+ *     that context is {@code @protected} and maps the term to the MDS IRI.</li>
+ * </ul>
+ * A {@code MembershipCredential} of another dataspace (without the MDS credentials context) is not accepted.
  */
 public class MembershipPolicyFunction<R extends Rule, C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<R, C> {
 
     static final String VC_CLAIM = "vc";
     static final String MDS_CREDENTIALS_NAMESPACE = "https://w3id.org/mobility-dataspace/2026/1/credentials/";
+    static final String MDS_CREDENTIALS_CONTEXT = MDS_CREDENTIALS_NAMESPACE + "context.jsonld";
     static final String MEMBERSHIP_CREDENTIAL_TYPE = "MembershipCredential";
+    static final String MDS_MEMBERSHIP_CREDENTIAL_IRI = MDS_CREDENTIALS_NAMESPACE + MEMBERSHIP_CREDENTIAL_TYPE;
     static final String ACTIVE = "active";
 
-    private static final Set<String> ACCEPTED_TYPES = Set.of(MEMBERSHIP_CREDENTIAL_TYPE, MDS_CREDENTIALS_NAMESPACE + MEMBERSHIP_CREDENTIAL_TYPE);
     private static final String PROBLEM_PREFIX = "Failing evaluation of Membership constraint. ";
 
     @Override
@@ -62,13 +72,19 @@ public class MembershipPolicyFunction<R extends Rule, C extends ParticipantAgent
         var hasMembershipCredential = credentials.stream()
                 .filter(VerifiableCredential.class::isInstance)
                 .map(VerifiableCredential.class::cast)
-                .anyMatch(credential -> credential.getType().stream().anyMatch(ACCEPTED_TYPES::contains));
+                .anyMatch(this::isMdsMembershipCredential);
 
         if (!hasMembershipCredential) {
-            context.reportProblem(PROBLEM_PREFIX + "No MembershipCredential presented by the counterparty");
+            context.reportProblem(PROBLEM_PREFIX + "No MDS MembershipCredential presented by the counterparty");
         }
 
         return hasMembershipCredential;
+    }
+
+    private boolean isMdsMembershipCredential(VerifiableCredential credential) {
+        var types = credential.getType();
+        return types.contains(MDS_MEMBERSHIP_CREDENTIAL_IRI) ||
+                (types.contains(MEMBERSHIP_CREDENTIAL_TYPE) && credential.getContext().contains(MDS_CREDENTIALS_CONTEXT));
     }
 
 }
