@@ -134,6 +134,57 @@ Content-Type: application/json
 The constraint is evaluated on catalog requests, contract negotiations and transfer processes.
 It is meant to replace [REFERRING_CONNECTOR](#referring_connector) once DCP is the only supported identity protocol.
 
+### Group
+
+Defined by the [MDS ODRL Profile](https://w3id.org/mobility-dataspace/2026/1/policy/) as
+`https://w3id.org/mobility-dataspace/2026/1/policy/Group`: the MDS groups the counterparty belongs to, as issued by MDS.
+Requires DCP: the groups are read from the `credentialSubject.groups` of the MDS `GroupMembershipCredential` presented
+by the counterparty, a string of group identifiers separated by `,` (e.g. `"public-transport,parking-operators"`).
+The credential is recognized like the `MembershipCredential` (see [Membership](#membership)): typed
+`GroupMembershipCredential` with the MDS credentials context, or typed with the full IRI
+`https://w3id.org/mobility-dataspace/2026/1/credentials/GroupMembershipCredential`. Under DAPS no credentials are
+presented, so it always fails.
+
+| Operators             | Right operand                                                                        |
+|-----------------------|--------------------------------------------------------------------------------------|
+| `eq`                  | one group identifier: a non-empty string without `,`                                 |
+| `isAnyOf`, `isAllOf`  | one or more group identifiers: a list of strings without `,` (or a single string)    |
+
+Any other operator or right operand fails the evaluation.
+The constraint passes when the counterparty's `GroupMembershipCredential` lists the group (`eq`), at least one of the
+groups (`isAnyOf`) or all of them (`isAllOf`). Group identifiers are maintained by the MDS Authority.
+
+Add the MDS policy context to use the short `Group` name:
+
+```http
+POST /v4/policydefinitions
+Content-Type: application/json
+
+{
+  "@context": [
+    "https://w3id.org/edc/connector/management/v2",
+    "https://w3id.org/mobility-dataspace/connector/management/v1",
+    "https://w3id.org/mobility-dataspace/2026/1/policy/context.jsonld"
+  ],
+  "@type": "PolicyDefinition",
+  "@id": "parking-and-transit",
+  "policy": {
+    "@type": "Set",
+    "permission": [{
+      "action": "use",
+      "constraint": [{
+        "leftOperand": "Group",
+        "operator": "isAnyOf",
+        "rightOperand": ["parking-operators", "transit-authorities"]
+      }]
+    }]
+  }
+}
+```
+
+The constraint is evaluated on catalog requests, contract negotiations and transfer processes, so counterparties
+outside the groups don't see the offer in the catalog.
+
 ### REFERRING_CONNECTOR
 
 The `rightOperand` will be checked against the `referringConnector` claim.
