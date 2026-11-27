@@ -50,6 +50,7 @@ public class PoliciesTest {
 
     private static final String MDS_MEMBERSHIP = "https://w3id.org/mobility-dataspace/2026/1/policy/Membership";
     private static final String MDS_PARTICIPANT_ID = "https://w3id.org/mobility-dataspace/2026/1/policy/ParticipantId";
+    private static final String MDS_GROUP = "https://w3id.org/mobility-dataspace/2026/1/policy/Group";
 
     private static final MdsParticipant RUNTIME = MdsParticipant.Builder.newInstance()
             .id("runtime").name("runtime")
@@ -80,7 +81,7 @@ public class PoliciesTest {
                 )
                 .build();
 
-        var evaluated = policyEngine.evaluate(policy, new CatalogPolicyContext(new ParticipantAgent("any", emptyMap(), emptyMap())));
+        var evaluated = policyEngine.evaluate(policy, new CatalogPolicyContext(null, new ParticipantAgent("any", emptyMap(), emptyMap())));
 
         assertThat(evaluated).isSucceeded();
     }
@@ -236,6 +237,75 @@ public class PoliciesTest {
         var policyEngine = RUNTIME_EXTENSION.getService(PolicyEngine.class);
         assertThat(policyEngine.evaluate(stored.getPolicy(), new CatalogPolicyContext(member("did:web:operator")))).isSucceeded();
         assertThat(policyEngine.evaluate(stored.getPolicy(), new CatalogPolicyContext(member("did:web:another")))).isFailed();
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ParticipantAgentContexts.class)
+    void group_shouldEvaluatePolicy(Function<ParticipantAgent, PolicyContext> contextProvider) {
+        var policyEngine = RUNTIME_EXTENSION.getService(PolicyEngine.class);
+        var policy = Policy.Builder.newInstance()
+                .permission(Permission.Builder.newInstance()
+                        .action(Action.Builder.newInstance().type(ODRL_USE_ACTION_ATTRIBUTE).build())
+                        .constraint(AtomicConstraint.Builder.newInstance()
+                                .leftExpression(new LiteralExpression(MDS_GROUP))
+                                .operator(Operator.EQ)
+                                .rightExpression(new LiteralExpression("parking-operators"))
+                                .build())
+                        .build()
+                )
+                .build();
+
+        assertThat(policyEngine.evaluate(policy, contextProvider.apply(groupMember("public-transport,parking-operators")))).isSucceeded();
+        assertThat(policyEngine.evaluate(policy, contextProvider.apply(groupMember("public-transport")))).isFailed();
+        assertThat(policyEngine.evaluate(policy, contextProvider.apply(member("did:web:consumer")))).isFailed();
+    }
+
+    @Test
+    void group_shouldEvaluatePolicyCreatedWithListRightOperand() {
+        var policyDefinition = Json.createObjectBuilder()
+                .add("@context", Json.createArrayBuilder()
+                        .add("https://w3id.org/edc/connector/management/v2")
+                        .add("https://w3id.org/mobility-dataspace/connector/management/v1")
+                        .add("https://w3id.org/mobility-dataspace/2026/1/policy/context.jsonld"))
+                .add("@type", "PolicyDefinition")
+                .add("@id", "mds-groups")
+                .add("policy", Json.createObjectBuilder()
+                        .add("@type", "Set")
+                        .add("permission", Json.createArrayBuilder().add(Json.createObjectBuilder()
+                                .add("action", "use")
+                                .add("constraint", Json.createArrayBuilder().add(Json.createObjectBuilder()
+                                        .add("leftOperand", "Group")
+                                        .add("operator", "isAllOf")
+                                        .add("rightOperand", Json.createArrayBuilder().add("parking-operators").add("transit-authorities")))))))
+                .build();
+
+        RUNTIME.baseManagementRequest()
+                .contentType(JSON)
+                .body(policyDefinition.toString())
+                .post("/policydefinitions")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200);
+
+        var stored = RUNTIME_EXTENSION.getService(PolicyDefinitionService.class).findById(RUNTIME.getId(), "mds-groups");
+        assertThat(stored).isNotNull();
+        var constraint = (AtomicConstraint) stored.getPolicy().getPermissions().get(0).getConstraints().get(0);
+        assertThat(constraint.getLeftExpression()).isEqualTo(new LiteralExpression(MDS_GROUP));
+
+        var policyEngine = RUNTIME_EXTENSION.getService(PolicyEngine.class);
+        assertThat(policyEngine.evaluate(stored.getPolicy(), new CatalogPolicyContext(groupMember("transit-authorities,parking-operators")))).isSucceeded();
+        assertThat(policyEngine.evaluate(stored.getPolicy(), new CatalogPolicyContext(groupMember("parking-operators")))).isFailed();
+    }
+
+    private ParticipantAgent groupMember(String groups) {
+        var groupMembershipCredential = VerifiableCredential.Builder.newInstance()
+                .contexts(List.of("https://www.w3.org/ns/credentials/v2", "https://w3id.org/mobility-dataspace/2026/1/credentials/context.jsonld"))
+                .types(List.of("VerifiableCredential", "GroupMembershipCredential"))
+                .issuer(new Issuer("did:web:issuer"))
+                .issuanceDate(Instant.now())
+                .credentialSubject(CredentialSubject.Builder.newInstance().id("did:web:consumer").claim("groups", groups).build())
+                .build();
+        return new ParticipantAgent("did:web:consumer", Map.of("vc", List.of(groupMembershipCredential)), emptyMap());
     }
 
     private ParticipantAgent member(String did) {

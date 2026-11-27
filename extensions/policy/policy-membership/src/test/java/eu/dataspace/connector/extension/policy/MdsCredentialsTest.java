@@ -23,23 +23,23 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
-import static eu.dataspace.connector.extension.policy.MdsMembershipCredentials.VC_CLAIM;
+import static eu.dataspace.connector.extension.policy.MdsCredentials.VC_CLAIM;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.edc.junit.assertions.AbstractResultAssert.assertThat;
 
-class MdsMembershipCredentialsTest {
+class MdsCredentialsTest {
 
     private static final String VC2_CONTEXT = "https://www.w3.org/ns/credentials/v2";
     private static final String MDS_CREDENTIALS_CONTEXT = "https://w3id.org/mobility-dataspace/2026/1/credentials/context.jsonld";
 
-    private final MdsMembershipCredentials mdsMembershipCredentials = new MdsMembershipCredentials();
+    private final MdsCredentials mdsCredentials = MdsCredentials.membership();
 
     @Test
     void shouldReturnCredential_whenTypedMembershipCredentialWithMdsContext() {
         var credential = credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "MembershipCredential");
 
-        var result = mdsMembershipCredentials.find(agentWith(credential));
+        var result = mdsCredentials.find(agentWith(credential));
 
         assertThat(result).isSucceeded().isEqualTo(List.of(credential));
     }
@@ -48,7 +48,7 @@ class MdsMembershipCredentialsTest {
     void shouldReturnCredential_whenTypedWithMdsIri() {
         var credential = credential(List.of(VC2_CONTEXT), "VerifiableCredential", "https://w3id.org/mobility-dataspace/2026/1/credentials/MembershipCredential");
 
-        var result = mdsMembershipCredentials.find(agentWith(credential));
+        var result = mdsCredentials.find(agentWith(credential));
 
         assertThat(result).isSucceeded().isEqualTo(List.of(credential));
     }
@@ -58,7 +58,7 @@ class MdsMembershipCredentialsTest {
         var group = credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "GroupMembershipCredential");
         var membership = credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "MembershipCredential");
 
-        var result = mdsMembershipCredentials.find(agentWith(group, membership));
+        var result = mdsCredentials.find(agentWith(group, membership));
 
         assertThat(result).isSucceeded().isEqualTo(List.of(membership));
     }
@@ -67,7 +67,7 @@ class MdsMembershipCredentialsTest {
     void shouldFail_whenNoMembershipCredentialIsPresented() {
         var credential = credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "GroupMembershipCredential");
 
-        var result = mdsMembershipCredentials.find(agentWith(credential));
+        var result = mdsCredentials.find(agentWith(credential));
 
         assertThat(result).isFailed().detail().contains("No MDS MembershipCredential");
     }
@@ -76,7 +76,7 @@ class MdsMembershipCredentialsTest {
     void shouldFail_whenMembershipCredentialHasNoMdsContext() {
         var credential = credential(List.of(VC2_CONTEXT), "VerifiableCredential", "MembershipCredential");
 
-        var result = mdsMembershipCredentials.find(agentWith(credential));
+        var result = mdsCredentials.find(agentWith(credential));
 
         assertThat(result).isFailed().detail().contains("No MDS MembershipCredential");
     }
@@ -86,7 +86,7 @@ class MdsMembershipCredentialsTest {
         var credential = credential(List.of(VC2_CONTEXT, "https://example.com/other-dataspace/credentials/context.jsonld"),
                 "VerifiableCredential", "MembershipCredential");
 
-        var result = mdsMembershipCredentials.find(agentWith(credential));
+        var result = mdsCredentials.find(agentWith(credential));
 
         assertThat(result).isFailed();
     }
@@ -95,14 +95,14 @@ class MdsMembershipCredentialsTest {
     void shouldFail_whenTypeIsInAnotherNamespace() {
         var credential = credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "https://example.com/credentials/MembershipCredential");
 
-        var result = mdsMembershipCredentials.find(agentWith(credential));
+        var result = mdsCredentials.find(agentWith(credential));
 
         assertThat(result).isFailed();
     }
 
     @Test
     void shouldFail_whenNoCredentialsArePresented() {
-        var result = mdsMembershipCredentials.find(new ParticipantAgent("any", emptyMap(), emptyMap()));
+        var result = mdsCredentials.find(new ParticipantAgent("any", emptyMap(), emptyMap()));
 
         assertThat(result).isFailed().detail().contains("No verifiable credentials");
     }
@@ -111,9 +111,46 @@ class MdsMembershipCredentialsTest {
     void shouldFail_whenVcClaimDoesNotContainCredentials() {
         var agent = new ParticipantAgent("any", Map.of(VC_CLAIM, List.of("MembershipCredential")), emptyMap());
 
-        var result = mdsMembershipCredentials.find(agent);
+        var result = mdsCredentials.find(agent);
 
         assertThat(result).isFailed().detail().contains("No MDS MembershipCredential");
+    }
+
+    @Test
+    void groupMembership_shouldReturnOnlyGroupMembershipCredentials() {
+        var group = credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "GroupMembershipCredential");
+        var membership = credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "MembershipCredential");
+
+        var result = MdsCredentials.groupMembership().find(agentWith(membership, group));
+
+        assertThat(result).isSucceeded().isEqualTo(List.of(group));
+    }
+
+    @Test
+    void groupMembership_shouldReturnCredential_whenTypedWithMdsIri() {
+        var credential = credential(List.of(VC2_CONTEXT), "VerifiableCredential", "https://w3id.org/mobility-dataspace/2026/1/credentials/GroupMembershipCredential");
+
+        var result = MdsCredentials.groupMembership().find(agentWith(credential));
+
+        assertThat(result).isSucceeded().isEqualTo(List.of(credential));
+    }
+
+    @Test
+    void groupMembership_shouldFail_whenOnlyMembershipCredentialIsPresented() {
+        var credential = credential(List.of(VC2_CONTEXT, MDS_CREDENTIALS_CONTEXT), "VerifiableCredential", "MembershipCredential");
+
+        var result = MdsCredentials.groupMembership().find(agentWith(credential));
+
+        assertThat(result).isFailed().detail().contains("No MDS GroupMembershipCredential");
+    }
+
+    @Test
+    void groupMembership_shouldFail_whenGroupMembershipCredentialHasNoMdsContext() {
+        var credential = credential(List.of(VC2_CONTEXT), "VerifiableCredential", "GroupMembershipCredential");
+
+        var result = MdsCredentials.groupMembership().find(agentWith(credential));
+
+        assertThat(result).isFailed();
     }
 
     private ParticipantAgent agentWith(VerifiableCredential... credentials) {

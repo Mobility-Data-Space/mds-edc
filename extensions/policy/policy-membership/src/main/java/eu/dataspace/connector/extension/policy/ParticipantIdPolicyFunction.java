@@ -38,16 +38,16 @@ import static java.util.stream.Collectors.toSet;
  * {@code neq} and {@code isNoneOf} exclude participants from the MDS members: they are never satisfied for a
  * counterparty that does not present an MDS MembershipCredential.
  *
- * @see MdsMembershipCredentials
+ * @see MdsCredentials
  */
 public class ParticipantIdPolicyFunction<R extends Rule, C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<R, C> {
 
     private static final String PROBLEM_PREFIX = "Failing evaluation of ParticipantId constraint. ";
 
-    private final MdsMembershipCredentials mdsMembershipCredentials;
+    private final MdsCredentials mdsCredentials;
 
-    public ParticipantIdPolicyFunction(MdsMembershipCredentials mdsMembershipCredentials) {
-        this.mdsMembershipCredentials = mdsMembershipCredentials;
+    public ParticipantIdPolicyFunction(MdsCredentials mdsCredentials) {
+        this.mdsCredentials = mdsCredentials;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ParticipantIdPolicyFunction<R extends Rule, C extends ParticipantAg
             return false;
         }
 
-        var membershipCredentials = mdsMembershipCredentials.find(context.participantAgent());
+        var membershipCredentials = mdsCredentials.find(context.participantAgent());
         if (membershipCredentials.failed()) {
             context.reportProblem(PROBLEM_PREFIX + membershipCredentials.getFailureDetail());
             return false;

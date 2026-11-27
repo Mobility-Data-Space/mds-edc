@@ -35,12 +35,12 @@ import static org.mockito.Mockito.when;
 
 class MembershipPolicyFunctionTest {
 
-    private final MdsMembershipCredentials mdsMembershipCredentials = mock();
-    private final MembershipPolicyFunction<Rule, ParticipantAgentPolicyContext> function = new MembershipPolicyFunction<>(mdsMembershipCredentials);
+    private final MdsCredentials mdsCredentials = mock();
+    private final MembershipPolicyFunction<Rule, ParticipantAgentPolicyContext> function = new MembershipPolicyFunction<>(mdsCredentials);
 
     @Test
     void shouldReturnTrue_whenMembershipCredentialIsPresented() {
-        when(mdsMembershipCredentials.find(any())).thenReturn(Result.success(List.of(membershipCredential())));
+        when(mdsCredentials.find(any())).thenReturn(Result.success(List.of(membershipCredential())));
         var context = new TestPolicyContext();
 
         var result = function.evaluate(Operator.EQ, "active", null, context);
@@ -51,7 +51,7 @@ class MembershipPolicyFunctionTest {
 
     @Test
     void shouldReturnFalse_whenNoMembershipCredentialIsPresented() {
-        when(mdsMembershipCredentials.find(any())).thenReturn(Result.failure("No MDS MembershipCredential presented by the counterparty"));
+        when(mdsCredentials.find(any())).thenReturn(Result.failure("No MDS MembershipCredential presented by the counterparty"));
         var context = new TestPolicyContext();
 
         var result = function.evaluate(Operator.EQ, "active", null, context);
@@ -69,7 +69,7 @@ class MembershipPolicyFunctionTest {
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).anyMatch(it -> it.contains("Unsupported operator"));
-        verifyNoInteractions(mdsMembershipCredentials);
+        verifyNoInteractions(mdsCredentials);
     }
 
     @Test
@@ -80,7 +80,7 @@ class MembershipPolicyFunctionTest {
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).anyMatch(it -> it.contains("Right operand"));
-        verifyNoInteractions(mdsMembershipCredentials);
+        verifyNoInteractions(mdsCredentials);
     }
 
     @Test

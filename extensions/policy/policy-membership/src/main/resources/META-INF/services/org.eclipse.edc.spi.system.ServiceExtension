@@ -1,2 +1,3 @@
 eu.dataspace.connector.extension.policy.MembershipPolicyExtension
 eu.dataspace.connector.extension.policy.ParticipantIdPolicyExtension
+eu.dataspace.connector.extension.policy.GroupPolicyExtension

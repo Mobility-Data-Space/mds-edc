@@ -40,8 +40,8 @@ class ParticipantIdPolicyFunctionTest {
     private static final String CONSUMER = "did:web:consumer.example";
     private static final String OTHER = "did:web:other.example";
 
-    private final MdsMembershipCredentials mdsMembershipCredentials = mock();
-    private final ParticipantIdPolicyFunction<Rule, ParticipantAgentPolicyContext> function = new ParticipantIdPolicyFunction<>(mdsMembershipCredentials);
+    private final MdsCredentials mdsCredentials = mock();
+    private final ParticipantIdPolicyFunction<Rule, ParticipantAgentPolicyContext> function = new ParticipantIdPolicyFunction<>(mdsCredentials);
 
     @Nested
     class Eq {
@@ -212,7 +212,7 @@ class ParticipantIdPolicyFunctionTest {
 
         assertThat(result).isFalse();
         assertThat(context.getProblems()).anyMatch(it -> it.contains("Unsupported operator"));
-        verifyNoInteractions(mdsMembershipCredentials);
+        verifyNoInteractions(mdsCredentials);
     }
 
     @Test
@@ -235,12 +235,12 @@ class ParticipantIdPolicyFunctionTest {
     }
 
     private TestPolicyContext contextWithCredentials(VerifiableCredential... credentials) {
-        when(mdsMembershipCredentials.find(any())).thenReturn(Result.success(List.of(credentials)));
+        when(mdsCredentials.find(any())).thenReturn(Result.success(List.of(credentials)));
         return new TestPolicyContext();
     }
 
     private TestPolicyContext contextWithoutMembershipCredential() {
-        when(mdsMembershipCredentials.find(any())).thenReturn(Result.failure("No MDS MembershipCredential presented by the counterparty"));
+        when(mdsCredentials.find(any())).thenReturn(Result.failure("No MDS MembershipCredential presented by the counterparty"));
         return new TestPolicyContext();
     }
 

@@ -24,7 +24,7 @@ import org.eclipse.edc.policy.model.Rule;
  * <p>
  * Only {@code eq "active"} is allowed. The credential's presence is evaluated; no claim is read.
  *
- * @see MdsMembershipCredentials
+ * @see MdsCredentials
  */
 public class MembershipPolicyFunction<R extends Rule, C extends ParticipantAgentPolicyContext> implements AtomicConstraintRuleFunction<R, C> {
 
@@ -32,10 +32,10 @@ public class MembershipPolicyFunction<R extends Rule, C extends ParticipantAgent
 
     private static final String PROBLEM_PREFIX = "Failing evaluation of Membership constraint. ";
 
-    private final MdsMembershipCredentials mdsMembershipCredentials;
+    private final MdsCredentials mdsCredentials;
 
-    public MembershipPolicyFunction(MdsMembershipCredentials mdsMembershipCredentials) {
-        this.mdsMembershipCredentials = mdsMembershipCredentials;
+    public MembershipPolicyFunction(MdsCredentials mdsCredentials) {
+        this.mdsCredentials = mdsCredentials;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class MembershipPolicyFunction<R extends Rule, C extends ParticipantAgent
             return false;
         }
 
-        var membershipCredentials = mdsMembershipCredentials.find(context.participantAgent());
+        var membershipCredentials = mdsCredentials.find(context.participantAgent());
         if (membershipCredentials.failed()) {
             context.reportProblem(PROBLEM_PREFIX + membershipCredentials.getFailureDetail());
             return false;
