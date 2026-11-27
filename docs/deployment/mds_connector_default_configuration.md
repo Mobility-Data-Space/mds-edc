@@ -58,7 +58,7 @@ edc.oauth.endpoint.audience = "idsc:IDS_CONNECTORS_ALL"
 edc.agent.identity.key = "referringConnector"
 
 # Manual Negotiation Approval
-# Required to hold negotiations whose contract definition has the `manualApproval` private property
+# Required to hold negotiations whose contract policy has the `ManualApproval` constraint
 edc.negotiation.approval.enabled = true
 
 # Logging House configuration

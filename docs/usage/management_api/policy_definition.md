@@ -185,6 +185,50 @@ Content-Type: application/json
 The constraint is evaluated on catalog requests, contract negotiations and transfer processes, so counterparties
 outside the groups don't see the offer in the catalog.
 
+### ManualApproval
+
+Defined by the [MDS ODRL Profile](https://w3id.org/mobility-dataspace/2026/1/policy/) as
+`https://w3id.org/mobility-dataspace/2026/1/policy/ManualApproval`: the provider approves the contract negotiation by
+hand. When the contract policy has a permission with this constraint, the provider connector holds every negotiation
+for the offer in `REQUESTED` state until it is [manually approved or rejected](../mds_features/contract_negotiation_manual_approval_rejection.md).
+Requires `edc.negotiation.approval.enabled=true` on the provider connector.
+
+Only the `eq` operator with the right operand `"true"` (a string) is allowed. A constraint that does not follow it
+holds the negotiation as well, and fails the policy definition validation.
+
+Add the MDS policy context to use the short `ManualApproval` name:
+
+```http
+POST /v4/policydefinitions
+Content-Type: application/json
+
+{
+  "@context": [
+    "https://w3id.org/edc/connector/management/v2",
+    "https://w3id.org/mobility-dataspace/connector/management/v1",
+    "https://w3id.org/mobility-dataspace/2026/1/policy/context.jsonld"
+  ],
+  "@type": "PolicyDefinition",
+  "@id": "manual-approval",
+  "policy": {
+    "@type": "Set",
+    "permission": [{
+      "action": "use",
+      "constraint": [{
+        "leftOperand": "ManualApproval",
+        "operator": "eq",
+        "rightOperand": "true"
+      }]
+    }]
+  }
+}
+```
+
+Use it as the **contract policy** of the contract definition: the constraint is part of the offer, so the manual
+approval requirement is visible to consumers in the catalog. It is evaluated only when the provider decides on the
+approval of a negotiation: catalog requests, contract negotiations and transfer processes ignore it, so it can be
+combined with any other constraint.
+
 ### REFERRING_CONNECTOR
 
 The `rightOperand` will be checked against the `referringConnector` claim.

@@ -43,46 +43,80 @@ edc.negotiation.approval.enabled = true
 
 Without it, negotiations are never held, and a warning is logged at startup.
 
-To enable manual approval for specific contract offers, set the following **private property** on the contract definition:
+### Requiring Manual Approval on an Offer
 
-```text
-https://w3id.org/edc/v0.0.1/ns/manualApproval = true
+To require manual approval for a contract offer, add the MDS `ManualApproval` constraint to a permission of its
+**contract policy**:
+
+```json
+{ "leftOperand": "ManualApproval", "operator": "eq", "rightOperand": "true" }
 ```
 
-> **Important**: This is a **private property**, meaning it is not shared in the catalog and is only visible to the provider.
-
-> **Note**: Participants can additionally, if desired, make this information visible in the MDS Central Catalog by setting `additionalProperties.manualApproval` to `true` in the asset properties. See [On-Request Data Offers](on-request-data-offers.md) for an example of how `additionalProperties` is used.
+The constraint is part of the offer, so consumers see in the catalog that the provider approves negotiations by hand.
+See [ManualApproval](../management_api/policy_definition.md#manualapproval) for the full policy definition.
 
 ### Contract Definition Example
 
 #### Via Management API
 
-**Endpoint**: `POST /v3/contractdefinitions`
+Create the policy definition with the `ManualApproval` constraint:
+
+**Endpoint**: `POST /v4/policydefinitions`
 
 **Request Body**:
 
 ```json
 {
-  "@context": {
-    "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
-    "edc": "https://w3id.org/edc/v0.0.1/ns/"
-  },
+  "@context": [
+    "https://w3id.org/edc/connector/management/v2",
+    "https://w3id.org/mobility-dataspace/connector/management/v1",
+    "https://w3id.org/mobility-dataspace/2026/1/policy/context.jsonld"
+  ],
+  "@type": "PolicyDefinition",
+  "@id": "manual-approval",
+  "policy": {
+    "@type": "Set",
+    "permission": [{
+      "action": "use",
+      "constraint": [{
+        "leftOperand": "ManualApproval",
+        "operator": "eq",
+        "rightOperand": "true"
+      }]
+    }]
+  }
+}
+```
+
+Then use it as contract policy:
+
+**Endpoint**: `POST /v4/contractdefinitions`
+
+**Request Body**:
+
+```json
+{
+  "@context": "https://w3id.org/mobility-dataspace/connector/management/v1",
   "@type": "ContractDefinition",
   "@id": "contract-def-manual-approval",
-  "accessPolicyId": "policy-id",
-  "contractPolicyId": "policy-id",
+  "accessPolicyId": "access-policy-id",
+  "contractPolicyId": "manual-approval",
   "assetsSelector": [
     {
+      "@type": "Criterion",
       "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
       "operator": "=",
       "operandRight": "asset-id"
     }
-  ],
-  "privateProperties": {
-    "manualApproval": true
-  }
+  ]
 }
 ```
+
+### Deprecated: `manualApproval` contract definition property
+
+Setting the private property `https://w3id.org/edc/v0.0.1/ns/manualApproval = true` on the contract definition still
+holds negotiations, but it is **deprecated** and will be removed: it is not visible to consumers, and a warning is logged
+every time it is used. Replace it with a contract policy carrying the `ManualApproval` constraint.
 
 ## Provider Workflow
 

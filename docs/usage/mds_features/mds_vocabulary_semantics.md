@@ -100,7 +100,7 @@ enumerated values, not the format: URLs, dates and language codes are not checke
 | `onrequest`         | Marks the asset as an [on-request data offer](on-request-data-offers.md)                          |
 | `email`             | Contact email for requests about the asset                                                        |
 | `preferred_subject` | Suggested subject for request emails                                                              |
-| `manual_approval`   | Informational flag: it is not evaluated by the connector, which holds negotiations for [manual approval](contract_negotiation_manual_approval_rejection.md) based on the contract definition |
+| `manual_approval`   | Informational flag: it is not evaluated by the connector, which holds negotiations for [manual approval](contract_negotiation_manual_approval_rejection.md) based on the `ManualApproval` contract policy constraint |
 
 ```json
 {
