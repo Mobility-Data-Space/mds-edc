@@ -16,21 +16,27 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import jakarta.json.JsonObject;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import static jakarta.json.Json.createObjectBuilder;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates.FINALIZED;
 import static org.eclipse.edc.connector.controlplane.contract.spi.types.negotiation.ContractNegotiationStates.TERMINATED;
+import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.atomicConstraint;
 import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.noConstraintPolicy;
+import static org.eclipse.edc.connector.controlplane.test.system.utils.PolicyFixtures.policy;
 import static org.eclipse.edc.connector.controlplane.transfer.spi.types.TransferProcessStates.REQUESTED;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
 
 public class ContractNegotiationManualApprovalTest {
+
+    private static final String MDS_MANUAL_APPROVAL = "https://w3id.org/mobility-dataspace/2026/1/policy/ManualApproval";
 
     @DapsTest
     @Nested
@@ -111,6 +117,36 @@ public class ContractNegotiationManualApprovalTest {
         protected Tests(MdsParticipant provider, MdsParticipant consumer) {
             this.provider = provider;
             this.consumer = consumer;
+        }
+
+        @Test
+        void shouldPublishManualApprovalRequirementInCatalog() {
+            var assetId = createOfferWithManualApproval();
+
+            var catalogDatasets = consumer.getCatalogDatasets(provider);
+
+            assertThat(catalogDatasets).anySatisfy(dataset -> {
+                assertThat(dataset.asJsonObject().getString(ID)).isEqualTo(assetId);
+                assertThat(dataset.toString()).contains(MDS_MANUAL_APPROVAL);
+            });
+        }
+
+        @Test
+        @Deprecated
+        void shouldManuallyApproveNegotiation_whenContractDefinitionHasManualApprovalProperty() {
+            var assetId = UUID.randomUUID().toString();
+            provider.createAsset(assetId, emptyMap(), dataAddressProperties());
+            var noConstraintPolicyId = provider.createPolicyDefinition(noConstraintPolicy());
+            provider.createContractDefinitionWithManualApproval(assetId, noConstraintPolicyId);
+            var consumerContractNegotiationId = consumer.initContractNegotiation(provider, assetId);
+
+            var pending = awaitPendingOnProvider(consumerContractNegotiationId);
+
+            provider.approveNegotiation(pending.getString(ID)).statusCode(204);
+
+            await().untilAsserted(() -> {
+                assertThat(consumer.getContractNegotiationState(consumerContractNegotiationId)).isEqualTo(FINALIZED.name());
+            });
         }
 
         @Test
@@ -216,7 +252,12 @@ public class ContractNegotiationManualApprovalTest {
             var assetId = UUID.randomUUID().toString();
             provider.createAsset(assetId, emptyMap(), dataAddressProperties());
             var noConstraintPolicyId = provider.createPolicyDefinition(noConstraintPolicy());
-            provider.createContractDefinitionWithManualApproval(assetId, noConstraintPolicyId);
+            var manualApprovalPermission = createObjectBuilder()
+                    .add("action", "use")
+                    .add("constraint", atomicConstraint(MDS_MANUAL_APPROVAL, "eq", "true"))
+                    .build();
+            var manualApprovalPolicyId = provider.createPolicyDefinition(policy(List.of(manualApprovalPermission)));
+            provider.createContractDefinition(assetId, UUID.randomUUID().toString(), noConstraintPolicyId, manualApprovalPolicyId);
             return assetId;
         }
 

@@ -43,7 +43,10 @@ Content-Type: application/json
 }
 ```
 
-### With Manual Approval
+### With Manual Approval (deprecated)
+
+> **Deprecated**: the `manualApproval` private property will be removed. Use a contract policy with the
+> [ManualApproval](policy_definition.md#manualapproval) constraint instead, that also makes the requirement visible in the catalog.
 
 ```http
 POST /v4/contractdefinitions

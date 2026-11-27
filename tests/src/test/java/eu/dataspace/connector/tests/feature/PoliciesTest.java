@@ -2,6 +2,7 @@ package eu.dataspace.connector.tests.feature;
 
 import eu.dataspace.connector.tests.MdsParticipant;
 import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.ApprovalContractNegotiationPolicyContext;
 import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
 import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
 import org.eclipse.edc.connector.controlplane.services.spi.policydefinition.PolicyDefinitionService;
@@ -51,6 +52,7 @@ public class PoliciesTest {
     private static final String MDS_MEMBERSHIP = "https://w3id.org/mobility-dataspace/2026/1/policy/Membership";
     private static final String MDS_PARTICIPANT_ID = "https://w3id.org/mobility-dataspace/2026/1/policy/ParticipantId";
     private static final String MDS_GROUP = "https://w3id.org/mobility-dataspace/2026/1/policy/Group";
+    private static final String MDS_MANUAL_APPROVAL = "https://w3id.org/mobility-dataspace/2026/1/policy/ManualApproval";
 
     private static final MdsParticipant RUNTIME = MdsParticipant.Builder.newInstance()
             .id("runtime").name("runtime")
@@ -295,6 +297,46 @@ public class PoliciesTest {
         var policyEngine = RUNTIME_EXTENSION.getService(PolicyEngine.class);
         assertThat(policyEngine.evaluate(stored.getPolicy(), new CatalogPolicyContext(groupMember("transit-authorities,parking-operators")))).isSucceeded();
         assertThat(policyEngine.evaluate(stored.getPolicy(), new CatalogPolicyContext(groupMember("parking-operators")))).isFailed();
+    }
+
+    @Test
+    void manualApproval_shouldNotBeSatisfiedInApprovalScope() {
+        var policyEngine = RUNTIME_EXTENSION.getService(PolicyEngine.class);
+        var policy = manualApprovalPolicy("true");
+        var agent = new ParticipantAgent("did:web:consumer", emptyMap(), emptyMap());
+
+        assertThat(policyEngine.evaluate(policy, new ApprovalContractNegotiationPolicyContext(RUNTIME.getId(), agent))).isFailed();
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ParticipantAgentContexts.class)
+    void manualApproval_shouldBeIgnoredOutsideApprovalScope(Function<ParticipantAgent, PolicyContext> contextProvider) {
+        var policyEngine = RUNTIME_EXTENSION.getService(PolicyEngine.class);
+        var policy = manualApprovalPolicy("true");
+
+        assertThat(policyEngine.evaluate(policy, contextProvider.apply(new ParticipantAgent("did:web:consumer", emptyMap(), emptyMap())))).isSucceeded();
+    }
+
+    @Test
+    void manualApproval_shouldValidatePolicy() {
+        var policyEngine = RUNTIME_EXTENSION.getService(PolicyEngine.class);
+
+        assertThat(policyEngine.validate(manualApprovalPolicy("true"))).isSucceeded();
+        assertThat(policyEngine.validate(manualApprovalPolicy("false"))).isFailed();
+    }
+
+    private Policy manualApprovalPolicy(String rightOperand) {
+        return Policy.Builder.newInstance()
+                .permission(Permission.Builder.newInstance()
+                        .action(Action.Builder.newInstance().type(ODRL_USE_ACTION_ATTRIBUTE).build())
+                        .constraint(AtomicConstraint.Builder.newInstance()
+                                .leftExpression(new LiteralExpression(MDS_MANUAL_APPROVAL))
+                                .operator(Operator.EQ)
+                                .rightExpression(new LiteralExpression(rightOperand))
+                                .build())
+                        .build()
+                )
+                .build();
     }
 
     private ParticipantAgent groupMember(String groups) {
